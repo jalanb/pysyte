@@ -7,10 +7,15 @@ from setuptools import setup
 import dotsite
 
 
+name = 'dotsite'
+
+
 setup(
-    name='dotsite',
+    name=name,
+    packages=[name],
     version=dotsite.__version__,
     url='https://github.com/jalanb/dotsite',
+    download_url='https://github.com/jalanb/dotsite/tarball/v0.1.1',
     license='MIT License',
     author='J Alan Brogan',
     author_email='dotsite@al-got-rhythm.net',
