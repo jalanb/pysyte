@@ -15,7 +15,8 @@ setup(
     packages=[name],
     version=dotsite.__version__,
     url='https://github.com/jalanb/dotsite',
-    download_url='https://github.com/jalanb/dotsite/tarball/v0.1.1',
+    download_url=
+        'https://github.com/jalanb/dotsite/tarball/v%s' % dotsite.__version__,
     license='MIT License',
     author='J Alan Brogan',
     author_email='dotsite@al-got-rhythm.net',
