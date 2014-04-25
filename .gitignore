@@ -52,3 +52,11 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Other filesystems
+.svn
+.DS_Store
+
+# Editors
+.*.swp
+*~
+
