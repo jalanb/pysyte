@@ -24,3 +24,20 @@ def swap_dictionary(dictionary):
     for k, v in dictionary.iteritems():
         result[v] = k
     return result
+
+
+def append_value(dictionary, key, item):
+    """Append those items to the values for that key"""
+    items = dictionary.get(key, [])
+    items.append(item)
+    dictionary[key] = items
+
+
+def extend_values(dictionary, key, items):
+    """Extend the values for that key with the items"""
+    values = dictionary.get(key, [])
+    try:
+        values.extend(items)
+    except TypeError:
+        raise TypeError('Expected a list, got: %r' % items)
+    dictionary[key] = values

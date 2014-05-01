@@ -40,3 +40,33 @@ class DictionariesTest(unittest.TestCase):
         self.assertEquals(expected, actual)
         with self.assertRaises(AttributeError):
             dictionaries.swap_dictionary('not a dict')
+
+    def test_append_value(self):
+        dictionary = {}
+        dictionaries.append_value(dictionary, 'one', 1)
+        self.assertDictEqual(dictionary, {'one': [1]})
+        dictionaries.append_value(dictionary, 'one', 2)
+        self.assertDictEqual(dictionary, {'one': [1, 2]})
+        dictionaries.append_value(dictionary, 'two', 2)
+        self.assertDictEqual(dictionary, {'one': [1, 2], 'two': [2]})
+        dictionaries.append_value(dictionary, 'one', 3)
+        self.assertDictEqual(dictionary, {'one': [1, 2, 3], 'two': [2]})
+        dictionaries.append_value(dictionary, 'one', None)
+        self.assertDictEqual(dictionary, {'one': [1, 2, 3, None], 'two': [2]})
+
+    def test_extend_values(self):
+        dictionary = {}
+        dictionaries.extend_values(dictionary, 'one', [1])
+        self.assertDictEqual(dictionary, {'one': [1]})
+        dictionaries.extend_values(dictionary, 'one', [2, 3])
+        self.assertDictEqual(dictionary, {'one': [1, 2, 3]})
+        dictionaries.extend_values(dictionary, 'two', [2, 3])
+        self.assertDictEqual(dictionary, {'one': [1, 2, 3], 'two': [2, 3]})
+        dictionaries.extend_values(dictionary, 'one', [2, 3])
+        self.assertDictEqual(dictionary,
+                             {'one': [1, 2, 3, 2, 3], 'two': [2, 3]})
+        self.assertRaisesRegexp(
+            TypeError,
+            'Expected a list, got: 2',
+            dictionaries.extend_values,
+            dictionary, 'one', 2)
