@@ -43,30 +43,36 @@ class DictionariesTest(unittest.TestCase):
 
     def test_append_value(self):
         dictionary = {}
-        dictionaries.append_value(dictionary, 'one', 1)
-        self.assertDictEqual(dictionary, {'one': [1]})
-        dictionaries.append_value(dictionary, 'one', 2)
-        self.assertDictEqual(dictionary, {'one': [1, 2]})
-        dictionaries.append_value(dictionary, 'two', 2)
-        self.assertDictEqual(dictionary, {'one': [1, 2], 'two': [2]})
-        dictionaries.append_value(dictionary, 'one', 3)
-        self.assertDictEqual(dictionary, {'one': [1, 2, 3], 'two': [2]})
-        dictionaries.append_value(dictionary, 'one', None)
-        self.assertDictEqual(dictionary, {'one': [1, 2, 3, None], 'two': [2]})
+        data = [
+            ('one', 1, {'one': [1]}),
+            ('one', 2, {'one': [1, 2]}),
+            ('two', 2, {'one': [1, 2], 'two': [2]}),
+            ('one', 3, {'one': [1, 2, 3], 'two': [2]}),
+            ('one', None, {'one': [1, 2, 3, None], 'two': [2]}),
+        ]
+        for key, value, expected in data:
+            dictionaries.append_value(dictionary, key, value)
+            message = 'append(%s, %s): %s != %s' % (
+                key, value, expected, dictionary)
+            self.assertDictEqual(dictionary, expected, message)
 
     def test_extend_values(self):
         dictionary = {}
-        dictionaries.extend_values(dictionary, 'one', [1])
-        self.assertDictEqual(dictionary, {'one': [1]})
-        dictionaries.extend_values(dictionary, 'one', [2, 3])
-        self.assertDictEqual(dictionary, {'one': [1, 2, 3]})
-        dictionaries.extend_values(dictionary, 'two', [2, 3])
-        self.assertDictEqual(dictionary, {'one': [1, 2, 3], 'two': [2, 3]})
-        dictionaries.extend_values(dictionary, 'one', [2, 3])
-        self.assertDictEqual(dictionary,
-                             {'one': [1, 2, 3, 2, 3], 'two': [2, 3]})
+        data = [
+            ('one', [1], {'one': [1]}),
+            ('one', [2, 3], {'one': [1, 2, 3]}),
+            ('two', [2, 3], {'one': [1, 2, 3], 'two': [2, 3]}),
+            ('one', [2, 3], {'one': [1, 2, 3, 2, 3], 'two': [2, 3]}),
+        ]
+        for key, value, expected in data:
+            dictionaries.extend_values(dictionary, key, value)
+            message = 'extend(%s, %s): %s != %s' % (
+                key, value, expected, dictionary)
+            self.assertDictEqual(dictionary, expected, message)
+
+    def test_extend_values_expects_a_list(self):
         self.assertRaisesRegexp(
             TypeError,
             'Expected a list, got: 2',
             dictionaries.extend_values,
-            dictionary, 'one', 2)
+            {}, 'one', 2)
