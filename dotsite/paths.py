@@ -44,7 +44,7 @@ class Path(path):
 
     # The / operator joins paths.
     def __div__(self, child):
-        """ Join two path components, adding a separator character if needed.
+        """Join two path components, adding a separator character if needed.
 
         If the result is a file return self.__file_class__(result)
 
