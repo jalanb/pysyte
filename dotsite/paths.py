@@ -34,7 +34,117 @@ class PathAssertions:
             raise PathError('%s is not a file' % self)
         return self
 
-class FilePath(path, PathAssertions):
+class Path(path):
+    """Some additions to the classic path class"""
+
+    def __repr__(self):
+        return '<%s %s>' % (
+            self.__class__.__name__,
+            super(path, self).__repr__())
+
+    # The / operator joins paths.
+    def __div__(self, child):
+        """ Join two path components, adding a separator character if needed.
+
+        If the result is a file return self.__file_class__(result)
+
+        >>> p = Path('/home/guido')
+        >>> p.__div__('fred') == p / 'fred' == p.joinpath('fred')
+        True
+        """
+        if child:
+            result = os.path.join(self, child)
+        else:
+            result = str(self)
+        return self.as_existing_file(result)
+
+    def as_file(self, filepath):
+        """Return the file_class of the file, or self's class"""
+        if hasattr(self,'__file_class__'):
+            return self.__file_class__(filepath)
+        return self.__class__(filepath)
+
+    def as_existing_file(self, filepath):
+        """Return the file class for existing files only"""
+        if os.path.isfile(filepath) and hasattr(self,'__file_class__'):
+            return self.__file_class__(filepath)
+        return self.__class__(filepath)
+
+    def dirnames(self):
+        """Split the dirname into individual directory names
+
+        An absolute path starts with an empty string, a relative path does not
+
+        >>> Path(u'/path/to/module.py').dirnames() == [ u'', u'path', u'to']
+        True
+        >>> Path(u'path/to/module.py').dirnames() == [ u'path', u'to']
+        True
+        """
+        return self.dirname().split(os.path.sep)
+
+    def directories(self):
+        """Split the dirname into individual directory names
+
+        No empty parts are included
+
+        >>> Path(u'path/to/module.py').directories() == [ u'path', u'to']
+        True
+        >>> Path(u'/path/to/module.py').directories() == [ u'path', u'to']
+        True
+        """
+        return [d for d in self.dirnames() if d]
+
+    parents = property(
+        dirnames, None, None,
+        """ This path's parent directories, as a list of strings.
+
+        >>> Path(u'/path/to/module.py').parents == [ u'', u'path', u'to']
+        True
+        """)
+
+    def short_relative_path_to(self, destination):
+        """The shorter of either the absolute path of the destination, or the relative path to it
+
+        >>> print Path('/home/guido/bin').short_relative_path_to('/home/guido/build/python.tar')
+        ../build/python.tar
+        >>> print Path('/home/guido/bin').short_relative_path_to('/mnt/guido/build/python.tar')
+        /mnt/guido/build/python.tar
+        """
+        relative = self.relpathto(destination)
+        absolute = self.__class__(destination).abspath()
+        if len(relative) < len(absolute):
+            return relative
+        return absolute
+
+    def short_relative_path_to_here(self):
+        """A short path relative to current working directory"""
+        return self.short_relative_path_to(os.getcwd())
+
+    def short_relative_path_from_here(self):
+        """A short path relative to self to the current working directory"""
+        return self.__class__(os.getcwd()).short_relative_path_to(self)
+
+    def walk_some_dirs(self, levels = -1, pattern=None):
+        """ D.walkdirs() -> iterator over subdirs, recursively.
+
+        With the optional 'pattern' argument, this yields only
+        directories whose names match the given pattern.  For
+        example, mydir.walkdirs('*test') yields only directories
+        with names ending in 'test'.
+        """
+        if not levels:
+            yield self
+            raise StopIteration
+        levels -= 1
+        for child in self.dirs():
+            if pattern is None or child.fnmatch(pattern):
+                yield child
+            if levels:
+                for subsubdir in child.walk_some_dirs(levels, pattern):
+                    yield subsubdir
+
+
+class FilePath(Path, PathAssertions):
     """A path to a known file"""
 
     def __div__(self, child):
@@ -130,7 +240,7 @@ class FilePath(path, PathAssertions):
         self.parent.touch_file(self.name)
         return self
 
-class DirectPath(path, PathAssertions):
+class DirectPath(Path, PathAssertions):
     """A path which knows it might be a directory
 
     And that files are in directories
@@ -238,7 +348,7 @@ def makepath(string, as_file = False):
     """
     if string is None:
         return None
-    string_path = path(string).expand()
+    string_path = Path(string).expand()
     if string_path.isfile() or as_file:
         result = FilePath(string_path)
     else:

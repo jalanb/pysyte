@@ -92,7 +92,7 @@ The makepath method expands paths "normally"
     >>> path_to_home = makepath('~')
     >>> direct_home == path_to_home
     True
-    
+
 And that is an expanded path
     >>> path_to_home.startswith('/') and '~' not in path_to_home
     True
@@ -170,6 +170,6 @@ Iterating a directory gives directory entries (sub-directories and files)
     True
 
 Iterating a file gives lines
-    >>> p = paths.home() / '.bashrc'
-    >>> print [l for l in p if 'source' in l][0]
-    source ...
+    >>> path_to_this_test = makepath(paths.__file__).extend_by('.test')
+    >>> print [l for l in path_to_this_test if 'paths' in l][0]
+    The paths module

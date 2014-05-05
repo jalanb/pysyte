@@ -32,6 +32,7 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Build Tools',
     ],
+    install_requires=['path.py'],
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={
