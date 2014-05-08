@@ -27,6 +27,17 @@ class TestSplits(unittest.TestCase):
         actual = splits.split('fred, was here', ' ')
         self.assertEqual(expected, actual)
 
+    def test_separator_regexp(self):
+        """Can split on a regular expression"""
+        data = [
+            ('one,two;three', '[,;]', ['one', 'two', 'three']),
+            ('one,,,two', ',*', ['one', 'two']),
+            ('*blackduck*', '[*?[]', ['', 'blackduck', '']),
+        ]
+        for string, separator, expected in data:
+            actual = splits.split(string, separator)
+            self.assertEqual(expected, actual)
+
     def test_split_and_strip(self):
         """Split a string on commas, and trim any spaces from the results"""
         expected = ['fred', 'was', 'here', 'today']
