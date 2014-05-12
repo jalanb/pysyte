@@ -8,6 +8,15 @@ from contextlib import contextmanager
 
 @contextmanager
 def swallow_stdout(stream=None):
+    """Divert stdout into the given stream
+
+    >>> from cStringIO import StringIO
+    >>> string = StringIO()
+    >>> with swallow_stdout(string):
+    ...     print 'hello',
+    >>> string.getvalue() == 'hello'
+    True
+    """
     saved = sys.stdout
     if stream is None:
         stream = StringIO()

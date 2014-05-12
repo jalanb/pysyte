@@ -122,3 +122,18 @@ class TestSplits(unittest.TestCase):
         tests = [[], ['one'], ['one', 'two']]
         actual = all([splits.split(splits.join(t)) == t for t in tests])
         self.assertTrue(actual)
+
+    def test_empty_separator(self):
+        self.assertEqual(
+            splits.split('i was here', ''),
+            'i was here'.split())
+
+    def test_empties_separator(self):
+        self.assertEqual(
+            splits.split_and_strip('i  was here', ''),
+            'i was here'.split())
+
+    def test_no_exclusions(self):
+        self.assertEqual(
+            splits.split_and_strip_without('i was here', ''),
+            splits.split_and_strip('i was here'))

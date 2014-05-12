@@ -3,13 +3,17 @@
 # pylint: disable=W0232
 
 
-class Empty:
+class Literals(object):
+    pass
+
+
+class Empty(Literals):
     string = ''
     integer = 0
     real = 0.0
 
 
-class Punctuation:
+class Punctuation(Literals):
     space = ' '
     comma = ','
     full_stop = dot = period = '.'
@@ -29,7 +33,7 @@ class Punctuation:
     equal = equals = '='
 
 
-class Digits:
+class Digits(Literals):
     false = zero = '0'
     true = one = '1'
     two = '2'
@@ -50,13 +54,13 @@ class Numbers(Digits):
     thirteen = '13'
 
 
-class Python:
+class Python(Literals):
     name = directory = command = package = inline = 'python'
     extension = 'py'
     ext = '.py'
 
 
-class Ansi_Colour_Sequences:
+class Ansi_Colour_Sequences(Literals):
     """Colour sequences are derived from the table at
 
     http://en.wikipedia.org/wiki/ANSI_escape_sequences#Colors"""
@@ -80,5 +84,6 @@ class Ansi_Colour_Sequences:
     grey = dark_colour % 37
     off = "\033[0m"
 
-    def highlighted(self, colour, text):
-        return '%s%s%s' % (colour, text, self.off)
+    @classmethod
+    def highlighted(cls, colour, text):
+        return '%s%s%s' % (colour, text, cls.off)

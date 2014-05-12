@@ -3,17 +3,21 @@
 The classes all inherit from the original path.path
 """
 
+
 import os
 
 from path import path
 
+
 class PathError(Exception):
     """Something went wrong with a path"""
     prefix = 'Path Error'
+
     def __init__(self, message):
         Exception.__init__(self, message)
 
-class PathAssertions:
+
+class PathAssertions(object):
     """Assertions that can be made about paths"""
 
     def assert_exists(self):
@@ -34,10 +38,14 @@ class PathAssertions:
             raise PathError('%s is not a file' % self)
         return self
 
+
+# pylint: disable-msg=abstract-method
+
 class Path(path):
     """Some additions to the classic path class"""
 
     def __repr__(self):
+        # pylint: disable-msg=bad-super-call
         return '<%s %s>' % (
             self.__class__.__name__,
             super(path, self).__repr__())
@@ -58,15 +66,9 @@ class Path(path):
             result = str(self)
         return self.as_existing_file(result)
 
-    def as_file(self, filepath):
-        """Return the file_class of the file, or self's class"""
-        if hasattr(self,'__file_class__'):
-            return self.__file_class__(filepath)
-        return self.__class__(filepath)
-
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
-        if os.path.isfile(filepath) and hasattr(self,'__file_class__'):
+        if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
             return self.__file_class__(filepath)
         return self.__class__(filepath)
 
@@ -75,9 +77,9 @@ class Path(path):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> Path(u'/path/to/module.py').dirnames() == [ u'', u'path', u'to']
+        >>> Path(u'/path/to/module.py').dirnames() == [u'', u'path', u'to']
         True
-        >>> Path(u'path/to/module.py').dirnames() == [ u'path', u'to']
+        >>> Path(u'path/to/module.py').dirnames() == [u'path', u'to']
         True
         """
         return self.dirname().split(os.path.sep)
@@ -87,9 +89,9 @@ class Path(path):
 
         No empty parts are included
 
-        >>> Path(u'path/to/module.py').directories() == [ u'path', u'to']
+        >>> Path(u'path/to/module.py').directories() == [u'path', u'to']
         True
-        >>> Path(u'/path/to/module.py').directories() == [ u'path', u'to']
+        >>> Path(u'/path/to/module.py').directories() == [u'path', u'to']
         True
         """
         return [d for d in self.dirnames() if d]
@@ -98,16 +100,19 @@ class Path(path):
         dirnames, None, None,
         """ This path's parent directories, as a list of strings.
 
-        >>> Path(u'/path/to/module.py').parents == [ u'', u'path', u'to']
+        >>> Path(u'/path/to/module.py').parents == [u'', u'path', u'to']
         True
         """)
 
     def short_relative_path_to(self, destination):
-        """The shorter of either the absolute path of the destination, or the relative path to it
+        """The shorter of either the absolute path of the destination,
+            or the relative path to it
 
-        >>> print Path('/home/guido/bin').short_relative_path_to('/home/guido/build/python.tar')
+        >>> print Path('/home/guido/bin').short_relative_path_to(
+        ...     '/home/guido/build/python.tar')
         ../build/python.tar
-        >>> print Path('/home/guido/bin').short_relative_path_to('/mnt/guido/build/python.tar')
+        >>> print Path('/home/guido/bin').short_relative_path_to(
+        ...     '/mnt/guido/build/python.tar')
         /mnt/guido/build/python.tar
         """
         relative = self.relpathto(destination)
@@ -124,7 +129,7 @@ class Path(path):
         """A short path relative to self to the current working directory"""
         return self.__class__(os.getcwd()).short_relative_path_to(self)
 
-    def walk_some_dirs(self, levels = -1, pattern=None):
+    def walk_some_dirs(self, levels=-1, pattern=None):
         """ D.walkdirs() -> iterator over subdirs, recursively.
 
         With the optional 'pattern' argument, this yields only
@@ -148,7 +153,7 @@ class FilePath(Path, PathAssertions):
     """A path to a known file"""
 
     def __div__(self, child):
-        raise PathError, '%r has no children' % self
+        raise PathError('%r has no children' % self)
 
     def __iter__(self):
         for l in path.lines(self):
@@ -165,23 +170,25 @@ class FilePath(Path, PathAssertions):
     def stripped_lines(self):
         """A list of all non-empty lines
 
-        If lines can not be read (e.g. no such file) then an empty list is returned
+        If lines can not be read (e.g. no such file) then an empty list
         """
         try:
-            return [ l.rstrip() for l in self.lines() ]
+            return [l.rstrip() for l in self.lines()]
         except IOError:
             return []
 
     def non_comment_lines(self):
         """A list of all non-empty, non-comment lines"""
-        return [ l for l in self.stripped_lines() if l and not l.startswith('#') ]
+        return [l
+                for l in self.stripped_lines()
+                if l and not l.startswith('#')]
 
     def split_all_ext(self):
         copy = self[:]
         filename, ext = os.path.splitext(copy)
         if ext == '.gz':
             filename, ext = os.path.splitext(filename)
-            ext += '.gz'
+            ext.append('.gz')
         return self.__class__(filename), ext
 
     def as_python(self):
@@ -216,10 +223,10 @@ class FilePath(Path, PathAssertions):
 
     def dirname(self):
         return DirectPath(os.path.dirname(self))
-    parent = property( dirname )
+    parent = property(dirname)
 
     def shebang(self):
-        """The #! entry from the first line of the file
+        """The  #! entry from the first line of the file
 
         If no shebang is present, return an empty string
         """
@@ -239,6 +246,7 @@ class FilePath(Path, PathAssertions):
         self.parent.make_directory_exist()
         self.parent.touch_file(self.name)
         return self
+
 
 class DirectPath(Path, PathAssertions):
     """A path which knows it might be a directory
@@ -284,7 +292,7 @@ class DirectPath(Path, PathAssertions):
         Including any sub-directories and their contents"""
         for child in self.walkfiles():
             child.remove()
-        for child in reversed([ d for d in self.walkdirs() ]):
+        for child in reversed([d for d in self.walkdirs()]):
             if child == self or not child.isdir():
                 continue
             child.rmdir()
@@ -293,17 +301,17 @@ class DirectPath(Path, PathAssertions):
         """Change program's current directory to self"""
         return cd(self)
 
-    def listdir(self, pattern = None):
-        return [ self.as_existing_file(p) for p in path.listdir(self, pattern) ]
+    def listdir(self, pattern=None):
+        return [self.as_existing_file(p) for p in path.listdir(self, pattern)]
 
     def make_directory_exist(self):
         if self.isdir():
             return False
-        if os.path.exists(self) :
+        if os.path.exists(self):
             raise PathError('%s exists but is not a directory' % self)
         self.makedirs()
 
-    def make_file_exist(self, filename = None):
+    def make_file_exist(self, filename=None):
         """Make the directory exist, then touch the file
 
         If the filename is None, then use self.name as filename
@@ -315,7 +323,7 @@ class DirectPath(Path, PathAssertions):
         else:
             self.make_directory_exist()
             path_to_file = self.touch_file(filename)
-            return FilePath( path_to_file )
+            return FilePath(path_to_file)
 
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
@@ -329,7 +337,7 @@ class DirectPath(Path, PathAssertions):
 
     def existing_sub_paths(self, sub_paths):
         """Those in the given list of sub_paths which do exist"""
-        paths_to_subs = [ self / p for p in sub_paths ]
+        paths_to_subs = [self / p for p in sub_paths]
         return [p for p in paths_to_subs if p.exists()]
 
     def clear_directory(self):
@@ -337,11 +345,13 @@ class DirectPath(Path, PathAssertions):
         self.make_directory_exist()
         self.empty_directory()
 
-class chmod_values:
+
+class chmod_values(object):
     readonly_file = 0444
     readonly_directory = 0555
 
-def makepath(string, as_file = False):
+
+def makepath(string, as_file=False):
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
@@ -354,6 +364,7 @@ def makepath(string, as_file = False):
     else:
         result = DirectPath(string_path)
     return result.expand().realpath().abspath()
+
 
 def cd(path_to):
     """cd to the given path
@@ -381,10 +392,12 @@ def cd(path_to):
     cd.previous = previous
     return True
 
+
 try:
     cd.previous = makepath(os.getcwd())
 except OSError:
     cd.previous = None
+
 
 def as_path(string_or_path):
     """Return the argument as a DirectPath
@@ -396,35 +409,49 @@ def as_path(string_or_path):
         return string_or_path
     return makepath(string_or_path)
 
+
 def string_to_paths(string):
     for c in ':, ;':
         if c in string:
-            return strings_to_paths( string.split(c) )
-    return [ makepath(string) ]
+            return strings_to_paths(string.split(c))
+    return [makepath(string)]
+
 
 def strings_to_paths(strings):
-    return [ makepath(s) for s in strings ]
+    return [makepath(s) for s in strings]
+
 
 def split_directories(strings):
     strings = strings_to_paths(strings)
-    return [ p for p in strings if p.isdir() ], [ p for p in strings if not p.isdir() ]
+    return [p
+            for p in strings
+            if p.isdir()], [p for p in strings if not p.isdir()]
+
 
 def split_files(strings):
     strings = strings_to_paths(strings)
-    return [ p for p in strings if p.isfile() ], [ p for p in strings if not p.isfile() ]
+    return ([p for p in strings if p.isfile()],
+            [p for p in strings if not p.isfile()])
+
 
 def split_directories_files(strings):
     strings = strings_to_paths(strings)
-    return [ p for p in strings if p.isdir() ], [ p for p in strings if p.isfile() ], [ p for p in strings if not (p.isfile() or p.isdir())]
+    return ([p for p in strings if p.isdir()],
+            [p for p in strings if p.isfile()],
+            [p for p in strings if not (p.isfile() or p.isdir())])
+
 
 def files(strings):
     return split_files(strings)[0]
 
+
 def directories(strings):
     return split_directories(strings)[0]
 
+
 def home():
     return makepath('~')
+
 
 def pwd():
     return makepath(os.getcwd())
@@ -443,7 +470,7 @@ def first_dir(path_string):
 def first_dirs(path_strings):
     """Get the roots of those paths
 
-    >>> first_dirs(['usr/local/bin', 'usr/bin', 'bin']) == ['usr', 'usr', 'bin']
+    >>> first_dirs(['usr/bin', 'bin']) == ['usr', 'bin']
     True
     """
     return [first_dir(p) for p in path_strings]
@@ -452,7 +479,7 @@ def first_dirs(path_strings):
 def unique_first_dirs(path_strings):
     """Get the unique roots of those paths
 
-    >>> unique_first_dirs(['usr/local/bin', 'usr/bin', 'bin']) == set(['usr', 'bin'])
+    >>> unique_first_dirs(['usr/local/bin', 'bin']) == set(['usr', 'bin'])
     True
     """
     return set(first_dirs(path_strings))

@@ -28,6 +28,16 @@ def default_args(arg=None):
     return arg
 
 
+@decorators.debug
+def do_nothing():
+    pass
+
+
+@decorators.debug_exception
+def do_nothing_badly():
+    raise ValueError('pass')
+
+
 def method():
     pass
 
@@ -113,6 +123,10 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual(
             'Call: Fred Smith\nCall: John Silly\nCall: Fred Smith\n',
             self.stream.getvalue())
+
+    def test_invalid_invalidation(self):
+        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertRaises(KeyError, initials.invalidate, 'not called')
 
     def test_use_wtithout_decorator(self):
         memo_average = decorators.memoize(average)
