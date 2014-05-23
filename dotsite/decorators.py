@@ -85,25 +85,3 @@ def debug(method):
     new_method.__doc__ = method.__doc__
     new_method.__name__ = 'debug(%s)' % method.__name__
     return new_method
-
-
-def debug_exception(method):
-    """Decorator to debug an exception arising in the method"""
-    def new_method(*args, **kwargs):
-        import pdb
-        try:
-            import pudb
-        except ImportError:
-            pudb = pdb
-        try:
-            method(*args, **kwargs)
-        except:
-            import sys
-            type_, value, traceback = sys.exc_info()
-            try:
-                pudb.post_mortem(traceback, type_, value)
-            except pdb.bdb.BdbQuit:
-                print 'Normal quit from debugger'
-    new_method.__doc__ = method.__doc__
-    new_method.__name__ = 'debug_exception(%s)' % method.__name__
-    return new_method
