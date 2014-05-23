@@ -1,6 +1,9 @@
 """Some methods to help with the handling of dictionaries"""
 
 
+from collections import defaultdict
+
+
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
@@ -41,3 +44,36 @@ def extend_values(dictionary, key, items):
     except TypeError:
         raise TypeError('Expected a list, got: %r' % items)
     dictionary[key] = values
+
+
+def group_list(items):
+    """Items in the list are grouped into a dictionary
+
+    Items should be a list of (key, value) pairs
+
+    >>> grouped = group_list([(1,0), (2,0), (1,1)])
+    >>> grouped[1] == [0,1]
+    True
+    """
+    groups = defaultdict(list)
+    for key, value in items:
+        groups[key].append(value)
+    return groups
+
+
+def group_list_by(items, key_from_item):
+    """Items in the list are grouped into a dictionary
+
+    key_from_item is a method to get the key from the item
+
+    >>> items = [(1,9), (2,8), (1,7)]
+    >>> key_from_item = lambda x: 'a' if x[0] == 1 else 'b'
+    >>> grouped = group_list_by(items, key_from_item)
+    >>> grouped['a'] == [(1, 9), (1, 7)]
+    True
+    """
+    groups = defaultdict(list)
+    for item in items:
+        key = key_from_item(item)
+        groups[key].append(item)
+    return groups
