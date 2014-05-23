@@ -80,7 +80,7 @@ def debug(method):
             pudb = pdb
         try:
             pudb.runcall(method, *args, **kwargs)
-        except pdb.BdbQuit:
+        except pdb.bdb.BdbQuit:
             print 'Normal quit from debugger'
     new_method.__doc__ = method.__doc__
     new_method.__name__ = 'debug(%s)' % method.__name__
@@ -102,7 +102,7 @@ def debug_exception(method):
             type_, value, traceback = sys.exc_info()
             try:
                 pudb.post_mortem(traceback, type_, value)
-            except pdb.pdbQuit:
+            except pdb.bdb.BdbQuit:
                 print 'Normal quit from debugger'
     new_method.__doc__ = method.__doc__
     new_method.__name__ = 'debug_exception(%s)' % method.__name__
