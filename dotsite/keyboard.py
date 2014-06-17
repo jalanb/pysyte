@@ -12,6 +12,7 @@ def get_a_key():
 
 
 def get_letter():
-    for key in get_a_key():
+    while True:
+        key = get_a_key()
         if key.isupper() or key.islower():
             return key

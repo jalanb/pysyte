@@ -96,6 +96,43 @@ def split_and_strip_whole(string, separator_regexp=None):
     return split_and_strip_without(string, [''], separator_regexp)
 
 
+def split_by_count(items, count, filler=None):
+    """Split the items into tuples of count items each
+
+    >>> split_by_count([0,1,2,7,8,9], 3, 0) == split_by_count([0,1,2,7,8,9], 3)
+    True
+    >>> split_by_count([0,1,2,7,8,9,6], 3, 0)
+    [(0, 1, 2), (7, 8, 9), (6, 0, 0)]
+    """
+    if filler is not None:
+        while len(items) % count:
+            if type(items) == type(filler):
+                items = items + filler
+            else:
+                items = items + [filler]
+    iterator = iter(items)
+    iterators = [iterator] * count
+    return zip(*iterators)
+
+
+def pairs(items, filler=None):
+    """Split the items into pairs
+
+    >>> pairs([0,1,2,7,8,9])
+    [(0, 1), (2, 7), (8, 9)]
+    """
+    return split_by_count(items, 2, filler)
+
+
+def threes(items, filler=None):
+    """Split the items into groups of 3
+
+    >>> threes([0,1,2,7,8,9])
+    [(0, 1, 2), (7, 8, 9)]
+    """
+    return split_by_count(items, 3, filler)
+
+
 def despaced(string):
     """Split a string into spaceless items
 
