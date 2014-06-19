@@ -156,8 +156,8 @@ class FilePath(Path, PathAssertions):
         raise PathError('%r has no children' % self)
 
     def __iter__(self):
-        for l in path.lines(self):
-            yield l.rstrip('\n')
+        for l in self.stripped_lines():
+            yield l
 
     def directory(self):
         """Return a path to the file's directory"""
@@ -186,6 +186,18 @@ class FilePath(Path, PathAssertions):
         return [l
                 for l in self.stripped_whole_lines()
                 if not l.startswith('#')]
+
+    def has_line(self, string):
+        for line in self:
+            if string == line:
+                return True
+        return False
+
+    def any_line_has(self, string):
+        for line in self:
+            if string in line:
+                return True
+        return False
 
     def split_all_ext(self):
         copy = self[:]

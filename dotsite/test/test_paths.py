@@ -96,3 +96,15 @@ class TestPaths(TestCase):
                          if l.startswith('#')])
         self.assertFalse([l for l in path.non_comment_lines()
                           if l.startswith('#')])
+
+    def test_has_line(self):
+        path = MockFilePathWithLines('/not/a/real/file')
+        self.assertTrue(path.has_line('Normal line'))
+        self.assertFalse(path.has_line('Normal'))
+        self.assertFalse(path.has_line('Abnormal line'))
+
+    def test_any_line_has(self):
+        path = MockFilePathWithLines('/not/a/real/file')
+        self.assertTrue(path.any_line_has('Normal line'))
+        self.assertTrue(path.any_line_has('Normal'))
+        self.assertFalse(path.any_line_has('Abnormal line'))
