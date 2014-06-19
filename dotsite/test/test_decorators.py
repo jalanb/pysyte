@@ -33,11 +33,6 @@ def do_nothing():
     pass
 
 
-@decorators.debug_exception
-def do_nothing_badly():
-    raise ValueError('pass')
-
-
 def method():
     pass
 
