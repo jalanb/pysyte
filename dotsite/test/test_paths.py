@@ -1,5 +1,7 @@
 """Test paths module"""
 
+
+import random
 from unittest import TestCase
 
 
@@ -7,10 +9,23 @@ from dotsite import paths
 
 
 class SourcePath(paths.FilePath):
+    # pylint: disable-msg=abstract-method
     pass
 
 
 SourcePath.__file_class__ = SourcePath
+
+
+class MockFilePathWithLines(paths.FilePath):
+    # pylint: disable-msg=abstract-method
+    """Mock some known lines into a file"""
+    def lines(self, encoding=None, errors='strict', retain=True):
+        return [
+            '\n',
+            'line ends with spaces    ',
+            '# comment\n',
+            'Normal line\n'
+        ]
 
 
 class TestPaths(TestCase):
@@ -60,4 +75,24 @@ class TestPaths(TestCase):
         self.assertIs(path.__file_class__, SourcePath)
 
     def test_dirnames(self):
-        self.assertIn(self.dir.parent.dirnames(), self.dir.name)
+        self.assertIn(self.dir.name, self.path.dirnames())
+
+    def test_stripped_lines(self):
+        path = MockFilePathWithLines('/not/a/real/file')
+        line = random.choice(path.lines())
+        self.assertTrue(line[-1].isspace())
+        line = random.choice(path.stripped_lines())
+        if line:
+            self.assertFalse(line[-1].isspace())
+
+    def test_stripped_whole_lines(self):
+        path = MockFilePathWithLines('/not/a/real/file')
+        self.assertTrue([l for l in path.stripped_lines() if not l])
+        self.assertFalse([l for l in path.stripped_whole_lines() if not l])
+
+    def test_non_comment_lines(self):
+        path = MockFilePathWithLines('/not/a/real/file')
+        self.assertTrue([l for l in path.stripped_whole_lines()
+                         if l.startswith('#')])
+        self.assertFalse([l for l in path.non_comment_lines()
+                          if l.startswith('#')])

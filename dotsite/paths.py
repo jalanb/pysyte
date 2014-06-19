@@ -168,7 +168,7 @@ class FilePath(Path, PathAssertions):
         self.remove()
 
     def stripped_lines(self):
-        """A list of all non-empty lines
+        """A list of all lines without trailing whitespace
 
         If lines can not be read (e.g. no such file) then an empty list
         """
@@ -177,11 +177,15 @@ class FilePath(Path, PathAssertions):
         except IOError:
             return []
 
+    def stripped_whole_lines(self):
+        """A list of all lines without trailing whitespace or blank lines"""
+        return [l for l in self.stripped_lines() if l]
+
     def non_comment_lines(self):
         """A list of all non-empty, non-comment lines"""
         return [l
-                for l in self.stripped_lines()
-                if l and not l.startswith('#')]
+                for l in self.stripped_whole_lines()
+                if not l.startswith('#')]
 
     def split_all_ext(self):
         copy = self[:]
