@@ -1,5 +1,7 @@
 """Some keyboard handling code"""
 
+import sys
+
 
 import getch
 
@@ -16,3 +18,12 @@ def get_letter():
         key = get_a_key()
         if key.isupper() or key.islower():
             return key
+
+
+def quit_on_q():
+    try:
+        key = get_a_key()
+        if key in 'qQ':
+            sys.exit()
+    except KeyboardInterrupt:
+        sys.exit()
