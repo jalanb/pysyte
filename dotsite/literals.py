@@ -1,6 +1,6 @@
 """Literal values generally useful"""
 
-# pylint: disable=W0232
+# pylint: disable=no-init
 
 
 class Literals(object):
