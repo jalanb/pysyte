@@ -39,13 +39,13 @@ class PathAssertions(object):
         return self
 
 
-# pylint: disable-msg=abstract-method
+# pylint: disable=abstract-method
 
 class Path(path):
     """Some additions to the classic path class"""
 
     def __repr__(self):
-        # pylint: disable-msg=bad-super-call
+        # pylint: disable=bad-super-call
         return '<%s %s>' % (
             self.__class__.__name__,
             super(path, self).__repr__())
