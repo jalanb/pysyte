@@ -448,7 +448,12 @@ def cd(path_to):
         return cd(cd.previous)
     if not hasattr(path_to, 'cd'):
         path_to = makepath(path_to)
-    previous = os.getcwd()
+    try:
+        previous = os.getcwd()
+    except OSError as e:
+        if 'No such file or directory' in str(e):
+            return False
+        raise
     if path_to.isdir():
         os.chdir(path_to)
     elif path_to.isfile():
