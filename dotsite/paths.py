@@ -5,6 +5,7 @@ The classes all inherit from the original path.path
 
 
 import os
+import fnmatch
 
 from path import path
 
@@ -148,6 +149,46 @@ class Path(path):
                 for subsubdir in child.walk_some_dirs(levels, pattern):
                     yield subsubdir
 
+    def fnmatch_basename(self, glob):
+        if glob.startswith(os.path.sep):
+            glob = glob.lstrip(os.path.sep)
+        string = self.basename()
+        if fnmatch.fnmatch(string, glob):
+            return self
+        return None
+
+    def fnmatch_directory(self, glob):
+        if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
+            glob = glob.strip(os.path.sep)
+        if self.isdir():
+            string = self.basename()
+        else:
+            string = self.parent.basename()
+        if fnmatch.fnmatch(string, glob):
+            return self
+        return None
+
+    def fnmatch_directories(self, glob):
+        if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
+            glob = glob.strip(os.path.sep)
+        else:
+            return
+        strings = reversed(self.directory().splitall()[1:])
+        for string in strings:
+            if fnmatch.fnmatch(string, glob):
+                return self
+        return None
+
+    def fnmatch_part(self, glob):
+        if self.fnmatch(glob):
+            return self
+        if self.fnmatch_basename(glob):
+            return self
+        if self.fnmatch_directory(glob):
+            return self
+        if self.fnmatch_directories(glob):
+            return self
+        return None
 
 class FilePath(Path, PathAssertions):
     """A path to a known file"""
@@ -360,6 +401,17 @@ class DirectPath(Path, PathAssertions):
         """Make sure the directory exists and is empty"""
         self.make_directory_exist()
         self.empty_directory()
+
+    def walkfiles(self, pattern=None, errors='strict', ignores=[]):
+        def ignored(path):
+            for ignore in ignores:
+                if path.fnmatch_part(ignore):
+                    return True
+            return False
+
+        for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
+            if not ignored(path_to_file):
+                yield path_to_file
 
 
 class chmod_values(object):
