@@ -57,6 +57,28 @@ def get_key():
     return (i,)
 
 
+def get_ascii():
+    """Get ASCII key from stdin
+
+    return None for others
+    """
+    keys = get_key()
+    if len(keys) == 1:
+        return chr(keys[0])
+    return None
+
+
+def get_ASCII():
+    """Get ASCII key from stdin
+
+    raise error on other
+    """
+    key = get_ascii()
+    if key:
+        return key
+    raise KeyboardInterrupt
+
+
 def show_get_key():
     """Show output of the get_key() method"""
     key = get_key()
@@ -67,6 +89,12 @@ def show_get_key():
     else:
         print repr(k),
     print key[1:]
+
+
+def yield_asciis():
+    k = get_ascii()
+    while True:
+        yield k
 
 
 if __name__ == '__main__':
