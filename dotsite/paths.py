@@ -5,7 +5,7 @@ The classes all inherit from the original path.path
 
 
 import os
-import fnmatch
+from fnmatch import fnmatch
 
 from path import path
 
@@ -190,6 +190,7 @@ class Path(path):
             return self
         return None
 
+
 class FilePath(Path, PathAssertions):
     """A path to a known file"""
 
@@ -245,7 +246,7 @@ class FilePath(Path, PathAssertions):
         filename, ext = os.path.splitext(copy)
         if ext == '.gz':
             filename, ext = os.path.splitext(filename)
-            ext.append('.gz')
+            ext = '%s.gz' % ext
         return self.__class__(filename), ext
 
     def as_python(self):
@@ -402,12 +403,16 @@ class DirectPath(Path, PathAssertions):
         self.make_directory_exist()
         self.empty_directory()
 
-    def walkfiles(self, pattern=None, errors='strict', ignores=[]):
-        def ignored(path):
+    # pylint: disable=arguments-differ
+    def walkfiles(self, pattern=None, errors='strict', ignores=None):
+        def ignored(p):
             for ignore in ignores:
-                if path.fnmatch_part(ignore):
+                if p.fnmatch_part(ignore):
                     return True
             return False
+
+        if not ignores:
+            ignores = []
 
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
             if not ignored(path_to_file):
@@ -529,6 +534,7 @@ def home():
 def pwd():
     return makepath(os.getcwd())
 
+here = pwd
 
 def first_dir(path_string):
     """Get the first directory in that path
@@ -556,3 +562,73 @@ def unique_first_dirs(path_strings):
     True
     """
     return set(first_dirs(path_strings))
+
+
+def _names_in_directory(path_to_directory):
+    """Get all items in the given directory
+
+    Swallow errors to give an empty list
+    """
+    try:
+        return os.listdir(path_to_directory)
+    except OSError:
+        return []
+
+
+def make_needed(pattern, path_to_directory, wanted):
+    """Make a method to check if an item matches the pattern, and is wanted
+
+    If wanted is None just check the pattern
+    """
+    if wanted:
+        def needed(name):
+            return fnmatch(name, pattern) and wanted(
+                os.path.join(path_to_directory, name))
+        return needed
+    else:
+        return lambda name: fnmatch(name, pattern)
+
+
+def list_items(path_to_directory, pattern, wanted):
+    """All items in the given path which match the given glob and are wanted"""
+    if not path_to_directory:
+        return set()
+    needed = make_needed(pattern, path_to_directory, wanted)
+    return [os.path.join(path_to_directory, name)
+            for name in _names_in_directory(path_to_directory)
+            if needed(name)]
+
+
+def list_sub_directories(path_to_directory, pattern):
+    """All sub-directories of the given directory matching the given glob"""
+    return list_items(path_to_directory, pattern, os.path.isdir)
+
+
+def set_items(path_to_directory, pattern, wanted):
+    return set(list_items(path_to_directory, pattern, wanted))
+
+
+def set_files(path_to_directory, pattern):
+    """A list of all files in the given directory matching the given glob"""
+    return set_items(path_to_directory, pattern, os.path.isfile)
+
+
+def contains_glob(path_to_directory, pattern, wanted=None):
+    """Whether the given path contains an item matching the given glob"""
+    if not path_to_directory:
+        return False
+    needed = make_needed(pattern, path_to_directory, wanted)
+    for name in _names_in_directory(path_to_directory):
+        if needed(name):
+            return True
+    return False
+
+
+def contains_directory(path_to_directory, pattern):
+    """Whether the given path contains a directory matching the given glob"""
+    return contains_glob(path_to_directory, pattern, os.path.isdir)
+
+
+def contains_file(path_to_directory, pattern):
+    """Whether the given directory contains a file matching the given glob"""
+    return contains_glob(path_to_directory, pattern, os.path.isfile)

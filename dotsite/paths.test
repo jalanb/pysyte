@@ -173,3 +173,32 @@ Iterating a file gives lines
     >>> path_to_this_test = makepath(paths.__file__).extend_by('.test')
     >>> print [l for l in path_to_this_test if 'paths' in l][0]
     The paths module
+
+Sets of paths
+-------------
+
+    >>> '/usr/lib' in paths.list_sub_directories('/usr','l*')
+    True
+    >>> '/usr/lib' in paths.list_sub_directories('/usr','a*')
+    False
+    >>> '/bin/ls' in paths.set_files('/bin','l*')
+    True
+    >>> '/bin/ls' in paths.set_files('/bin','a*')
+    False
+
+List directories
+----------------
+
+    >>> paths.contains_glob('/usr','*oca*')
+    True
+    >>> paths.contains_glob('/usr','*oca')
+    False
+    >>> paths.contains_file('/usr','*oca*')
+    False
+    >>> paths.contains_file('/usr','*oca')
+    False
+    >>> paths.contains_directory('/usr','*oca*')
+    True
+    >>> paths.contains_directory('/usr','*oca')
+    False
+
