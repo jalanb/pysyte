@@ -7,8 +7,6 @@ The classes all inherit from the original path.path
 import os
 from fnmatch import fnmatch
 
-from path import path
-
 
 class PathError(Exception):
     """Something went wrong with a path"""
@@ -41,6 +39,9 @@ class PathAssertions(object):
 
 
 # pylint: disable=abstract-method
+
+from path import path
+
 
 class Path(path):
     """Some additions to the classic path class"""
@@ -189,6 +190,7 @@ class Path(path):
         if self.fnmatch_directories(glob):
             return self
         return None
+del path
 
 
 class FilePath(Path, PathAssertions):
@@ -438,6 +440,9 @@ def makepath(string, as_file=False):
         result = DirectPath(string_path)
     return result.expand().realpath().abspath()
 
+# See also http://stackoverflow.com/questions/26403972/how-do-i-get-rid-of-make-xxx-method  # noqa
+path = makepath
+
 
 def cd(path_to):
     """cd to the given path
@@ -536,6 +541,7 @@ def pwd():
 
 here = pwd
 
+
 def first_dir(path_string):
     """Get the first directory in that path
 
@@ -632,3 +638,15 @@ def contains_directory(path_to_directory, pattern):
 def contains_file(path_to_directory, pattern):
     """Whether the given directory contains a file matching the given glob"""
     return contains_glob(path_to_directory, pattern, os.path.isfile)
+
+
+def environ_paths(key):
+    return [makepath(p) for p in os.environ[key].split(':')]
+
+
+def environ_path(key):
+    return makepath(os.environ[key])
+
+
+def default_environ_path(key, default):
+    return makepath(os.environ.get(key, default))
