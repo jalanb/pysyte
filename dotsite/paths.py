@@ -47,10 +47,9 @@ class Path(path):
     """Some additions to the classic path class"""
 
     def __repr__(self):
-        # pylint: disable=bad-super-call
         return '<%s %s>' % (
             self.__class__.__name__,
-            super(path, self).__repr__())
+            repr(str(self)))
 
     # The / operator joins paths.
     def __div__(self, child):
@@ -255,7 +254,7 @@ class FilePath(Path, PathAssertions):
         """The path to the file with a .py extension
 
         >>> FilePath('/path/to/fred.txt').as_python()
-        <FilePath u'/path/to/fred.py'>
+        <FilePath ...'/path/to/fred.py'>
         """
         return self.extend_by('.py')
 
@@ -263,11 +262,11 @@ class FilePath(Path, PathAssertions):
         """The path to the file changed to use the given extension
 
         >>> FilePath('/path/to/fred').extend_by('.txt')
-        <FilePath u'/path/to/fred.txt'>
+        <FilePath ...'/path/to/fred.txt'>
         >>> FilePath('/path/to/fred.txt').extend_by('..tmp')
-        <FilePath u'/path/to/fred.tmp'>
+        <FilePath ...'/path/to/fred.tmp'>
         >>> FilePath('/path/to/fred.txt').extend_by('fred')
-        <FilePath u'/path/to/fred.fred'>
+        <FilePath ...'/path/to/fred.fred'>
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
@@ -317,7 +316,7 @@ class DirectPath(Path, PathAssertions):
     __file_class__ = FilePath
 
     def __iter__(self):
-        for p in path.listdir(self):
+        for p in Path.listdir(self):
             yield p
 
     def directory(self):
@@ -362,7 +361,7 @@ class DirectPath(Path, PathAssertions):
         return cd(self)
 
     def listdir(self, pattern=None):
-        return [self.as_existing_file(p) for p in path.listdir(self, pattern)]
+        return [self.as_existing_file(p) for p in Path.listdir(self, pattern)]
 
     def make_directory_exist(self):
         if self.isdir():

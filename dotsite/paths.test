@@ -23,7 +23,7 @@ It returns True if the change of directory is successful
     >>> paths.cd('/usr/lib')
     True
     >>> paths.pwd()
-    <DirectPath u'/usr/lib'>
+    <DirectPath ...'/usr/lib'>
 
 cd() recognises the special value '-' to go back to the previous directory
 
@@ -34,7 +34,7 @@ If a cd() fails the value used gets ignored for going back
     >>> paths.cd('/no/such/path') and paths.pwd() or 'fail'
     'fail'
     >>> paths.cd('-') and paths.pwd() or 'fail'
-    <DirectPath u'/usr/lib'>
+    <DirectPath ...'/usr/lib'>
 
 Calling using '-' repeatedly will toggle between two directories:
 
@@ -81,7 +81,7 @@ DirectPath is ako string, which shows the string in %s and %r
     >>> print '%s' % bin
     /bin
     >>> print '%r' % bin
-    <DirectPath u'/bin'>
+    <DirectPath ...'/bin'>
 
 Path expansion at creation
 --------------------------
@@ -121,7 +121,7 @@ It calls the module level cd() method with its own value, so it works as above.
     True
     >>> f = paths.DirectPath('/bin')
     >>> f.cd() and paths.pwd() or 'fail'
-    <DirectPath u'/bin'>
+    <DirectPath ...'/bin'>
 
 DirectPath vs path
 ------------------
@@ -147,9 +147,9 @@ The split_all_ext method
 
     >>> p = paths.FilePath('/alan/was/here.tar.gz')
     >>> p.splitext()
-    (<FilePath u'/alan/was/here.tar'>, u'.gz')
+    (<FilePath ...'/alan/was/here.tar'>, ...'.gz')
     >>> p.split_all_ext()
-    (<FilePath u'/alan/was/here'>, u'.tar.gz')
+    (<FilePath ...'/alan/was/here'>, ...'.tar.gz')
 
 
 Whether sub_paths exist
@@ -160,7 +160,7 @@ This test assumes you have a ~/bin directory
     >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
     >>> show(real_paths)
-    [<FilePath u'/.../.bashrc'>, <DirectPath u'/.../bin'>]
+    [<FilePath ...'/.../.bashrc'>, <DirectPath ...'/.../bin'>]
 
 Iteration of paths
 ------------------
