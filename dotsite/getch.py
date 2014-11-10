@@ -16,45 +16,115 @@ Adapted from
 import sys
 import tty
 import termios
+import signal
 import curses.ascii
 
 
-def getch():
-    """Read one byte from sys.stdin
+class NoKeys(StopIteration):
+    pass
 
-    Use raw mode, and restore to unraw before returning
+
+def get_ord():
+    return ord(sys.stdin.read(1))
+
+
+class TerminalContext(object):
+    def __init__(self):
+        self.fd = None
+        self.old_settings = None
+
+    def __enter__(self):
+        self.fd = sys.stdin.fileno()
+        self.old_settings = termios.tcgetattr(self.fd)
+        mode = termios.tcgetattr(self.fd)
+        mode[tty.LFLAG] = mode[tty.LFLAG] & ~(termios.ECHO | termios.ICANON)
+        termios.tcsetattr(self.fd, termios.TCSAFLUSH, mode)
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        if typ is not None:
+            pass  # exception
+        if self.old_settings:
+            termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
+
+
+class Timeout(Exception):
+    pass
+
+
+def timeout_raiser(_signum, _frame):
+    raise Timeout()
+
+
+class TimerContext(object):
+
+    def __init__(self, seconds):
+        self.seconds = seconds
+        self.old_handler = None
+        self.timed_out = False
+
+    def __enter__(self):
+        self.old_handler = signal.signal(signal.SIGALRM, timeout_raiser)
+        signal.setitimer(signal.ITIMER_REAL, self.seconds)
+        return self
+
+    def __exit__(self, typ_, value, traceback):
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        if self.old_handler:
+            signal.signal(signal.SIGALRM, self.old_handler)
+        if isinstance(value, Timeout):
+            self.timed_out = True
+            return True
+
+
+def _get_keycodes():
+    """Read keypress giving a tuple of key codes
+
+    A 'key code' is the ordinal value of characters read
+
+    For example, pressing 'A' will give (65,)
     """
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(sys.stdin.fileno())
-        return sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    result = []
+    terminators = 'ABCDFHPQRS~'
+    with TerminalContext():
+        code = get_ord()
+        result.append(code)
+        if code == 27:
+            with TimerContext(0.1) as timer:
+                code = get_ord()
+            if not timer.timed_out:
+                result.append(code)
+                result.append(get_ord())
+                if 64 < result[-1] < 69:
+                    pass
+                elif result[1] == 91:
+                    while True:
+                        code = get_ord()
+                        result.append(code)
+                        if chr(code) in terminators:
+                            break
+    return tuple(result)
 
 
-def get_ord_ch():
-    """Get the ord value of a byte from stdin"""
-    return ord(getch())
+class ExtendedKey(Exception):
+    def __init__(self, codes):
+        super(ExtendedKey, self).__init__(
+            'Too many key codes: %s' % repr(codes))
+        self.codes = codes
+
+
+def getch():
+    codes = _get_keycodes()
+    if len(codes) == 1:
+        return chr(codes[0])
+    raise ExtendedKey(codes)
 
 
 def get_key():
-    """Get a key value from stdin
-
-    This method should be used to get non-ASCII keys, e.g. <F12>
-
-    A tuple is returned with 1, 2, or 3 items
-        which are the bytes from stdin for that key
-        The first item is an int (ord value), others are chars
-        e.g. for 'A' it returns (65,)
-        e.g. for <F12> it returns (27, '[', '2')
-    """
-    i = get_ord_ch()
-    if not i:
-        return i, getch()
-    if i == 27:
-        return i, getch(), getch()
-    return (i,)
+    codes = _get_keycodes()
+    if len(codes) == 1:
+        return chr(codes[0])
+    return get_extended_key_name(codes)
 
 
 def get_ascii():
@@ -62,10 +132,10 @@ def get_ascii():
 
     return None for others
     """
-    keys = get_key()
-    if len(keys) == 1:
-        return chr(keys[0])
-    return None
+    try:
+        return getch()
+    except ExtendedKey:
+        return None
 
 
 def get_ASCII():
@@ -73,25 +143,72 @@ def get_ASCII():
 
     raise error on other
     """
-    key = get_ascii()
-    if key:
-        return key
-    raise KeyboardInterrupt
+    try:
+        return getch()
+    except ExtendedKey:
+        raise KeyboardInterrupt
+
+
+def get_as_key():
+    """Get key from stdin
+
+    return ASCII keys as (single char) strings
+    others as tuples
+    """
+    try:
+        return getch()
+    except ExtendedKey as e:
+        return e.codes
+
+
+def get_extended_key_name(codes):
+    known_keys = {
+        (27, 79, 70): 'end',
+        (27, 79, 72): 'home',
+        (27, 91, 50): 'insert',
+        (27, 91, 50, 52): 'F12',
+        (27, 91, 51): 'delete',
+        (27, 91, 53): 'page up',
+        (27, 91, 54): 'page down',
+        (27, 91, 65): 'up',
+        (27, 91, 66): 'down',
+        (27, 91, 67): 'right',
+        (27, 91, 68): 'left',
+    }
+    return known_keys[codes]
+
+
+def _yielder(getter):
+    def yield_till_stopped():
+        while True:
+            try:
+                yield getter()
+            except KeyboardInterrupt:
+                raise NoKeys
+
+    return yield_till_stopped
+
+
+yield_keycodes = _yielder(_get_keycodes)
+yield_asciis = _yielder(get_ascii)
+yield_ASCIIs = _yielder(get_ASCII)
+yield_as_keys = _yielder(get_as_key)
 
 
 def show_get_key():
-    """Show output of the get_key() method"""
-    key = get_key()
-    k = key[0]
-    c = chr(k)
-    if curses.ascii.isgraph(c):
-        print repr(c),
-    else:
-        print repr(k),
-    print key[1:]
+    """Show output of the _get_keycodes() method"""
+    keycodes = _get_keycodes()
+    initial_code, codes = keycodes[0], keycodes[1:]
+    initial_char = chr(initial_code)
+    if initial_code == 27:
+        initial_char = '\\e'
+    elif not curses.ascii.isgraph(initial_char):
+        initial_char = '\\x%x' % initial_code
+    chars = ''.join([chr(c) for c in codes])
+    print '%s%s' % (initial_char, chars)
 
 
-def yield_asciis():
+def yield_asciis_old():
     k = get_ascii()
     while True:
         yield k
