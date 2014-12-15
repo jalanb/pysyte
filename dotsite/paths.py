@@ -153,7 +153,7 @@ class Path(path):
         if glob.startswith(os.path.sep):
             glob = glob.lstrip(os.path.sep)
         string = self.basename()
-        if fnmatch.fnmatch(string, glob):
+        if fnmatch(string, glob):
             return self
         return None
 
@@ -164,7 +164,7 @@ class Path(path):
             string = self.basename()
         else:
             string = self.parent.basename()
-        if fnmatch.fnmatch(string, glob):
+        if fnmatch(string, glob):
             return self
         return None
 
@@ -175,7 +175,7 @@ class Path(path):
             return
         strings = reversed(self.directory().splitall()[1:])
         for string in strings:
-            if fnmatch.fnmatch(string, glob):
+            if fnmatch(string, glob):
                 return self
         return None
 
