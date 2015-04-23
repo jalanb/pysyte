@@ -421,8 +421,8 @@ class DirectPath(Path, PathAssertions):
 
 
 class chmod_values(object):
-    readonly_file = 0444
-    readonly_directory = 0555
+    readonly_file = 0o444
+    readonly_directory = 0o555
 
 
 def makepath(string, as_file=False):
