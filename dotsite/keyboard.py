@@ -8,15 +8,23 @@ import sys
 from getch import get_as_key
 
 
-def get_letter():
+def _get_chosen_chars(chooser):
     while True:
         key = get_as_key()
         try:
-            if key.isupper() or key.islower():
+            if chooser(key):
                 return key
         except AttributeError:
             print(key)
             continue
+
+
+def get_digit():
+    return _get_chosen_chars(lambda x: x.isdigit())
+
+
+def get_letter():
+    return _get_chosen_chars(lambda x: x.isupper() or x.islower())
 
 
 def quit_on_q():
