@@ -84,6 +84,20 @@ class Path(path):
         """
         return self.dirname().split(os.path.sep)
 
+    def dirpaths(self):
+        """Split the dirname into individual directory names
+
+        An absolute path starts with an empty string, a relative path does not
+
+        >>> p = Path(u'/path/to/x.py')
+        >>> p.paths == p.dirpaths()
+        True
+        """
+        parts = self.splitall()
+        root, rest = parts[0], parts[1:]
+        return [makepath(root / os.path.sep.join(rest[:i]))
+                for i in range(len(parts))]
+
     def directories(self):
         """Split the dirname into individual directory names
 
@@ -101,6 +115,16 @@ class Path(path):
         """ This path's parent directories, as a list of strings.
 
         >>> Path(u'/path/to/module.py').parents == [u'', u'path', u'to']
+        True
+        """)
+
+    paths = property(
+        dirpaths, None, None,
+        """ This path's parent directories, as a sequence of paths.
+
+        >>> Path('/usr/bin/vim').paths == [
+        ...     DirectPath('/'), DirectPath('/usr'), DirectPath('/usr/bin'),
+        ...     FilePath('/usr/bin/vim')]
         True
         """)
 
@@ -313,6 +337,9 @@ class DirectPath(Path, PathAssertions):
     """
 
     __file_class__ = FilePath
+
+    def __getitem__(self, i):
+        return self.paths[i]
 
     def __iter__(self):
         for p in Path.listdir(self):

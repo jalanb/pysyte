@@ -71,8 +71,6 @@ Or by using the method makepath
     >>> p = makepath('.')
 
 The difference is that makepath expands the string given
-    >>> paths.DirectPath('~/..')[0] == '~'
-    True
     >>> makepath('~/..')[0] == '/'
     True
 
