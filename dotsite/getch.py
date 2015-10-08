@@ -123,7 +123,10 @@ def getch():
 def get_key():
     codes = _get_keycodes()
     if len(codes) == 1:
-        return chr(codes[0])
+        code = codes[0]
+        if code >= 32:
+            return chr(code)
+        return control_key_name(code)
     return get_extended_key_name(codes)
 
 
@@ -159,6 +162,10 @@ def get_as_key():
         return getch()
     except ExtendedKey as e:
         return e.codes
+
+
+def control_key_name(code):
+    return '^%s' % (chr(code - 1 + ord('A')))
 
 
 def get_extended_key_name(codes):
