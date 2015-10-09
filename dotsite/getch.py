@@ -120,6 +120,10 @@ def getch():
     raise ExtendedKey(codes)
 
 
+def get_codes():
+    return tuple(str(_) for _ in _get_keycodes())
+
+
 def get_key():
     codes = _get_keycodes()
     if len(codes) == 1:
