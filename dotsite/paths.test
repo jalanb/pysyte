@@ -51,10 +51,11 @@ Calling using '-' repeatedly will toggle between two directories:
     /home
 
 If the path to a file is given, cd() will change to that file's parent directory
-
+    /bin/cp is present on nearly all systems
+        (but it might be a link to /usr/bin/cp)
     >>> paths.cd('/bin/cp')
     True
-    >>> paths.pwd() == '/bin'
+    >>> paths.pwd() in ('/bin', '/usr/bin')
     True
 
 DirectPath
@@ -117,11 +118,11 @@ It calls the module level cd() method with its own value, so it works as above.
     >>> p = makepath('/bin/cp')
     >>> p.cd()
     True
-    >>> paths.pwd() == '/bin'
+    >>> paths.pwd() in ('/bin', '/usr/bin')
     True
     >>> f = paths.DirectPath('/bin')
     >>> f.cd() and paths.pwd() or 'fail'
-    <DirectPath ...'/bin'>
+    <DirectPath .../bin'>
 
 DirectPath vs path
 ------------------
