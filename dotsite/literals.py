@@ -60,7 +60,7 @@ class Python(Literals):
     ext = '.py'
 
 
-class Ansi_Colour_Sequences(Literals):
+class AnsiColourSequences(Literals):
     """Colour sequences are derived from the table at
 
     http://en.wikipedia.org/wiki/ANSI_escape_sequences#Colors"""

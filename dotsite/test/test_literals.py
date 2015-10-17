@@ -5,7 +5,7 @@ import unittest
 
 
 from dotsite.literals import Punctuation, Digits, Numbers, Empty, Python
-from dotsite.literals import Ansi_Colour_Sequences
+from dotsite.literals import AnsiColourSequences
 
 
 class TestLiterals(unittest.TestCase):
@@ -31,9 +31,9 @@ class TestLiterals(unittest.TestCase):
         self.assertEqual(Python.package, 'python')
 
     def test_colours(self):
-        self.assertEqual(Ansi_Colour_Sequences.red.replace('[0', '[1'),
-                         Ansi_Colour_Sequences.light_red)
-        coloured = Ansi_Colour_Sequences.highlighted(
-            Ansi_Colour_Sequences.red, 'Fred')
-        self.assertTrue(coloured.startswith(Ansi_Colour_Sequences.red))
-        self.assertTrue(coloured.endswith(Ansi_Colour_Sequences.off))
+        self.assertEqual(AnsiColourSequences.red.replace('[0', '[1'),
+                         AnsiColourSequences.light_red)
+        coloured = AnsiColourSequences.highlighted(
+            AnsiColourSequences.red, 'Fred')
+        self.assertTrue(coloured.startswith(AnsiColourSequences.red))
+        self.assertTrue(coloured.endswith(AnsiColourSequences.off))
