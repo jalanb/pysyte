@@ -19,7 +19,7 @@ setup(
         'https://github.com/jalanb/dotsite/tarball/v%s' % dotsite.__version__,
     license='MIT License',
     author='J Alan Brogan',
-    author_email='dotsite@al-got-rhythm.net',
+    author_email='github@al-got-rhythm.net',
     description=dotsite.__doc__,
     platforms='any',
     classifiers=[
