@@ -14,19 +14,18 @@ def get_caselessly(dictionary, sought):
     try:
         return dictionary[sought]
     except KeyError:
-        caseless_keys = dict([(k.lower(), k) for k in dictionary.keys()])
+        caseless_keys = {k.lower(): k for k in dictionary.keys()}
         real_key = caseless_keys[sought.lower()]  # allow any KeyError here
         return dictionary[real_key]
 
 
 def swap_dictionary(dictionary):
-    """Swap keys for values in the given dictionary"""
-    if not dictionary:
-        return {}
-    result = {}
-    for k, v in dictionary.iteritems():
-        result[v] = k
-    return result
+    """Swap keys for values in the given dictionary
+
+    >>> swap_dictionary({'one': 1})[1] == 'one'
+    True
+    """
+    return {v: k for k, v in dictionary.items()}
 
 
 def append_value(dictionary, key, item):
