@@ -25,6 +25,8 @@ def swap_dictionary(dictionary):
     >>> swap_dictionary({'one': 1})[1] == 'one'
     True
     """
+    if dictionary is None:
+        return None
     return {v: k for k, v in dictionary.items()}
 
 

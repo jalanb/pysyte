@@ -1,0 +1,6 @@
+The dictionaries module
+=======================
+
+    >>> import dictionaries
+    >>> print dictionaries.__doc__
+    Some methods to help with the handling of dictionaries

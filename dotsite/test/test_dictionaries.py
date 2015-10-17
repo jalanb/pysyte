@@ -7,6 +7,7 @@ import unittest
 from dotsite import dictionaries
 
 
+# pylint: disable=missing-docstring
 class DictionariesTest(unittest.TestCase):
 
     def test_get_caselessly(self):
@@ -32,12 +33,17 @@ class DictionariesTest(unittest.TestCase):
         actual = dictionaries.swap_dictionary(pythons)
         self.assertEquals(expected, actual)
 
-    def test_swap_edge_cases(self):
+    def test_swap_empty_dictionary(self):
         actual = dictionaries.swap_dictionary({})
         expected = {}
         self.assertEquals(expected, actual)
+
+    def test_swap_none(self):
+        expected = None
         actual = dictionaries.swap_dictionary(None)
         self.assertEquals(expected, actual)
+
+    def test_swap_not_a_dictionary(self):
         with self.assertRaises(AttributeError):
             dictionaries.swap_dictionary('not a dict')
 
@@ -70,7 +76,7 @@ class DictionariesTest(unittest.TestCase):
                 key, value, expected, dictionary)
             self.assertDictEqual(dictionary, expected, message)
 
-    def test_extend_values_expects_a_list(self):
+    def test_extend_with_non_list(self):
         self.assertRaisesRegexp(
             TypeError,
             'Expected a list, got: 2',
