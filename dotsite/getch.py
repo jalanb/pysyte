@@ -21,14 +21,18 @@ import curses.ascii
 
 
 class NoKeys(StopIteration):
+    """Better name for StopIteration caused by running out of keys"""
     pass
 
 
 def get_ord():
+    """The integer ordinal of the next byte read from sys.stdin"""
     return ord(sys.stdin.read(1))
 
 
 class TerminalContext(object):
+    """Context wrapper to set up termios values"""
+    # pylint: disable=too-few-public-methods
     def __init__(self):
         self.fd = None
         self.old_settings = None
@@ -49,15 +53,18 @@ class TerminalContext(object):
 
 
 class Timeout(Exception):
+    """A timeout has occurred"""
     pass
 
 
 def timeout_raiser(_signum, _frame):
+    """Raise a timeout exception"""
     raise Timeout()
 
 
 class TimerContext(object):
-
+    """Context wrapper for a timeout"""
+    # pylint: disable=too-few-public-methods
     def __init__(self, seconds):
         self.seconds = seconds
         self.old_handler = None
@@ -107,6 +114,7 @@ def _get_keycodes():
 
 
 class ExtendedKey(Exception):
+    """Raised for an unrecognised Extended key code"""
     def __init__(self, codes):
         super(ExtendedKey, self).__init__(
             'Too many key codes: %s' % repr(codes))
@@ -114,6 +122,7 @@ class ExtendedKey(Exception):
 
 
 def getch():
+    """Get a char or and ExtendedKey from a keyboard"""
     codes = _get_keycodes()
     if len(codes) == 1:
         return chr(codes[0])
@@ -121,10 +130,15 @@ def getch():
 
 
 def get_codes():
+    """Get a tuple of stringified keycodes from the keyboard"""
     return tuple(str(_) for _ in _get_keycodes())
 
 
 def get_key():
+    """Get a key from the keyboard as a string
+
+    A 'key' will be a single char, or the name of an extended key
+    """
     codes = _get_keycodes()
     if len(codes) == 1:
         code = codes[0]
@@ -169,10 +183,15 @@ def get_as_key():
 
 
 def control_key_name(code):
+    """Prefix the name of a control key with '^'"""
     return '^%s' % (chr(code - 1 + ord('A')))
 
 
 def get_extended_key_name(codes):
+    """Get a name for the extended key with those codes
+
+    Names are defined herein
+    """
     known_keys = {
         (27, 79, 70): 'end',
         (27, 79, 72): 'home',
@@ -201,7 +220,9 @@ def get_extended_key_name(codes):
 
 
 def _yielder(getter):
+    """Keep yielding from that getter until KeyboardInteruptted"""
     def yield_till_stopped():
+        """Yield from the getter until KeyboardInteruptted"""
         while True:
             try:
                 yield getter()
@@ -231,6 +252,7 @@ def show_get_key():
 
 
 def yield_asciis_old():
+    """This one is deprecated"""
     k = get_ascii()
     while True:
         yield k
