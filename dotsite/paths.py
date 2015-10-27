@@ -465,7 +465,8 @@ def makepath(string, as_file=False):
         result = DirectPath(string_path)
     return result.expand().realpath().abspath()
 
-# See also http://stackoverflow.com/questions/26403972/how-do-i-get-rid-of-make-xxx-method  # noqa
+# See also http://stackoverflow.com/questions/26403972
+#     /how-do-i-get-rid-of-make-xxx-method
 path = makepath
 
 
