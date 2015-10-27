@@ -38,13 +38,12 @@ class PathAssertions(object):
         return self
 
 
-# pylint: disable=abstract-method
-
 from path import path
 
 
 class Path(path):
     """Some additions to the classic path class"""
+    # pylint: disable=abstract-method
 
     def __repr__(self):
         return '<%s %s>' % (
