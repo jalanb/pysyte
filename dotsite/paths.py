@@ -98,8 +98,8 @@ class Path(path):
         >>> p.paths == p.dirpaths()
         True
         """
-        parts = self.splitall()
-        root, rest = parts[0], parts[1:]
+        parts = self.split(os.path.sep)
+        root, rest = Path('/'), parts[1:]
         return [makepath(root / os.path.sep.join(rest[:i]))
                 for i in range(len(parts))]
 
@@ -127,9 +127,16 @@ class Path(path):
         dirpaths, None, None,
         """ This path's parent directories, as a sequence of paths.
 
-        >>> Path('/usr/bin/vim').paths , [
-        ...     DirectPath('/'), DirectPath('/usr'), DirectPath('/usr/bin'),
-        ...     FilePath('/usr/bin/vim')]
+        >>> paths = Path('/usr/bin/vim').paths
+        >>> paths[-1].isfile()  # vim might be a link
+        True
+        >>> paths[-2] == paths[-1].parent
+        True
+        >>> paths[-3] == paths[-2].parent
+        True
+        >>> paths[-4] == paths[-3].parent
+        True
+        >>> paths[-4] == paths[0]
         True
         """)
 
