@@ -282,7 +282,7 @@ class FilePath(Path, PathAssertions):
         """The path to the file with a .py extension
 
         >>> FilePath('/path/to/fred.txt').as_python()
-        <FilePath ...'/path/to/fred.py'>
+        <FilePath '/path/to/fred.py'>
         """
         return self.extend_by('.py')
 
@@ -290,11 +290,11 @@ class FilePath(Path, PathAssertions):
         """The path to the file changed to use the given extension
 
         >>> FilePath('/path/to/fred').extend_by('.txt')
-        <FilePath ...'/path/to/fred.txt'>
+        <FilePath '/path/to/fred.txt'>
         >>> FilePath('/path/to/fred.txt').extend_by('..tmp')
-        <FilePath ...'/path/to/fred.tmp'>
+        <FilePath '/path/to/fred.tmp'>
         >>> FilePath('/path/to/fred.txt').extend_by('fred')
-        <FilePath ...'/path/to/fred.fred'>
+        <FilePath '/path/to/fred.fred'>
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
