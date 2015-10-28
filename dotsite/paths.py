@@ -127,7 +127,7 @@ class Path(path):
         dirpaths, None, None,
         """ This path's parent directories, as a sequence of paths.
 
-        >>> Path('/usr/bin/vim').paths == [
+        >>> Path('/usr/bin/vim').paths , [
         ...     DirectPath('/'), DirectPath('/usr'), DirectPath('/usr/bin'),
         ...     FilePath('/usr/bin/vim')]
         True
