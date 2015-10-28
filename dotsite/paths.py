@@ -18,6 +18,7 @@ class PathError(Exception):
 
 class PathAssertions(object):
     """Assertions that can be made about paths"""
+    # pylint: disable=no-member
 
     def assert_exists(self):
         """Raise a PathError if this path does not exist on disk"""
@@ -69,8 +70,12 @@ class Path(path):
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
         if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
-            return self.__file_class__(filepath)
+            return self.__file_class__(filepath)  # pylint: disable=no-member
         return self.__class__(filepath)
+
+    def directory(self):
+        """Return a path to the path's directory"""
+        return self.parent
 
     def dirnames(self):
         """Split the dirname into individual directory names
@@ -212,6 +217,10 @@ class Path(path):
         if self.fnmatch_directories(glob):
             return self
         return None
+
+    def __get_owner_not_implemented(self):
+        pass
+
 del path
 
 
@@ -222,12 +231,8 @@ class FilePath(Path, PathAssertions):
         raise PathError('%r has no children' % self)
 
     def __iter__(self):
-        for l in self.stripped_lines():
-            yield l
-
-    def directory(self):
-        """Return a path to the file's directory"""
-        return self.parent
+        for line in self.stripped_lines():
+            yield line
 
     def try_remove(self):
         """Try to remove the file"""
@@ -297,9 +302,9 @@ class FilePath(Path, PathAssertions):
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
-        self.chmod(chmod_values.readonly_file)
+        self.chmod(ChmodValues.readonly_file)
 
-    def cd(self):
+    def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
         return cd(self.parent)
 
@@ -320,7 +325,7 @@ class FilePath(Path, PathAssertions):
             pass
         return ''
 
-    def mv(self, destination):
+    def mv(self, destination):  # pylint: disable=invalid-name
         return self.move(destination)
 
     def make_file_exist(self):
@@ -342,8 +347,8 @@ class DirectPath(Path, PathAssertions):
         return self.paths[i]
 
     def __iter__(self):
-        for p in Path.listdir(self):
-            yield p
+        for a_path in Path.listdir(self):
+            yield a_path
 
     def directory(self):
         """Return a path to a directory.
@@ -382,12 +387,12 @@ class DirectPath(Path, PathAssertions):
                 continue
             child.rmdir()
 
-    def cd(self):
+    def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
         return cd(self)
 
     def listdir(self, pattern=None):
-        return [self.as_existing_file(p) for p in Path.listdir(self, pattern)]
+        return [self.as_existing_file(_) for _ in Path.listdir(self, pattern)]
 
     def make_directory_exist(self):
         if self.isdir():
@@ -412,7 +417,7 @@ class DirectPath(Path, PathAssertions):
 
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
-        self.chmod(chmod_values.readonly_directory)
+        self.chmod(ChmodValues.readonly_directory)
 
     def touch_file(self, filename):
         """Touch a file in the directory"""
@@ -422,8 +427,8 @@ class DirectPath(Path, PathAssertions):
 
     def existing_sub_paths(self, sub_paths):
         """Those in the given list of sub_paths which do exist"""
-        paths_to_subs = [self / p for p in sub_paths]
-        return [p for p in paths_to_subs if p.exists()]
+        paths_to_subs = [self / _ for _ in sub_paths]
+        return [_ for _ in paths_to_subs if _.exists()]
 
     def clear_directory(self):
         """Make sure the directory exists and is empty"""
@@ -432,9 +437,9 @@ class DirectPath(Path, PathAssertions):
 
     # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors='strict', ignores=None):
-        def ignored(p):
+        def ignored(a_path):
             for ignore in ignores:
-                if p.fnmatch_part(ignore):
+                if a_path.fnmatch_part(ignore):
                     return True
             return False
 
@@ -446,7 +451,8 @@ class DirectPath(Path, PathAssertions):
                 yield path_to_file
 
 
-class chmod_values(object):
+class ChmodValues(object):
+    # pylint: disable=too-few-public-methods
     readonly_file = 0o444
     readonly_directory = 0o555
 
@@ -467,10 +473,10 @@ def makepath(string, as_file=False):
 
 # See also http://stackoverflow.com/questions/26403972
 #     /how-do-i-get-rid-of-make-xxx-method
-path = makepath
+path = makepath  # pylint: disable=invalid-name
 
 
-def cd(path_to):
+def cd(path_to):  # pylint: disable=invalid-name
     """cd to the given path
 
     If the path is a file, then cd to its parent directory
@@ -532,22 +538,22 @@ def strings_to_paths(strings):
 
 def split_directories(strings):
     strings = strings_to_paths(strings)
-    return [p
-            for p in strings
-            if p.isdir()], [p for p in strings if not p.isdir()]
+    return [_
+            for _ in strings
+            if _.isdir()], [_ for _ in strings if not _.isdir()]
 
 
 def split_files(strings):
     strings = strings_to_paths(strings)
-    return ([p for p in strings if p.isfile()],
-            [p for p in strings if not p.isfile()])
+    return ([_ for _ in strings if _.isfile()],
+            [_ for _ in strings if not _.isfile()])
 
 
 def split_directories_files(strings):
     strings = strings_to_paths(strings)
-    return ([p for p in strings if p.isdir()],
-            [p for p in strings if p.isfile()],
-            [p for p in strings if not (p.isfile() or p.isdir())])
+    return ([_ for _ in strings if _.isdir()],
+            [_ for _ in strings if _.isfile()],
+            [_ for _ in strings if not (_.isfile() or _.isdir())])
 
 
 def files(strings):
@@ -565,7 +571,7 @@ def home():
 def pwd():
     return makepath(os.getcwd())
 
-here = pwd
+here = pwd  # pylint: disable=invalid-name
 
 
 def first_dir(path_string):
@@ -584,7 +590,7 @@ def first_dirs(path_strings):
     >>> first_dirs(['usr/bin', 'bin']) == ['usr', 'bin']
     True
     """
-    return [first_dir(p) for p in path_strings]
+    return [first_dir(_) for _ in path_strings]
 
 
 def unique_first_dirs(path_strings):
@@ -667,7 +673,7 @@ def contains_file(path_to_directory, pattern):
 
 
 def environ_paths(key):
-    return [makepath(p) for p in os.environ[key].split(':')]
+    return [makepath(_) for _ in os.environ[key].split(':')]
 
 
 def environ_path(key):
