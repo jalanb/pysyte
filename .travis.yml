@@ -12,6 +12,5 @@ notifications:
 deploy:
   provider: pypi
   user: jalanb
-  password: pypi.python.org&bcx4bzrt
   on:
     tags: true
