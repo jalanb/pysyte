@@ -139,11 +139,12 @@ def get_key():
 
     A 'key' will be a single char, or the name of an extended key
     """
+    character_name = chr
     codes = _get_keycodes()
     if len(codes) == 1:
         code = codes[0]
         if code >= 32:
-            return chr(code)
+            return character_name(code)
         return control_key_name(code)
     return get_extended_key_name(codes)
 
