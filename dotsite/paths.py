@@ -327,7 +327,7 @@ class FilePath(Path, PathAssertions):
         try:
             first_line = self.lines()[0]
             if first_line.startswith('#!'):
-                return first_line[2:].strip()
+                return makepath(first_line[2:].strip())
         except IndexError:
             pass
         return ''
@@ -342,6 +342,44 @@ class FilePath(Path, PathAssertions):
         return self
 
 
+class ScriptPath(FilePath):
+    """A file recognised by its interptreter
+
+    The interpreter is determined by extension
+
+    >>> ScriptPath('/path/to/fred.py').interpreter == 'python'
+    True
+
+    If there is no extension, but shebang is present, then use that
+
+    >>> ScriptPath(home() / '.bashrc').interpreter == 'bash'
+    True
+    """
+
+    interpreted_extensions = { #  Get this from OS
+         '.py': 'python',
+         '.py2': 'python2',
+         '.py3': 'python3',
+         '.sh': 'bash',
+         '.bash': 'bash',
+         '.pl': 'perl',
+    }
+
+    @property
+    def interpreter(self):
+        """The program which will interpret this script"""
+        try:
+            return self._interpreter
+        except AttributeError:
+            self._interpreter = None
+            try:
+                self._interpreter = self.interpreted_extensions[self.ext]
+            except KeyError:
+                if not self.ext:
+                    self._interpreter = str(self.shebang().name)
+        return self._interpreter
+
+
 class DirectPath(Path, PathAssertions):
     """A path which knows it might be a directory
 
@@ -350,8 +388,6 @@ class DirectPath(Path, PathAssertions):
 
     __file_class__ = FilePath
 
-    def __getitem__(self, i):
-        return self.paths[i]
 
     def __iter__(self):
         for a_path in Path.listdir(self):
