@@ -228,6 +228,13 @@ class Path(path):
     def __get_owner_not_implemented(self):
         pass
 
+    def expandall(self):
+        return self.expand().realpath().abspath()
+
+    def same_path(self, other):
+        return self.expandall() == other.expandall()
+
+
 del path
 
 
@@ -512,7 +519,7 @@ def makepath(string, as_file=False):
         result = FilePath(string_path)
     else:
         result = DirectPath(string_path)
-    return result.expand().realpath().abspath()
+    return result.expandall()
 
 # See also http://stackoverflow.com/questions/26403972
 #     /how-do-i-get-rid-of-make-xxx-method

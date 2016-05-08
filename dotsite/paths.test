@@ -99,7 +99,7 @@ And that is an expanded path
 The same works for the value if concatenation was applied to the path
     or is applied to the string
     >>> path_to_bashrc = makepath('~/.bashrc')
-    >>> path_to_home / '.bashrc' == path_to_bashrc
+    >>> path_to_bashrc.same_path(path_to_home / '.bashrc')
     True
 
 We are expecting ~/.bashrc to exist,
