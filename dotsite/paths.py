@@ -39,10 +39,10 @@ class PathAssertions(object):
         return self
 
 
-from path import path
+from path import Path as path_path
 
 
-class Path(path):
+class Path(path_path):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
 
@@ -235,7 +235,7 @@ class Path(path):
         return self.expandall() == other.expandall()
 
 
-del path
+del path_path
 
 
 class FilePath(Path, PathAssertions):
