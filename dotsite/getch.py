@@ -239,8 +239,8 @@ yield_ASCIIs = _yielder(get_ASCII)
 yield_as_keys = _yielder(get_as_key)
 
 
-def show_get_key():
-    """Show output of the _get_keycodes() method"""
+def repr_get_key():
+    """Represent output of the _get_keycodes() method"""
     keycodes = _get_keycodes()
     initial_code, codes = keycodes[0], keycodes[1:]
     initial_char = chr(initial_code)
@@ -249,7 +249,7 @@ def show_get_key():
     elif not curses.ascii.isgraph(initial_char):
         initial_char = '\\x%x' % initial_code
     chars = ''.join([chr(c) for c in codes])
-    print '%s%s' % (initial_char, chars)
+    return ''.join((initial_char, chars))
 
 
 def yield_asciis_old():

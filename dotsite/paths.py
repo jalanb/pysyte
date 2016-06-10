@@ -349,42 +349,68 @@ class FilePath(Path, PathAssertions):
         return self
 
 
-class ScriptPath(FilePath):
-    """A file recognised by its interptreter
-
-    The interpreter is determined by extension
-
-    >>> ScriptPath('/path/to/fred.py').interpreter == 'python'
-    True
-
-    If there is no extension, but shebang is present, then use that
-
-    >>> ScriptPath(home() / '.bashrc').interpreter == 'bash'
-    True
-    """
-
-    interpreted_extensions = { #  Get this from OS
+def ext_classifier(ext):
+    return language_classifier({
          '.py': 'python',
          '.py2': 'python2',
          '.py3': 'python3',
          '.sh': 'bash',
          '.bash': 'bash',
-         '.pl': 'perl',
-    }
+         '.pl': 'perl',}.get(ext, 'None'))
+
+def language_classifier(language):
+    def classify(string):
+        string.language = language
+        return string
+    return classify
+
+
+
+def classifier(name):
+    def classify(string):
+        return string
+    return classify
+
+
+class ScriptPath(FilePath):
+    """A file recognised by its interptreter
+
+    The classifier is determined by extension
+
+    >>> ScriptPath('/path/to/fred.py').classifier == 'python'
+    True
+
+    If there is no extension, but shebang is present, then use that
+
+    >>> ScriptPath(home() / '.bashrc').classifier == 'bash'
+    True
+    """
 
     @property
-    def interpreter(self):
-        """The program which will interpret this script"""
+    def classifier(self):
+        """The program which will classify this script"""
         try:
-            return self._interpreter
+            return self._classifier
         except AttributeError:
-            self._interpreter = None
+            self._classifier = None
             try:
-                self._interpreter = self.interpreted_extensions[self.ext]
+                self._classifier = ext_classifier(self.ext)
             except KeyError:
                 if not self.ext:
-                    self._interpreter = str(self.shebang().name)
-        return self._interpreter
+                    self._classifier = classifier(str(self.shebang().name))
+        return self._classifier
+
+
+class DirectPath(Path, PathAssertions):
+    """A path which knows it might be a directory
+
+    And that files are in directories
+    """
+
+    __file_class__ = FilePath
+
+    def __getitem__(self, i):
+        return self
 
 
 class DirectPath(Path, PathAssertions):

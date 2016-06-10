@@ -81,7 +81,7 @@ def debug(method):
         try:
             pudb.runcall(method, *args, **kwargs)
         except pdb.bdb.BdbQuit:
-            print 'Normal quit from debugger'
+            sys.exit('Normal quit from debugger')
     new_method.__doc__ = method.__doc__
     new_method.__name__ = 'debug(%s)' % method.__name__
     return new_method

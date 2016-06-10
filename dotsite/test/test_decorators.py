@@ -5,10 +5,10 @@ from cStringIO import StringIO
 import unittest
 
 
-from dotsite import decorators
+import dotsite as site
 
 
-@decorators.memoize
+@site.decorators.memoize
 def initials(forename, surname, stream):
     """Print initials of the name
 
@@ -18,17 +18,17 @@ def initials(forename, surname, stream):
     return '%s%s' % (forename[0], surname[0])
 
 
-@decorators.memoize
+@site.decorators.memoize
 def no_args():
     return None
 
 
-@decorators.memoize
+@site.decorators.memoize
 def default_args(arg=None):
     return arg
 
 
-@decorators.debug
+@site.decorators.debug
 def do_nothing():
     pass
 
@@ -124,7 +124,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertRaises(KeyError, initials.invalidate, 'not called')
 
     def test_use_wtithout_decorator(self):
-        memo_average = decorators.memoize(average)
+        memo_average = site.decorators.memoize(average)
         one = memo_average(1, 6, self.stream)
         two = memo_average(2, 5, self.stream)
         three = memo_average(1, 6, self.stream)
