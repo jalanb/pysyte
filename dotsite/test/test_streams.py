@@ -5,7 +5,8 @@ from cStringIO import StringIO
 from unittest import TestCase
 
 
-from dotsite.streams import swallow_stdout, swallow_stderr
+import dotsite as site
+from site.streams import swallow_stdout, swallow_stderr
 
 
 class TestStreams(TestCase):

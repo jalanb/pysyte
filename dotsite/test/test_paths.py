@@ -5,10 +5,10 @@ import random
 from unittest import TestCase
 
 
-from dotsite import paths
+import dotsite as site
 
 
-class SourcePath(paths.FilePath):
+class SourcePath(site.paths.FilePath):
     # pylint: disable=abstract-method
     pass
 
@@ -16,7 +16,7 @@ class SourcePath(paths.FilePath):
 SourcePath.__file_class__ = SourcePath
 
 
-class MockFilePathWithLines(paths.FilePath):
+class MockFilePathWithLines(site.paths.FilePath):
     # pylint: disable=abstract-method
     """Mock some known lines into a file"""
     def lines(self, encoding=None, errors='strict', retain=True):
@@ -31,17 +31,17 @@ class MockFilePathWithLines(paths.FilePath):
 class TestPaths(TestCase):
 
     def setUp(self):
-        self.path = paths.makepath(__file__).extend_by('py')
+        self.path = site.paths.path(__file__).extend_by('py')
         self.dir = self.path.parent
-        self.source = paths.makepath(paths.__file__).extend_by('py')
+        self.source = site.paths.path(site.paths.__file__).extend_by('py')
 
     def test_path_error(self):
         self.assertRaises(
-            paths.PathError,
-            paths.makepath('/not/a/path').assert_exists)
+            site.paths.PathError,
+            site.paths.path('/not/a/path').assert_exists)
 
     def test_not_path_error(self):
-        p = paths.makepath('/')
+        p = site.paths.path('/')
         self.assertEqual(p, p.assert_exists())
 
     def test_assert_isfile(self):
@@ -51,7 +51,7 @@ class TestPaths(TestCase):
 
     def test_assert_not_isfile(self):
         self.assertRaises(
-            paths.PathError,
+            site.paths.PathError,
             self.dir.assert_isfile)
 
     def test_assert_isdir(self):
@@ -61,7 +61,7 @@ class TestPaths(TestCase):
 
     def test_assert_not_isdir(self):
         self.assertRaises(
-            paths.PathError,
+            site.paths.PathError,
             self.path.assert_isdir)
 
     def test_join_with_nothing(self):

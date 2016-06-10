@@ -5,12 +5,12 @@ from __future__ import print_function
 import sys
 
 
-from getch import get_as_key
+import dotsite as site
 
 
 def _get_chosen_chars(chooser):
     while True:
-        key = get_as_key()
+        key = site.getch.get_as_key()
         try:
             if chooser(key):
                 return key
@@ -29,7 +29,7 @@ def get_letter():
 
 def quit_on_q():
     try:
-        key = get_as_key()
+        key = site.getch.get_as_key()
         if key in 'qQ':
             sys.exit()
         return key

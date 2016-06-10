@@ -3,9 +3,7 @@
 
 import re
 
-
-from dotsite.literals import Empty
-from dotsite.literals import Punctuation
+import dotsite as site
 
 
 def _default_separator():
@@ -13,7 +11,7 @@ def _default_separator():
 
     Monkey-patching this method can change that default
     """
-    return Punctuation.comma
+    return site.literals.Punctuation.comma
 
 
 def join(items, separator=None):
@@ -37,7 +35,7 @@ def seamless_join(items):
     >>> seamless_join(['fred', 'was', 'here'])
     'fredwashere'
     """
-    return join(items, Empty.string)
+    return join(items, site.literals.Empty.string)
 
 
 def split(string, separator_regexp=None, maxsplit=0):

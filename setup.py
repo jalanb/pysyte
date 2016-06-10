@@ -4,7 +4,7 @@
 from setuptools import setup
 
 
-import dotsite
+import dotsite as site
 
 
 name = 'dotsite'
@@ -13,14 +13,14 @@ name = 'dotsite'
 setup(
     name=name,
     packages=[name],
-    version=dotsite.__version__,
+    version=site.__version__,
     url='https://github.com/jalanb/dotsite',
     download_url=
-        'https://github.com/jalanb/dotsite/tarball/v%s' % dotsite.__version__,
+        'https://github.com/jalanb/dotsite/tarball/v%s' % site.__version__,
     license='MIT License',
     author='J Alan Brogan',
     author_email='github@al-got-rhythm.net',
-    description=dotsite.__doc__,
+    description=site.__doc__,
     platforms='any',
     classifiers=[
         'Programming Language :: Python :: 2.7',
