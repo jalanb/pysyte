@@ -15,8 +15,8 @@ def _tput(tput_command):
 
 
 def screen_width():
-    _tput('cols')
+    return _tput('cols')
 
 
 def screen_height():
-    _tput('lines')
+    return _tput('lines')
