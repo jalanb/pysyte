@@ -15,4 +15,4 @@ from dotsite import term
 
 __all__=[decorators, dictionaries, getch, keyboard, literals, main, paths, pp, splits, streams, term]
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
