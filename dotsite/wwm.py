@@ -25,7 +25,7 @@ def _lines_before_at_same_indentation(read, end):
         match = regexp.match(string)
         try:
             return match.string[:match.end()]
-        except AttributeError as e:
+        except AttributeError:
             return ''
 
     def make_finder(regexp):
@@ -49,15 +49,18 @@ def _lines_before_at_same_indentation(read, end):
     return reversed([read(i) for i in lines])
 
 def lines_in_frame(path, line):
+    import pudb
     pudb.set_trace()
     from pym.edit.tree import Climber
     from pym.ast.parse import parse_path
     climber = Climber(parse_path(path))
     climber.to_line(line)
+    return []
 
 
 def set_trace():
     from pprintpp import pprint as pp
+    # pylint: disable=unused-variable
     def ppd(_):
         return pp(dir(_))
 
@@ -66,7 +69,7 @@ def set_trace():
 
     import pudb
     import inspect
-    sources = [(path, line) for _, path, line, _, _, _ inspect.stack()]
+    sources = [(path, line) for _, path, line, _, _, _ in inspect.stack()]
     path, line = sources[-1]
     read = _read_line_from_path(path)
     lines = lines_in_frame(path, line)
