@@ -13,7 +13,9 @@ def main(streams):
 sys.exit(site.main(main, __name__))
 """
 
-@site.decorators.streamer
+from dotsite.decorators import streamer
+
+@streamer
 def main(streams):
     for stream in streams:
         if stream.read() in 'qQ':
