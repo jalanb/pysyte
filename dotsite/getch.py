@@ -259,5 +259,9 @@ def yield_asciis_old():
         yield k
 
 
-if __name__ == '__main__':
-    show_get_key()
+def ask_user(prompt, default=None):
+    prompt_default = str('[%s]' % default) if default else ''
+    print '%s %s? ' % (prompt, prompt_default),
+    result = getch().lower().strip()
+    print
+    return result or default
