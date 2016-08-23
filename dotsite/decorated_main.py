@@ -38,17 +38,6 @@ def main(streams, globs):
 sys.exit(site.main(main, __name__))
 """
 
-
-def globber(main_method, globs):
-    """Recognise globs in args"""
-    import os
-    from glob import glob
-
-    def main(arguments):
-        lists_of_paths = [_ for _ in arguments if glob(pathname, recursive=True) ]
-        return main_method(arguments, lists_of_paths)
-    return main
-
 def py_catcher(glob, path):
     class Scripts(object):
         def __init__(self, languages = None):

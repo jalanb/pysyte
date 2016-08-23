@@ -126,3 +126,14 @@ def old_streamer(main_method):
         if os.path.isfile(argument):
             return file(argument, 'r')
     return method
+
+
+def globber(main_method, globs):
+    """Recognise globs in args"""
+    import os
+    from glob import glob
+
+    def main(arguments):
+        lists_of_paths = [_ for _ in arguments if glob(pathname, recursive=True) ]
+        return main_method(arguments, lists_of_paths)
+    return main
