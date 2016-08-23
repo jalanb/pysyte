@@ -39,7 +39,7 @@ class PathAssertions(object):
         return self
 
 
-from path import Path as path_path
+from path import Path as path_path # pylint: disable=wrong-import-position
 
 
 class Path(path_path):
@@ -64,7 +64,7 @@ class Path(path_path):
         if child:
             result = os.path.join(self, child)
         else:
-            result = str(self)
+            result = str(self) # pylint: disable=redefined-variable-type
         return self.as_existing_file(result)
 
     def as_existing_file(self, filepath):
@@ -351,12 +351,12 @@ class FilePath(Path, PathAssertions):
 
 def ext_classifier(ext):
     return language_classifier({
-         '.py': 'python',
-         '.py2': 'python2',
-         '.py3': 'python3',
-         '.sh': 'bash',
-         '.bash': 'bash',
-         '.pl': 'perl',}.get(ext, 'None'))
+        '.py': 'python',
+        '.py2': 'python2',
+        '.py3': 'python3',
+        '.sh': 'bash',
+        '.bash': 'bash',
+        '.pl': 'perl',}.get(ext, 'None'))
 
 def language_classifier(language):
     def classify(string):
@@ -366,13 +366,13 @@ def language_classifier(language):
 
 
 
-def classifier(name):
+def classifier(_name):
     def classify(string):
         return string
     return classify
 
 
-class ScriptPath(FilePath):
+class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
     """A file recognised by its interptreter
 
     The classifier is determined by extension
@@ -399,18 +399,6 @@ class ScriptPath(FilePath):
                 if not self.ext:
                     self._classifier = classifier(str(self.shebang().name))
         return self._classifier
-
-
-class DirectPath(Path, PathAssertions):
-    """A path which knows it might be a directory
-
-    And that files are in directories
-    """
-
-    __file_class__ = FilePath
-
-    def __getitem__(self, i):
-        return self
 
 
 class DirectPath(Path, PathAssertions):
@@ -537,6 +525,7 @@ def makepath(string, as_file=False):
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
+    See also http://stackoverflow.com/questions/26403972/how-do-i-get-rid-of-make-xxx-method
     """
     if string is None:
         return None
@@ -544,11 +533,9 @@ def makepath(string, as_file=False):
     if string_path.isfile() or as_file:
         result = FilePath(string_path)
     else:
-        result = DirectPath(string_path)
+        result = DirectPath(string_path) # pylint: disable=redefined-variable-type
     return result.expandall()
 
-# See also http://stackoverflow.com/questions/26403972
-#     /how-do-i-get-rid-of-make-xxx-method
 path = makepath  # pylint: disable=invalid-name
 
 
