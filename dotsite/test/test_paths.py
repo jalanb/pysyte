@@ -108,3 +108,18 @@ class TestPaths(TestCase):
         self.assertTrue(path.any_line_has('Normal line'))
         self.assertTrue(path.any_line_has('Normal'))
         self.assertFalse(path.any_line_has('Abnormal line'))
+
+    def test_directory(self):
+        self.assertEquals(self.path.directory(), self.path.parent)
+
+    def test_no_div_for_file(self):
+        path = site.paths.FilePath(__file__)
+        with self.assertRaises(site.paths.PathError):
+            path / 'fred'
+
+    def test_directory_iteration(self):
+        for item in self.path.directory():
+            if item == self.path:
+                break
+        else:
+            self.fail('Could not find %s' % self.path)
