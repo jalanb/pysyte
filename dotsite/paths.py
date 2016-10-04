@@ -334,7 +334,10 @@ class FilePath(Path, PathAssertions):
         try:
             first_line = self.lines()[0]
             if first_line.startswith('#!'):
-                return makepath(first_line[2:].strip())
+                rest_of_line = first_line[2:].strip()
+                parts = rest_of_line.split(' ')
+                interpreter = parts[0]
+                return makepath(interpreter)
         except IndexError:
             pass
         return ''
@@ -349,56 +352,42 @@ class FilePath(Path, PathAssertions):
         return self
 
 
-def ext_classifier(ext):
-    return language_classifier({
+def ext_language(ext):
+    return {
         '.py': 'python',
         '.py2': 'python2',
         '.py3': 'python3',
         '.sh': 'bash',
         '.bash': 'bash',
-        '.pl': 'perl',}.get(ext, 'None'))
-
-def language_classifier(language):
-    def classify(string):
-        string.language = language
-        return string
-    return classify
-
-
-
-def classifier(_name):
-    def classify(string):
-        return string
-    return classify
+        '.pl': 'perl',}[ext]
 
 
 class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
     """A file recognised by its interptreter
 
-    The classifier is determined by extension
+    The language is determined by extension
 
-    >>> ScriptPath('/path/to/fred.py').classifier == 'python'
+    >>> ScriptPath('/path/to/fred.py').language == 'python'
     True
 
     If there is no extension, but shebang is present, then use that
 
-    >>> ScriptPath(home() / '.bashrc').classifier == 'bash'
+    >>> ScriptPath(home() / '.bashrc').language == 'bash'
     True
     """
 
     @property
-    def classifier(self):
-        """The program which will classify this script"""
+    def language(self):
+        """The language of this script"""
         try:
-            return self._classifier
+            return self._language
         except AttributeError:
-            self._classifier = None
-            try:
-                self._classifier = ext_classifier(self.ext)
-            except KeyError:
-                if not self.ext:
-                    self._classifier = classifier(str(self.shebang().name))
-        return self._classifier
+            if self.ext:
+                language = ext_language(self.ext)
+            else:
+                language = str(self.shebang().name)
+            self._language = language
+        return self._language
 
 
 class DirectPath(Path, PathAssertions):

@@ -38,6 +38,8 @@ def main(streams, globs):
 sys.exit(site.main(main, __name__))
 """
 
+import sys
+
 def py_catcher(glob, path):
     class Scripts(object):
         def __init__(self, languages = None):
