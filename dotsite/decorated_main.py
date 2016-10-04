@@ -67,4 +67,5 @@ def main(method, name):
     result = method(sys.argv)
     return result and os.EX_OK or result
 
-sys.exit(main(main, __name__))
+if __name__ == '__main__':
+    sys.exit(main(main, __name__))

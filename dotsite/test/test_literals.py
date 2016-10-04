@@ -1,12 +1,13 @@
 """Test the literal namespaces"""
-
-
 import unittest
 
 
-import dotsite as site
-from site.literals import Punctuation, Digits, Numbers, Empty, Python
-from site.literals import AnsiColourSequences
+from dotsite.literals import AnsiColourSequences
+from dotsite.literals import Digits
+from dotsite.literals import Empty
+from dotsite.literals import Numbers
+from dotsite.literals import Punctuation
+from dotsite.literals import Python
 
 
 class TestLiterals(unittest.TestCase):
