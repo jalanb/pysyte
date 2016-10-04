@@ -137,3 +137,10 @@ class TestSplits(unittest.TestCase):
         self.assertEqual(
             site.splits.split_and_strip_without('i was here', ''),
             site.splits.split_and_strip('i was here'))
+
+    def test_split_by_count(self):
+        items = [1, 2, 3]
+        actual = site.splits.split_by_count(items, 2, 4)
+        expected = [(1, 2), (3, 4)]
+        self.assertEqual(actual, expected)
+        self.assertEqual(items, [1, 2, 3])

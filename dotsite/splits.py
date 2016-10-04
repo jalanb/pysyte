@@ -113,11 +113,9 @@ def split_by_count(items, count, filler=None):
     [(0, 1, 2), (7, 8, 9), (6, 0, 0)]
     """
     if filler is not None:
+        items = items[:]
         while len(items) % count:
-            if type(items) == type(filler):
-                items = items + filler
-            else:
-                items = items + [filler]
+            items.append(filler)
     iterator = iter(items)
     iterators = [iterator] * count
     return zip(*iterators)
