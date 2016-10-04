@@ -39,7 +39,10 @@ class PathAssertions(object):
         return self
 
 
-from path import Path as path_path # pylint: disable=wrong-import-position
+try:
+    from path import Path as path_path # pylint: disable=wrong-import-position
+except ImportError:
+    path_path = str
 
 
 class Path(path_path):
@@ -568,7 +571,7 @@ def cd(path_to):  # pylint: disable=invalid-name
 
 try:
     cd.previous = makepath(os.getcwd())
-except OSError:
+except (OSError, AttributeError):
     cd.previous = None
 
 
