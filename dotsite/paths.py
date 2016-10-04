@@ -332,7 +332,10 @@ class FilePath(Path, PathAssertions):
         If no shebang is present, return an empty string
         """
         try:
-            first_line = self.lines()[0]
+            try:
+                first_line = self.lines()[0]
+            except OSError:
+                return ''
             if first_line.startswith('#!'):
                 rest_of_line = first_line[2:].strip()
                 parts = rest_of_line.split(' ')
@@ -371,9 +374,10 @@ class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
     True
 
     If there is no extension, but shebang is present, then use that
+    (~/.bashrc might not exist - then there's no language)
 
-    >>> p = ScriptPath(home() / '.bashrc')
-    >>> p.isfile() and p.language == 'bash' or True
+    >>> p = ScriptPath(home() / '.bashr')
+    >>> p.language == ('bash' if p.isfile() else None)
     True
     """
 
@@ -386,7 +390,8 @@ class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
             if self.ext:
                 language = ext_language(self.ext)
             else:
-                language = str(self.shebang().name)
+                shebang = self.shebang()
+                language = shebang and str(shebang.name) or None
             self._language = language
         return self._language
 
