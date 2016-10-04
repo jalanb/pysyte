@@ -372,7 +372,8 @@ class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
 
     If there is no extension, but shebang is present, then use that
 
-    >>> ScriptPath(home() / '.bashrc').language == 'bash'
+    >>> p = ScriptPath(home() / '.bashrc')
+    >>> p.isfile() and p.language == 'bash' or True
     True
     """
 
