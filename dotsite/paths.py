@@ -261,20 +261,22 @@ def ext_language(ext, exts=None):
         '.txt': 'english',
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
-    return ext_languages[ext]
+    return ext_languages.get(ext)
 
 
 def find_language(script):
     """Determine the script's language  extension
 
-    >>> find_language('/path/to/fred.py') == 'python'
+    >>> this_script = __file__.rstrip('c')
+    >>> find_language(makepath(this_script)) == 'python'
     True
 
     If there is no extension, but shebang is present, then use that
     (~/.bashrc might not exist - then there's no language)
 
-    >>> language = find_language(home() / '.bashrc')
-    >>> language == ('bash' if p.isfile() else None)
+    >>> bashrc = home() / '.bashrc'
+    >>> language = find_language(bashrc)
+    >>> language == ('bash' if bashrc.isfile() else None)
     True
     """
     if script.ext:
@@ -379,7 +381,7 @@ class FilePath(Path, PathAssertions):
         try:
             try:
                 first_line = self.lines()[0]
-            except OSError:
+            except (OSError, UnicodeDecodeError):
                 return ''
             if first_line.startswith('#!'):
                 rest_of_line = first_line[2:].strip()

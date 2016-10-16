@@ -33,7 +33,7 @@ class TestPaths(TestCase):
     def setUp(self):
         self.path = site.paths.path(__file__).extend_by('py')
         self.dir = self.path.parent
-        self.source = site.paths.path(site.paths.__file__).extend_by('py')
+        self.source = site.paths.path(site.paths.__file__.rstrip('c')).extend_by('py')
 
     def test_path_error(self):
         self.assertRaises(
