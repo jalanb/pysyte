@@ -40,7 +40,7 @@ class PathAssertions(object):
 
 
 try:
-    from path import Path as path_path # pylint: disable=wrong-import-position
+    from path import Path as path_path  # pylint: disable=wrong-import-position
 except ImportError:
     path_path = str
 
@@ -67,7 +67,7 @@ class Path(path_path):
         if child:
             result = os.path.join(self, child)
         else:
-            result = str(self) # pylint: disable=redefined-variable-type
+            result = str(self)  # pylint: disable=redefined-variable-type
         return self.as_existing_file(result)
 
     def as_existing_file(self, filepath):
@@ -241,6 +241,48 @@ class Path(path_path):
 del path_path
 
 
+def ext_language(ext, exts=None):
+    """Language of the extension in those extensions
+
+    If exts is supplied, then restrict recognition to those exts only
+    If exts is not supplied, then use all known extensions
+
+    >>> ext_language('.py') == 'python'
+    True
+    """
+    languages = {
+        '.py': 'python',
+        '.py2': 'python2',
+        '.py3': 'python3',
+        '.sh': 'bash',
+        '.bash': 'bash',
+        '.pl': 'perl',
+        '.js': 'javascript',
+        '.txt': 'english',
+    }
+    ext_languages = {_: languages[_] for _ in exts} if exts else languages
+    return ext_languages[ext]
+
+
+def find_language(script):
+    """Determine the script's language  extension
+
+    >>> find_language('/path/to/fred.py') == 'python'
+    True
+
+    If there is no extension, but shebang is present, then use that
+    (~/.bashrc might not exist - then there's no language)
+
+    >>> language = find_language(home() / '.bashrc')
+    >>> language == ('bash' if p.isfile() else None)
+    True
+    """
+    if script.ext:
+        return ext_language(script.ext)
+    shebang = script.shebang()
+    return shebang and str(shebang.name) or None
+
+
 class FilePath(Path, PathAssertions):
     """A path to a known file"""
 
@@ -357,46 +399,22 @@ class FilePath(Path, PathAssertions):
         self.parent.touch_file(self.name)
         return self
 
-
-def ext_language(ext):
-    return {
-        '.py': 'python',
-        '.py2': 'python2',
-        '.py3': 'python3',
-        '.sh': 'bash',
-        '.bash': 'bash',
-        '.pl': 'perl',}[ext]
-
-
-class ScriptPath(FilePath): # pylint: disable=too-many-ancestors
-    """A file recognised by its interptreter
-
-    The language is determined by extension
-
-    >>> ScriptPath('/path/to/fred.py').language == 'python'
-    True
-
-    If there is no extension, but shebang is present, then use that
-    (~/.bashrc might not exist - then there's no language)
-
-    >>> p = ScriptPath(home() / '.bashr')
-    >>> p.language == ('bash' if p.isfile() else None)
-    True
-    """
-
     @property
     def language(self):
-        """The language of this script"""
+        """The language of this file"""
         try:
             return self._language
         except AttributeError:
-            if self.ext:
-                language = ext_language(self.ext)
-            else:
-                shebang = self.shebang()
-                language = shebang and str(shebang.name) or None
-            self._language = language
+            self._language = find_language(self)
         return self._language
+
+    @language.setter
+    def language(self, value):
+        self._langauge = value
+
+    def choose_language(self, exts):
+        self._exts = exts
+        self._language = ext_language(self.ext, exts)
 
 
 class DirectPath(Path, PathAssertions):
@@ -406,7 +424,6 @@ class DirectPath(Path, PathAssertions):
     """
 
     __file_class__ = FilePath
-
 
     def __iter__(self):
         for a_path in Path.listdir(self):
