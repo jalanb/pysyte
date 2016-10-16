@@ -78,3 +78,23 @@ def group_list_by(items, key_from_item):
         key = key_from_item(item)
         groups[key].append(item)
     return groups
+
+
+class DefaultDict(defaultdict):
+    def __repr__(self):
+        from pprint import pformat
+        return '%s<\n%r\n>' % (self.__class__.__name__, pformat(dict(self)))
+
+
+class LazyDefaultDict(DefaultDict):
+    """A defaultdict which waits for key access to provide default
+
+    Same as a defaultdict, but the initiasing method takes a key
+        and provides a value
+    """
+    def __init__(self, method):
+        self.method = method
+        super(LazyDefaultDict, self).__init__(None)
+
+    def __missing__(self, key):
+        return self.method(key)
