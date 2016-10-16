@@ -30,7 +30,6 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)
         self.assertEqual(len(self.visitor.used), 2)
-        p = os.path
 
     def test_redundant_imports(self):
         self.assertEqual(
