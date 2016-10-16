@@ -473,6 +473,22 @@ class DirectPath(Path, PathAssertions):
     def listdir(self, pattern=None):
         return [self.as_existing_file(_) for _ in Path.listdir(self, pattern)]
 
+    def list_dirs(self, pattern=None):
+        return self.list_dirs_files(pattern)[0]
+
+    def list_files(self, pattern=None):
+        return self.list_dirs_files(pattern)[1]
+
+    def list_dirsfiles(self, pattern=None):
+        dirs, others = self.list_dirs_files(pattern)
+        return dirs + others
+
+    def list_dirs_files(self, pattern=None):
+        items = self.listdir(pattern)
+        dirs = [_ for _ in items if _.isdir()]
+        others = [_ for _ in items if not _.isdir()]
+        return dirs, others
+
     def make_directory_exist(self):
         if self.isdir():
             return False
@@ -540,15 +556,17 @@ def makepath(string, as_file=False):
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
-    See also http://stackoverflow.com/questions/26403972/how-do-i-get-rid-of-make-xxx-method
+    See also http://stackoverflow.com/questions/26403972
     """
     if string is None:
         return None
     string_path = Path(string).expand()
     if string_path.isfile() or as_file:
         result = FilePath(string_path)
+        result.language = find_language(result)
     else:
-        result = DirectPath(string_path) # pylint: disable=redefined-variable-type
+        result = DirectPath(  # pylint: disable=redefined-variable-type
+            string_path)
     return result.expandall()
 
 path = makepath  # pylint: disable=invalid-name
@@ -615,23 +633,23 @@ def strings_to_paths(strings):
 
 
 def split_directories(strings):
-    strings = strings_to_paths(strings)
+    paths = strings_to_paths(strings)
     return [_
-            for _ in strings
-            if _.isdir()], [_ for _ in strings if not _.isdir()]
+            for _ in paths
+            if _.isdir()], [_ for _ in paths if not _.isdir()]
 
 
 def split_files(strings):
-    strings = strings_to_paths(strings)
-    return ([_ for _ in strings if _.isfile()],
-            [_ for _ in strings if not _.isfile()])
+    paths = strings_to_paths(strings)
+    return ([_ for _ in paths if _.isfile()],
+            [_ for _ in paths if not _.isfile()])
 
 
 def split_directories_files(strings):
-    strings = strings_to_paths(strings)
-    return ([_ for _ in strings if _.isdir()],
-            [_ for _ in strings if _.isfile()],
-            [_ for _ in strings if not (_.isfile() or _.isdir())])
+    paths = strings_to_paths(strings)
+    return ([_ for _ in paths if _.isdir()],
+            [_ for _ in paths if _.isfile()],
+            [_ for _ in paths if not (_.isfile() or _.isdir())])
 
 
 def files(strings):
