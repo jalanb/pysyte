@@ -11,13 +11,14 @@ Adapted from
     And reducing down to just the tty version
         No need here for Windows/Carbon
 """
+from __future__ import print_function
 
-
-import sys
-import tty
-import termios
+import re
 import signal
-import curses.ascii
+import sys
+import termios
+import tty
+from curses import ascii
 
 
 class NoKeys(StopIteration):
@@ -149,6 +150,19 @@ def get_key():
     return get_extended_key_name(codes)
 
 
+def get_menu(prompt, **kwargs):
+    if prompt:
+        print(prompt)
+    key = get_key()
+    for name, string in kwargs.items():
+        match = re.match('^%s$' % string, key)
+        if match:
+            return name
+        if key in name or key in string:
+            return name
+    return key
+
+
 def get_ascii():
     """Get ASCII key from stdin
 
@@ -246,7 +260,7 @@ def repr_get_key():
     initial_char = chr(initial_code)
     if initial_code == 27:
         initial_char = '\\e'
-    elif not curses.ascii.isgraph(initial_char):
+    elif not ascii.isgraph(initial_char):
         initial_char = '\\x%x' % initial_code
     chars = ''.join([chr(c) for c in codes])
     return ''.join((initial_char, chars))
@@ -261,7 +275,7 @@ def yield_asciis_old():
 
 def ask_user(prompt, default=None):
     prompt_default = str('[%s]' % default) if default else ''
-    print '%s %s? ' % (prompt, prompt_default),
+    print('%s %s? ' % (prompt, prompt_default), end='')
     result = getch().lower().strip()
-    print
+    print()
     return result or default
