@@ -2,8 +2,6 @@
 
 The classes all inherit from the original path.path
 """
-
-
 import os
 from fnmatch import fnmatch
 
@@ -75,6 +73,11 @@ class Path(path_path):
         if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
             return self.__file_class__(filepath)  # pylint: disable=no-member
         return self.__class__(filepath)
+
+    def parent_directory(self):
+        if str(self) == '/':
+            return None
+        return self.parent
 
     def directory(self):
         """Return a path to the path's directory"""
@@ -264,11 +267,15 @@ def ext_language(ext, exts=None):
     return ext_languages.get(ext)
 
 
-def find_language(script):
+def find_language(script, exts=None):
     """Determine the script's language  extension
 
     >>> this_script = __file__.rstrip('c')
     >>> find_language(makepath(this_script)) == 'python'
+    True
+
+    If exts are given they restrict which extensions are allowed
+    >>> find_language(makepath(this_script), ('.sh', '.txt')) is None
     True
 
     If there is no extension, but shebang is present, then use that
@@ -280,7 +287,7 @@ def find_language(script):
     True
     """
     if script.ext:
-        return ext_language(script.ext)
+        return ext_language(script.ext, exts)
     shebang = script.shebang()
     return shebang and str(shebang.name) or None
 
@@ -407,7 +414,7 @@ class FilePath(Path, PathAssertions):
         try:
             return self._language
         except AttributeError:
-            self._language = find_language(self)
+            self._language = find_language(self, getattr(self, 'exts', None))
         return self._language
 
     @language.setter
@@ -565,7 +572,6 @@ def makepath(string, as_file=False):
     string_path = Path(string).expand()
     if string_path.isfile() or as_file:
         result = FilePath(string_path)
-        result.language = find_language(result)
     else:
         result = DirectPath(  # pylint: disable=redefined-variable-type
             string_path)
