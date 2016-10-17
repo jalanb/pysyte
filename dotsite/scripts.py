@@ -1,12 +1,16 @@
 from __future__ import print_function
+
+import argparse
 import os
 import sys
-import argparse
 
 from dotsite import __version__
+from dotsite.debuggers import DebugExit
+
 
 _versions = [__version__]
 _exit_ok = os.EX_OK
+_exit_fail = not _exit_ok
 
 
 def latest_version():
@@ -32,7 +36,8 @@ def parse_args(add_args):
         raise SystemExit(_exit_ok)
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser = add_args(parser)
+    result = add_args(parser)
+    parser = result if result else parser
     parser.add_argument('-v', '--version', action='store_true',
                         help='Show version [default: %s]' % __version__)
     # parser.add_argument('-q', '--quiet', action='store_true',
@@ -63,16 +68,18 @@ def main(method, add_args, version=None, error_stream=sys.stderr):
         _versions.append(version)
     try:
         args = parse_args(add_args)
-        return _exit_ok if method(args) else not _exit_ok
+        return _exit_ok if method(args) else _exit_fail
     except KeyboardInterrupt as e:
         ctrl_c = 3
         return ctrl_c
     except SystemExit as e:
         return e.code
+    except DebugExit:
+        return _exit_fail
     except Exception, e:  # pylint: disable=broad-except
         if int(latest_version().split('.')[0]) < 1:
             raise
         if error_stream:
             print(e, file=error_stream)
-        return not _exit_ok
+        return _exit_fail
     return _exit_ok
