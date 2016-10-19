@@ -5,18 +5,16 @@ from setuptools import setup
 
 
 import dotsite
-
-
-name = 'dotsite'
+from dotsite import paths
 
 
 setup(
-    name=name,
-    packages=[name],
+    name=dotsite.__name__,
+    packages=[dotsite.__name__],
     version=dotsite.__version__,
-    url='https://github.com/jalanb/dotsite',
-    download_url=
-        'https://github.com/jalanb/dotsite/tarball/v%s' % dotsite.__version__,
+    url='https://github.com/jalanb/%s' % dotsite.__name__,
+    download_url='https://github.com/jalanb/%s/tarball/v%s' % (
+        dotsite.__name__, dotsite.__version__),
     license='MIT License',
     author='J Alan Brogan',
     author_email='github@al-got-rhythm.net',
@@ -32,7 +30,7 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Build Tools',
     ],
-    install_requires=['path.py'],
+    install_requires=paths.install_requires(__file__),
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={
