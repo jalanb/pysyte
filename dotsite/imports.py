@@ -1,5 +1,9 @@
 import os
 import ast
+import imp
+
+
+from dotsite import dictionaries
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -131,3 +135,21 @@ def extract_imports(script):
         raise ValueError('Not a file: %s' % script)
     parse_tree = parse_python(script)
     return find_imports(parse_tree)
+
+
+def load_module(package, module_name):
+
+    def default_value(key):
+
+        def imp_load(a, b, c):
+            return imp.load_module(full_name, a, b, c)
+
+        full_name = '%s.%s' % (package.__name__, module_name)
+        return imp_load(imp.find_module(key, [package.__path__]))
+
+    # pylint: disable=protected-access
+    try:
+        _loaded = package._loaded
+    except AttributeError:
+        _loaded = package._loaded = dictionaries.LazyDefaultDict(default_value)
+    return _loaded[module_name]
