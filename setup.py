@@ -5,7 +5,6 @@ from setuptools import setup
 
 
 import dotsite
-from dotsite import paths
 
 
 setup(
@@ -30,7 +29,7 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Build Tools',
     ],
-    install_requires=paths.install_requires(__file__),
+    install_requires=['path.py'],
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={
