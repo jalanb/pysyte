@@ -4,7 +4,7 @@ import os
 import sys
 from StringIO import StringIO
 
-from dotsite.jab.osx import get_clipboard_data
+from dotsite.platform import get_clipboard_data
 
 
 def argvs(clipboard_arg=None):
