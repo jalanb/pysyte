@@ -1,7 +1,7 @@
 dotsite
 =======
 
-Python modules often used in dotjab, and elsewhere
+Python modules often used from dotfiles
 
 Build status
 ------------
