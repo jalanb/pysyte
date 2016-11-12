@@ -1,3 +1,4 @@
+"""Framework for a script to be run from a shell"""
 from __future__ import print_function
 
 import argparse
@@ -22,7 +23,7 @@ def version(args):
     raise SystemExit
 
 
-def parse_args(add_args):
+def parse_args(add_args, docstring):
     """Parse out command line arguments"""
 
     def run_args(args):
@@ -35,7 +36,10 @@ def parse_args(add_args):
             method(args)
         raise SystemExit(_exit_ok)
 
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        description=docstring
+        and docstring.splitlines()[0]
+        or "No docstring provided")
     result = add_args(parser)
     parser = result if result else parser
     parser.add_argument('-v', '--version', action='store_true',
@@ -50,7 +54,8 @@ def parse_args(add_args):
 
 
 # pylint: disable=redefined-outer-name
-def main(method, add_args, version=None, error_stream=sys.stderr):
+def main(method, add_args, version=None,
+         docstring=None, error_stream=sys.stderr):
     """Run the method as a script
 
     Add a '--version' argument
@@ -67,7 +72,7 @@ def main(method, add_args, version=None, error_stream=sys.stderr):
     if version:
         _versions.append(version)
     try:
-        args = parse_args(add_args)
+        args = parse_args(add_args, docstring)
         return _exit_ok if method(args) else _exit_fail
     except KeyboardInterrupt as e:
         ctrl_c = 3
