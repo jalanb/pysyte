@@ -5,4 +5,4 @@ ipython
 pudb
 pprintpp
 dotsite
-path.py==7.7
+path.py==7.7.1
