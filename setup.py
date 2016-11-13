@@ -5,6 +5,7 @@ from setuptools import setup
 
 
 import dotsite
+from pip.req import parse_requirements
 
 
 setup(
@@ -29,7 +30,8 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Build Tools',
     ],
-    install_requires=['path.py'],
+    install_requires=[str(_.req) for _ in parse_requirements(
+        dotsite.paths.path(__file__).parent / 'requirements.txt')],
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={
