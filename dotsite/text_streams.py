@@ -4,7 +4,7 @@ import os
 import sys
 from StringIO import StringIO
 
-from dotsite.platform import get_clipboard_data
+from dotsite.platforms import get_clipboard_data
 
 
 def argvs(clipboard_arg=None):
@@ -23,7 +23,7 @@ def argvs(clipboard_arg=None):
         for arg in args:
             if os.path.isfile(arg):
                 files = True
-                yield file(arg)
+                yield open(arg)
         if not files and use_clipboard:
             yield StringIO(get_clipboard_data())
 
