@@ -561,20 +561,15 @@ class ChmodValues(object):
     readonly_directory = 0o555
 
 
-def makepath(string, as_file=False):
+def makepath(s, as_file=False):
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
     """
-    if string is None:
+    if s is None:
         return None
-    string_path = Path(string).expand()
-    if string_path.isfile() or as_file:
-        result = FilePath(string_path)
-    else:
-        result = DirectPath(  # pylint: disable=redefined-variable-type
-            string_path)
+    result = FilePath(s) if (os.path.isfile(s) or as_file) else DirectPath(s)
     return result.expandall()
 
 path = makepath  # pylint: disable=invalid-name
