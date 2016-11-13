@@ -145,7 +145,7 @@ def load_module(package, module_name):
             return imp.load_module(full_name, a, b, c)
 
         full_name = '%s.%s' % (package.__name__, module_name)
-        return imp_load(imp.find_module(key, [package.__path__]))
+        return imp_load(*imp.find_module(key, package.__path__))
 
     # pylint: disable=protected-access
     try:
