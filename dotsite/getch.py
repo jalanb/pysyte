@@ -150,9 +150,7 @@ def get_key():
     return get_extended_key_name(codes)
 
 
-def get_menu(prompt, **kwargs):
-    if prompt:
-        print(prompt)
+def get_menu(**kwargs):
     key = get_key()
     for name, string in kwargs.items():
         match = re.match('^%s$' % string, key)
