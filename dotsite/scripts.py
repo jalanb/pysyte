@@ -73,7 +73,6 @@ def main(method, add_args, version=None,
     if version:
         _versions.append(version)
     try:
-        args = parse_args(add_args, docstring)
         args = parse_args(
             add_args,
             docstring and docstring or '%s()' % method.__name__)
