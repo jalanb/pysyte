@@ -43,7 +43,7 @@ except ImportError:
     path_path = str
 
 
-class Path(path_path):
+class DotPath(path_path):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
 
@@ -58,7 +58,7 @@ class Path(path_path):
 
         If the result is a file return self.__file_class__(result)
 
-        >>> p = Path('/home/guido')
+        >>> p = DotPath('/home/guido')
         >>> p.__div__('fred') == p / 'fred' == p.joinpath('fred')
         True
         """
@@ -88,9 +88,9 @@ class Path(path_path):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> Path(u'/path/to/module.py').dirnames() == [u'', u'path', u'to']
+        >>> DotPath(u'/path/to/module.py').dirnames() == [u'', u'path', u'to']
         True
-        >>> Path(u'path/to/module.py').dirnames() == [u'path', u'to']
+        >>> DotPath(u'path/to/module.py').dirnames() == [u'path', u'to']
         True
         """
         return self.dirname().split(os.path.sep)
@@ -100,12 +100,12 @@ class Path(path_path):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> p = Path(u'/path/to/x.py')
+        >>> p = DotPath(u'/path/to/x.py')
         >>> p.paths == p.dirpaths()
         True
         """
         parts = self.split(os.path.sep)
-        root, rest = Path('/'), parts[1:]
+        root, rest = DotPath('/'), parts[1:]
         return [makepath(root / os.path.sep.join(rest[:i]))
                 for i in range(len(parts))]
 
@@ -114,9 +114,9 @@ class Path(path_path):
 
         No empty parts are included
 
-        >>> Path(u'path/to/module.py').directories() == [u'path', u'to']
+        >>> DotPath(u'path/to/module.py').directories() == [u'path', u'to']
         True
-        >>> Path(u'/path/to/module.py').directories() == [u'path', u'to']
+        >>> DotPath(u'/path/to/module.py').directories() == [u'path', u'to']
         True
         """
         return [d for d in self.dirnames() if d]
@@ -125,7 +125,7 @@ class Path(path_path):
         dirnames, None, None,
         """ This path's parent directories, as a list of strings.
 
-        >>> Path(u'/path/to/module.py').parents == [u'', u'path', u'to']
+        >>> DotPath(u'/path/to/module.py').parents == [u'', u'path', u'to']
         True
         """)
 
@@ -133,7 +133,7 @@ class Path(path_path):
         dirpaths, None, None,
         """ This path's parent directories, as a sequence of paths.
 
-        >>> paths = Path('/usr/bin/vim').paths
+        >>> paths = DotPath('/usr/bin/vim').paths
         >>> paths[-1].isfile()  # vim might be a link
         True
         >>> paths[-2] == paths[-1].parent
@@ -150,10 +150,10 @@ class Path(path_path):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print Path('/home/guido/bin').short_relative_path_to(
+        >>> print DotPath('/home/guido/bin').short_relative_path_to(
         ...     '/home/guido/build/python.tar')
         ../build/python.tar
-        >>> print Path('/home/guido/bin').short_relative_path_to(
+        >>> print DotPath('/home/guido/bin').short_relative_path_to(
         ...     '/mnt/guido/build/python.tar')
         /mnt/guido/build/python.tar
         """
@@ -292,7 +292,7 @@ def find_language(script, exts=None):
     return shebang and str(shebang.name) or None
 
 
-class FilePath(Path, PathAssertions):
+class FilePath(DotPath, PathAssertions):
     """A path to a known file"""
 
     def __div__(self, child):
@@ -426,7 +426,7 @@ class FilePath(Path, PathAssertions):
         self._language = ext_language(self.ext, exts)
 
 
-class DirectPath(Path, PathAssertions):
+class DirectPath(DotPath, PathAssertions):
     """A path which knows it might be a directory
 
     And that files are in directories
@@ -435,7 +435,7 @@ class DirectPath(Path, PathAssertions):
     __file_class__ = FilePath
 
     def __iter__(self):
-        for a_path in Path.listdir(self):
+        for a_path in DotPath.listdir(self):
             yield a_path
 
     def directory(self):
@@ -480,7 +480,7 @@ class DirectPath(Path, PathAssertions):
         return cd(self)
 
     def listdir(self, pattern=None):
-        return [self.as_existing_file(_) for _ in Path.listdir(self, pattern)]
+        return [self.as_existing_file(_) for _ in DotPath.listdir(self, pattern)]
 
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
