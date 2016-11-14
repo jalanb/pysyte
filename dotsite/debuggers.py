@@ -30,14 +30,25 @@ class Debugger(object):
     def add_break(self, filename, lineno):
         self.add_breaks([(filename, lineno)])
 
-    def _make_break(self, filename, lineno):
+    def _make_break(self, filename, lineno):  # pylint: disable=no-self-use
         return (filename, lineno)
 
     def add_breaks(self, filenames_lines):
         self.save_breaks(
             self.load_breaks() + [
-                _make_break(f, l) for f, l in filenames_lines
+                self._make_break(f, l) for f, l in filenames_lines
             ])
+
+
+class PythonDebugger(Debugger):
+    def _continue(self, frame):
+        raise NotImplementedError('To do: running in de other buggers')
+
+    def save_breaks(self, breakpoints):
+        raise NotImplementedError('To do: breakpoints in de other buggers')
+
+    def load_breaks(self):
+        raise NotImplementedError('To do: breakpoints in de other buggers')
 
 
 class PudbDebugger(Debugger):
@@ -69,18 +80,6 @@ class PudbDebugger(Debugger):
             self.debugger.reload_breakpoints(0, 0, 0)  # args not used
 
 
-class PymDebugger(object):
-    """Proxy to pym's debugger"""
-    def _continue(self, frame):
-        pymdb.continue_(frame)
-
-    def save_breaks(self, breakpoints):
-        return pymdb.save_breaks(breakpoints)
-
-    def load_breaks(self):
-        return pymdb.load_breaks()
-
-
 class IPythonDebugger(object):
     """Proxy to ipdb's debugger"""
     def _continue(self, frame):
@@ -98,14 +97,15 @@ try:
     db = PudbDebugger()
 except ImportError:
     try:
-        import ipdb
+        # pylint: disable=redefined-variable-type
         db = IPythonDebugger()
     except ImportError:
-        from pym.debugger import pymdb
-        db = PymDebugger()
+        db = PythonDebugger()
 
 
 def debug_here():
+    if not db:
+        return
     pudb.set_trace()
     frame = inspect.currentframe().f_back
     db.break_here(frame)
