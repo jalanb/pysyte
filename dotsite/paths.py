@@ -286,6 +286,8 @@ def find_language(script, exts=None):
     >>> language == ('bash' if bashrc.isfile() else None)
     True
     """
+    if not script.isfile():
+        return None
     if script.ext:
         return ext_language(script.ext, exts)
     shebang = script.shebang()
