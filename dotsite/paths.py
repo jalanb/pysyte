@@ -283,7 +283,7 @@ def find_language(script, exts=None):
 
     >>> bashrc = home() / '.bashrc'
     >>> language = find_language(bashrc)
-    >>> language
+    >>> repr(language)
     None
     >>> language in ('bash', None)
     True
@@ -484,7 +484,8 @@ class DirectPath(DotPath, PathAssertions):
         return cd(self)
 
     def listdir(self, pattern=None):
-        return [self.as_existing_file(_) for _ in DotPath.listdir(self, pattern)]
+        return [self.as_existing_file(_)
+                for _ in DotPath.listdir(self, pattern)]
 
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
