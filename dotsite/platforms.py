@@ -9,6 +9,8 @@ platform = imports.load_module(dotsite, _platform_name)
 
 
 def _bash(command):
+    if not command:
+        return None
     status, output = commands.getstatusoutput(command)
     if status:
         raise ValueError(output)
