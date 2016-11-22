@@ -279,11 +279,11 @@ def find_language(script, exts=None):
     True
 
     If there is no extension, but shebang is present, then use that
-    (~/.bashrc might not exist - then there's no language)
+    (Expecting to find "#!" in ~/.bashrc for this test,
+        but ~/.bashrc might not exist - then there's no language)
 
     >>> bashrc = home() / '.bashrc'
-    >>> language = find_language(bashrc)
-    >>> language in ('bash', None)
+    >>> find_language(bashrc) in ('bash', None)
     True
     """
     if not script.isfile():
