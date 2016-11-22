@@ -283,7 +283,9 @@ def find_language(script, exts=None):
 
     >>> bashrc = home() / '.bashrc'
     >>> language = find_language(bashrc)
-    >>> language == ('bash' if bashrc.isfile() else None)
+    >>> language
+    None
+    >>> language in ('bash', None)
     True
     """
     if not script.isfile():
