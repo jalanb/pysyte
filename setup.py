@@ -1,17 +1,9 @@
 """Set up the dotsite project"""
 
 
-import os
 from setuptools import setup
 
-
 import dotsite
-
-
-p = os.path.join(os.path.dirname(__file__), 'requirements.txt')
-with open(p) as stream:
-    required = stream.read().splitlines()
-
 
 setup(
     name=dotsite.__name__,
@@ -35,7 +27,11 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Build Tools',
     ],
-    install_requires=required,
+    install_requires=[
+        'nose==1.3.7',
+        'pprintpp',
+        'path.py==7.7.1',
+    ],
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={
