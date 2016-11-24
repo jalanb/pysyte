@@ -1,6 +1,6 @@
 nose==1.3.7
 nose-progressive==1.5.1
-nose-pudb
+nose-pudb==1.0
 ipython
 pudb
 pprintpp==0.2.3
