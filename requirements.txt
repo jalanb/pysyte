@@ -3,5 +3,5 @@ nose-progressive
 nose-pudb
 ipython
 pudb
-pprintpp
+pprintpp==0.2.3
 path.py==7.7.1
