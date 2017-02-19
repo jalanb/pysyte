@@ -24,9 +24,9 @@ class TestDashboardImports(unittest.TestCase):
             to make sure getting more than top-level imports
             and can handle the edge-cases
         """
-        import os, sys
+        import os, sys as system
         from os import (path,
-                        kill)
+                        kill as killer)
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)
         self.assertEqual(len(self.visitor.used), 2)
@@ -34,7 +34,7 @@ class TestDashboardImports(unittest.TestCase):
     def test_redundant_imports(self):
         self.assertEqual(
             set(self.visitor.unused().keys()),
-            {'defaultdict', 'sys', 'kill', 'path', 'os'})
+            {'defaultdict', 'system', 'killer', 'path', 'os'})
 
     def test_mutiples(self):
         """Check that mutiple imports of 'os' are found
@@ -46,8 +46,8 @@ class TestDashboardImports(unittest.TestCase):
 
     def test_redundant_lines(self):
         redundant = self.visitor.unused()
-        self.assertEqual(redundant['sys'][0], 27)
-        self.assertEqual(redundant['kill'][0], 28)
+        self.assertEqual(redundant['system'][0], 27)
+        self.assertEqual(redundant['killer'][0], 28)
 
 
 if __name__ == '__main__':

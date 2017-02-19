@@ -57,17 +57,19 @@ class ImportVisitor(ast.NodeVisitor):
     def mutiples(self):
         return {k: v for k, v in self.imports.items() if len(v) > 1}
 
-    def visit_ImportFrom(self, node):
+    def collect_names(self, node):
         names = [(_.name, getattr(_, 'asname', None)) for _ in node.names]
         for name, alias in names:
             self.imports[alias if alias else name].append(node.lineno)
+        return names
+
+    def visit_ImportFrom(self, node):
+        names = self.collect_names(node)
         self.froms[node.module].extend(names)
         self.generic_visit(node)
 
     def visit_Import(self, node):
-        names = [_.name for _ in node.names]
-        for name in names:
-            self.imports[name].append(node.lineno)
+        self.collect_names(node)
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
