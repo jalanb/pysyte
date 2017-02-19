@@ -64,8 +64,9 @@ class ImportVisitor(ast.NodeVisitor):
         return names
 
     def visit_ImportFrom(self, node):
-        names = self.collect_names(node)
-        self.froms[node.module].extend(names)
+        if node.module != '__future__':
+            names = self.collect_names(node)
+            self.froms[node.module].extend(names)
         self.generic_visit(node)
 
     def visit_Import(self, node):
