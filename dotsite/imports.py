@@ -137,7 +137,9 @@ def extract_imports(script):
     if not os.path.isfile(script):
         raise ValueError('Not a file: %s' % script)
     parse_tree = parse_python(script)
-    return find_imports(parse_tree)
+    result = find_imports(parse_tree)
+    result.path = script
+    return result
 
 
 def load_module(package, module_name):
