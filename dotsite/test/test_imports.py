@@ -36,13 +36,14 @@ class TestDashboardImports(unittest.TestCase):
             set(self.visitor.unused().keys()),
             {'defaultdict', 'system', 'killer', 'path', 'os'})
 
-    def test_mutiples(self):
-        """Check that mutiple imports of 'os' are found
+    def test_multiples(self):
+        """Check that multiple imports of 'os' are found
 
         They are on lines 7 and 27
         """
-        self.assertEquals(self.visitor.mutiples().keys(), ['os'])
-        self.assertEquals(self.visitor.mutiples()['os'], [7, 27])
+        multiples = self.visitor.multiples()
+        self.assertEquals(multiples.keys(), ['os'])
+        self.assertEquals(multiples['os'], [7, 27])
 
     def test_redundant_lines(self):
         redundant = self.visitor.unused()

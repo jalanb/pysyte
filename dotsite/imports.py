@@ -54,7 +54,7 @@ class ImportVisitor(ast.NodeVisitor):
     def unused(self):
         return {k: v for k, v in self.imports.items() if k not in self.used}
 
-    def mutiples(self):
+    def multiples(self):
         return {k: v for k, v in self.imports.items() if len(v) > 1}
 
     def collect_names(self, node):
