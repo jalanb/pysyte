@@ -55,8 +55,10 @@ class PudbDebugger(Debugger):
     """Proxy to the pudb debugger"""
     @property
     def debugger(self):
-        debuggers = pudb.CURRENT_DEBUGGER
-        return debuggers and debuggers[0] or None
+        try:
+            return pudb.CURRENT_DEBUGGER[0]
+        except IndexError:
+            return None
 
     def _make_break(self, filename, lineno):
         return (filename, lineno, False, None, None)
@@ -68,8 +70,27 @@ class PudbDebugger(Debugger):
         else:
             pudb.set_trace()
 
+    def break_here(self, frame):
+        if self.debugger:
+            self.debugger.break_here(frame)
+        else:
+            dbg = pudb._get_debugger()
+            import threading
+            if isinstance(threading.current_thread(), threading._MainThread):
+                pudb.set_interrupt_handler()
+            dbg.set_trace(frame)
+
     def save_breaks(self, breakpoints):
-        pudb.settings.save_breakpoints(breakpoints)
+        class PudbBreakpoint(object):
+            # Cadged from .../pudb/settings.py
+            # https://github.com/inducer/pudb/blob/master/pudb/settings.py#L494
+            def __init__(self, filename, lineno, condition):
+                self.file = filename
+                self.line = lineno
+                self.cond = condition
+
+        save_breakpoints = [PudbBreakpoint(*b[:3]) for b in breakpoints]
+        pudb.settings.save_breakpoints(save_breakpoints)
 
     def load_breaks(self):
         return pudb.settings.load_breakpoints()
@@ -103,9 +124,8 @@ except ImportError:
         db = PythonDebugger()
 
 
-def debug_here():
-    if not db:
+def debug_here(really=True):
+    if not really or not db:
         return
-    pudb.set_trace()
     frame = inspect.currentframe().f_back
     db.break_here(frame)

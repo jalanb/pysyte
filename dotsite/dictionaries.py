@@ -98,3 +98,6 @@ class LazyDefaultDict(DefaultDict):
 
     def __missing__(self, key):
         return self.method(key)
+
+    def __repr__(self):
+        return repr(dict(self))
