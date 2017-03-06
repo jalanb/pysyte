@@ -82,8 +82,10 @@ class PudbDebugger(Debugger):
 
     def save_breaks(self, breakpoints):
         class PudbBreakpoint(object):
-            # Cadged from .../pudb/settings.py
-            # https://github.com/inducer/pudb/blob/master/pudb/settings.py#L494
+            """Cadged from .../pudb/settings.py
+
+            https://github.com/inducer/pudb/blob/master/pudb/settings.py#L494
+            """
             def __init__(self, filename, lineno, condition):
                 self.file = filename
                 self.line = lineno
