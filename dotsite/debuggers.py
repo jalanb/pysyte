@@ -4,6 +4,20 @@ import inspect
 from bdb import BdbQuit as DebugExit  # pylint: disable=unused-import
 
 
+try:
+    from pprintpp import pprint as pp
+except ImportError:
+    from pprint import pprint as pp
+
+
+def ppd(_):
+    return pp(dir(_))
+
+
+def ppv(_):
+    return pp(vars(_))
+
+
 def source_of(frame):
     return frame.f_code.co_filename, frame.f_lineno
 
