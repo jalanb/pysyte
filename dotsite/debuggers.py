@@ -85,6 +85,7 @@ class PudbDebugger(Debugger):
             pudb.set_trace()
 
     def break_here(self, frame):
+        # pylint: disable=protected-access
         if self.debugger:
             self.debugger.break_here(frame)
         else:
