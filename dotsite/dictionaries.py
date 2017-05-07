@@ -1,7 +1,7 @@
 """Some methods to help with the handling of dictionaries"""
 
 
-from collections import defaultdict
+from collections import defaultdict as dd
 
 
 def get_caselessly(dictionary, sought):
@@ -56,7 +56,7 @@ def group_list(items):
     >>> grouped[1] == [0,1]
     True
     """
-    groups = defaultdict(list)
+    groups = dd(list)
     for key, value in items:
         groups[key].append(value)
     return groups
@@ -73,14 +73,14 @@ def group_list_by(items, key_from_item):
     >>> grouped['a'] == [(1, 9), (1, 7)]
     True
     """
-    groups = defaultdict(list)
+    groups = dd(list)
     for item in items:
         key = key_from_item(item)
         groups[key].append(item)
     return groups
 
 
-class DefaultDict(defaultdict):
+class DefaultDict(dd):
     def __repr__(self):
         from pprint import pformat
         return '%s<\n%r\n>' % (self.__class__.__name__, pformat(dict(self)))

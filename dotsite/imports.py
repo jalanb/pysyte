@@ -8,10 +8,10 @@ from dotsite import dictionaries
 
 class ImportVisitor(ast.NodeVisitor):
     def __init__(self):
-        from collections import defaultdict
-        self.froms = defaultdict(list)
-        self.imports = defaultdict(list)
-        self.used = defaultdict(list)
+        dd = dictionaries.dd
+        self.froms = dd(list)
+        self.imports = dd(list)
+        self.used = dd(list)
         super(ImportVisitor, self).__init__()
 
     def find_value_id(self, node, attr=None):
