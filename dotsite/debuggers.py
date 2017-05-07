@@ -4,6 +4,20 @@ import inspect
 from bdb import BdbQuit as DebugExit  # pylint: disable=unused-import
 
 
+try:
+    from pprintpp import pprint as pp
+except ImportError:
+    from pprint import pprint as pp
+
+
+def ppd(_):
+    return pp(dir(_))
+
+
+def ppv(_):
+    return pp(vars(_))
+
+
 def source_of(frame):
     return frame.f_code.co_filename, frame.f_lineno
 
@@ -71,6 +85,7 @@ class PudbDebugger(Debugger):
             pudb.set_trace()
 
     def break_here(self, frame):
+        # pylint: disable=protected-access
         if self.debugger:
             self.debugger.break_here(frame)
         else:
@@ -131,3 +146,19 @@ def debug_here(really=True):
         return
     frame = inspect.currentframe().f_back
     db.break_here(frame)
+
+
+def stack_sources():
+    """A list of sources for frames above this"""
+    # lazy imports
+    import linecache
+    result = []
+    for frame_info in reversed(inspect.stack()):
+        _frame, filename, line_number, _function, _context, _index = frame_info
+        linecache.lazycache(filename, {})
+        _line = linecache.getline(filename, line_number).rstrip()
+
+    # Each record contains a frame object, filename, line number, function
+    # name, a list of lines of context, and index within the context
+    _sources = [(path, line) for _, path, line, _, _, _ in inspect.stack()]
+    return result

@@ -8,10 +8,10 @@ from dotsite import dictionaries
 
 class ImportVisitor(ast.NodeVisitor):
     def __init__(self):
-        from collections import defaultdict
-        self.froms = defaultdict(list)
-        self.imports = defaultdict(list)
-        self.used = defaultdict(list)
+        dd = dictionaries.dd
+        self.froms = dd(list)
+        self.imports = dd(list)
+        self.used = dd(list)
         super(ImportVisitor, self).__init__()
 
     def find_value_id(self, node, attr=None):
@@ -104,7 +104,6 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node):
-        lineno = node.lineno
         func = node.func
         try:
             name = func.id
@@ -112,7 +111,7 @@ class ImportVisitor(ast.NodeVisitor):
             name = self.find_value_id(func, 'func')
             name2 = self.find_name(node, 'value', 'func')
             assert name == name2
-        self.check_usage(name, lineno)
+        self.check_usage(name, node.lineno)
         self.generic_visit(node)
 
     def visit_Name(self, node):
