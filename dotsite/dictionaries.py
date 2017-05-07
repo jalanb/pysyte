@@ -81,7 +81,12 @@ def group_list_by(items, key_from_item):
 
 
 class DefaultDict(dd):
+    """A default dict with improved repr"""
     def __repr__(self):
+        import pdir
+        return pdir.pd(self)
+
+    def old_repper(self):
         from pprint import pformat
         return '%s<\n%r\n>' % (self.__class__.__name__, pformat(dict(self)))
 

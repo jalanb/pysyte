@@ -12,3 +12,7 @@ The dictionaries module
     True
     >>> stuff[198798] == 'big'
     True
+    >>> print stuff
+    {5: 'small', 198798: 'big'}
+    >>> print repr(stuff)
+    {5: 'small', 198798: 'big'}
