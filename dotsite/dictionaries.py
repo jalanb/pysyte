@@ -102,7 +102,9 @@ class LazyDefaultDict(DefaultDict):
         super(LazyDefaultDict, self).__init__(None)
 
     def __missing__(self, key):
-        return self.method(key)
+        result = self.method(key)
+        self[key] = result
+        return result
 
     def __repr__(self):
         return repr(dict(self))
