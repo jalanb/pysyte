@@ -44,7 +44,7 @@ Calling using '-' repeatedly will toggle between two directories:
     True
     >>> for i in range(0,4):
     ...    _ = paths.cd('-')
-    ...    print paths.pwd()
+    ...    print(paths.pwd())
     /usr
     /home
     /usr
@@ -77,9 +77,9 @@ The difference is that makepath expands the string given
 DirectPath is ako string, which shows the string in %s and %r
 
     >>> bin = paths.DirectPath('/bin')
-    >>> print '%s' % bin
+    >>> print('%s' % bin)
     /bin
-    >>> print '%r' % bin
+    >>> print('%r' % bin)
     <DirectPath ...'/bin'>
 
 Path expansion at creation
@@ -170,7 +170,7 @@ Iterating a directory gives directory entries (sub-directories and files)
 
 Iterating a file gives lines
     >>> path_to_this_test = makepath(paths.__file__).extend_by('.test')
-    >>> print [l for l in path_to_this_test if 'paths' in l][0]
+    >>> print([l for l in path_to_this_test if 'paths' in l][0])
     The paths module
 
 Sets of paths

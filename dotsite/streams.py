@@ -13,7 +13,7 @@ def swallow_stdout(stream=None):
     >>> from cStringIO import StringIO
     >>> string = StringIO()
     >>> with swallow_stdout(string):
-    ...     print 'hello',
+    ...     print('hello')
     >>> string.getvalue() == 'hello'
     True
     """

@@ -8,7 +8,7 @@ def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
     >>> things = {'Fred' : 9}
-    >>> print get_caselessly(things, 'fred')
+    >>> print(get_caselessly(things, 'fred'))
     9
     """
     try:

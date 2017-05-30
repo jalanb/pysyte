@@ -30,7 +30,7 @@ class TestStreams(TestCase):
         """
         # pylint: disable=no-self-use
         with swallow_stdout():
-            print 'hello'
+            print('hello')
 
     def test_discard_stderr(self):
         """This method is not programatically testable,

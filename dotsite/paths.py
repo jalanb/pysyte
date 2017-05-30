@@ -150,10 +150,10 @@ class DotPath(path_path):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print DotPath('/home/guido/bin').short_relative_path_to(
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
         ...     '/home/guido/build/python.tar')
         ../build/python.tar
-        >>> print DotPath('/home/guido/bin').short_relative_path_to(
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
         ...     '/mnt/guido/build/python.tar')
         /mnt/guido/build/python.tar
         """

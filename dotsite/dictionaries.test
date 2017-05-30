@@ -2,7 +2,7 @@ The dictionaries module
 =======================
 
     >>> import dictionaries
-    >>> print dictionaries.__doc__
+    >>> print(dictionaries.__doc__)
     Some methods to help with the handling of dictionaries
 
     >>> def method(key):
@@ -12,7 +12,7 @@ The dictionaries module
     True
     >>> stuff[198798] == 'big'
     True
-    >>> print stuff
+    >>> print(stuff)
     {5: 'small', 198798: 'big'}
-    >>> print repr(stuff)
+    >>> print(repr(stuff))
     {5: 'small', 198798: 'big'}
