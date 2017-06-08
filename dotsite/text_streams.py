@@ -2,36 +2,48 @@
 
 import os
 import sys
-from StringIO import StringIO
+import contextlib
+from io import StringIO
 
 from dotsite.platforms import get_clipboard_data
 
 
-def argvs(clipboard_arg=None):
+def clipboard_stream(name=None):
+    stream = StringIO(get_clipboard_data())
+    stream.name = name or '<clipboard>'
+    return stream
+
+
+@contextlib.contextmanager
+def clipin():
+    yield clipboard_stream()
+
+
+@contextlib.contextmanager
+def files():
     """Yield streams of text given to a program
 
-    If there are files in sys.argv, use them
-    Otherwise if a clipboard arg was provided use a string of clipboard
-    Otherwise sys.stdin
+    If there are files in sys.argv, yield them
+    yield sys.stdin
     """
-    args = sys.argv[1:]
-    use_clipboard = clipboard_arg in args + [True]
-    if not args:
-        yield sys.stdin
-    else:
-        files = False
-        for arg in args:
-            if os.path.isfile(arg):
-                files = True
-                yield open(arg)
-        if not files and use_clipboard:
-            yield StringIO(get_clipboard_data())
+    for arg in sys.argv[1:]:
+        if os.path.isfile(arg):
+            yield open(arg)
 
 
-def first_argv(clipboard_arg=None):
+@contextlib.contextmanager
+def all():
+    with files() as streams:
+        yield streams
+    yield clipboard_stream()
+    yield sys.stdin
+
+
+def first_file():
     try:
-        arg_stream = argvs(clipboard_arg)
-        return arg_stream.next()
+        arg_stream = files()
+        first, *_rest = arg_stream
+        return first
     except StopIteration:
         return ''
 
