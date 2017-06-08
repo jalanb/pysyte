@@ -1,4 +1,4 @@
-import commands
+import subprocess
 import platform as python_platform
 
 import dotsite
@@ -11,7 +11,7 @@ platform = imports.load_module(dotsite, _platform_name)
 def _bash(command):
     if not command:
         return None
-    status, output = commands.getstatusoutput(command)
+    status, output = subprocess.getstatusoutput(command)
     if status:
         raise ValueError(output)
     return output
