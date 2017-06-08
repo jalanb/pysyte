@@ -1,7 +1,8 @@
 """Test the decorators module"""
 
 
-from cStringIO import StringIO
+from __future__ import print_function
+from io import StringIO
 import unittest
 
 
@@ -14,7 +15,7 @@ def initials(forename, surname, stream):
 
     Method is memoized, so we show an actual call by writing to stream
     """
-    print >> stream, 'Call:', forename, surname
+    print(''.join(('Call:', forename, surname), file=stream))
     return '%s%s' % (forename[0], surname[0])
 
 
@@ -65,21 +66,21 @@ class MemoizeTest(unittest.TestCase):
 
     def test_second_call_different_args(self):
         """Second call of method gives twice the output"""
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Silly', self.stream))
-        self.assertEqual('Call: Fred Smith\nCall: Fred Silly\n',
-                         self.stream.getvalue())
+        self.check_second_call('Fred', 'Smith', 'Silly')
 
     def test_second_call_same_args(self):
-        """Second call of method with same args gives once the output
+        """Second call of method with same args gives once the output"""
+        self.check_second_call('Fred', 'Smith')
 
-        Method was not actually called this time (nothing extra on stream)
-            but produced the same output
-        """
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('Call: Fred Smith\n',
-                         self.stream.getvalue())
+    def check_second_call(self, forename, surname, surname2=None):
+        abbrev = ''.join((forename[0].upper(), surname[0].upper()))
+        surnames = [surname, surname2 or surname]
+        for name in surnames:
+            self.assertEqual(abbrev, initials(forename, name, self.stream))
+        callees = [(forename, name) for name in surnames]
+        calls = ['Call: %s' % c for c in callees]
+        call_string = '\n'.join(calls + [''])
+        self.assertEqual(call_string, self.stream.getvalue())
 
     def test_invalidate(self):
         """Invalidating a cached call loses the memory
