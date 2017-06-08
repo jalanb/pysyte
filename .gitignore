@@ -36,6 +36,7 @@ coverage.xml
 
 # Translations
 *.mo
+*.pot
 
 # Mr Developer
 .mr.developer.cfg
@@ -47,7 +48,14 @@ coverage.xml
 
 # Django stuff:
 *.log
-*.pot
+local_settings.py
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
 
 # Sphinx documentation
 docs/_build/
@@ -59,4 +67,19 @@ docs/_build/
 # Editors
 .*.swp
 *~
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# virtualenv
+.venv
+venv/
+ENV/
+
 
