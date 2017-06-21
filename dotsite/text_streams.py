@@ -4,7 +4,9 @@ import os
 import sys
 import contextlib
 from io import StringIO
+from itertools import chain
 
+from dotsite.iteration import first
 from dotsite.platforms import get_clipboard_data
 
 
@@ -19,33 +21,35 @@ def clipin():
     yield clipboard_stream()
 
 
-@contextlib.contextmanager
-def files():
-    """Yield streams of text given to a program
-
-    If there are files in sys.argv, yield them
-    yield sys.stdin
-    """
-    for arg in sys.argv[1:]:
-        if os.path.isfile(arg):
-            yield open(arg)
+def arg_paths():
+    return [a for a in sys.argv[1:] if os.path.isfile(a)]
 
 
-@contextlib.contextmanager
+def arg_files():
+    """yield streams to all arg.isfile()"""
+    for path in arg_paths():
+        yield open(path)
+
+
 def all():
-    with files() as streams:
-        yield streams
-    yield clipboard_stream()
-    yield sys.stdin
+    more = iter([clipboard_stream(), sys.stdin])
+    return chain(arg_files(), more)
+
+
+def any():
+    try:
+        stream = first(arg_files())
+        if stream:
+            return arg_files()
+    except ValueError:
+        return iter([clipboard_stream(), sys.stdin])
 
 
 def first_file():
     try:
-        arg_stream = files()
-        first, *_rest = arg_stream
-        return first
-    except StopIteration:
-        return ''
+        return first(arg_files())
+    except ValueError:
+        return None
 
 
 def full_lines(stream):
