@@ -118,7 +118,7 @@ def split_by_count(items, count, filler=None):
             items.append(filler)
     iterator = iter(items)
     iterators = [iterator] * count
-    return zip(*iterators)
+    return list(zip(*iterators))
 
 
 def pairs(items, filler=None):
