@@ -5,10 +5,10 @@ import random
 from unittest import TestCase
 
 
-import dotsite as site
+from dotsite import paths
 
 
-class SourcePath(site.paths.FilePath):
+class SourcePath(paths.FilePath):
     # pylint: disable=abstract-method
     pass
 
@@ -16,7 +16,7 @@ class SourcePath(site.paths.FilePath):
 SourcePath.__file_class__ = SourcePath
 
 
-class MockFilePathWithLines(site.paths.FilePath):
+class MockFilePathWithLines(paths.FilePath):
     # pylint: disable=abstract-method
     """Mock some known lines into a file"""
     def lines(self, encoding=None, errors='strict', retain=True):
@@ -31,17 +31,17 @@ class MockFilePathWithLines(site.paths.FilePath):
 class TestPaths(TestCase):
 
     def setUp(self):
-        self.path = site.paths.path(__file__).extend_by('py')
+        self.path = paths.path(__file__).extend_by('py')
         self.dir = self.path.parent
-        self.source = site.paths.path(site.paths.__file__.rstrip('c')).extend_by('py')
+        self.source = paths.path(paths.__file__.rstrip('c')).extend_by('py')
 
     def test_path_error(self):
         self.assertRaises(
-            site.paths.PathError,
-            site.paths.path('/not/a/path').assert_exists)
+            paths.PathError,
+            paths.path('/not/a/path').assert_exists)
 
     def test_not_path_error(self):
-        p = site.paths.path('/')
+        p = paths.path('/')
         self.assertEqual(p, p.assert_exists())
 
     def test_assert_isfile(self):
@@ -51,7 +51,7 @@ class TestPaths(TestCase):
 
     def test_assert_not_isfile(self):
         self.assertRaises(
-            site.paths.PathError,
+            paths.PathError,
             self.dir.assert_isfile)
 
     def test_assert_isdir(self):
@@ -61,7 +61,7 @@ class TestPaths(TestCase):
 
     def test_assert_not_isdir(self):
         self.assertRaises(
-            site.paths.PathError,
+            paths.PathError,
             self.path.assert_isdir)
 
     def test_join_with_nothing(self):
@@ -113,8 +113,8 @@ class TestPaths(TestCase):
         self.assertEquals(self.path.directory(), self.path.parent)
 
     def test_no_div_for_file(self):
-        path = site.paths.FilePath(__file__)
-        with self.assertRaises(site.paths.PathError):
+        path = paths.FilePath(__file__)
+        with self.assertRaises(paths.PathError):
             path / 'fred'
 
     def test_directory_iteration(self):

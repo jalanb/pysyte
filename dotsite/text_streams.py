@@ -3,8 +3,9 @@
 import os
 import sys
 import contextlib
-from io import StringIO
 from itertools import chain
+
+from six import StringIO
 
 from dotsite.iteration import first
 from dotsite.platforms import get_clipboard_data
