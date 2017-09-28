@@ -90,11 +90,7 @@ def debug(method):
 
 
 def argparser(main_method, options, **kwargs):
-    from argparse import ArgumentParser
-    parser = ArgumentParser(description='Process some integers.')
-    for _method, flag, name, help in options:
-        name_or_flags = [flag, name] if flag else name
-        parser.add_argument(name_or_flags, help=help, **kwargs)
+
     def main(argv):
         args = parser.parse_args(argv)
         for method, _flag, name, _help in options:
@@ -105,6 +101,12 @@ def argparser(main_method, options, **kwargs):
                 continue
             method(value)
         return main_method(args)
+
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description='Process some integers.')
+    for _method, flag, name, help in options:
+        name_or_flags = [flag, name] if flag else name
+        parser.add_argument(name_or_flags, help=help, **kwargs)
     return main
 
 
@@ -112,8 +114,8 @@ def streamer(main_method):
     """Open a stream for the first file in arguments, or stdin"""
     def main(arguments):
         streams = [StringIO(get_clipboard_data())] if (arguments and '-c' in arguments) else []
-        streams = streams or ([sys.stdin] if not (streams or arguments) else [])
         streams = streams or ([file(_, 'r') for _ in arguments if os.path.isfile(argument)] if arguments else [])
+        streams = streams or ([sys.stdin] if not (streams or arguments) else [])
         return main_method(arguments, streams)
     return main
 
@@ -136,6 +138,6 @@ def globber(main_method, globs):
     from glob import glob
 
     def main(arguments):
-        lists_of_paths = [_ for _ in arguments if glob(pathname, recursive=True) ]
+        lists_of_paths = [_ for _ in arguments if glob(pathname, recursive=True)]
         return main_method(arguments, lists_of_paths)
     return main
