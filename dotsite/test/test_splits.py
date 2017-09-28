@@ -58,7 +58,8 @@ class TestSplits(unittest.TestCase):
     def test_maxsplit(self):
         """Can supply a max number of parts"""
         expected = ['fred', 'was   , here ,today']
-        actual = site.splits.split_and_strip('fred,was   , here ,today', maxsplit=1)
+        actual = site.splits.split_and_strip(
+            'fred,was   , here ,today', maxsplit=1)
         self.assertEqual(expected, actual)
 
     def test_separator_and_maxsplit(self):
@@ -95,7 +96,8 @@ class TestSplits(unittest.TestCase):
         (not just "remove all spaces")
         """
         expected = 'fred,was,here with some nice people,today'
-        actual = site.splits.rejoin('fred,was   , here with some nice people,today')
+        actual = site.splits.rejoin(
+            'fred,was   , here with some nice people,today')
         self.assertEqual(expected, actual)
 
     def test_rejoin_spaced(self):
@@ -111,16 +113,18 @@ class TestSplits(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_despaced_edge_cases(self):
-        self.assertEquals(site.splits.despaced('despaced'), ['despaced'])
-        self.assertEquals(site.splits.despaced(''), [])
-        self.assertEquals(site.splits.despaced(None), [])
+        self.assertEqual(site.splits.despaced('despaced'), ['despaced'])
+        self.assertEqual(site.splits.despaced(''), [])
+        self.assertEqual(site.splits.despaced(None), [])
 
     def test_split_mirrors_join(self):
         tests = ['', ',', 'a,', ',b', 'a,b']
-        actual = all([site.splits.join(site.splits.split(t)) == t for t in tests])
+        actual = all(
+            [site.splits.join(site.splits.split(t)) == t for t in tests])
         self.assertTrue(actual)
         tests = [[], ['one'], ['one', 'two']]
-        actual = all([site.splits.split(site.splits.join(t)) == t for t in tests])
+        actual = all(
+            [site.splits.split(site.splits.join(t)) == t for t in tests])
         self.assertTrue(actual)
 
     def test_empty_separator(self):
