@@ -5,7 +5,7 @@ The streams module
     >>> print(streams.__doc__)
     Methods to handle streams
 
-    >>> from cStringIO import StringIO
+    >>> from io import StringIO
     >>> stream = StringIO()
     >>> with streams.swallow_stdout(stream):
     ...     print('Hello World')

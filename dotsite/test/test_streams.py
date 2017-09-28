@@ -1,7 +1,7 @@
 """Test stream handlers"""
 
 import sys
-from cStringIO import StringIO
+from io import StringIO
 from unittest import TestCase
 
 
@@ -13,13 +13,13 @@ class TestStreams(TestCase):
     def test_swallow_stdout(self):
         stream = StringIO()
         with swallow_stdout(stream):
-            print 'hello',
+            print('hello', end='')
         self.assertEqual(stream.getvalue(), 'hello')
 
     def test_swallow_stderr(self):
         stream = StringIO()
         with swallow_stderr(stream):
-            print >> sys.stderr, 'hello'
+            print('hello', file=sys.stderr)
         self.assertEqual(stream.getvalue(), 'hello\n')
 
     def test_discard_stdout(self):
@@ -40,4 +40,4 @@ class TestStreams(TestCase):
         """
         # pylint: disable=no-self-use
         with swallow_stderr():
-            print >> sys.stderr, 'hello'
+            print('hello', file=sys.stderr)

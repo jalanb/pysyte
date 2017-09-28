@@ -2,8 +2,9 @@
 
 
 import sys
-from cStringIO import StringIO
 from contextlib import contextmanager
+
+from six import StringIO
 
 
 @contextmanager

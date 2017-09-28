@@ -1,5 +1,7 @@
 """A module to provide decorators which change methods"""
 
+from six import StringIO
+
 
 def _represent_arguments(*arguments, **keyword_arguments):
     """Represent the aruments in a form suitable as a key (hashable)

@@ -16,9 +16,10 @@ from __future__ import print_function
 import re
 import signal
 import sys
-import termios
 import tty
 from curses import ascii
+
+import termios
 
 
 class NoKeys(StopIteration):
@@ -251,8 +252,8 @@ yield_ASCIIs = _yielder(get_ASCII)
 yield_as_keys = _yielder(get_as_key)
 
 
-def repr_get_key():
-    """Represent output of the _get_keycodes() method"""
+def get_string():
+    """A better str(_get_keycodes()) method"""
     keycodes = _get_keycodes()
     initial_code, codes = keycodes[0], keycodes[1:]
     initial_char = chr(initial_code)
