@@ -28,6 +28,18 @@ def argvs(clipboard_arg=None):
             yield StringIO(get_clipboard_data())
 
 
+def file_streams(files, clipboard):
+    if files:
+        for file_ in files:
+            if os.path.isfile(file_):
+                with open(file_) as stream:
+                    yield stream
+    elif clipboard:
+        yield StringIO(get_clipboard_data())
+    else:
+        yield sys.stdin
+
+
 def first_argv(clipboard_arg=None):
     try:
         arg_stream = argvs(clipboard_arg)
