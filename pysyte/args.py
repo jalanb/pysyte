@@ -12,7 +12,8 @@ def parser(text):
         add = arg_parser.add_argument
         true = partial(add, action='store_true')
         num = partial(add, type=int)
-        parse = arg_parser.parse_args
+        parse_args = arg_parser.parse_args
+        parse = parse_args
 
         def strings(self, name, help, many='*'):
             self.add(name, metavar=name, help=help, type=str, nargs=many)
