@@ -68,6 +68,9 @@ class DotPath(path_path):
             result = str(self)  # pylint: disable=redefined-variable-type
         return self.as_existing_file(result)
 
+    def __cmp__(self, other):
+        return cmp(str(self), str(other))
+
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
         if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
