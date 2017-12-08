@@ -4,18 +4,30 @@ import argparse
 from functools import partial
 
 
-def parser(text):
+def parser(help_text):
     """Parse out command line arguments"""
-    arg_parser = argparse.ArgumentParser(description=text.splitlines()[0])
 
     class ArgParser(object):
-        add = arg_parser.add_argument
-        true = partial(add, action='store_true')
-        num = partial(add, type=int)
-        parse_args = arg_parser.parse_args
-        parse = parse_args
+
+        def __init__(self, argument_parser):
+            self.parser = argument_parser
+            self.parse = self.parse_args = self.parser.parse_args
+
+            self.arg = self.parser.add_argument
+            self.true = partial(self.arg, action='store_true')
+            self.int = partial(self.arg, type=int)
 
         def strings(self, name, help, many='*'):
-            self.add(name, metavar=name, help=help, type=str, nargs=many)
+            self.arg(name, metavar=name, help=help, type=str, nargs=many)
 
-    return ArgParser()
+        def answer(self, answers=None):
+            yes_no = {
+                'n': ('-n', '--no', 'Answer no'),
+                'y': ('-y', '--yes', 'Answer yes'),
+            }
+            options = yes_no
+            options.update(answers)
+            [self.true(options[o]) for o in options]
+
+    return ArgParser(
+        argparse.ArgumentParser(description=help_text.splitlines()[0]))
