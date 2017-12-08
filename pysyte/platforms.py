@@ -1,11 +1,11 @@
 import platform as python_platform
 
-import dotsite
-from dotsite import imports
-from dotsite import cmnds
+import pysyte
+from pysyte import imports
+from pysyte import cmnds
 
 _platform_name = python_platform.system().lower()
-platform = imports.load_module(dotsite, _platform_name)
+platform = imports.load_module(pysyte, _platform_name)
 
 
 def _bash(command):

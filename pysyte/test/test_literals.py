@@ -2,12 +2,12 @@
 import unittest
 
 
-from dotsite.literals import AnsiColourSequences
-from dotsite.literals import Digits
-from dotsite.literals import Empty
-from dotsite.literals import Numbers
-from dotsite.literals import Punctuation
-from dotsite.literals import Python
+from pysyte.literals import AnsiColourSequences
+from pysyte.literals import Digits
+from pysyte.literals import Empty
+from pysyte.literals import Numbers
+from pysyte.literals import Punctuation
+from pysyte.literals import Python
 
 
 class TestLiterals(unittest.TestCase):

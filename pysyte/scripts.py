@@ -5,8 +5,8 @@ import argparse
 import os
 import sys
 
-from dotsite import __version__
-from dotsite.debuggers import DebugExit
+from pysyte import __version__
+from pysyte.debuggers import DebugExit
 
 
 _versions = [__version__]

@@ -5,7 +5,7 @@ from io import StringIO
 from unittest import TestCase
 
 
-from dotsite.streams import swallow_stdout, swallow_stderr
+from pysyte.streams import swallow_stdout, swallow_stderr
 
 
 class TestStreams(TestCase):

@@ -3,7 +3,7 @@
 
 import re
 
-from dotsite import literals
+from pysyte import literals
 
 
 def _default_separator():

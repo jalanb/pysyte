@@ -8,7 +8,7 @@ import os
 import unittest
 from collections import defaultdict
 
-from dotsite import imports
+from pysyte import imports
 
 
 class TestDashboardImports(unittest.TestCase):

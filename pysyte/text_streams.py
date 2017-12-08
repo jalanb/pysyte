@@ -7,8 +7,8 @@ from itertools import chain
 
 from six import StringIO
 
-from dotsite.iteration import first
-from dotsite.platforms import get_clipboard_data
+from pysyte.iteration import first
+from pysyte.platforms import get_clipboard_data
 
 
 def clipboard_stream(name=None):

@@ -4,7 +4,7 @@
 import unittest
 
 
-from dotsite import term
+from pysyte import term
 
 
 class TestTerm(unittest.TestCase):

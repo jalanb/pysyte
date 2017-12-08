@@ -4,7 +4,7 @@
 import unittest
 
 
-import dotsite as site
+import pysyte as site
 
 
 # pylint: disable=missing-docstring

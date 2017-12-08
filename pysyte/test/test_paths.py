@@ -5,7 +5,7 @@ import random
 from unittest import TestCase
 
 
-from dotsite import paths
+from pysyte import paths
 
 
 class SourcePath(paths.FilePath):

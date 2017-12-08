@@ -3,7 +3,7 @@ import ast
 import imp
 
 
-from dotsite import dictionaries
+from pysyte import dictionaries
 
 
 class ImportVisitor(ast.NodeVisitor):

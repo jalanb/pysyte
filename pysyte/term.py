@@ -1,4 +1,4 @@
-import dotsite as site
+import pysyte as site
 
 
 def _tput(tput_command):

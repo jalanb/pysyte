@@ -6,7 +6,7 @@ from io import StringIO
 import unittest
 
 
-from dotsite import decorators
+from pysyte import decorators
 
 
 @decorators.memoize
