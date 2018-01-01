@@ -1,4 +1,4 @@
-dotsite
+pysite
 =======
 
 Python modules often used from dotfiles
@@ -6,22 +6,22 @@ Python modules often used from dotfiles
 Latest PyPi Package
 -------------------
 
-.. image:: https://badge.fury.io/py/dotsite.svg
-   :target: https://pypi.python.org/pypi/dotsite
+.. image:: https://badge.fury.io/py/pysite.svg
+   :target: https://pypi.python.org/pypi/pysite
    :alt: PyPi Package
 
 Build status
 ------------
 
-.. image:: https://travis-ci.org/jalanb/dotsite.svg?branch=master
-   :target: https://travis-ci.org/jalanb/dotsite
+.. image:: https://travis-ci.org/jalanb/pysite.svg?branch=master
+   :target: https://travis-ci.org/jalanb/pysite
    :alt: Build Status
 
 Test Coverage
 -------------
 
-.. image:: https://codecov.io/gh/jalanb/dotsite/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/jalanb/dotsite
+.. image:: https://codecov.io/gh/jalanb/pysite/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/jalanb/pysite
    :alt: Test Coverage
 
 Dependency status
