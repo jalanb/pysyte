@@ -7,7 +7,7 @@ from itertools import chain
 
 from six import StringIO
 
-from pysyte.iteration import first
+from pysyte import iteration
 from pysyte.platforms import get_clipboard_data
 
 
@@ -37,9 +37,17 @@ def all():
     return chain(arg_files(), more)
 
 
+def first():
+    return iteration.first(all())
+
+
+def last():
+    return iteration.last(all())
+
+
 def any():
     try:
-        stream = first(arg_files())
+        stream = iteration.first(arg_files())
         if stream:
             return arg_files()
     except ValueError:
@@ -48,7 +56,7 @@ def any():
 
 def first_file():
     try:
-        return first(arg_files())
+        return iteration.first(arg_files())
     except ValueError:
         return None
 
