@@ -179,6 +179,12 @@ def ansi_to_html(ansi):
 
 
 def name_to_int(name):
+    """Get a number for that colour name
+
+    if not a name, then not a number
+    """
+    if not name:
+        return float('nan')
     lower = name.lower()
     cga_names = {s: i for i, s in enumerate(colour_names.cga())}
     return cga_names.get(name.lower()) or html_to_small_ansi(name)

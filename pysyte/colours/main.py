@@ -1,5 +1,7 @@
-from psyste.colours import ansi_escapes
-from psyste.colours import colour_numbers
+import os
+from pysyte.colours import ansi_escapes
+from pysyte.colours import colour_numbers
+from pysyte.colours.texts import colour_initials
 
 
 def test():

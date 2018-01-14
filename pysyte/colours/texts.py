@@ -14,7 +14,7 @@ from pysyte.colours import ansi_escapes
 from pysyte.colours import colour_numbers
 
 
-class CoulouredTail(object):
+class ColouredTail(object):
     """The tail of a string that is being coloured
 
     Also holds a head, all of string before the tail
@@ -47,17 +47,18 @@ class CoulouredTail(object):
 
     def colour_text(self, *args):
         new = colour_text(*args, head='')
-        return CoulouredTail(str(self), new)
+        return ColouredTail(str(self), new)
 
     colour = text = colour_text
 
 
 def colour_text(text, name=None, head=None):
     string = str(text)
-    number = colour_numbers.name_to_int(name)
-    if number:
-        string = ansi_escapes.foreground_string(text, number)
-    return CoulouredTail(head, string)
+    colour_ = colour_numbers.name_to_int(name) if name else False
+    return ColouredTail(
+        head or '',
+        ansi_escapes.foreground_string(string, colour_) if colour_ else string
+    )
 
 colour = text = colour_text
 
