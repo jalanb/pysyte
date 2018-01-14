@@ -1,0 +1,28 @@
+The texts module
+================
+
+    >>> import texts
+    >>> print texts.__doc__
+    Provide methods to handle colour values
+    ...
+
+Basic usage:
+    >>> hello = texts.colour_text('H', 'green').colour_text('ello ')
+
+Shorter way:
+    >>> world = texts.colour('W', 'red').text('orld')
+
+Both methods have same effect
+    >>> hello, world
+    (<CoulouredTail '\x1b[32mH\x1b[2m\x1b[0m''ello '>, <CoulouredTail '\x1b[31mW\x1b[2m\x1b[0m''orld'>)
+
+Adds in ANSI sequences (looks better on terminal than in a doctest)
+    >>> print hello, world
+    [32mH[2m[0mello  [31mW[2m[0morld
+
+Convenience method to highlight initials
+
+    >>> foo = texts.colour('H', 'red').colour('ello')
+    >>> foo == texts.colour_initial('Hello', 'red')
+    True
+

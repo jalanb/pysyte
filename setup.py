@@ -1,21 +1,21 @@
-"""Set up the dotsite project"""
+"""Set up the pysyte project"""
 
 
 from setuptools import setup
 
-import dotsite
+import pysyte
 
 setup(
-    name=dotsite.__name__,
-    packages=[dotsite.__name__],
-    version=dotsite.__version__,
-    url='https://github.com/jalanb/%s' % dotsite.__name__,
+    name=pysyte.__name__,
+    packages=[pysyte.__name__],
+    version=pysyte.__version__,
+    url='https://github.com/jalanb/%s' % pysyte.__name__,
     download_url='https://github.com/jalanb/%s/tarball/v%s' % (
-        dotsite.__name__, dotsite.__version__),
+        pysyte.__name__, pysyte.__version__),
     license='MIT License',
     author='J Alan Brogan',
     author_email='github@al-got-rhythm.net',
-    description=dotsite.__doc__,
+    description=pysyte.__doc__,
     platforms='any',
     classifiers=[
         'Programming Language :: Python :: 2.7',
