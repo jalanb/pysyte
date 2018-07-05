@@ -6,4 +6,5 @@ pudb>=2016.2
 pprintpp>=0.2.3
 path.py==7.7.1
 pdir
+sh
 tox

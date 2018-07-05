@@ -14,7 +14,7 @@ Methods handle two known representations:
 import re
 
 
-from .colours import colour_names
+from . import colour_names
 
 
 def integer_to_ansi(integer):
