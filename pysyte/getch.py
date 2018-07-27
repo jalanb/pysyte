@@ -86,6 +86,18 @@ class TimerContext(object):
             return True
 
 
+_key_cache = []
+
+
+def cache_keys(keys):
+    """Allow debugging via PyCharm"""
+    d = known_keys()
+    known_names = dict(zip(d.values(), d.keys()))
+    for k in keys:
+        i = (ord(k),) if len(k) == 1 else known_names[k]
+        _key_cache.insert(0, i)
+
+
 def _get_keycodes():
     """Read keypress giving a tuple of key codes
 
@@ -93,6 +105,10 @@ def _get_keycodes():
 
     For example, pressing 'A' will give (65,)
     """
+    try:
+        return _key_cache.pop()
+    except IndexError:
+        pass
     result = []
     terminators = 'ABCDFHPQRS~'
     with TerminalContext():
@@ -206,7 +222,11 @@ def get_extended_key_name(codes):
 
     Names are defined herein
     """
-    known_keys = {
+    return known_keys()[codes]
+
+
+def known_keys():
+    return {
         (27, 79, 70): 'end',
         (27, 79, 72): 'home',
         (27, 79, 80): 'F1',
@@ -222,15 +242,22 @@ def get_extended_key_name(codes):
         (27, 91, 50, 49, 126): 'F10',
         (27, 91, 50, 51, 126): 'F11',
         (27, 91, 50, 52, 126): 'F12',
+        (27, 91, 49, 59, 50, 80): 'F13',
+        (27, 91, 49, 59, 50, 83): 'F16',
+        (27, 91, 49, 53, 59, 50, 126): 'F17',
+        (27, 91, 49, 55, 59, 50, 126): 'F18',
+        (27, 91, 49, 56, 59, 50, 126): 'F19',
+        (27, 91, 51, 126): 'Del',
         (27, 91, 51): 'delete',
         (27, 91, 53): 'page up',
+        (27, 91, 53, 126): 'page up',
         (27, 91, 54): 'page down',
+        (27, 91, 54, 126): 'page down',
         (27, 91, 65): 'up',
         (27, 91, 66): 'down',
         (27, 91, 67): 'right',
         (27, 91, 68): 'left',
     }
-    return known_keys[codes]
 
 
 def _yielder(getter):
