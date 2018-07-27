@@ -3,6 +3,7 @@
 The classes all inherit from the original path.path
 """
 import os
+import itertools
 from fnmatch import fnmatch
 
 
@@ -104,10 +105,21 @@ class DotPath(PPath):
         >>> p.paths == p.dirpaths()
         True
         """
+        head, *rest = self.parts()
+        result = [DotPath(head or '/')]
+        for name in rest:
+            result.append(result[-1] / name)
+        return result
+
+    def parts(self):
+        """Split the path into parts like Pathlib
+
+        >>> expected = ('/', path', 'to', 'there')
+        >>> assert DotPath('/path/to/there').parts() == expected
+        """
         parts = self.split(os.path.sep)
-        root, rest = DotPath('/'), parts[1:]
-        return [makepath(root / os.path.sep.join(rest[:i]))
-                for i in range(len(parts))]
+        parts[0] = parts[0] and parts[0] or '/'
+        return parts
 
     def directories(self):
         """Split the dirname into individual directory names
@@ -246,6 +258,11 @@ class DotPath(PPath):
 
     def same_path(self, other):
         return self.expandall() == other.expandall()
+
+    @property
+    def hidden(self):
+        s = str(self)
+        return s and s[0] == '.'
 
 
 def ext_language(ext, exts=None):
@@ -645,6 +662,10 @@ def strings_to_paths(strings):
     return [makepath(s) for s in strings]
 
 
+def paths(strings):
+    return [p for p in strings_to_paths(strings) if p.exists()]
+
+
 def split_directories(strings):
     paths = strings_to_paths(strings)
     return [_
@@ -791,3 +812,36 @@ def environ_path(key):
 
 def default_environ_path(key, default):
     return makepath(os.environ.get(key, default))
+
+
+def tab_complete(string):
+    """Finish file names "left short" by tab-completion
+
+    For example, if an argument is "fred."
+        and no file called "fred." exists
+        but "fred.py" does exist
+        then return fred.py
+    """
+    if is_option(string):
+        return string
+    if not missing_extension(string):
+        return string
+    if os.path.isfile(string):
+        return string
+    extended_files = [f for f in extend(string) if os.path.isfile(f)]
+    try:
+        return extended_files[0]
+    except IndexError:
+        return string
+
+
+def pyc_to_py(path_to_file):
+    """Change some file extensions to those which are more likely to be text
+
+    >>> pyc_to_py('vim.pyc') == 'vim.py'
+    True
+    """
+    stem, ext = os.path.splitext(path_to_file)
+    if ext == '.pyc':
+        return '%s.py' % stem
+    return path_to_file

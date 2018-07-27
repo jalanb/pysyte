@@ -185,19 +185,19 @@ Sets of paths
     >>> '/bin/ls' in paths.set_files('/bin','a*')
     False
 
-List directories
+Search directories
 ----------------
 
-    >>> paths.contains_glob('/usr','*oca*')
-    True
-    >>> paths.contains_glob('/usr','*oca')
-    False
-    >>> paths.contains_file('/usr','*oca*')
-    False
-    >>> paths.contains_file('/usr','*oca')
-    False
-    >>> paths.contains_directory('/usr','*oca*')
-    True
-    >>> paths.contains_directory('/usr','*oca')
-    False
+    >>> assert paths.contains_glob('/usr','*oca*')
+    >>> assert paths.contains_directory('/usr','*oca*')
+    >>> assert not paths.contains_file('/usr','*oca*')
 
+    >>> assert not paths.contains_glob('/usr','*oca')
+    >>> assert not paths.contains_file('/usr','*oca')
+    >>> assert not paths.contains_directory('/usr','*oca')
+
+
+Parts and parents
+-----------------
+
+    >>> assert paths.home

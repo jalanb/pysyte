@@ -28,6 +28,11 @@ def last(sequence, message=None):
         raise ValueError(message or f'Sequence is empty: {sequence}')
 
 
+def first_or(sequence, value):
+    try:
+        return first(sequence)
+    except ValueError:
+        return value
 
 
 def first_that(predicate, sequence, message=None):
