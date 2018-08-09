@@ -130,7 +130,7 @@ Using the / operator on a DirectPath or path gives an instance of the same class
     >>> home = path('~')
     >>> bashrc = home / '.bashrc'
     >>> type(bashrc)
-    <class 'path.path'>
+    <class 'path.Path'>
 
     >>> home = paths.DirectPath('~')
     >>> bashrc = home / '.bashrc'
@@ -159,7 +159,7 @@ This test assumes you have a ~/bin directory
     >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
     >>> show(real_paths)
-    [<FilePath ...'/.../.bashrc'>, <DirectPath ...'/.../bin'>]
+    [<DirectPath '/Users/jab/.bashrc'>, <DirectPath '/Users/jab/bin'>]
 
 Iteration of paths
 ------------------
