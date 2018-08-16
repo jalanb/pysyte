@@ -14,7 +14,7 @@ Methods handle two known representations:
 import re
 
 
-import colour_names
+from .colours import colour_names
 
 
 def integer_to_ansi(integer):
@@ -187,4 +187,4 @@ def name_to_int(name):
         return float('nan')
     lower = name.lower()
     cga_names = {s: i for i, s in enumerate(colour_names.cga())}
-    return cga_names.get(name.lower()) or html_to_small_ansi(name)
+    return cga_names.get(lower) or html_to_small_ansi(lower)
