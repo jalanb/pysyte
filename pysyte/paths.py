@@ -235,7 +235,14 @@ class DotPath(PPath):
         pass
 
     def expandall(self):
-        return self.expand().realpath().abspath()
+        try:
+            return self.expand().realpath().abspath()
+        except AttributeError:
+            return self.__class__(
+                os.path.abspath(os.path.realpath(
+                    os.path.expanduser(os.path.expandvars(str(self)))
+                ))
+            )
 
     def same_path(self, other):
         return self.expandall() == other.expandall()
