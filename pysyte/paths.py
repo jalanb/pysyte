@@ -37,13 +37,10 @@ class PathAssertions(object):
         return self
 
 
-try:
-    from path import Path as path_path  # pylint: disable=wrong-import-position
-except ImportError:
-    path_path = str
+from path import Path as PPath  # pylint: disable=wrong-import-position
 
 
-class DotPath(path_path):
+class DotPath(PPath):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
 
@@ -244,9 +241,6 @@ class DotPath(path_path):
         return self.expandall() == other.expandall()
 
 
-del path_path
-
-
 def ext_language(ext, exts=None):
     """Language of the extension in those extensions
 
@@ -295,6 +289,9 @@ def find_language(script, exts=None):
         return ext_language(script.ext, exts)
     shebang = script.shebang()
     return shebang and str(shebang.name) or None
+
+
+del PPath
 
 
 class FilePath(DotPath, PathAssertions):
