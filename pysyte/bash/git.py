@@ -587,7 +587,7 @@ def git_continuer(method, *args, **kwargs):
             except Resolver as resolved:
                 pass
             else:
-                return
+                break
 
 
 def cherry_pick(pick):
