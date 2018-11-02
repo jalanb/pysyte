@@ -1,4 +1,4 @@
-pysite
+pysyte
 =======
 
 Python modules often used from dotfiles
