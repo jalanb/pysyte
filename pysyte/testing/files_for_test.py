@@ -106,9 +106,7 @@ def add_sub_dirs(paths):
     result = dirs.copy()
     for path_to_dir in dirs:
         for sub_dir in path_to_dir.walkdirs():
-            import pudb
-            pudb.set_trace()
-            if sub_dir.in_git_repo():
+            if '.git' in sub_dir.splitall():
                 continue
             result.add(sub_dir)
     return result

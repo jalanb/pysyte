@@ -72,10 +72,11 @@ def show_stream(stream, args):
     lines, first = parse_lines(args, lines_in)
     line_format_ = line_format(lines)
     for i, line in enumerate(lines, first):
-        prefix = ''
         if args.numbers:
             prefix = line_format_ % (i + 1)
-        out = ' '.join((prefix, line.rstrip()))
+            out = ' '.join((prefix, line.rstrip()))
+        else:
+            out = line.rstrip()
         if args.width:
             out = out[:args.width]
         print(out)
