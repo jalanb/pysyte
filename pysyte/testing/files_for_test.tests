@@ -2,10 +2,16 @@ The files_for_test module
 =========================
 
     >>> import files_for_test
-    >>> print files_for_test.paths_to_doctests(strings=['no_such_file'], recursive=False)
+
+Handle files
+------------
+
+Unknown files raise an exception
+
+    >>> files_for_test.paths_to_doctests(strings=['no_such_file'], recursive=False)
     Traceback (most recent call last):
     ...
-    UserMessage: ...no_such_file.test*, ...no_such_file.py not found
+    files_for_test.MissingFiles: ...no_such_file.test*, ...no_such_file.py not found
 
 
 We'll need to find all possible extension of a stem
@@ -30,11 +36,11 @@ Edge cases
     >>> files_for_test._get_path_to_test_directory([str(path_to_test_directory / 'not_a_file')])
     Traceback (most recent call last):
     ...
-    UserMessage: No doctests found in ['/.../testing/not_a_file']
+    files_for_test.MissingFiles: No doctests found in ['/.../testing/not_a_file']
     >>> files_for_test._get_path_to_test_directory('/etc/httpd/conf')
     Traceback (most recent call last):
     ...
-    UserMessage: No doctests found in '/etc/httpd/conf'
+    files_for_test.MissingFiles: No doctests found in '/etc/httpd/conf'
 
     >>> path_to_test_directory in files_for_test._get_path_stems([str(path_to_test_directory)], True)
     True
@@ -57,13 +63,12 @@ Edge cases
     False
 
     >>> path_to_test_stem.write_lines(['#! /usr/local/python', 'print 0'])
-    >>> path_to_test_stem in files_for_test.all_possible_files_for_test_in(path_to_test_directory, False)
-    True
     >>> path_to_test_stem in files_for_test._expand_stems([path_to_test_stem])
     True
     >>> path_to_test_stem in files_for_test.paths_to_doctests([path_to_test_stem], False)
     True
-    >>> path_to_test_stem.remove()
+    >>> deleted = path_to_test_stem.remove()
+    >>> assert not deleted.exists()
 
     >>> files_for_test._first_line_is_python_shebang(['#! /usr/local/python', 'print 0'])
     True

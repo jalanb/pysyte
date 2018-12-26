@@ -2,9 +2,8 @@ The files_for_test module
 =========================
 
     >>> import files_for_test
-    >>> print files_for_test.__doc__
-    This module provides convenience methods to handle test files
-    ...
+    >>> assert 'methods to handle test files' in files_for_test.__doc__
+
 
 More modules for testing
 ------------------------

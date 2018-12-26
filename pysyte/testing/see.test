@@ -3,41 +3,36 @@ The see module
 
     >>> import  see
 
-The basic method is a better version of dir() 
-    >>> see.see()
-    DoctestInterrupt()    bash()    makepath()    see    see_attributes()
-    see_methods()    show()    spread()    sys    test
-
+The basic method is a better version of dir()
     >>> see.see(sys)
-    help()    .api_version    .argv    .builtin_module_names    .byteorder
+    help()    ...
     ...
 
-    >>> see.see(sys,pattern="*a*")
-    .api_version    .argv    .builtin_module_names    .call_tracing()
-    ...
 
-    >>> see.see(sys,pattern=".all*")
+Search by regexp
+    >>> see.see(sys, r="api")
+      .api_version
 
-    >>> see.see(sys,r=".all*")
-    .call_tracing()    .callstats()    .getcheckinterval()
-    ...
+Or search by glob
+    >>> see.see(sys, pattern=".call*")
+      .call_tracing()    .callstats()
 
-    >>> see.see(sys,pattern="*a*",attributes=True)
-    .api_version    .argv    .builtin_module_names    .executable    .flags
-    ...
+Hide attributes
+    >>> see.see(sys, r="api", attributes=False)
 
-    >>> see.see(sys,pattern="*a*",methods=True)
-    .call_tracing()    .callstats()    .displayhook()    .exc_clear()
-    ...
+Only include methods
+    >>> see.see(sys, pattern=".call*", methods=True)
+      .call_tracing()    .callstats()
 
-    >>> see.see_attributes(sys,pattern="*a*")
-    .api_version    .argv    .builtin_module_names    .executable    .flags
-    ...
+Convenience method to avoid having to use an arg !
+    >>> see.see_attributes(sys, r="api")
+      .api_version
 
-    >>> see.see_methods(sys,pattern="*a*")
-    .call_tracing()    .callstats()    .displayhook()    .exc_clear()
-    ...
+Another candidate for /r/badcode
+    >>> see.see_methods(sys, pattern=".call*")
+      .call_tracing()    .callstats()
 
+Spread out for display
     >>> see.spread(sys)
     <module
     ...

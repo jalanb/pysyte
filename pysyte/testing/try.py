@@ -8,6 +8,7 @@ import re
 import os
 import io
 import sys
+import importlib
 import doctest
 import getpass
 import socket
@@ -16,10 +17,7 @@ import datetime
 from pprint import pprint
 
 
-try:
-    from pysyte.paths import path
-except ImportError:
-    from dotsite.paths import path
+from pysyte.paths import path
 
 from see import see, see_methods, see_attributes, spread
 import files_for_test
@@ -111,8 +109,8 @@ def parse_args():
     pa('stems', metavar='stems', type=str, nargs='*',
        help='stems to be tested (e.g "try.py" or "try.*" or "try." or "try/"')
     pa('-s', '--show', help='show files being tested', action='store_true')
-    pa('-V', '--verbose', help='Show more text', action='store_true')
-    pa('-v', '--version', help='Show version', action='store_true')
+    pa('-v', '--verbose', help='Show more text', action='store_true')
+    pa('-V', '--version', help='Show version', action='store_true')
     pa('-r', '--recursive', action='store_true',
        help='recurse into any sub-directories found',)
     pa('-a', '--all', action='store_true',
@@ -162,32 +160,42 @@ class SysPathHandler(object):
 
 
 def make_module(path_to_python):
-    """The module object for the given python source code"""
+    """The module object for the given python source code
+
+    https://stackoverflow.com/a/67692/500942
+    """
     name = path_to_python.namebase
     try:
         return sys.modules[name]
     except KeyError:
-        pass
-    # DeprecationWarning: the imp module is deprecated in favour of importlib
-    import imp
+        spec = importlib.util.spec_from_file_location(name, path_to_python)
+        return importlib.util.module_from_spec(spec)
+
+
+def make_python2_module(path_to_python):
     try:
-        fp, pathname, description = imp.find_module(
-            name, [path_to_python.parent])
-    except ImportError:
+        return sys.modules[name]
+    except KeyError:
         try:
-            fp, pathname, description = (
-                open(name), path_to_python, ('', 'r', imp.PY_SOURCE))
-        except IOError:
-            raise ImportError('Could not find a module for %r' %
-                              str(path_to_python))
-    # If any of the following calls raises an exception,
-    # there's a problem we can't handle -- let the caller handle it.
-    try:
-        x = imp.load_module(name, fp, pathname, description)
-        return x
-    finally:
-        if fp:
-            fp.close()
+            fp, pathname, description = importlib.find_module(
+                name, [path_to_python.parent])
+        except ImportError:
+            try:
+                fp, pathname, description = (
+                    open(name), path_to_python, ('', 'r', importlib.PY_SOURCE))
+            except IOError:
+                raise ImportError('Could not find a module for %r' %
+                                  str(path_to_python))
+        # If any of the following calls raises an exception,
+        # there's a problem we can't handle -- let the caller handle it.
+        try:
+            # DeprecationWarning: the imp module is deprecated in favour of importlib
+            import imp
+            x = imp.load_module(name, fp, pathname, description)
+            return x
+        finally:
+            if fp:
+                fp.close()
 
 
 def test_source(source_script):
@@ -288,8 +296,8 @@ def show_time_taken(start, messages, message, tests_run):
 
 def show_exception(test_script, exception):
     """Show the reason for an interuption on stderr"""
-    print('Bye from %s' % test_script, file=sys.stderr)
-    print('Because: %s' % syntax_error, file=sys.stderr)
+    print('Bye from ', test_script, file=sys.stderr)
+    print('Because:', interruption, file=sys.stderr)
 
 
 def show_interruption(*args):

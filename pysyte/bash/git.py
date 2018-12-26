@@ -6,7 +6,7 @@ import shutil
 from contextlib import contextmanager
 from functools import partial
 
-from subpprocess import getstausoutput
+from subprocess import getstatusoutput
 
 _working_dirs = ['.']
 

@@ -33,8 +33,7 @@ If that went well we have a hidden variable called test
     True
 
     >>> import os
-    >>> print test.here == os.getcwd()
-    True
+    >>> assert test.here == os.getcwd()
 
 We also have access to some modules I often use
     without a need for explicit import
@@ -48,12 +47,10 @@ And we can run bash commands
     /.../.bashrc
     True
 
-    >>> print test.home == makepath('~')
-    True
+    >>> assert test.home == makepath('~')
 
 We know the user who is running the tests
-    >>> print test.user == '%s@%s' % (os.environ['USER'], test.host)
-    True
+    >>> assert test.user == '%s@%s' % (os.environ['USER'], test.host)
 
 Edge cases
 ----------
@@ -68,21 +65,6 @@ Edge cases
 
     >>> show(0)
     0
-
-    >>> test.add_path('fred', 'py')
-    >>> 'fred' not in test.path_to_py
-    True
-
-    >>> sys.argv = ['try.py', '-r', test.path_to_tests]
-    >>> options, args = try_module.command_line()
-    Traceback (most recent call last):
-    ...
-    ValueError: Do not use --recursive with files (/.../try.tests)
-
-    >>> sys.argv = ['try.py', '-v', test.path_to_tests]
-    >>> options, args = try_module.command_line()
-    >>> options.verbose and test.path_to_tests in args
-    True
 
     >>> re_imported_try = try_module.make_module(test.path_to_py)
     >>> re_imported_try == try_module
@@ -104,25 +86,18 @@ Edge cases
     ...
         /.../testing/see.py
     ...
-    >>> see = try_module.make_module(test.path_to_py.parent / 'not_a_file.py')
-    Traceback (most recent call last):
-    ...
-    ImportError: Could not find a module for '/.../testing/not_a_file.py'
-
-    >>> try_module.show_running_doctest(makepath('not_a_file.py'), options)
-    Traceback (most recent call last):
-    ...
-    ImportError: Could not find a module for '.../not_a_file.py'
+    >>> mod = try_module.make_module(test.path_to_py.parent / 'not_a_file.py')
+    >>> assert isinstance(mod, type(imp))
+    >>> assert mod.__name__, 'not_a_file'
 
 Hiding output
 -------------
 
+    >>> from pprint import pprint
     >>> def hello(arg):
-    ...     print 'Hello'
+    ...     pprint('Hello')
     ...     return arg
-    >>> hello('World')
-    Hello
-    'World'
+    >>> assert hello('World') == 'World'
+    'Hello'
 
-    >>> no_print(hello, 'World')
-    'World'
+    >>> assert no_print(hello, 'World') == 'World'

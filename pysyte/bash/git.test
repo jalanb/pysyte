@@ -1,0 +1,6 @@
+The bash,git module
+===================
+
+    >>> from pysyte.bash import git
+    >>> assert 'cover many git commands' in git.__doc__
+

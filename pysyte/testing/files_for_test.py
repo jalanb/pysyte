@@ -25,6 +25,8 @@ class UserMessage(Exception):
     """Tell the user something went wrong"""
     pass
 
+class MissingFiles(UserMessage):
+    pass
 
 def first_thing_that(things, predicate):
     for thing in things:
@@ -45,9 +47,9 @@ def _get_path_to_test_directory(strings):
         try:
             result = first_thing_that(paths, lambda p: p.parent and p.isfile()).parent
         except AttributeError:
-            raise UserMessage('No doctests found in %r' % strings)
+            raise MissingFiles('No doctests found in %r' % strings)
     if not result.files('*.test*') and not result.files('*.py'):
-        raise UserMessage('No doctests found in %r' % strings)
+        raise MissingFiles('No doctests found in %r' % strings)
     return result
 
 
@@ -244,7 +246,7 @@ def _expand_stems(path_stems):
     if not result:
         path_stem = path_stems.pop()
         display_stem = path_stem.short_relative_path_from_here()
-        raise UserMessage('%s.test*, %s.py not found' % (display_stem, display_stem))
+        raise MissingFiles('%s.test*, %s.py not found' % (display_stem, display_stem))
     return result
 
 
@@ -312,7 +314,7 @@ def handle_command_line():
         '-r', '--recursive', action='store_true', help='Look in sub-directories')
     args = parser.parse_args()
     stems = args.stems if args.stems else [os.path.dirname(__file__)]
-    return stems, args.recursiive
+    return stems, args.recursive
 
 
 def main():

@@ -114,7 +114,7 @@ class DotPath(PPath):
     def parts(self):
         """Split the path into parts like Pathlib
 
-        >>> expected = ('/', path', 'to', 'there')
+        >>> expected = ('/', 'path', 'to', 'there')
         >>> assert DotPath('/path/to/there').parts() == expected
         """
         parts = self.split(os.path.sep)

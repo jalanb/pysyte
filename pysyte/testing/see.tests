@@ -23,9 +23,7 @@ Edge cases
     >>> fred.fred = fred
     >>> see.spread(fred)
     <Fred
+        no : ...
         none : None
         fred : ...
-        no : ...
     >
-    >>> see.see(fred)
-        .fred   .no     .none

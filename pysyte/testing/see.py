@@ -53,7 +53,6 @@ import inspect
 
 
 from pprint import pformat
-from pprint import pprint
 
 __all__ = ['see']
 
@@ -177,7 +176,7 @@ def see(obj=_LOCALS, pattern=None, r=None, methods=None, attributes=None):
             actions.append(symbol)
 
     for attr in attrs:
-        if not attr.startswith('_'):
+        if attr.startswith('_'):
             continue
         try:
             prop = getattr(obj, attr)
@@ -258,7 +257,7 @@ def spread(thing, exclude=None):
         return '''<%s%s%s\n%s>''' % (
             klass, separator, attributes_string, separator[1:-2])
 
-    pprint(spread_out_the_attributes(thing, '\n\t'))
+    print(spread_out_the_attributes(thing, '\n\t'))
 
 
 PY_300 = sys.version_info >= (3, 0)
