@@ -5,9 +5,9 @@ try
 ---
 
 try is a reserved word so we need a roundabout import
-    >>> import imp
-    >>> fp, pathname, description = imp.find_module('try')
-    >>> try_module = imp.load_module('try', fp, pathname, description)
+    >>> import importlib
+    >>> fp, pathname, description = importlib.find_module('try')
+    >>> try_module = importlib.load_module('try', fp, pathname, description)
 
 try.tests
 ---------
@@ -87,7 +87,7 @@ Edge cases
         /.../testing/see.py
     ...
     >>> mod = try_module.make_module(test.path_to_py.parent / 'not_a_file.py')
-    >>> assert isinstance(mod, type(imp))
+    >>> assert isinstance(mod, type(importlib))
     >>> assert mod.__name__, 'not_a_file'
 
 Hiding output

@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """Script to handle running of doctests"""
 
 
@@ -19,9 +18,9 @@ from pprint import pprint
 
 from pysyte.paths import path
 
-from see import see, see_methods, see_attributes, spread
-import files_for_test
-import try_plugins
+from pysyte.testing import files_for_test
+from pysyte.testing import try_plugins
+from pysyte.testing.see import see, see_methods, see_attributes, spread
 
 __version__ = '0.7.3.1'
 
@@ -189,10 +188,7 @@ def make_python2_module(path_to_python):
         # If any of the following calls raises an exception,
         # there's a problem we can't handle -- let the caller handle it.
         try:
-            # DeprecationWarning: the imp module is deprecated in favour of importlib
-            import imp
-            x = imp.load_module(name, fp, pathname, description)
-            return x
+            return importlib.load_module(name, fp, pathname, description)
         finally:
             if fp:
                 fp.close()
@@ -354,20 +350,3 @@ def test():
     if failures_all or not args.quiet_on_success:
         print('\n'.join(messages))
     return failures_all
-
-
-def main():
-    """Run the program"""
-    try:
-        return test()
-    except files_for_test.UserMessage as e:
-        print(e, file=sys.stderr)
-    except KeyboardInterrupt as e:
-        print('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c ', file=sys.stderr)
-        print('Bye now', file=sys.stderr)
-        if str(e):
-            print(e, file=sys.stderr)
-
-
-if __name__ == '__main__':
-    sys.exit(main())

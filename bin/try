@@ -1,0 +1,28 @@
+#! /usr/bin/env python3
+"""Run doctests in *.py and associated test files"""
+
+import sys
+import importlib
+
+from pysyte import testing
+
+# Module name prevents a normal import
+# try_ = importlib.import_module('try', 'pysyte.testing')
+
+
+def main():
+    """Run the program"""
+
+    try:
+        return testing.try.test()
+    except testing.files_for_test.UserMessage as e:
+        print(e, file=sys.stderr)
+    except KeyboardInterrupt as e:
+        print('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c ', file=sys.stderr)
+        print('Bye now', file=sys.stderr)
+        if str(e):
+            print(e, file=sys.stderr)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
