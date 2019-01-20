@@ -14,7 +14,6 @@ from pysyte.testing import files_for_test
 def main():
     """Run the program"""
 
-    sys.stdout.write(sys.executable)
     try:
         return trying.test()
     except files_for_test.UserMessage as e:
@@ -26,7 +25,8 @@ def main():
             if str(e):
                 print(e, file=sys.stderr)
         except SyntaxError:
-            sys.stdout.write(sys.executable)
+            sys.stdout.write('%s had a SyntaxError:\n' % sys.executable)
+            traceback.print_exc()
 
 
 if __name__ == '__main__':

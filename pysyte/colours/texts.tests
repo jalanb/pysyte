@@ -2,9 +2,6 @@ The texts module
 ================
 
     >>> import texts
-    >>> print texts.__doc__
-    Provide methods to handle colour values
-    ...
 
 Leaving out colour name, is same as giving an empty one
     >>> texts.colour_text('Fred') == texts.colour_text('Fred', None) == texts.colour_text('Fred', 'none')

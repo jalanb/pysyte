@@ -14,11 +14,10 @@ Methods handle two known representations:
 import re
 
 
-from . import colour_names
+from pysyte.colours import colour_names
 
 
 def integer_to_ansi(integer):
-
     if integer < 16:
         return integer
 
@@ -26,13 +25,13 @@ def integer_to_ansi(integer):
         i -= 0x10
         if i < 0:
             return 0
-        return i / 40
+        return i // 40
 
     def grey_shade(red, green, blue):
         for i in red, green, blue:
             if (i - 8) % 10:
                 return False
-        return 232 + ((red - 8) / 10)
+        return 232 + ((red - 8) // 10)
 
     red = (integer & 0xff0000) >> 16
     green = (integer & 0x00ff00) >> 8
@@ -54,14 +53,14 @@ def ansi_to_red_green_blue(ansi):
     def decimal_to_rgb(i):
         if not i:
             return 0
-        return (i * 40) + 55
+        return int((i * 40) + 55)
     return decimal_to_rgb(red), decimal_to_rgb(green), decimal_to_rgb(blue)
 
 
 def red_green_blue_to_int(red, green, blue):
-    assert 0 <= red < 256
-    assert 0 <= blue < 256
-    assert 0 <= green < 256
+    assert 0 <= red < 512
+    assert 0 <= blue < 512
+    assert 0 <= green < 512, green
     return (red << 16) + (green << 8) + blue
 
 

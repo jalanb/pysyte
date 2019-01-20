@@ -1,4 +1,4 @@
-"""Provide methods to handle colour values
+"""Provide methods to put colours in texts
 
 
 Inspired by http://stackoverflow.com/questions/384076/how-can-i-make-the-python-logging-output-to-be-colored  # noqa
@@ -10,8 +10,8 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 from __future__ import print_function, absolute_import
 import os
 
-from . import ansi_escapes
-from . import colour_numbers
+from pysyte.colours import ansi_escapes
+from pysyte.colours import colour_numbers
 
 
 class ColouredTail(object):

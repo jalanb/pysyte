@@ -2,9 +2,7 @@ The colour_numbers module
 =========================
 
     >>> import colour_numbers
-    >>> print colour_numbers.__doc__
-    Convert between some numbers known to represent colours
-    ...
+    >>> assert 'numbers known to represent colours' in  colour_numbers.__doc__
 
 Convert html strings to integers
 --------------------------------
@@ -51,8 +49,7 @@ Convert an HTML colour string to an ANSI code (which is a number)
     True
 
 And back again
-    >>> colour_numbers.ansi_to_html(ansi) == html
-    True
+    >>> assert colour_numbers.ansi_to_html(ansi) == html
 
 VGA colours
 -----------

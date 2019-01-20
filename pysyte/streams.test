@@ -9,5 +9,4 @@ The streams module
     >>> stream = StringIO()
     >>> with streams.swallow_stdout(stream):
     ...     print('Hello World')
-    >>> stream.getvalue() == 'Hello World\n'
-    True
+    >>> assert stream.getvalue() == 'Hello World\n'

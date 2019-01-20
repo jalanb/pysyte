@@ -159,7 +159,7 @@ This test assumes you have a ~/bin directory
     >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
     >>> show(real_paths)
-    [<DirectPath '/Users/jab/.bashrc'>, <DirectPath '/Users/jab/bin'>]
+    [<FilePath '/Users/jab/.bashrc'>, <DirectPath '/Users/jab/bin'>]
 
 Iteration of paths
 ------------------

@@ -1,0 +1,17 @@
+The pysyte/splits module
+========================
+
+    >>> from pysyte import splits
+    >>> assert 'splitting strings' in splits.__doc__
+
+Splitting strings
+-----------------
+
+    >>> string = 'hello,world'
+    >>> assert splits.split(string) == ['hello', 'world']
+
+    >>> assert splits.join(splits.split(string)) == string
+
+    >>> string = 'fred, alan'
+    >>> assert splits.split(string) == ['fred', ' alan']
+    >>> assert splits.split_and_strip(string) == ['fred', 'alan']

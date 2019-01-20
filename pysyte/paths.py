@@ -69,6 +69,9 @@ class DotPath(PPath):
     def __cmp__(self, other):
         return cmp(str(self), str(other))
 
+    def _next_class(self, string):
+        return self.as_existing_file(string)
+
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
         if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
@@ -114,7 +117,7 @@ class DotPath(PPath):
     def parts(self):
         """Split the path into parts like Pathlib
 
-        >>> expected = ('/', 'path', 'to', 'there')
+        >>> expected = ['/', 'path', 'to', 'there']
         >>> assert DotPath('/path/to/there').parts() == expected
         """
         parts = self.split(os.path.sep)
@@ -162,11 +165,11 @@ class DotPath(PPath):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
-        ...     '/home/guido/build/python.tar')
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
+        ...     '/home/guido/build/python.tar'))
         ../build/python.tar
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
-        ...     '/mnt/guido/build/python.tar')
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
+        ...     '/mnt/guido/build/python.tar'))
         /mnt/guido/build/python.tar
         """
         relative = self.relpathto(destination)

@@ -2,9 +2,7 @@ The texts module
 ================
 
     >>> import texts
-    >>> print texts.__doc__
-    Provide methods to handle colour values
-    ...
+    >>> assert 'colours in texts' in texts.__doc__
 
 Basic usage:
     >>> hello = texts.colour_text('H', 'green').colour_text('ello ')
@@ -12,13 +10,15 @@ Basic usage:
 Shorter way:
     >>> world = texts.colour('W', 'red').text('orld')
 
-Both methods have same effect
-    >>> hello, world
-    (<CoulouredTail '\x1b[32mH\x1b[2m\x1b[0m''ello '>, <CoulouredTail '\x1b[31mW\x1b[2m\x1b[0m''orld'>)
+Both methods give a coloured tail
+    >>> hello
+    <ColouredTail '\x1b[32mH\x1b[2m\x1b[0m''ello '>
+    >>> world
+    <ColouredTail '\x1b[31mW\x1b[2m\x1b[0m''orld'>
 
 Adds in ANSI sequences (looks better on terminal than in a doctest)
-    >>> print hello, world
-    [32mH[2m[0mello  [31mW[2m[0morld
+    >>> assert str(hello) == '\x1b[32mH\x1b[2m\x1b[0mello '
+    >>> assert str(world) == '\x1b[31mW\x1b[2m\x1b[0morld'
 
 Convenience method to highlight initials
 

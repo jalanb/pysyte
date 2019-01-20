@@ -5,9 +5,7 @@ try
 ---
 
 try is a reserved word so we need a roundabout import
-    >>> import importlib
-    >>> fp, pathname, description = importlib.find_module('try')
-    >>> try_module = importlib.load_module('try', fp, pathname, description)
+    >>> from pysyte.testing import trying
 
 try.tests
 ---------
@@ -22,15 +20,13 @@ Assuming that this test is actually run under try
 Running tests with try provides an instance called test
     which has some interesting attributes
     e.g. this file is called try.tests
-    >>> test.path.name == 'try.tests'
-    True
+    >>> assert test.path.name == 'trying.tests'
 
 If that went well we have a hidden variable called test
     which is an object from the __main__ module
     and has some attributes
 
-    >>> test.path_to_py.name == 'try.py'
-    True
+    >>> assert test.path_to_py.name == 'trying.py'
 
     >>> import os
     >>> assert test.here == os.getcwd()
@@ -39,13 +35,11 @@ We also have access to some modules I often use
     without a need for explicit import
     Which ignores the heuristic that
         "Explicit is better than implicit"
-    >>> test.path.name == makepath(sys.argv[0]).name
-    True
+    >>> assert test.path.name == makepath(sys.argv[0]).name
 
 And we can run bash commands
-    >>> bash('/bin/ls ~/.bashrc')
+    >>> assert bash('/bin/ls ~/.bashrc')
     /.../.bashrc
-    True
 
     >>> assert test.home == makepath('~')
 
@@ -55,9 +49,8 @@ We know the user who is running the tests
 Edge cases
 ----------
 
-    >>> bash('/bin/ls ~/no_such_file')
+    >>> assert not bash('/bin/ls ~/no_such_file')
     FAIL: .../no_such_file: No such file or directory
-    False
 
     >>> show(os)
     Help on module os:
@@ -66,13 +59,11 @@ Edge cases
     >>> show(0)
     0
 
-    >>> re_imported_try = try_module.make_module(test.path_to_py)
-    >>> re_imported_try == try_module
-    True
+    >>> re_imported_try = trying.make_module(test.path_to_py)
+    >>> assert re_imported_try.__file__ == trying.__file__
 
     >>> import see
-    >>> see == try_module.make_module(test.path_to_py.parent / 'see.py')
-    True
+    >>> assert see == trying.make_module(test.path_to_py.parent / 'see.py')
     >>> show(see)
     Help on module see:
     ...
@@ -80,24 +71,12 @@ Edge cases
     ...
 
     >>> del sys.modules['see']
-    >>> see = try_module.make_module(test.path_to_py.parent / 'see.py')
+    >>> see = trying.make_module(test.path_to_py.parent / 'see.py')
     >>> show(see)
     Help on module see:
     ...
         /.../testing/see.py
     ...
-    >>> mod = try_module.make_module(test.path_to_py.parent / 'not_a_file.py')
-    >>> assert isinstance(mod, type(importlib))
+    >>> mod = trying.make_module(test.path_to_py.parent / 'not_a_file.py')
+    >>> assert isinstance(mod, type(trying))
     >>> assert mod.__name__, 'not_a_file'
-
-Hiding output
--------------
-
-    >>> from pprint import pprint
-    >>> def hello(arg):
-    ...     pprint('Hello')
-    ...     return arg
-    >>> assert hello('World') == 'World'
-    'Hello'
-
-    >>> assert no_print(hello, 'World') == 'World'

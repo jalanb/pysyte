@@ -11,12 +11,10 @@ from six import StringIO
 def swallow_stdout(stream=None):
     """Divert stdout into the given stream
 
-    >>> from cStringIO import StringIO
     >>> string = StringIO()
     >>> with swallow_stdout(string):
     ...     print('hello')
-    >>> string.getvalue() == 'hello'
-    True
+    >>> assert string.getvalue().rstrip() == 'hello'
     """
     saved = sys.stdout
     if stream is None:
