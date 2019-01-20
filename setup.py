@@ -33,6 +33,10 @@ setup(
         'path.py==7.7.1',
         'pdir',
     ],
+    scripts=[
+        'bin/kat',
+        'bin/try',
+    ],
     test_suite='nose.collector',
     tests_require=['nose'],
     extras_require={

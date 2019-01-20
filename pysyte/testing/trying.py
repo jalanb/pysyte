@@ -218,6 +218,7 @@ def test_file(test_script):
             'test': TestBeingRun(test_script),
             'sys': sys,
             'see': see,
+            'pp': pprint,
             'spread': spread,
             'see_methods': see_methods,
             'see_attributes': see_attributes,

@@ -297,6 +297,8 @@ def paths_to_doctests(strings, recursive):
     paths_to_files = _get_files_from_stems(strings, recursive)
     paths_to_positive_scripts = [p for p in paths_to_files if p.ext in positive_test_extensions()]
     for path_to_script in paths_to_files:
+        if path_to_script in paths_to_positive_scripts:
+            continue
         if path_to_script.ext:
             continue
         if not _first_line_is_python_shebang(path_to_script.lines()):

@@ -1,8 +1,9 @@
 """Some methods to help with the handling of dictionaries"""
 
 
-from collections import defaultdict as dd
+from collections import defaultdict
 
+import pdir
 
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
@@ -56,7 +57,7 @@ def group_list(items):
     >>> grouped[1] == [0,1]
     True
     """
-    groups = dd(list)
+    groups = defaultdict(list)
     for key, value in items:
         groups[key].append(value)
     return groups
@@ -73,17 +74,16 @@ def group_list_by(items, key_from_item):
     >>> grouped['a'] == [(1, 9), (1, 7)]
     True
     """
-    groups = dd(list)
+    groups = defaultdict(list)
     for item in items:
         key = key_from_item(item)
         groups[key].append(item)
     return groups
 
 
-class DefaultDict(dd):
+class DefaultDict(defaultdict):
     """A default dict with improved repr"""
     def __repr__(self):
-        import pdir
         return pdir.pd(self)
 
     def old_repper(self):

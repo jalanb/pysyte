@@ -4,7 +4,8 @@
 import sys
 import importlib
 
-from pysyte import testing
+from pysyte.testing import trying
+from pysyte.testing import files_for_test
 
 # Module name prevents a normal import
 # try_ = importlib.import_module('try', 'pysyte.testing')
@@ -13,15 +14,19 @@ from pysyte import testing
 def main():
     """Run the program"""
 
+    sys.stdout.write(sys.executable)
     try:
-        return testing.try.test()
-    except testing.files_for_test.UserMessage as e:
+        return trying.test()
+    except files_for_test.UserMessage as e:
         print(e, file=sys.stderr)
     except KeyboardInterrupt as e:
         print('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c ', file=sys.stderr)
-        print('Bye now', file=sys.stderr)
-        if str(e):
-            print(e, file=sys.stderr)
+        try:
+            print('Bye now', file=sys.stderr)
+            if str(e):
+                print(e, file=sys.stderr)
+        except SyntaxError:
+            sys.stdout.write(sys.executable)
 
 
 if __name__ == '__main__':
