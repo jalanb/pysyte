@@ -108,9 +108,9 @@ class DotPath(PPath):
         >>> p.paths == p.dirpaths()
         True
         """
-        head, *rest = self.parts()
-        result = [DotPath(head or '/')]
-        for name in rest:
+        parts = self.parts()
+        result = [DotPath(parts[0] or '/')]
+        for name in parts[1:]:
             result.append(result[-1] / name)
         return result
 

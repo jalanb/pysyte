@@ -17,16 +17,11 @@ def main():
     try:
         return trying.test()
     except files_for_test.UserMessage as e:
-        print(e, file=sys.stderr)
+        sys.stderr.write(str(e))
     except KeyboardInterrupt as e:
-        print('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c ', file=sys.stderr)
-        try:
-            print('Bye now', file=sys.stderr)
-            if str(e):
-                print(e, file=sys.stderr)
-        except SyntaxError:
-            sys.stdout.write('%s had a SyntaxError:\n' % sys.executable)
-            traceback.print_exc()
+        sys.stderr.write('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c\n')
+        sys.stderr.write('Bye now\n')
+        sys.stderr.write(str(e))
 
 
 if __name__ == '__main__':
