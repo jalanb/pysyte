@@ -18,7 +18,7 @@ setup(
     description=pysyte.__doc__,
     platforms='any',
     classifiers=[
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
         'Development Status :: 1 - Planning',
         'Natural Language :: English',
         'Environment :: Console',
