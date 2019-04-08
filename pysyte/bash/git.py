@@ -50,7 +50,8 @@ class GitException(RuntimeError):
 class GitError(GitException):
     def __init__(self, command, status_, output):
         super(GitError, self).__init__(
-            'Command: %s\nstderr:%s' % (command, output))
+            '\nPWD: %r\nCommand: %r\nstderr:\n%r' % (
+                os.getcwd(), command, output))
         self.command = command
         self.status = status_
         self.output = output
@@ -68,19 +69,33 @@ class NoRemoteRef(GitError):
     pass
 
 
+class NoSuchCommit(GitError):
+    pass
+
+
+class ExistingReference(GitError):
+    pass
+
+
+class ExistingBranch(GitError):
+    pass
+
+
 class EmptyCommit(GitError):
     pass
 
 
 def resolve_conflicts(in_lines):
     lines = []
-    resolved = []
+    resolved = set()
     conflicts = set()
     for line in in_lines:
         if line.startswith('Resolved'):
             name = line.split("'")[1]
-            resolved.append(name)
+            resolved.add(name)
             add(name)
+            if name in conflicts:
+                conflicts.remove(name)
             continue
         lsw = line.startswith
         if lsw('CONFLICT') or lsw('Recorded preimage'):
@@ -155,7 +170,7 @@ def cd(path):
     _working_dirs[0] = root_from(path)
 
 
-def run(sub_command, quiet=False, no_edit=False):
+def run(sub_command, quiet=False, no_edit=False, no_verify=False):
     """Run a git command
 
     Prefix that sub_command with "git "
@@ -172,7 +187,8 @@ def run(sub_command, quiet=False, no_edit=False):
     else:
         git_command = 'git'
     edit = 'GIT_EDITOR=true' if no_edit else ''
-    command = '%s %s %s' % (edit, git_command, sub_command)
+    verify = 'GIT_SSL_NO_VERIFY=true' if no_verify else ''
+    command = '%s %s %s %s' % (verify, edit, git_command, sub_command)
     if not quiet:
         logger.info('$ %s', command)
     status_, output = getstatusoutput(command)
@@ -184,8 +200,14 @@ def run(sub_command, quiet=False, no_edit=False):
             raise UnknownRevision(command, status_, output)
         elif 'remote ref does not exist' in output:
             raise NoRemoteRef(command, status_, output)
+        elif 'no such commit' in output:
+            raise NoSuchCommit(command, status_, output)
+        elif 'reference already exists' in output:
+            raise ExistingReference(command, status_, output)
         elif re.search('Resolved|CONFLICT|Recorded preimage', output):
             raise ResolveError(command, status_, output)
+        elif re.search('branch named.*already exists', output):
+            raise ExistingBranch(command, status, output)
         raise GitError(command, status_, output)
     elif output and not quiet:
         logger.info('\n%s', output)
@@ -244,6 +266,12 @@ def branches(remotes=False):
     """
     stdout = branch('--list %s' % (remotes and '-a' or ''), quiet=True)
     return [_.lstrip('*').strip() for _ in stdout.splitlines()]
+
+
+def branches_containing(commit):
+    """Return a list of branches conatining that commit"""
+    lines = run('branch --contains %s' % commit).splitlines()
+    return [l.lstrip('* ') for l in lines]
 
 
 def hide(item):
@@ -305,8 +333,16 @@ def config(key, value, local=True):
     Unless local is set to False: only change local config
     """
     option = local and '--local' or ''
-    run('config %s %s %s' % (option, key, value))
+    run('config %s "%s" "%s"' % (option, key, value))
 
+
+def clean(full=False):
+    options = '-d -f -f -x' if full else ''
+    run('clean %s' % options)
+    run('gc --quiet')
+    if full:
+        run('reset HEAD .')
+        checkout('.')
 
 def clone(url, path=None, remove=True):
     """Clone a local repo from that URL to that path
@@ -368,6 +404,20 @@ def needs_abort():
     return None
 
 
+@contextmanager
+def very_clean():
+    """Do a full git clean before and after"""
+    abandon_fully()
+    try:
+        yield
+    finally:
+        abandon_fully()
+
+
+def abandon_fully():
+    abandon_operation()
+    clean(full=True)
+
 def abandon_operation():
     """Abandon any current operaton which needs it"""
     command = needs_abort()
@@ -376,11 +426,43 @@ def abandon_operation():
     return run(command.replace('git', '', 1))
 
 
-def rebase_renew(source, destination):
-    checkout(source)
-    pulled = pull()
-    renew_local_branch(destination, source)
-    return pulled
+def show_branches(branch1, branch2):
+    """Runs git show-branch between the 2 branches, parse result"""
+
+    def find_column(string):
+        """Find first non space line in the prefix"""
+        result = 0
+        for c in string:
+            if c == ' ':
+                result += 1
+        return result
+
+    def parse_show_line(string):
+        """Parse a typical line from git show-branch
+
+        >>> parse_show_line('+  [master^2] TOOLS-122 Add bashrc')
+        '+ ', 'master^2', 'TOOLS-122 Add bashrc'
+        """
+        regexp = re.compile('(.*)\[(.*)] (.*)')
+        match = regexp.match(string)
+        if not match:
+            return None
+        prefix, commit, comment = match.groups()
+        return find_column(prefix), commit, comment
+
+    log = run('show-branch --sha1-name "%s" "%s"' % (branch1, branch2))
+    lines = iter(log.splitlines())
+    line = lines.next()
+    branches = {}
+    while line != '--':
+        column, branch, comment = parse_show_line(line)
+        branches[column] = [branch]
+        line = lines.next()
+    line = lines.next()
+    for line in lines:
+        column, commit, comment = parse_show_line(line)
+        branches[column].append((commit, comment))
+    return branches
 
 
 # pylint: disable=redefined-outer-name
@@ -397,11 +479,31 @@ def rebase_renew(source, destination):
 current_branch = branch
 
 
-def latest_commit(branch=None):
-    """Last commit message on given (or current) branch"""
-    options = '%s --no-abbrev-commit' % branch or ''
+def latest_commit(branch=None, path=None):
+    """Last commit message on given (or current) branch
+
+    If a path is given, then get latest for that path only
+    """
+    options = '--no-abbrev-commit %s %s' % (
+        branch or '',
+        path and str('-- %s' % path) or '')
     result = log(options, 1, True, True)
     return result and result.split(' ', 1) or ('', '')
+
+
+def commits_with_message(message):
+    """All commits with that message (in current branch)"""
+    output = log("--grep '%s'" % message, oneline=True, quiet=True)
+    lines = output.splitlines()
+    return [l.split(' ', 1)[0] for l in lines]
+
+
+def sha1(branch=None, path=None):
+    """SHA1 of the last commit on given (or current) branch
+
+    If a path is given, then get latest for that path only
+    """
+    return latest_commit(branch, path)[0]
 
 
 def checkout(branch, quiet=False, as_path=False):
@@ -440,10 +542,41 @@ def diff(options=None, branch='master', path=None):
     return run('diff %s %s %s' % (options, branch, suffix))
 
 
+def same_diffs(commit1, commit2):
+    """Whether those 2 commits have the same change
+
+    Run "git range-diff" against 2 commit ranges:
+        1. parent of commit1 to commit1
+        1. parent of commit2 to commit2
+
+    If the two produce the same diff then git will only show header lines
+        Header lines are prefixed like "1: ...."
+    Otherwise there will be lines after the header lines
+        (and those lines will show the difference)
+    """
+    def range_one(commit):
+        """A git commit "range" to include only one commit"""
+        return '%s^..%s' % (commit, commit)
+
+    output = run('range-diff %s %s' % (range_one(commit1), range_one(commit2)))
+    lines = output.splitlines()
+    for i, line in enumerate(lines, 1):
+        if not line.startswith('%s: ' % i):
+            break
+    return not lines[i:]
+
+
 def checkout_log(branch, number=15, quiet=False, as_path=False):
     if checkout(branch, quiet, as_path):
         return log('', number=number, oneline=True, quiet=quiet).splitlines()
     return []
+
+
+def renew_local_branch_from_remote(branch, start_point):
+    checkout(start_point)
+    pulled = pull()
+    renew_local_branch(branch, start_point)
+    return pulled
 
 
 def renew_local_branch(branch, start_point, remote=False):
@@ -463,6 +596,14 @@ def renew_local_branch(branch, start_point, remote=False):
     return result
 
 
+def pull_branch(branch):
+    checkout(branch)
+    pull()
+    return up_to_date()
+
+def up_to_date():
+    return bool(re.search('up.to.date', status()))
+
 def new_local_branch(branch, start_point):
     """Make a new local branch from that start_point
 
@@ -471,15 +612,32 @@ def new_local_branch(branch, start_point):
     return run('checkout -b %s %s' % (branch, start_point))
 
 
-def publish(branch):
+def publish(branch, full_force=False):
     """Publish that branch, i.e. push it to origin"""
     checkout(branch)
-    push('--force --set-upstream origin', branch)
+    try:
+        push('--force --set-upstream origin', branch)
+    except ExistingReference:
+        if full_force:
+            push('origin --delete', branch)
+            push('--force --set-upstream origin', branch)
+
 
 
 def delete(branch, force=False, remote=False):
     option = '-D' if force else '-d'
-    result = run('branch %s %s' % (option, branch))
+    try:
+        result = run('branch %s %s' % (option, branch))
+        pass
+    except GitError as e:
+        if 'checked out at' not in e.output:
+            raise
+        if branch == 'master':
+            raise
+        checkout('master')
+        result = run('branch %s %s' % (option, branch))
+    except Exception as e:
+        pass
     if remote:
         return hide(branch)
     return result
@@ -587,7 +745,7 @@ def git_continuer(method, *args, **kwargs):
             except Resolver as resolved:
                 pass
             else:
-                break
+                return
 
 
 def cherry_pick(pick):
@@ -654,6 +812,7 @@ def split_conflict(conflict):
                         previous_conflict = True
                     elif marker == '>>>>>>>':
                         position = after
-                continue
-            position.append(line)
+                    break
+            else:
+                position.append(line)
     return before, during, after
