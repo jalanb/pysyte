@@ -3,7 +3,6 @@
 The classes all inherit from the original path.path
 """
 import os
-import itertools
 from fnmatch import fnmatch
 
 
@@ -264,7 +263,8 @@ class DotPath(PPath):
 
     @property
     def hidden(self):
-        s = str(self)
+        """A 'hidden file' has a name starting with a '.'"""
+        s = str(self.basename())
         return s and s[0] == '.'
 
 
@@ -571,18 +571,28 @@ class DirectPath(DotPath, PathAssertions):
 
     # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors='strict', ignores=None):
-        def ignored(a_path):
-            for ignore in ignores:
-                if a_path.fnmatch_part(ignore):
-                    return True
-            return False
-
-        if not ignores:
-            ignores = []
-
+        ignored = ignore_globs(ignores)
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
             if not ignored(path_to_file):
                 yield path_to_file
+
+    def listfiles(self, pattern=None, ignores=None):
+        ignored = ignore_globs(ignores)
+        return [_ for _ in self.listdir(pattern) if not ignored(_)]
+
+
+
+def ignore_globs(ignores):
+
+    def ignored(a_path):
+        if not ignores:
+            return False
+        for ignore in ignores:
+            if a_path.fnmatch_part(ignore):
+                return True
+        return False
+
+    return ignored
 
 
 class ChmodValues(object):

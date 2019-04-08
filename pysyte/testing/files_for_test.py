@@ -204,14 +204,17 @@ def all_possible_test_files_in(path_to_root, recursive):
 
     If recursive is True then include sub-directories
     """
-    find_files = recursive and path_to_root.walkfiles or path_to_root.files
+    find_files = recursive and path_to_root.walkfiles or path_to_root.listfiles
     result = []
+    ignores = ['.git/', '.svn/', '.idea/',
+               'coverage/', 'build/', '*.egg-info/', 'dist/', '__pycache__/',
+               '*.sw[op]']
     for glob in _positive_test_globs():
-        result.extend(find_files(glob))
-    for path_to_file in find_files():
-        if '.git' in path_to_file or path_to_file.basename()[0] == '.':
-            continue
-        if path_to_file.ext in ('.swp', '.swo'):
+        files = find_files(glob, ignores=ignores)
+        result.extend(files)
+    ignores.extend(_positive_test_globs())
+    for path_to_file in find_files(ignores=ignores):
+        if path_to_file.hidden:
             continue
         try:
             if not path_to_file.ext and _first_line_is_python_shebang(path_to_file.lines()):
@@ -224,15 +227,10 @@ def all_possible_test_files_in(path_to_root, recursive):
 def _get_scripts_here(recursive):
     """Find all test scripts in the current working directory"""
     here = path('.')
-    result = []
-    for python_file in all_possible_test_files_in(here, recursive):
-        if has_python_source_extension(python_file):
-            text = python_file.text()
-            if has_doctests(text):
-                result.append(python_file)
-        else:
-            result.append(python_file)
-    return result
+    all_possibles = all_possible_test_files_in(here, recursive)
+    test_extensions = [_ for _ in all_possibles if has_python_doctest_extension(_)]
+    test_texts = [_ for _ in all_possibles if has_python_source_extension(_) and has_doctests(_.text())]
+    return test_texts + test_extensions
 
 
 def _expand_stems(path_stems):
