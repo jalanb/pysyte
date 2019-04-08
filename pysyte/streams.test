@@ -1,9 +1,11 @@
 The streams module
 ==================
 
-    >>> import streams
-    >>> print(streams.__doc__)
-    Methods to handle streams
+    >>> from pysyte import streams
+    >>> assert 'handle streams' in streams.__doc__
+
+Swallowing stdout
+-----------------
 
     >>> from io import StringIO
     >>> stream = StringIO()

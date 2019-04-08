@@ -1,7 +1,7 @@
 The texts module
 ================
 
-    >>> import texts
+    >>> from pysyte.colours import texts
     >>> assert 'colours in texts' in texts.__doc__
 
 Basic usage:
@@ -23,6 +23,5 @@ Adds in ANSI sequences (looks better on terminal than in a doctest)
 Convenience method to highlight initials
 
     >>> foo = texts.colour('H', 'red').colour('ello')
-    >>> foo == texts.colour_initial('Hello', 'red')
-    True
+    >>> assert foo == texts.colour_initial('Hello', 'red')
 
