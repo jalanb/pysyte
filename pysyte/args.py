@@ -20,6 +20,8 @@ def parser(help_text):
         def strings(self, name, help, many='*'):
             self.arg(name, metavar=name, help=help, type=str, nargs=many)
 
+        args = strings
+
         def answer(self, answers=None):
             yes_no = {
                 'n': ('-n', '--no', 'Answer no'),
