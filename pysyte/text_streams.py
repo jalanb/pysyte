@@ -33,8 +33,12 @@ def arg_files():
 
 
 def all():
-    more = iter([clipboard_stream(), sys.stdin])
-    return chain(arg_files(), more)
+    some = False
+    for path in arg_paths():
+        yield open(path)
+        some = True
+    if not some:
+        yield sys.stdin
 
 
 def first():
