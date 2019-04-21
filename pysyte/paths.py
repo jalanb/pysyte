@@ -578,7 +578,7 @@ class DirectPath(DotPath, PathAssertions):
 
     def listfiles(self, pattern=None, ignores=None):
         ignored = ignore_globs(ignores)
-        return [_ for _ in self.listdir(pattern) if not ignored(_)]
+        return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
 
 
