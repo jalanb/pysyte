@@ -5,7 +5,7 @@ import logging
 import os
 from contextlib import contextmanager
 
-from cmnds import getstatusoutput
+from pysyte.bash.cmnds import getstatusoutput
 
 logger = logging.getLogger(__name__)
 

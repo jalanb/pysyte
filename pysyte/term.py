@@ -1,9 +1,9 @@
-import pysyte as site
+from pysyte.bash import cmnds
 
 
 def _tput(tput_command):
     command = 'tput %s' % tput_command
-    status, output = site.bash.cmnds.getstatusoutput(command)
+    status, output = cmnds.getstatusoutput(command)
     if status:
         raise NotImplementedError(output)
     if not output:
