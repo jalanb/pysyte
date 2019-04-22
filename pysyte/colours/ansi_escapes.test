@@ -1,7 +1,7 @@
 The ansi_escapes module
 =======================
 
-    >>> import ansi_escapes
+    >>> from pysyte.colours import ansi_escapes
     >>> assert 'ANSI escape codes' in ansi_escapes.__doc__
 
 Get a coloured text

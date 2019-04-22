@@ -3,7 +3,7 @@ import pysyte as site
 
 def _tput(tput_command):
     command = 'tput %s' % tput_command
-    status, output = site.cmnds.getstatusoutput(command)
+    status, output = site.bash.cmnds.getstatusoutput(command)
     if status:
         raise NotImplementedError(output)
     if not output:

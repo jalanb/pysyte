@@ -1,7 +1,15 @@
 The see module
 ==============
 
-    >>> import  see
+    >>> from pysyte.testing import see
+
+More imports for testing
+------------------------
+
+    >>> import sys
+
+see()
+-----
 
 The basic method is a better version of dir()
     >>> see.see(sys)

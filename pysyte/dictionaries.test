@@ -1,9 +1,8 @@
 The dictionaries module
 =======================
 
-    >>> import dictionaries
-    >>> print(dictionaries.__doc__)
-    Some methods to help with the handling of dictionaries
+    >>> from pysyte import dictionaries
+    >>> assert 'help with the handling of dictionaries' in dictionaries.__doc__
 
 Default Dictionaries
 --------------------
@@ -26,11 +25,10 @@ A LazyDefaultDict initialises with a method (not a type), which takes a key
 
     >>> stuff = dictionaries.LazyDefaultDict(method)
 
-    >>> stuff[5] == 'small'
-    True
-    >>> stuff[198798] == 'big'
-    True
+    >>> assert stuff[5] == 'small'
+    >>> assert stuff[198798] == 'big'
 
+Also has the better representation of DefaultDict
     >>> stuff
     <LazyDefaultDict
         {5: 'small', 198798: 'big'}

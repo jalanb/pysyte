@@ -4,11 +4,6 @@
 see
 A human alternative to dir().
 
-    >>> from see import see
-    >>> help(see)
-    Help on function see in module see:
-    ...
-
 Copyright (c) 2009-2010 Liam Cooke
 http://inky.github.com/see/
 

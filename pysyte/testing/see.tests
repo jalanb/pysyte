@@ -1,7 +1,7 @@
 The see module
 ==============
 
-    >>> import  see
+    >>> from pysyte.testing import see
 
 Edge cases
 ----------

@@ -1,7 +1,7 @@
 The colour_names module
 =======================
 
-    >>> import colour_names
+    >>> from pysyte.colours import colour_names
     >>> assert 'provide names for colours' in  colour_names.__doc__
 
 

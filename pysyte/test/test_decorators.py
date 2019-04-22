@@ -15,7 +15,7 @@ def initials(forename, surname, stream):
 
     Method is memoized, so we show an actual call by writing to stream
     """
-    print(''.join(('Call:', forename, surname), file=stream))
+    print(' '.join(('Call:', str(forename), str(surname))), file=stream)
     return '%s%s' % (forename[0], surname[0])
 
 
@@ -39,8 +39,8 @@ def method():
 
 
 def average(a, b, stream):
-    result = (a + b) / 2
-    print >> stream, 'Average of', a, 'and', b, 'is', result
+    result = (a + b) // 2
+    print('Average of', a, 'and', b, 'is', result, file=stream)
     return result
 
 
@@ -50,8 +50,7 @@ class MemoizeTest(unittest.TestCase):
 
     def test_first_call(self):
         self.assertEqual('FM', initials('Fred', 'Murphy', self.stream))
-        self.assertEqual('Call: Fred Murphy\n',
-                         self.stream.getvalue())
+        self.assertEqual('Call: Fred Murphy\n', self.stream.getvalue())
 
     def test_method_name(self):
         """A memoized method has been renamed"""
@@ -66,21 +65,20 @@ class MemoizeTest(unittest.TestCase):
 
     def test_second_call_different_args(self):
         """Second call of method gives twice the output"""
-        self.check_second_call('Fred', 'Smith', 'Silly')
+        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('FS', initials('Fred', 'Silly', self.stream))
+        actual = self.stream.getvalue()
+        expected = 'Call: Fred Smith\nCall: Fred Silly\n'
+        self.assertEqual(expected, actual)
 
     def test_second_call_same_args(self):
         """Second call of method with same args gives once the output"""
-        self.check_second_call('Fred', 'Smith')
+        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        actual = self.stream.getvalue()
+        expected = 'Call: Fred Smith\n'
+        self.assertEqual(expected, actual)
 
-    def check_second_call(self, forename, surname, surname2=None):
-        abbrev = ''.join((forename[0].upper(), surname[0].upper()))
-        surnames = [surname, surname2 or surname]
-        for name in surnames:
-            self.assertEqual(abbrev, initials(forename, name, self.stream))
-        callees = [(forename, name) for name in surnames]
-        calls = ['Call: %s' % c for c in callees]
-        call_string = '\n'.join(calls + [''])
-        self.assertEqual(call_string, self.stream.getvalue())
 
     def test_invalidate(self):
         """Invalidating a cached call loses the memory

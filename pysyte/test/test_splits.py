@@ -31,7 +31,7 @@ class TestSplits(unittest.TestCase):
         """Can split on a regular expression"""
         data = [
             ('one,two;three', '[,;]', ['one', 'two', 'three']),
-            ('one,,,two', ',*', ['one', 'two']),
+            ('one,,,two', ',+', ['one', 'two']),
             ('*blackduck*', '[*?[]', ['', 'blackduck', '']),
         ]
         for string, separator, expected in data:

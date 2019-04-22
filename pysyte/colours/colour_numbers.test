@@ -1,7 +1,7 @@
 The colour_numbers module
 =========================
 
-    >>> import colour_numbers
+    >>> from pysyte.colours import colour_numbers
     >>> assert 'numbers known to represent colours' in  colour_numbers.__doc__
 
 Convert html strings to integers

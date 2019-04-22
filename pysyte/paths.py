@@ -65,6 +65,8 @@ class DotPath(PPath):
             result = str(self)  # pylint: disable=redefined-variable-type
         return self.as_existing_file(result)
 
+    __truediv__ = __div__
+
     def __cmp__(self, other):
         return cmp(str(self), str(other))
 
@@ -326,6 +328,8 @@ class FilePath(DotPath, PathAssertions):
 
     def __div__(self, child):
         raise PathError('%r has no children' % self)
+
+    __truediv__ = __div__
 
     def __iter__(self):
         for line in self.stripped_lines():
@@ -707,8 +711,8 @@ def directories(strings):
     return split_directories(strings)[0]
 
 
-def home():
-    return makepath('~')
+def home(sub_path = None):
+    return makepath('~') / sub_path
 
 
 def pwd():

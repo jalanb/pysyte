@@ -1,6 +1,7 @@
 import os
 import ast
 import imp
+from collections import defaultdict
 
 
 from pysyte import dictionaries
@@ -8,7 +9,7 @@ from pysyte import dictionaries
 
 class ImportVisitor(ast.NodeVisitor):
     def __init__(self):
-        dd = dictionaries.dd
+        dd = defaultdict
         self.froms = dd(list)
         self.imports = dd(list)
         self.used = dd(list)

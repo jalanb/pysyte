@@ -1,6 +1,6 @@
-"""Check all imports in the dashboard package
+"""Check all imports in the package
 
-Find *.py under the dashboard package
+Find *.py under the package
     find all import lines in each file, and execute them
 """
 
@@ -42,7 +42,7 @@ class TestDashboardImports(unittest.TestCase):
         They are on lines 7 and 27
         """
         multiples = self.visitor.multiples()
-        self.assertEquals(multiples.keys(), ['os'])
+        self.assertEquals(list(multiples.keys()), ['os'])
         self.assertEquals(multiples['os'], [7, 27])
 
     def test_redundant_lines(self):

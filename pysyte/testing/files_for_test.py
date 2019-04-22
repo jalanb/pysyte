@@ -144,12 +144,12 @@ def is_python_doctest_extension(string):
     return string in python_doctest_extensions()
 
 
-def is_possible_test_extension(string):
+def _is_possible_test_extension(string):
     """Whether the string is a possible test extension"""
     return string in possible_test_extensions()
 
 
-def is_positive_test_extension(string):
+def _is_positive_test_extension(string):
     """Whether the string is a positive test extension"""
     return string in positive_test_extensions()
 
@@ -170,14 +170,14 @@ def has_python_doctest_extension(string):
     return _has_checked_extension(string, is_python_doctest_extension)
 
 
-def has_possible_test_extension(string):
+def _has_possible_test_extension(string):
     """Whether the string has a possible test extension"""
-    return _has_checked_extension(string, is_possible_test_extension)
+    return _has_checked_extension(string, _is_possible_test_extension)
 
 
-def has_positive_test_extension(string):
+def _has_positive_test_extension(string):
     """Whether the string has a possible test extension"""
-    return _has_checked_extension(string, is_positive_test_extension)
+    return _has_checked_extension(string, _is_positive_test_extension)
 
 
 def _positive_test_globs():
@@ -199,7 +199,7 @@ def has_doctests(string):
     return bool(doctest_regexp.search(string))
 
 
-def all_possible_test_files_in(path_to_root, recursive):
+def _all_possible_test_files_in(path_to_root, recursive):
     """A list of all possibel test files in the given root
 
     If recursive is True then include sub-directories
@@ -227,7 +227,7 @@ def all_possible_test_files_in(path_to_root, recursive):
 def _get_scripts_here(recursive):
     """Find all test scripts in the current working directory"""
     here = path('.')
-    all_possibles = all_possible_test_files_in(here, recursive)
+    all_possibles = _all_possible_test_files_in(here, recursive)
     test_extensions = [_ for _ in all_possibles if has_python_doctest_extension(_)]
     test_texts = [_ for _ in all_possibles if has_python_source_extension(_) and has_doctests(_.text())]
     return test_texts + test_extensions

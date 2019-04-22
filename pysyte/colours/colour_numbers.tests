@@ -1,7 +1,7 @@
 The colour_numbers module
 =========================
 
-    >>> import colour_numbers
+    >>> from pysyte.colours import colour_numbers
 
 
 More modules for testing
