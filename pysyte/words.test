@@ -11,23 +11,15 @@ Can find plurals of words
     >>> assert words.pluralize('fred') == 'freds'
 
 Which preserves case
-    >>> assert words.pluralize('Freddy') == 'Freddies'
+    >>> assert words.pluralize('Freddy') == 'Freddys'
 
 Singulars
 ---------
 
 We can also get singular forms,
-    but the method is called words.depluralize to emphasize that
-    it just does the opposite of words.pluralize()
-
-ONe gets less milk from only one of these
-    >>> assert words.depluralize('cows') == 'cow'
-
-But there's still plenty of sailing at the only one of these
-    >>> assert words.depluralize('Cowes') == 'Cowes'
-
+    >>> assert words.singularize('cows') == 'cow'
 
 Names for numbers
 -----------------
 
-    >>> assert words.number_name(-621.77) == 'minus six hundred and twenty one point seven seven'
+    >>> assert words.number_name(-621.77) == 'minus six hundred and twenty-one point seven seven'

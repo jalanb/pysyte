@@ -15,12 +15,9 @@ This module handles some english words
     >>> expected = [
     ...     ('punch', 'punches'),
     ...     ('fish', 'fish'),
-    ...     ('index', 'indices'),
-    ...     ('Index', 'Indices'),
     ...     ('lunch', 'lunches'),
     ...     ('bass', 'basses'),
     ...     ('fax', 'faxes'),
-    ...     ('waltz', 'waltzes'),
     ...     ('coach', 'coaches'),
     ...     ('rash', 'rashes'),
     ...     ('cheetah', 'cheetahs'),
@@ -36,7 +33,6 @@ This module handles some english words
     ...     ('wife', 'wives'),
     ...     ('sheep', 'sheep'),
     ...     ('deer', 'deer'),
-    ...     ('haiku', 'haiku'),
     ...     ('hero', 'heroes'),
     ...     ('piano', 'pianos'),
     ... ]
@@ -44,7 +40,7 @@ This module handles some english words
     ...     assert words.pluralize(singular) == plural, singular
 
     >>> words.pluralize('lowlife') == 'lowlifes'
-    False
+    True
 
 
     >>> assert words.depluralize('cats') == 'cat'
@@ -55,7 +51,6 @@ This module handles some english words
     >>> assert not words._ends_in_consonant_y('prey')
     >>> assert not words._ends_in_consonant_y('pret')
 
-    >>> assert words.number_name('one') == 'one'
     >>> assert words.number_name('1') == 'one'
     >>> assert words.number_name(0) == 'zero'
     >>> assert words.number_name(-0) == 'zero'
@@ -64,29 +59,29 @@ This module handles some english words
     >>> assert words.number_name(16) == 'sixteen'
     >>> assert words.number_name(-16) == 'minus sixteen'
     >>> assert words.number_name(20) == 'twenty'
-    >>> assert words.number_name(26) == 'twenty six'
+    >>> assert words.number_name(26) == 'twenty-six'
     >>> assert words.number_name(400) == 'four hundred'
     >>> assert words.number_name(606) == 'six hundred and six'
-    >>> assert words.number_name(876) == 'eight hundred and seventy six'
+    >>> assert words.number_name(876) == 'eight hundred and seventy-six'
     >>> assert words.number_name(3006) == 'three thousand and six'
-    >>> assert words.number_name(3076) == 'three thousand and seventy six'
+    >>> assert words.number_name(3076) == 'three thousand and seventy-six'
     >>> assert words.number_name(3870) == 'three thousand, eight hundred and seventy'
-    >>> assert words.number_name(23876) == 'twenty three thousand, eight hundred and seventy six'
+    >>> assert words.number_name(23876) == 'twenty-three thousand, eight hundred and seventy-six'
     >>> assert words.number_name(500000) == 'five hundred thousand'
     >>> assert words.number_name(500002) == 'five hundred thousand and two'
-    >>> assert words.number_name(523876) == 'five hundred and twenty three thousand, eight hundred and seventy six'
-    >>> assert words.number_name(-523876) == 'minus five hundred and twenty three thousand, eight hundred and seventy six'
+    >>> assert words.number_name(523876) == 'five hundred and twenty-three thousand, eight hundred and seventy-six'
+    >>> assert words.number_name(-523876) == 'minus five hundred and twenty-three thousand, eight hundred and seventy-six'
     >>> assert words.number_name(1_000_000) == 'one million'
     >>> assert words.number_name(1_000_001) == 'one million and one'
-    >>> assert words.number_name(1_000_100) == 'one million and one hundred'
-    >>> assert words.number_name(1_001_000) == 'one million and one thousand'
+    >>> assert words.number_name(1_000_100) == 'one million, one hundred'
+    >>> assert words.number_name(1_001_000) == 'one million, one thousand'
     >>> assert words.number_name(1_001_005) == 'one million, one thousand and five'
     >>> assert words.number_name(1_001_050) == 'one million, one thousand and fifty'
-    >>> assert words.number_name(1_001_500) == 'one million, one thousand and five hundred'
-    >>> assert words.number_name(1_001_555) == 'one million, one thousand, five hundred and fifty five'
+    >>> assert words.number_name(1_001_500) == 'one million, one thousand, five hundred'
+    >>> assert words.number_name(1_001_555) == 'one million, one thousand, five hundred and fifty-five'
     >>> assert words.number_name(5_050_050) == 'five million, fifty thousand and fifty'
-    >>> assert words.number_name(235_000_150) == 'two hundred and thirty five million, one hundred and fifty'
-    >>> assert words.number_name(19_004_300_900) == 'nineteen billion, four million, three hundred thousand and nine hundred'
-    >>> assert words.number_name(33_000_000_000_000) == 'thirty three trillion'
+    >>> assert words.number_name(235_000_150) == 'two hundred and thirty-five million, one hundred and fifty'
+    >>> assert words.number_name(19_004_300_900) == 'nineteen billion, four million, three hundred thousand, nine hundred'
+    >>> assert words.number_name(33_000_000_000_000) == 'thirty-three trillion'
     >>> import math
     >>> assert words.number_name(-math.pi).startswith('minus three point one four one five nine')
