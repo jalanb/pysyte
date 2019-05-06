@@ -11,7 +11,6 @@ Adapted from
     And reducing down to just the tty version
         No need here for Windows/Carbon
 """
-from __future__ import print_function
 
 import re
 import signal

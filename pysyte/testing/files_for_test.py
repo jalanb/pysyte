@@ -7,7 +7,6 @@ Test files are expected to exist as triples:
 We also allow for python scripts which have no extension
 """
 
-from __future__ import print_function
 
 import os
 import re
@@ -200,14 +199,14 @@ def has_doctests(string):
 
 
 def _all_possible_test_files_in(path_to_root, recursive):
-    """A list of all possibel test files in the given root
+    """A list of all possible test files in the given root
 
     If recursive is True then include sub-directories
     """
     find_files = recursive and path_to_root.walkfiles or path_to_root.listfiles
     result = []
     ignores = ['.git/', '.svn/', '.idea/',
-               'coverage/', 'build/', '*.egg-info/', 'dist/', '__pycache__/',
+               'coverage/', 'build/', '*.egg-info/', 'dist/', '__pycache__/', '.tox/',
                '*.sw[op]']
     for glob in _positive_test_globs():
         files = find_files(glob, ignores=ignores)

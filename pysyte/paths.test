@@ -69,11 +69,12 @@ Or by using the method makepath
     >>> p = paths.makepath('.')
 
 The difference is that makepath expands the string given
-    >>> env_home = os.environ['HOME']
-    >>> assert paths.DirectPath('~') != env_home
-    >>> assert paths.DirectPath('$HOME') != env_home
-    >>> assert paths.makepath('~') == env_home
-    >>> assert paths.makepath('$HOME') == env_home
+    >>> os_home = os.path.expanduser('~')
+    >>> assert paths.DirectPath('~') != os_home
+    >>> assert paths.makepath('~') == os_home
+    >>> if 'HOME' in os.environ:
+    ...     assert paths.DirectPath('$HOME') != os_home
+    ...     assert paths.makepath('$HOME') == os_home
 
 DirectPath is ako string, which shows the string in %s and %r
 
@@ -88,7 +89,7 @@ Path expansion at creation
 
 The makepath method expands paths "normally"
     So both of these end up with the same (string) value:
-    >>> direct_home = paths.DirectPath(os.environ['HOME'])
+    >>> direct_home = paths.DirectPath(os_home)
     >>> path_to_home = paths.makepath('~')
     >>> assert direct_home == path_to_home
 

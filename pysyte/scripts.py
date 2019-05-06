@@ -1,5 +1,4 @@
 """Framework for a script to be run from a shell"""
-from __future__ import print_function
 
 import argparse
 import os

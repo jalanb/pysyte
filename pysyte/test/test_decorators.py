@@ -1,7 +1,6 @@
 """Test the decorators module"""
 
 
-from __future__ import print_function
 from io import StringIO
 import unittest
 

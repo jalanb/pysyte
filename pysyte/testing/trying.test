@@ -4,6 +4,15 @@ The trying module
     >>> from pysyte.testing import trying
     >>> assert 'running of doctests' in trying.__doc__
 
+Imports for tests
+-----------------
+
+    >>> import os
+    >>> import getpass
+
+Trying trying
+-------------
+
 Following tests will only work when run under trying itself
     because, e.g. it provides a global called test
     >>> try:
@@ -22,7 +31,6 @@ If that went well we have a hidden variable called test
 
     >>> assert test.path_to_py.name == 'trying.py'
 
-    >>> import os
     >>> assert test.here == os.getcwd()
 
 We also have access to some modules I often use
@@ -38,7 +46,7 @@ And we can run bash commands
     >>> assert test.home == makepath('~')
 
 We know the user who is running the tests
-    >>> assert test.user == '%s@%s' % (os.environ['USER'], test.host)
+    >>> assert test.user == '%s@%s' % (getpass.getuser(), test.host)
 
 Edge cases
 ----------
@@ -52,9 +60,6 @@ Edge cases
 
     >>> show(0)
     0
-
-    >>> re_imported_try = trying.make_module(test.path_to_py)
-    >>> assert re_imported_try.__file__ == trying.__file__
 
     >>> import see
     >>> assert see == trying.make_module(test.path_to_py.parent / 'see.py')

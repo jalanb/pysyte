@@ -7,7 +7,7 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 """
 
 
-from __future__ import print_function, absolute_import
+from __future__ import absolute_import
 import os
 
 from pysyte.colours import ansi_escapes
