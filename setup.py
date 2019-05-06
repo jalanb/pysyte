@@ -5,6 +5,12 @@ from setuptools import setup
 
 import pysyte
 
+description = """Python modules often used in dotjab, and elsewhere
+
+Available on guthub and pypi for ease of access
+But probably not of great interest to others
+"""
+
 setup(
     name=pysyte.__name__,
     packages=[pysyte.__name__],
@@ -15,7 +21,8 @@ setup(
     license='MIT License',
     author='J Alan Brogan',
     author_email='github@al-got-rhythm.net',
-    description=pysyte.__doc__,
+    description=description.splitlines()[0],
+    long_description=description,
     platforms='any',
     classifiers=[
         'Programming Language :: Python :: 3.7',
