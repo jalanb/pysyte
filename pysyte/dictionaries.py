@@ -3,8 +3,6 @@
 
 from collections import defaultdict
 
-import pdir
-
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 

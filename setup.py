@@ -31,7 +31,6 @@ setup(
         'nose==1.3.7',
         'pprintpp',
         'path.py==7.7.1',
-        'pdir2',
     ],
     scripts=[
         'bin/kat',
