@@ -12,4 +12,4 @@ deploy:
   on:
     tags: true
   password:
-    secure: ex0qChPm4slkib0bLchLhm/2aTzEXHIX/icRXnlbYbP/1ToIq1SbG9MLvBegz+XXSXyZtNyDq67gFqglVe4pCm8INa78D9egxQRLGpWsw6RFydamTle/1DAP49sQHkbPY1rosObbKsNwfpyPLOMARiD+AdQH1EziZXGzSxTeXf4=
+    secure: g/XxaPnc2BgNWDy66OLyJ4lavMNUqmy8uwJzqBy52LZQ8+tRk+GMUo5fncIBju/Gr1vNechrx1dfEyAEFQo80dlFhSIVm2UHn/2bV2j7iMH/y3timoNnFbIW9S3M54vHRhwg2G3JgU3Stzy5B/Rbxk8sruFb6juf08T5xXTfH3A=
