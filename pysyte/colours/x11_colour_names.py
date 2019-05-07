@@ -47,7 +47,7 @@ def first_rgb_file(rgb_txt_paths):
 
 
 def _rgb_txt_line(string):
-    regexp = re.compile('([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([a-zA-Z0-9 ]+)\s*')
+    regexp = re.compile(r'([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([a-zA-Z0-9 ]+)\s*')
     match = regexp.match(string)
     if not match:
         return '', None

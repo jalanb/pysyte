@@ -443,7 +443,7 @@ def show_branches(branch1, branch2):
         >>> parse_show_line('+  [master^2] TOOLS-122 Add bashrc')
         '+ ', 'master^2', 'TOOLS-122 Add bashrc'
         """
-        regexp = re.compile('(.*)\[(.*)] (.*)')
+        regexp = re.compile(r'(.*)\[(.*)] (.*)')
         match = regexp.match(string)
         if not match:
             return None
@@ -657,7 +657,7 @@ def commit(message, add=False, quiet=False):
         if 'nothing to commit' in s or 'no changes added to commit' in s:
             raise EmptyCommit(*e.inits())
         raise
-    return re.split('[ \]]', stdout.splitlines()[0])[1]
+    return re.split(r'[ \]]', stdout.splitlines()[0])[1]
 
 
 def pull(rebase=True, refspec=None):
