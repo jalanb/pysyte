@@ -68,13 +68,6 @@ Edge cases
     >>> assert not fft._first_line_is_python_shebang(['print 0', '#! /usr/local/python'])
     >>> assert not fft._first_line_is_python_shebang([])
 
-    >>> options, args = fft.handle_command_line()
-
-    >>> fft.main() == 0
-    /.../testing/files_for_test.tests
-    ...
-    True
-
     >>> import sys
     >>> sys.stderr = sys.stdout
     >>> sys.argv = ['try.py', 'not_a_file']

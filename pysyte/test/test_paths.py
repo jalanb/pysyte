@@ -110,7 +110,7 @@ class TestPaths(TestCase):
         self.assertFalse(path.any_line_has('Abnormal line'))
 
     def test_directory(self):
-        self.assertEquals(self.path.directory(), self.path.parent)
+        self.assertEqual(self.path.directory(), self.path.parent)
 
     def test_no_div_for_file(self):
         path = paths.FilePath(__file__)

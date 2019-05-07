@@ -42,8 +42,8 @@ class TestDashboardImports(unittest.TestCase):
         They are on lines 7 and 27
         """
         multiples = self.visitor.multiples()
-        self.assertEquals(list(multiples.keys()), ['os'])
-        self.assertEquals(multiples['os'], [7, 27])
+        self.assertEqual(list(multiples.keys()), ['os'])
+        self.assertEqual(multiples['os'], [7, 27])
 
     def test_redundant_lines(self):
         redundant = self.visitor.unused()

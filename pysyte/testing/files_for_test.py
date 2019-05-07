@@ -194,7 +194,7 @@ def has_doctests(string):
     >>> has_doctests('not space    >>> print True')
     False
     """
-    doctest_regexp = re.compile('^\s*>>>\s', re.MULTILINE)
+    doctest_regexp = re.compile(r'^\s*>>>\s', re.MULTILINE)
     return bool(doctest_regexp.search(string))
 
 
@@ -216,7 +216,7 @@ def _all_possible_test_files_in(path_to_root, recursive):
         if path_to_file.hidden:
             continue
         try:
-            if not path_to_file.ext and _first_line_is_python_shebang(path_to_file.lines()):
+            if not path_to_file.ext and _first_line_is_python_shebang(path_to_file.stripped_lines()):
                 result.append(path_to_file)
         except UnicodeDecodeError as e:
             raise ValueError('%s - %s' % (path_to_file, repr(e)))
@@ -298,7 +298,7 @@ def paths_to_doctests(strings, recursive):
             continue
         if path_to_script.ext:
             continue
-        if not _first_line_is_python_shebang(path_to_script.lines()):
+        if not _first_line_is_python_shebang(path_to_script.stripped_lines()):
             continue
         paths_to_positive_scripts.append(path_to_script)
     return _re_order_scripts(paths_to_positive_scripts)

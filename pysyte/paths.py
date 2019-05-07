@@ -345,7 +345,7 @@ class FilePath(DotPath, PathAssertions):
         If lines can not be read (e.g. no such file) then an empty list
         """
         try:
-            return [l.rstrip() for l in self.lines()]
+            return [l.rstrip() for l in self.lines(retain=False)]
         except IOError:
             return []
 
@@ -420,7 +420,7 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             try:
-                first_line = self.lines()[0]
+                first_line = self.lines(retain=False)[0]
             except (OSError, UnicodeDecodeError):
                 return ''
             if first_line.startswith('#!'):

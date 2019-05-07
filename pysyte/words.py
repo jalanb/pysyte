@@ -12,7 +12,7 @@ _inlection = inflect.engine()
 def pluralize(string):
     """Returns the plural of string.
 
-    >>> pluralize('Index')  == 'Indices'
+    >>> pluralize('Cow')  == 'Cows'
     True
     """
     return _inlection.plural_noun(string)

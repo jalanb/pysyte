@@ -60,7 +60,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual('Print initials of the name', docstring)
 
     def test_method_module(self):
-        self.assertNotEquals(method.__module__, initials.__module__)
+        self.assertNotEqual(method.__module__, initials.__module__)
 
     def test_second_call_different_args(self):
         """Second call of method gives twice the output"""
@@ -72,10 +72,10 @@ class MemoizeTest(unittest.TestCase):
 
     def test_second_call_same_args(self):
         """Second call of method with same args gives once the output"""
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('OS', initials('One', 'Smith', self.stream))
+        self.assertEqual('OS', initials('One', 'Smith', self.stream))
         actual = self.stream.getvalue()
-        expected = 'Call: Fred Smith\n'
+        expected = 'Call: One Smith\n'
         self.assertEqual(expected, actual)
 
 
@@ -84,17 +84,17 @@ class MemoizeTest(unittest.TestCase):
 
         So, after invalidation, it is actually called again
 
-        Call twice with Fred - see only one call in the stream
+        Call twice - see only one call in the stream
         invalidate, then call again
             now a second call appears in the stream
         """
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('Call: Fred Smith\n',
+        self.assertEqual('TS', initials('Two', 'Smith', self.stream))
+        self.assertEqual('TS', initials('Two', 'Smith', self.stream))
+        self.assertEqual('Call: Two Smith\n',
                          self.stream.getvalue())
         initials.invalidate()
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('Call: Fred Smith\nCall: Fred Smith\n',
+        self.assertEqual('TS', initials('Two', 'Smith', self.stream))
+        self.assertEqual('Call: Two Smith\nCall: Two Smith\n',
                          self.stream.getvalue())
 
     def test_particular_invalidation(self):
@@ -105,20 +105,20 @@ class MemoizeTest(unittest.TestCase):
             Fred gets re-added to the stream (full call)
             John doesn't
         """
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('FS', initials('Four', 'Smith', self.stream))
+        self.assertEqual('FS', initials('Four', 'Smith', self.stream))
         self.assertEqual('JS', initials('John', 'Silly', self.stream))
-        self.assertEqual('Call: Fred Smith\nCall: John Silly\n',
+        self.assertEqual('Call: Four Smith\nCall: John Silly\n',
                          self.stream.getvalue())
-        initials.invalidate('Fred', 'Smith', self.stream)
+        initials.invalidate('Four', 'Smith', self.stream)
         self.assertEqual('JS', initials('John', 'Silly', self.stream))
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('FS', initials('Four', 'Smith', self.stream))
         self.assertEqual(
-            'Call: Fred Smith\nCall: John Silly\nCall: Fred Smith\n',
+            'Call: Four Smith\nCall: John Silly\nCall: Four Smith\n',
             self.stream.getvalue())
 
     def test_invalid_invalidation(self):
-        self.assertEqual('FS', initials('Fred', 'Smith', self.stream))
+        self.assertEqual('TS', initials('Three', 'Smith', self.stream))
         self.assertRaises(KeyError, initials.invalidate, 'not called')
 
     def test_use_wtithout_decorator(self):

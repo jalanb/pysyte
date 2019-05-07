@@ -7,7 +7,7 @@ The bash.git module
 More modules for test support
 -----------------------------
 
-    >>> from os import path
+    >>> import os
 
 Root of a clone
 ---------------
@@ -17,14 +17,14 @@ Get root of the current clone from the module under test
     >>> pysyte_root = git.root_from(git.__file__)
 
 That is a directory
-    >>> assert path.isdir(pysyte_root)
+    >>> assert os.path.isdir(pysyte_root)
 
 It is called "pysyte"
-    >>> assert path.basename(pysyte_root) == 'pysyte'
+    >>> assert os.path.basename(pysyte_root) == 'pysyte'
 
 And being a python project, it has an eponymous sub-dir
-    >>> assert path.isdir(path.join(pysyte_root, 'pysyte'))
+    >>> assert os.path.isdir(os.path.join(pysyte_root, 'pysyte'))
 
 Similar method, but gets root from current directory
-    (This test assumes it is run from within a pysyte clone)
+    >>> os.chdir(os.path.dirname(git.__file__))
     >>> assert pysyte_root == git.root()
