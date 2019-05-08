@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+"""Handle arguments from the command line"""
 
 import argparse
 import os
@@ -8,6 +8,8 @@ from itertools import chain
 
 _exit_ok = os.EX_OK
 _exit_fail = not _exit_ok
+
+import stackprinter
 
 from pysyte.debuggers import DebugExit
 
@@ -39,13 +41,17 @@ def parser(description=None, usage=None):
             except AttributeError:
                 return getattr(self._result, name)
 
-        def arg_strings(self, name=None):
+        def get_arg(self, name):
+            if not self._result:
+                return None
+            return getattr(self._result, name)
+
+        def get_strings(self, name):
             if not self._result:
                 return None
             return extract_strings(self._result.__dict__, name)
 
     class ArgParser(object):
-
         def __init__(self, argument_parser):
             self.parser = argument_parser
             self.parse = self.parse_args
@@ -55,14 +61,17 @@ def parser(description=None, usage=None):
             self.opt = self.true = partial(self.arg, action='store_true')
             self.int = partial(self.arg, type=int)
 
-        def parse_args(self):
-            return ArgNamespace(self.parser.parse_args())
+        def __repr__(self):
+            return f'<{self.__class__.__name__}>'
+
+        def parse_args(self, args=None):
+            return ArgNamespace(self.parser.parse_args(args))
 
         def sub(self, name, help=''):
-            self.arg(name, metavar=name, help=help, type=str)
+            return self.arg(name, metavar=name, help=help, type=str)
 
         def args(self, name, help='', many='*'):
-            self.arg(name, metavar=name, help=help, type=str, nargs=many)
+            return self.arg(name, metavar=name, help=help, type=str, nargs=many)
 
     lines = description.splitlines()
     if not usage:
@@ -87,7 +96,7 @@ def call_main(main):
     except DebugExit:
         return _exit_fail
     except Exception as e:  # pylint: disable=broad-except
-        return unhandled(e, 'Unhandled Exception')
+        stackprinter.show(e)
 
 
 def run_main(main, add_args):

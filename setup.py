@@ -55,6 +55,7 @@ setup(
         'pprintpp',
         'path.py==7.7.1',
         'six',
+        'stackprinter',
     ],
     scripts=[
         'bin/kat',

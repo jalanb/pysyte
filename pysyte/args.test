@@ -1,0 +1,47 @@
+The args module
+===============
+
+    >>> from pysyte import args
+    >>> assert 'arguments from the command line' in args.__doc__
+
+Parsing Arguments
+-----------------
+
+Get an argument parser
+    >>> parser = args.parser('desciption', 'usage')
+
+Which looks like the standard argparse parser
+    >>> assert callable(parser.parse_args)
+
+But has methods to make adding args easier
+    >>> arg = parser.arg('-a', '--add', help="Add stuff")
+    >>> opt = parser.true('-o', help='On True')
+    >>> num = parser.int('-i', help='An Integer')
+    >>> names = parser.args('--names', help='Some strings')
+
+    >>> assert arg.dest == 'add'
+    >>> assert arg.help == 'Add stuff'
+    >>> assert arg.default is None and opt.default is False
+    >>> assert num.type is int
+    >>> assert names.nargs == '*'
+
+Parse actual args
+    This call would normally be empty, and args taken from sys.argv
+    But a list can be used for testing
+    >>> args = parser.parse_args(
+    ...     ['-i', '3', '-a', '3', '--names', 'a', 'b'])
+    >>> assert args.add == '3'
+    >>> assert args.i == 3
+    >>> assert args.o is False
+    >>> assert args.names == ['a', 'b']
+
+Method to get strings from args indirectly
+    Useful for methods that are called from scripts
+    i.e. are in modules that did not set up the args
+    >>> assert args.get_arg('add') == args.add
+
+Similar method, guarantees to return a list of strings
+    ignoring other types
+    >>> assert args.get_strings('add') == [args.add]
+    >>> assert args.get_strings('i') == []
+

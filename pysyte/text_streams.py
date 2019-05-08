@@ -22,7 +22,7 @@ def parse_args():
 
 def args(parsed_args, name=None):
     """Interpret parsed args to streams"""
-    strings = parsed_args.arg_strings(name)
+    strings = parsed_args.get_strings(name)
     files = [s for s in strings if os.path.isfile(s)]
     if files:
         streams = [open(f) for f in files]
