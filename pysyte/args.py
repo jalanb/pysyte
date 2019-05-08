@@ -64,15 +64,6 @@ def parser(description=None, usage=None):
         def args(self, name, help='', many='*'):
             self.arg(name, metavar=name, help=help, type=str, nargs=many)
 
-        def answer(self, answers=None):
-            yes_no = {
-                'n': ('-n', '--no', 'Answer no'),
-                'y': ('-y', '--yes', 'Answer yes'),
-            }
-            options = yes_no
-            options.update(answers)
-            [self.true(options[o]) for o in options]
-
     lines = description.splitlines()
     if not usage:
         if len(lines) > 1 and not lines[1]:
@@ -84,37 +75,7 @@ def parser(description=None, usage=None):
         argparse.ArgumentParser(usage=description))
 
 
-def arg_strings(parsed_args, name=None):
-    """A list of all strings for the named arg"""
-    name = name or 'arg_strings'
-    value = getattr(parsed_args, name, [])
-    if isinstance(value, str):
-        return [value]
-    try:
-        return [v for v in value if isinstance(v, str)]
-    except TypeError:
-        return []
-
-
-def main_parser(outer_main, parser):
-
-    def main():
-        outer_main(parser().parse_args())
-
-    call_main(main)
-
-
 def call_main(main):
-
-    def unhandled(_e, message):
-        """Placeholder: write to log / Slack
-
-        e.g.
-        type_, value, traceback = sys.exc_info()
-        thing = format_exception(type_, value, traceback)
-        """
-        print(message, file=sys.stderr)
-        raise  # pylint: disable=misplaced-bare-raise
 
     try:
         return _exit_ok if main() else _exit_fail
@@ -125,8 +86,6 @@ def call_main(main):
         return ctrl_c
     except DebugExit:
         return _exit_fail
-    except AssertionError as e:
-        return unhandled(e, 'Failed Assertion')
     except Exception as e:  # pylint: disable=broad-except
         return unhandled(e, 'Unhandled Exception')
 
