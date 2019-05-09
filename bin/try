@@ -4,6 +4,7 @@
 import sys
 import importlib
 
+from pysyte import args as arguments
 from pysyte.testing import trying
 from pysyte.testing import files_for_test
 
@@ -25,4 +26,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(arguments.call_main(main))

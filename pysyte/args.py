@@ -96,7 +96,7 @@ def call_main(main):
     except DebugExit:
         return _exit_fail
     except Exception as e:  # pylint: disable=broad-except
-        stackprinter.show(e)
+        stackprinter.show(e, style='darkbg')
 
 
 def run_main(main, add_args):

@@ -7,6 +7,7 @@ import argparse
 from bdb import BdbQuit
 
 
+from pysyte import args as arguments
 from pysyte.paths import path
 from pysyte.paths import home
 
@@ -167,4 +168,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(arguments.call_main(main))
