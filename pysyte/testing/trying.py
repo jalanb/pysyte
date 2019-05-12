@@ -319,8 +319,10 @@ def test():
     failures_all = 0
     sys_paths.add('.')
     try:
-        for test_script in files_for_test.paths_to_doctests(
-                args.stems, args.recursive):
+        test_scripts = files_for_test.paths_to_doctests(
+            args.stems, args.recursive)
+        print('Found %d scripts in %s' % (len(test_scripts), pwd))
+        for test_script in test_scripts:
             failures, tests_run, message = 0, 0, ''
             os.chdir(pwd)
             start = datetime.datetime.now()
