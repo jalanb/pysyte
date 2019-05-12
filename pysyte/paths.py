@@ -584,6 +584,13 @@ class DirectPath(DotPath, PathAssertions):
         ignored = ignore_globs(ignores)
         return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
+    def has_vcs_dir(self):
+        parts = self.splitall()
+        for vcs_dir in ('.git', '.svn', '.hg'):
+            if vcs_dir in parts:
+                return True
+        return False
+
 
 
 def ignore_globs(ignores):

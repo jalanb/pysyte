@@ -123,3 +123,9 @@ class TestPaths(TestCase):
                 break
         else:
             self.fail('Could not find %s' % self.path)
+
+    def test_vcs_dirs(self):
+        self.assertTrue(paths.path('/usr/.git/fred').has_vcs_dir())
+        self.assertTrue(paths.path('/usr/local/.svn').has_vcs_dir())
+        self.assertTrue(paths.path('/.hg/etc').has_vcs_dir())
+        self.assertFalse(paths.path('/usr/local/bin').has_vcs_dir())

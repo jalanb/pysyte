@@ -107,7 +107,7 @@ def add_sub_dirs(paths):
     result = dirs.copy()
     for path_to_dir in dirs:
         for sub_dir in path_to_dir.walkdirs():
-            if '.git' in sub_dir.splitall():
+            if sub_dir.has_vcs_dir():
                 continue
             result.add(sub_dir)
     return result
