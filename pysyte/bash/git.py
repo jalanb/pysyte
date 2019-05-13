@@ -143,6 +143,7 @@ def use_resolver(resolver):
 
 def root_from(path):
     p = path if os.path.isdir(path) else os.path.dirname(path)
+    p = os.path.realpath(p)
     while p[:2] >= '/A':
         p_git = os.path.join(p, '.git')
         if os.path.isdir(p_git):
