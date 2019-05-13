@@ -209,12 +209,12 @@ def _all_possible_test_files_in(path_to_root, recursive):
     """
     find_files = recursive and path_to_root.walkfiles or path_to_root.listfiles
     result = []
-    ignore_files = _norecursedirs + ('*.sw[op]')
+    ignore_files = list(_norecursedirs + ('*.sw[op]',))
     for glob in _positive_test_globs():
         files = find_files(glob, ignores=ignore_files)
         result.extend(files)
-    ignores.extend(_positive_test_globs())
-    for path_to_file in find_files(ignores=ignores):
+    ignore_files.extend(_positive_test_globs())
+    for path_to_file in find_files(ignores=ignore_files):
         if path_to_file.hidden:
             continue
         try:
