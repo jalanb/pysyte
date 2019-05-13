@@ -100,13 +100,17 @@ def _get_path_stems(strings, recursive):
         return paths
     return add_sub_dirs(paths)
 
+# directory patterns to avoid for recursion:
+_norecursedirs = (
+    '.*', '*.egg-info', 'build', 'coverage', 'htmlcov', 'dist',
+    'venv', '__pycache__')
 
 def add_sub_dirs(paths):
     """Add all sub-directories for the directories of the paths"""
     dirs = {p.directory() for p in paths}
     result = dirs.copy()
     for path_to_dir in dirs:
-        for sub_dir in path_to_dir.walkdirs():
+        for sub_dir in path_to_dir.walkdirs(ignores=_norecursedirs):
             if sub_dir.has_vcs_dir():
                 continue
             result.add(sub_dir)
@@ -205,11 +209,9 @@ def _all_possible_test_files_in(path_to_root, recursive):
     """
     find_files = recursive and path_to_root.walkfiles or path_to_root.listfiles
     result = []
-    ignores = ['.git/', '.svn/', '.idea/',
-               'coverage/', 'build/', '*.egg-info/', 'dist/', '__pycache__/', '.tox/',
-               '*.sw[op]']
+    ignore_files = _norecursedirs + ('*.sw[op]')
     for glob in _positive_test_globs():
-        files = find_files(glob, ignores=ignores)
+        files = find_files(glob, ignores=ignore_files)
         result.extend(files)
     ignores.extend(_positive_test_globs())
     for path_to_file in find_files(ignores=ignores):
