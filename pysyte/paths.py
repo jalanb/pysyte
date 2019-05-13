@@ -346,7 +346,7 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             return [l.rstrip() for l in self.lines(retain=False)]
-        except IOError:
+        except (IOError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
