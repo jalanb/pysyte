@@ -228,8 +228,6 @@ class DotPath(PPath):
     def fnmatch_directories(self, glob):
         if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
             glob = glob.strip(os.path.sep)
-        else:
-            return
         strings = reversed(self.directory().splitall()[1:])
         for string in strings:
             if fnmatch(string, glob):
@@ -594,7 +592,7 @@ class DirectPath(DotPath, PathAssertions):
     def has_vcs_dir(self):
         parts = self.splitall()
         for vcs_dir in ('.git', '.svn', '.hg'):
-            if vcs_dir in parts:
+            if self.fnmatch_part(vcs_dir):
                 return True
         return False
 
