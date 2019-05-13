@@ -86,7 +86,7 @@ Adding sub_directories
 ----------------------
 
 Derive some paths for testing from the module under test
-    >>> files_for_test_script = makepath(fft.__file__)
+    >>> files_for_test_script = test.path.realpath()
     >>> files_for_test_parent = files_for_test_script.parent
     >>> files_for_test_grandparent = files_for_test_parent.parent
 
