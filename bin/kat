@@ -5,6 +5,7 @@ import os
 import re
 import sys
 
+from pysyte import __version__
 from pysyte import args as arguments
 from pysyte import text_streams
 
@@ -22,7 +23,12 @@ def parse_args():
                help='number/regexp of last line to show')
     parser.true('-n', '--numbers', help='Show line numbers')
     parser.int('-w', '--width', help='Max width of shown line')
-    return parser.parse_args()
+    parser.true('-v', '--version', help='Show version')
+    args = parser.parse_args()
+    if args.version:
+        print(f'{sys.argv[0]} version: {__version__}')
+        sys.exit(0)
+    return args
 
 
 def parse_lines(args, lines_read):

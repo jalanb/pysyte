@@ -7,38 +7,21 @@ import argparse
 from bdb import BdbQuit
 
 
+from pysyte import __version__
 from pysyte import args as arguments
 from pysyte.paths import path
 from pysyte.paths import home
-
-
-__version__ = '0.1.0'
 
 
 class ScriptError(NotImplementedError):
     pass
 
 
-def run_args(args, methods):
-    """Run any methods eponymous with args"""
-    if not args:
-        return False
-    valuable_args = {k for k, v in args.__dict__.items() if v}
-    arg_methods = {methods[a] for a in valuable_args if a in methods}
-    for method in arg_methods:
-        method(args)
-
-
-def version(_):
-    print(f'{sys.argv[0]} {__version__}')
-    raise SystemExit
-
-
 def parse_args(methods):
     """Parse out command line arguments"""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('directory',
-                        help='path to be abbreviated')
+    parser.add_argument('directory', default='.', type=str, nargs='*',
+                        help='path to be abbreviated (default ".")')
     parser.add_argument('-o', '--only_home', action='store_true',
                         help='only replace $HOME with ~')
     parser.add_argument('-x', '--exclude', type=str, nargs='*',
@@ -46,7 +29,9 @@ def parse_args(methods):
     parser.add_argument('-v', '--version', action='store_true',
                         help='Show version')
     args = parser.parse_args()
-    run_args(args, methods)
+    if args.version:
+        print(f'{sys.argv[0]} version: {__version__}')
+        sys.exit(0)
     return args
 
 

@@ -14,13 +14,13 @@ import datetime
 from pprint import pprint
 
 
+from pysyte import __version__
 from pysyte.paths import path
 
 from pysyte.testing import files_for_test
 from pysyte.testing import try_plugins
 from pysyte.testing.see import see, see_methods, see_attributes, spread
 
-__version__ = '0.7.3.1'
 
 class DoctestInterrupt(KeyboardInterrupt):
     """This exception is for better naming of the only thing to stop doctest"""
@@ -104,7 +104,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     pa = parser.add_argument
     pa('stems', metavar='stems', type=str, nargs='*',
-       help='stems to be tested (e.g "try.py" or "try.*" or "try." or "try/"')
+       help='stems to be tested (e.g. "try.py" or "try.*" or "try." or "try/"')
     pa('-s', '--show', help='show files being tested', action='store_true')
     pa('-v', '--verbose', help='Show more text', action='store_true')
     pa('-V', '--version', help='Show version', action='store_true')
@@ -314,7 +314,7 @@ def test():
     global args
     args = parse_args()
     if args.version:
-        print(__version__)
+        print(f'{sys.argv[0]} version: {__version__}')
         return 0
     messages = ['']
     pwd = os.getcwd()
