@@ -29,8 +29,8 @@ def run_args(args, methods):
         method(args)
 
 
-def version(args):
-    print('%s %s' % (args, __version__))
+def version(_):
+    print(f'{sys.argv[0]} {__version__}')
     raise SystemExit
 
 

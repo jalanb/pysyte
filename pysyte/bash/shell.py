@@ -45,10 +45,10 @@ def _get_path():
 
 
 def run(command):
-    path_command = 'PATH=%s %s' % (_get_path(), command)
+    path_command = f'PATH={_get_path()} {command}'
     if _working_dirs[0]:
-        run_command = '(cd %s; %s)' % (_working_dirs[0], path_command)
-        logger.info('$ (cd %s; %s)', _working_dirs[0], command)
+        run_command = f'(cd {_working_dirs[0]}; {path_command}'
+        logger.info('$ (cd %s; %s)', _working_dirs[0], path_command)
     else:
         run_command = path_command
         logger.info('$ %s', command)

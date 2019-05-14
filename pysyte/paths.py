@@ -21,19 +21,19 @@ class PathAssertions(object):
     def assert_exists(self):
         """Raise a PathError if this path does not exist on disk"""
         if not self.exists():
-            raise PathError('%s does not exist' % self)
+            raise PathError(f'{self} does not exist')
         return self
 
     def assert_isdir(self):
         """Raise a PathError if this path is not a directory on disk"""
         if not self.isdir():
-            raise PathError('%s is not a directory' % self)
+            raise PathError(f'{self} is not a directory')
         return self
 
     def assert_isfile(self):
         """Raise a PathError if this path is not a file on disk"""
         if not self.isfile():
-            raise PathError('%s is not a file' % self)
+            raise PathError(f'{self} is not a file')
         return self
 
 
@@ -45,9 +45,8 @@ class DotPath(PPath):
     # pylint: disable=abstract-method
 
     def __repr__(self):
-        return '<%s %s>' % (
-            self.__class__.__name__,
-            repr(str(self)))
+        string = repr(f'{self}')
+        return f'<{self.__class__.__name__} {string}>'
 
     # The / operator joins paths.
     def __div__(self, child):
@@ -374,7 +373,7 @@ class FilePath(DotPath, PathAssertions):
         filename, ext = os.path.splitext(copy)
         if ext == '.gz':
             filename, ext = os.path.splitext(filename)
-            ext = '%s.gz' % ext
+            ext = f'{ext}.gz'
         return self.__class__(filename), ext
 
     def as_python(self):
@@ -397,7 +396,7 @@ class FilePath(DotPath, PathAssertions):
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
-        return self.__class__('%s.%s' % (filename, extension.lstrip('.')))
+        return self.__class__(f'{filename}.{extension.lstrip(".")}')
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
@@ -534,7 +533,7 @@ class DirectPath(DotPath, PathAssertions):
         if self.isdir():
             return False
         if os.path.exists(self):
-            raise PathError('%s exists but is not a directory' % self)
+            raise PathError(f'{self} exists but is not a directory')
         self.makedirs()
 
     def make_file_exist(self, filename=None):
@@ -658,7 +657,7 @@ def cd(path_to):  # pylint: disable=invalid-name
     elif not os.path.exists(path_to):
         return False
     else:
-        raise PathError('Cannot cd to %s' % path_to)
+        raise PathError(f'Cannot cd to {path_to}')
     cd.previous = previous
     return True
 
@@ -872,5 +871,5 @@ def pyc_to_py(path_to_file):
     """
     stem, ext = os.path.splitext(path_to_file)
     if ext == '.pyc':
-        return '%s.py' % stem
+        return f'{stem}.py'
     return path_to_file

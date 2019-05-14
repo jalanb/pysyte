@@ -14,7 +14,7 @@ def first(sequence, message=None):
     try:
         return next(iter(sequence))
     except StopIteration:
-        raise ValueError(message or ('Sequence is empty: %s' % sequence))
+        raise ValueError(message or (f'Sequence is empty: {sequence}'))
 
 
 def last(sequence, message=None):

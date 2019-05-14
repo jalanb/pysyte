@@ -40,7 +40,7 @@ def run_command(command):
     """Run a command in the local shell (usually bash)"""
     status, output = subprocess.getstatusoutput(command)
     if status:
-        print('FAIL: %s:%s' % (status, output))
+        print(f'FAIL: {status}:{output}')
         return False
     print(output)
     return True
@@ -85,10 +85,10 @@ class TestBeingRun(object):
 
     def add_ext(self, base, ext):
         """Add a path for base.ext as an attribute to self"""
-        name = 'path_to_%s' % ext
+        name = f'path_to_{ext}'
         if hasattr(self, name):
             return
-        path_to_ext = path('%s.%s' % (base, ext))
+        path_to_ext = path(f'{base}.{ext}')
         if path_to_ext.isfile() or ext == 'fail':
             setattr(self, name, path_to_ext)
 
@@ -198,7 +198,7 @@ def make_python2_module(path_to_python):
 
 def test_source(source_script):
     """Run tests in the given source"""
-    message = 'py %s;' % source_script
+    message = f'py {source_script};'
     module = make_module(source_script)
     failures, tests_run = doctest.testmod(
         module,
@@ -211,7 +211,7 @@ def test_source(source_script):
 
 def test_file(test_script):
     """Run tests in a doctest script"""
-    message = 'try %s;' % test_script
+    message = f'try {test_script};'
     failures, tests_run = doctest.testfile(
         test_script,
         optionflags=get_doctest_options(),
@@ -284,12 +284,12 @@ def show_time_taken(start, messages, message, tests_run):
     time_taken = end - start
     if time_taken.seconds:
         if time_taken.seconds > 1:
-            time_msg = 'in %d seconds' % time_taken.seconds
+            time_msg = f'in {time_taken.seconds} seconds'
         else:
             time_msg = 'quickly'
     else:
         time_msg = 'very quickly'
-    messages.append('%s %s tests passed %s' % (message, tests_run, time_msg))
+    messages.append(f'{message} {tests_run} tests passed {time_msg}')
     return end
 
 
@@ -325,7 +325,7 @@ def test():
     try:
         test_scripts = files_for_test.paths_to_doctests(
             args.stems, args.recursive)
-        print('Found %d scripts in %s' % (len(test_scripts), pwd))
+        print(f'Found {len(test_scripts)} scripts in {pwd}')
         for test_script in test_scripts:
             failures, tests_run, message = 0, 0, ''
             os.chdir(pwd)
@@ -348,9 +348,9 @@ def test():
                 if not args.directory_all:
                     return failures
     finally:
-        time_taken = end - start_all
-        messages.append('%s tests passed, %d failed, in %s seconds' %
-                        (run_all, failures_all, time_taken.seconds))
+        time_taken = (end - start_all).seconds
+        messages.append(
+            f'{run_all} tests passed, {failures_all} failed, in {time_taken} seconds')
         messages.append('')
     if failures_all or not args.quiet_on_success:
         print('\n'.join(messages))

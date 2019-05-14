@@ -25,7 +25,7 @@ class ColouredTail(object):
         self._head = head
 
     def __repr__(self):
-        return '<%s %r%r>' % (self.__class__.__name__, self.head, self.tail)
+        return f'<{self.__class__.__name__} {self.head!r}{self.tail!r}>'
 
     def __str__(self):
         return ''.join((self.head, self.tail))

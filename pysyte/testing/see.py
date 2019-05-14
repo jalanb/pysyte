@@ -244,13 +244,12 @@ def spread(thing, exclude=None):
             else:
                 value = spread_out_an_attribute(v, separator)
             lines = separator.join(value.splitlines())
-            attributes_list.append('%s : %s' % (k, lines))
+            attributes_list.append(f'{k} : {lines}')
         attributes_string = separator.join(attributes_list)
         ids.pop()
         class_name = thing.__class__.__name__
         klass = hasattr(thing, '__class__') and class_name or dir(thing)
-        return '''<%s%s%s\n%s>''' % (
-            klass, separator, attributes_string, separator[1:-2])
+        return f'''<{klass}{separator}{attributes_string}\n{separator[1:-2]}>'''
 
     print(spread_out_the_attributes(thing, '\n\t'))
 

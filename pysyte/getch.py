@@ -133,8 +133,7 @@ def _get_keycodes():
 class ExtendedKey(Exception):
     """Raised for an unrecognised Extended key code"""
     def __init__(self, codes):
-        super(ExtendedKey, self).__init__(
-            'Too many key codes: %s' % repr(codes))
+        super(ExtendedKey, self).__init__(f'Too many key codes: {codes!r}')
         self.codes = codes
 
 
@@ -169,7 +168,7 @@ def get_key():
 def get_menu(**kwargs):
     key = get_key()
     for name, string in kwargs.items():
-        match = re.match('^%s$' % string, key)
+        match = re.match(f'^{string}$', key)
         if match:
             return name
         if key in name or key in string:
@@ -213,7 +212,8 @@ def get_as_key():
 
 def control_key_name(code):
     """Prefix the name of a control key with '^'"""
-    return '^%s' % (chr(code - 1 + ord('A')))
+    name = chr(code - 1 + ord('A'))
+    return f'^{name}'
 
 
 def get_extended_key_name(codes):
@@ -299,8 +299,8 @@ def yield_asciis_old():
 
 
 def ask_user(prompt, default=None):
-    prompt_default = str('[%s]' % default) if default else ''
-    print('%s %s? ' % (prompt, prompt_default), end='')
+    prompt_default = f'[{default}]' if default else ''
+    print(f'{prompt} {prompt_default}? ', end='')
     result = getch().lower().strip()
     print()
     return result or default

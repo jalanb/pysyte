@@ -83,9 +83,9 @@ class DefaultDict(defaultdict):
     """A default dict with improved repr"""
     def __repr__(self):
         from pprint import pformat
-        return '<%s\n    %s\n>' % (
-            self.__class__.__name__,
-            pformat(dict(self), indent=4))
+        name = self.__class__.__name__
+        value = pformat(dict(self), indent=4)
+        return f'<{name}\n    {value}\n>'
 
 
 class LazyDefaultDict(DefaultDict):

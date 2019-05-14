@@ -97,7 +97,7 @@ def html_to_html(string):
 
 
 def hashed_html(string):
-    return '#%s' % html_to_html(string)
+    return f'#{html_to_html(string)}'
 
 
 def html_to_red_green_blue(string):

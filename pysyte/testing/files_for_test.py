@@ -76,7 +76,7 @@ def _existing_test_files(path_to_stem):
     else:
         if path_to_stem.parent:
             dirr = path_to_stem.parent
-        glob = '%s.*' % path_to_stem.namebase
+        glob = f'{path_to_stem.namebase}.*'
     if not dirr.isdir():
         return []
     return [f for f in dirr.files(glob)]
@@ -185,7 +185,7 @@ def _has_positive_test_extension(string):
 
 def _positive_test_globs():
     """A glob for each of the _positive test extensions"""
-    return [str('*%s' % ext) for ext in positive_test_extensions()]
+    return [f'*{ext}' for ext in positive_test_extensions()]
 
 
 def has_doctests(string):
@@ -221,7 +221,7 @@ def _all_possible_test_files_in(path_to_root, recursive):
             if not path_to_file.ext and _first_line_is_python_shebang(path_to_file.stripped_lines()):
                 result.append(path_to_file)
         except UnicodeDecodeError as e:
-            raise ValueError('%s - %s' % (path_to_file, repr(e)))
+            raise ValueError(f'{path_to_file} - {e!r}')
     return result
 
 
@@ -245,7 +245,7 @@ def _expand_stems(path_stems):
     if not result:
         path_stem = path_stems.pop()
         display_stem = path_stem.short_relative_path_from_here()
-        raise MissingFiles('%s.test*, %s.py not found' % (display_stem, display_stem))
+        raise MissingFiles(f'{display_stem}.test*, {display_stem}.py not found')
     return result
 
 

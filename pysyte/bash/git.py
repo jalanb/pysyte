@@ -38,12 +38,10 @@ class GitException(RuntimeError):
         if 'required_handlers' in body:
             missing = set(cls.required_handlers) - set(body.keys())
             if missing:
-                raise TypeError(
-                    'Missing handler%s: %s' % (
-                        len(missing) == 1 and '' or 's',
-                        '\n'.join(
-                            '%s.%s()' % (cls.__class__.__name__, m)
-                            for m in missing)))
+                plural = len(missing) == 1 and '' or 's',
+                missings = '\n'.join(
+                    f'{cls.__class__.__name__}.{m}()' for m in missing)
+                raise TypeError(f'Missing handler{plural}: {missings}')
         return super(GitException, cls).__new__(cls, name, bases, body)
 
 
@@ -149,7 +147,7 @@ def root_from(path):
         if os.path.isdir(p_git):
             return p
         p = os.path.dirname(p)
-    raise ValueError('No .git above %s' % path)
+    raise ValueError(f'No .git above {path}')
 
 
 @contextmanager
@@ -184,12 +182,12 @@ def run(sub_command, quiet=False, no_edit=False, no_verify=False):
     If the command gives a non-zero status, raise a GitError exception
     """
     if _working_dirs[0] != '.':
-        git_command = 'git -C "%s"' % _working_dirs[0]
+        git_command = f'git -C "{_working_dirs[0]}"'
     else:
         git_command = 'git'
     edit = 'GIT_EDITOR=true' if no_edit else ''
     verify = 'GIT_SSL_NO_VERIFY=true' if no_verify else ''
-    command = '%s %s %s %s' % (verify, edit, git_command, sub_command)
+    command = f'{verify} {edit} {git_command} {sub_command}'
     if not quiet:
         logger.info('$ %s', command)
     status_, output = getstatusoutput(command)
@@ -224,18 +222,18 @@ def log(args, number=None, oneline=False, quiet=False):
     oneline, if true-ish, will add the "--oneline" option
     """
     options = ' '.join([
-        number and str('-n %s' % number) or '',
+        number and f'-n {number}' or '',
         oneline and '--oneline' or ''
     ])
     try:
-        return run('log %s %s' % (options, args), quiet=quiet)
+        return run(f'log {options} {args}', quiet=quiet)
     except UnknownRevision:
         return ''
 
 
 def rev_parse(options, *args, **kwargs):
     """Run 'git rev-parse' with those options"""
-    return run('rev-parse %s' % options, *args, **kwargs)
+    return run(f'rev-parse {options}', *args, **kwargs)
 
 
 def root():
@@ -252,7 +250,7 @@ def branch(options=False, *args, **kwargs):
     If not options then return name of the branch currently checked out
     """
     return (options
-            and run('branch %s' % options, *args, **kwargs)
+            and run(f'branch {options}', *args, **kwargs)
             or rev_parse('--abbrev-ref HEAD', *args, **kwargs))
 
 
@@ -265,13 +263,14 @@ def branches(remotes=False):
         this method just gives a list of branch names
     Use branch() method to determine the current branch
     """
-    stdout = branch('--list %s' % (remotes and '-a' or ''), quiet=True)
+    options = remotes and '-a' or ''
+    stdout = branch(f'--list {options}', quiet=True)
     return [_.lstrip('*').strip() for _ in stdout.splitlines()]
 
 
 def branches_containing(commit):
     """Return a list of branches conatining that commit"""
-    lines = run('branch --contains %s' % commit).splitlines()
+    lines = run(f'branch --contains {commit}').splitlines()
     return [l.lstrip('* ') for l in lines]
 
 
@@ -303,7 +302,7 @@ def add(path=None, force=False, quiet=False):
     so that it will be included in next commit
     """
     option = '-f' if force else ''
-    return run('add %s %s' % (option, path) or '.', quiet=quiet)
+    return run(f'add {option} {path or "."}', quiet=quiet)
 
 
 def push(qualifiers='', refspec=None):
@@ -312,7 +311,7 @@ def push(qualifiers='', refspec=None):
     If refspec is left as None, then push current branch
     If any qualifiers are given, then they will be added to the push command
     """
-    run('push %s %s' % (qualifiers, refspec or ''))
+    run(f'push {qualifiers} {refspec or ""}')
 
 
 def fetch_all():
@@ -334,12 +333,12 @@ def config(key, value, local=True):
     Unless local is set to False: only change local config
     """
     option = local and '--local' or ''
-    run('config %s "%s" "%s"' % (option, key, value))
+    run(f'config {option} "{key}" "{value}"')
 
 
 def clean(full=False):
     options = '-d -f -f -x' if full else ''
-    run('clean %s' % options)
+    run(f'clean {options}')
     run('gc --quiet')
     if full:
         run('reset HEAD .')
@@ -362,7 +361,7 @@ def clone(url, path=None, remove=True):
         else:
             shutil.rmtree(path)
     if clean:
-        stdout = run('clone %s %s' % (url, path or ''))
+        stdout = run(f'clone {url} {path or ""}')
         into = stdout.splitlines()[0].split("'")[1]
         path_to_clone = os.path.realpath(into)
     else:
@@ -376,12 +375,12 @@ def clone(url, path=None, remove=True):
 
 
 def diff_files(branch_1, branch_2):
-    return run('diff --name-only %s %s' % (branch_1, branch_2)).splitlines()
+    return run(f'diff --name-only {branch_1} {branch_2}').splitlines()
 
 
 def status(short=False):
     option = '--short' if short else '--long'
-    return run('status %s' % option)
+    return run(f'status {option}')
 
 
 def needs_abort():
@@ -443,7 +442,7 @@ def show_branches(branch1, branch2):
         prefix, commit, comment = match.groups()
         return prefix[0] == ' ' and 1 or 0, commit, comment
 
-    log = run('show-branch --sha1-name "%s" "%s"' % (branch1, branch2))
+    log = run(f'show-branch --sha1-name "{branch_1}" "{branch_2}"')
     lines = iter(log.splitlines())
     line = lines.next()
     branches = {}
@@ -479,14 +478,14 @@ def latest_commit(branch=None, path=None):
     """
     options = '--no-abbrev-commit %s %s' % (
         branch or '',
-        path and str('-- %s' % path) or '')
+        path and f'-- {path}' or '')
     result = log(options, 1, True, True)
     return result and result.split(' ', 1) or ('', '')
 
 
 def commits_with_message(message):
     """All commits with that message (in current branch)"""
-    output = log("--grep '%s'" % message, oneline=True, quiet=True)
+    output = log(f"--grep '{message}'", oneline=True, quiet=True)
     lines = output.splitlines()
     return [l.split(' ', 1)[0] for l in lines]
 
@@ -518,8 +517,9 @@ def checkout(branch, quiet=False, as_path=False):
     """
     try:
         if as_path:
-            branch = '-- %s' % branch
-        run('checkout %s %s' % (quiet and '-q' or '', branch))
+            branch = '-- {branch}'
+            option = quiet and '-q' or ''
+        run(f'checkout {option} {branch}')
         return True
     except GitError as e:
         if 'need to resolve your current index' in e.output:
@@ -531,8 +531,8 @@ checkout_path = partial(checkout, as_path=True)
 
 
 def diff(options=None, branch='master', path=None):
-    suffix = path and str('-- %s' % path) or ''
-    return run('diff %s %s %s' % (options, branch, suffix))
+    suffix = path and f'-- {path}' or ''
+    return run(f'diff {options} {branch} {suffix}')
 
 
 def same_diffs(commit1, commit2):
@@ -549,12 +549,12 @@ def same_diffs(commit1, commit2):
     """
     def range_one(commit):
         """A git commit "range" to include only one commit"""
-        return '%s^..%s' % (commit, commit)
+        return f'{commit}^..{commit}'
 
-    output = run('range-diff %s %s' % (range_one(commit1), range_one(commit2)))
+    output = run(f'range-diff {range_one(commit1)} {range_one(commit2)}')
     lines = output.splitlines()
     for i, line in enumerate(lines, 1):
-        if not line.startswith('%s: ' % i):
+        if not line.startswith(f'{i}'):
             break
     return not lines[i:]
 
@@ -602,7 +602,7 @@ def new_local_branch(branch, start_point):
 
     start_point is a git "commit-ish", e.g branch, tag, commit
     """
-    return run('checkout -b %s %s' % (branch, start_point))
+    return run(f'checkout -b {branch} {start_point}')
 
 
 def publish(branch, full_force=False):
@@ -620,7 +620,7 @@ def publish(branch, full_force=False):
 def delete(branch, force=False, remote=False):
     option = '-D' if force else '-d'
     try:
-        result = run('branch %s %s' % (option, branch))
+        result = run(f'branch {option} {branch}')
         pass
     except GitError as e:
         if 'checked out at' not in e.output:
@@ -628,7 +628,7 @@ def delete(branch, force=False, remote=False):
         if branch == 'master':
             raise
         checkout('master')
-        result = run('branch %s %s' % (option, branch))
+        result = run(f'branch {option} {branch}')
     except Exception as e:
         pass
     if remote:
@@ -660,7 +660,7 @@ def pull(rebase=True, refspec=None):
     The '--rebase' option is used unless rebase is set to false
     """
     options = rebase and '--rebase' or ''
-    output = run('pull %s %s' % (options, refspec or ''))
+    output = run(f'pull {options} {refspec or ""}')
     return not re.search('up.to.date', output)
 
 
@@ -670,10 +670,10 @@ def tag(name, remote=False, commit=None):
     If no commit is given, at current commit on cuurent branch
     If remote is true, also push the tag to origin
     """
-    command = 'tag %s %s' % (name, commit or '')
+    command = f'tag {name} {commit or ""}'
     result = run(command)
     if remote:
-        push('origin %s' % name)
+        push(f'origin {name}')
     return result
 
 
@@ -705,7 +705,7 @@ def re_tag(name, remote=False, commit=None):
         if name in tags:
             hide(name)
     if is_tag(name):
-        run('tag --delete %s' % name)
+        run(f'tag --delete {name}')
     return tag(name, remote, commit)
 
 
@@ -720,8 +720,8 @@ def merge(branch, fast_forward=False, commit=True, options=None):
     ] + (options and options or [])
     option_string = ' '.join(more_options)
     all_branches = branches()
-    assert branch in all_branches, 'Missing branch: %s' % branch
-    command = 'merge %s %s' % (option_string, branch)
+    assert branch in all_branches, f'Missing branch: {branch}'
+    command = f'merge {option_string} {branch}'
     return run(command)
 
 
@@ -749,7 +749,7 @@ def cherry_pick(pick):
             cherry_pick('ab12cd34 -X theirs')
     """
     with git_continuer(run, 'cherry-pick --continue', no_edit=True):
-        return run('cherry-pick -x --allow-empty %s' % pick)
+        return run(f'cherry-pick -x --allow-empty {pick}')
 
 
 def rebase(upstream, branch=None):
@@ -760,7 +760,7 @@ def rebase(upstream, branch=None):
     """
     rebase_branch = branch and branch or current_branch()
     with git_continuer(run, 'rebase --continue', no_edit=True):
-        stdout = run('rebase %s %s' % (upstream, rebase_branch))
+        stdout = run(f'rebase {upstream} {rebase_branch}')
         return 'Applying' in stdout
 
 
@@ -780,7 +780,7 @@ def merge_resolve(branch, fast_forward=False, commit=True, options=None):
         resolved = merge(branch, fast_forward, commit, options)
         if commit and resolved.resolved:
             # Then the resolved files were added, better commit them
-            commit("Merge branch '%s' into '%s'" % (branch, current_branch()))
+            commit(f"Merge branch '{branch}' into '{current_branch()}'")
 
 
 def split_conflict(conflict):

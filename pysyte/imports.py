@@ -135,7 +135,7 @@ def parse_python(path):
 def extract_imports(script):
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
-        raise ValueError('Not a file: %s' % script)
+        raise ValueError(f'Not a file: {script}')
     parse_tree = parse_python(script)
     result = find_imports(parse_tree)
     result.path = script
@@ -149,7 +149,7 @@ def load_module(package, module_name):
         def imp_load(a, b, c):
             return imp.load_module(full_name, a, b, c)
 
-        full_name = '%s.%s' % (package.__name__, module_name)
+        full_name = f'{package.__name__}.{module_name}'
         return imp_load(*imp.find_module(key, package.__path__))
 
     # pylint: disable=protected-access

@@ -72,7 +72,7 @@ def _local_rgb_txt_names_and_numbers():
 def known_colour_names_and_numbers():
     known_names = 'black red green yellow blue magenta cyan white'
     dark_names_and_numbers = [(name, number) for number, name  in enumerate(known_names.split())]
-    light_names_and_numbers = [('light %s' % name, number + 8) for name, number in dark_names_and_numbers]
+    light_names_and_numbers = [(f'light {name}', number + 8) for name, number in dark_names_and_numbers]
     return dark_names_and_numbers + light_names_and_numbers
 
 

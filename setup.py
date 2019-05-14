@@ -31,9 +31,8 @@ setup(
     packages=find_packages(),
     package_data={'': package_files('pysyte')},
     version=pysyte.__version__,
-    url='https://github.com/jalanb/%s' % pysyte.__name__,
-    download_url='https://github.com/jalanb/%s/tarball/v%s' % (
-        pysyte.__name__, pysyte.__version__),
+    url=f'https://github.com/jalanb/{pysyte.__name__}',
+    download_url='https://github.com/jalanb/{pysyte.__name__}/tarball/v{pysyte.__version__}',
     license='MIT License',
     author='J Alan Brogan',
     author_email='github@al-got-rhythm.net',
