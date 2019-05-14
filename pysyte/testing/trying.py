@@ -165,8 +165,12 @@ def make_module(path_to_python):
     try:
         return sys.modules[name]
     except KeyError:
-        spec = importlib.util.spec_from_file_location(name, path_to_python)
-        return importlib.util.module_from_spec(spec)
+        spec = importlib.util.spec_from_file_location(
+            name, str(path_to_python))
+        module = importlib.util.module_from_spec(spec)
+        if path_to_python.isfile():
+            spec.loader.exec_module(module)
+        return module
 
 
 def make_python2_module(path_to_python):
