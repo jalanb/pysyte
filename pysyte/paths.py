@@ -575,14 +575,14 @@ class DirectPath(DotPath, PathAssertions):
     def walkdirs(self, pattern=None, errors='strict', ignores=None):
         ignored = ignore_globs(ignores)
         for path_to_dir in super(DirectPath, self).walkdirs(pattern, errors):
-            if not ignored(path_to_dir):
+            if not ignored(path_to_dir.relpath(self)):
                 yield path_to_dir
 
     # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors='strict', ignores=None):
         ignored = ignore_globs(ignores)
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
-            if not ignored(path_to_file):
+            if not ignored(path_to_file.relpath(self)):
                 yield path_to_file
 
     def listfiles(self, pattern=None, ignores=None):
