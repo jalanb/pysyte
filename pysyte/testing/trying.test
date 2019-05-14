@@ -40,8 +40,8 @@ We also have access to some modules I often use
     >>> assert test.path.name == makepath(sys.argv[0]).name
 
 And we can run bash commands
-    >>> assert bash('/bin/ls ~/.bashrc')
-    /.../.bashrc
+    >>> assert bash('/bin/ls /bin/ls')
+    /bin/ls
 
     >>> assert test.home == makepath('~')
 
@@ -51,8 +51,8 @@ We know the user who is running the tests
 Edge cases
 ----------
 
-    >>> assert not bash('/bin/ls ~/no_such_file')
-    FAIL: .../no_such_file: No such file or directory
+    >>> assert not bash('/bin/ls /no_such_file')
+    FAIL: ...No such file or directory
 
     >>> show(os)
     Help on module os:
