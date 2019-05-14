@@ -9,13 +9,7 @@ from six import StringIO
 
 @contextmanager
 def swallow_stdout(stream=None):
-    """Divert stdout into the given stream
-
-    >>> string = StringIO()
-    >>> with swallow_stdout(string):
-    ...     print('hello')
-    >>> assert string.getvalue().rstrip() == 'hello'
-    """
+    """Divert stdout into the given stream"""
     saved = sys.stdout
     if stream is None:
         stream = StringIO()
