@@ -430,18 +430,10 @@ def abandon_operation():
 def show_branches(branch1, branch2):
     """Runs git show-branch between the 2 branches, parse result"""
 
-    def find_column(string):
-        """Find first non space line in the prefix"""
-        result = 0
-        for c in string:
-            if c == ' ':
-                result += 1
-        return result
-
     def parse_show_line(string):
         """Parse a typical line from git show-branch
 
-        >>> parse_show_line('+  [master^2] TOOLS-122 Add bashrc')
+        >>> parse_show_line('+ [master^2] TOOLS-122 Add bashrc')
         '+ ', 'master^2', 'TOOLS-122 Add bashrc'
         """
         regexp = re.compile(r'(.*)\[(.*)] (.*)')
@@ -449,7 +441,7 @@ def show_branches(branch1, branch2):
         if not match:
             return None
         prefix, commit, comment = match.groups()
-        return find_column(prefix), commit, comment
+        return prefix[0] == ' ' and 1 or 0, commit, comment
 
     log = run('show-branch --sha1-name "%s" "%s"' % (branch1, branch2))
     lines = iter(log.splitlines())
