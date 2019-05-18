@@ -20,8 +20,8 @@ class ScriptError(NotImplementedError):
 def parse_args(methods):
     """Parse out command line arguments"""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('directory', default='.', type=str, nargs='*',
-                        help='path to be abbreviated (default ".")')
+    parser.add_argument('directories', default='.', type=str, nargs='*',
+                        help='paths to be abbreviated (default ".")')
     parser.add_argument('-o', '--only_home', action='store_true',
                         help='only replace $HOME with ~')
     parser.add_argument('-x', '--exclude', type=str, nargs='*',
@@ -131,12 +131,13 @@ def sub_script(directory, args):
 
 
 def script(args):
-    directory = real_path(args.directory)
-    new_directory = sub_script(directory, args)
-    if not new_directory:
-        print(replace_home(directory))
-        return False
-    print(replace_home(new_directory))
+    for arg_dir in args.directories:
+        directory = real_path(arg_dir)
+        new_directory = sub_script(directory, args)
+        if not new_directory:
+            print(replace_home(directory))
+            return False
+        print(replace_home(new_directory))
     return True
 
 
