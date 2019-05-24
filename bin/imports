@@ -1,0 +1,62 @@
+#! /usr/bin/env python
+"""Find imports in python files"""
+
+import sys
+import os
+from collections import defaultdict
+
+from pysyte import imports
+from pysyte import scripts
+
+
+def add_args(parser):
+    """Parse out command line arguments"""
+    import sys
+    import re
+    parser.add_argument('source',
+                        help='path to source(s) to be checked')
+    parser.add_argument('-e', '--edit', action='store_true',
+                        help='Show a command for editing')
+    parser.add_argument('-d', '--duplicate', action='store_true',
+                        help='Show duplicate imports')
+    parser.add_argument('-u', '--unused', action='store_true',
+                        help='Show unused imports')
+
+
+def show_unused(visitor):
+    lines = visitor.unused_lines()
+    if not lines:
+        return []
+    print('Unused:')
+    for line in sorted(lines):
+        names_string = ','.join(lines[line])
+        print(f'{names_string}\n{visitor.line(line, True)}')
+    return visitor.unused().keys()
+
+
+def show_duplicates(visitor):
+    duplcates = visitor.multiples()
+    if duplcates:
+        print('Duplicates:')
+    for name, lines in duplcates.items():
+        instances = [visitor.line(_, True) for _ in lines]
+        lines = [name] + instances
+        print('\n'.join(lines))
+    return duplcates.keys()
+
+
+def script(args):
+    visitor = imports.extract_imports(args.source)
+    modules = []
+    if args.duplicate:
+        modules.extend(show_duplicates(visitor))
+    if args.unused:
+        modules.extend(show_unused(visitor))
+    if args.edit and modules:
+        sought = r'\>\|\<'.join(modules)
+        print(f'\nvim {visitor.path} +/"\<{sought}\>"')
+    return bool(modules)
+
+
+if __name__ == '__main__':
+    sys.exit(scripts.main(script, add_args, docstring=__doc__))

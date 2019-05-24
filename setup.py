@@ -60,6 +60,7 @@ setup(
         'bin/kat',
         'bin/short_dir',
         'bin/try',
+        'bin/imports',
     ],
     test_suite='nose.collector',
     tests_require=['nose'],
