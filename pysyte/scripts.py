@@ -42,11 +42,7 @@ def parse_args(add_args, docstring):
     result = add_args(parser)
     parser = result if result else parser
     parser.add_argument('-v', '--version', action='store_true',
-                        help=f'Show version [default: {__version__}]')
-    # parser.add_argument('-q', '--quiet', action='store_true',
-    # help='Do not show stdout')
-    # parser.add_argument('-Q', '--quiet_errors', action='store_true',
-    # help='Do not show stderr')
+                        help=f'Show version [{__version__}]')
     global args  # pylint: disable=global-statement
     args = parser.parse_args()
     run_args()
