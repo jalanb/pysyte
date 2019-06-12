@@ -54,17 +54,12 @@ def _arg_streams():
 
 
 def all():
-<<<<<<< HEAD
-    some = False
+    yielded = False
     for path in arg_paths():
         yield open(path)
-        some = True
-    if not some:
+        yielded = True
+    if not yielded or '-' in sys.argv:
         yield sys.stdin
-=======
-    more = iter([clipboard_stream(), sys.stdin])
-    return chain(_arg_streams(), more)
->>>>>>> fred
 
 
 def first():
