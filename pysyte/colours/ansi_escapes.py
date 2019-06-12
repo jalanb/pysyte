@@ -6,11 +6,11 @@ All numbers used in this file are values usable in an ANSI escape sequence
 
 
 def escape(string):
-    return '\033%s' % string
+    return f'\033{string}'
 
 
 def escape_sequence(string):
-    return escape('[%sm' % string)
+    return escape(f'[{string}m')
 
 
 def bold():
@@ -35,11 +35,12 @@ def _colour_16(ground, i):
         i = i - 8
     else:
         prefix = ''
-    return '%s%s' % (prefix, escape('[%d%dm' % (ground, i)))
+    escaped = escape(f'[{ground}{i}m')
+    return f'{prefix}{escaped}'
 
 
 def _colour_256(ground, i):
-    return escape_sequence('%s;5;%d') % (ground, i)
+    return escape_sequence(f'{ground};5;{i}')
 
 
 def _background_16(i):
@@ -71,15 +72,15 @@ def background(i):
 
 
 def prompt(string):
-    return '\001%s\002' % string
+    return f'\001{string}\002'
 
 
 def foreground_string(text, i):
-    return '%s%s%s' % (foreground(i), text, no_colour())
+    return f'{foreground(i)}{text}{no_colour()}'
 
 
 def background_string(text, i):
-    return '%s%s%s' % (background(i), text, no_colour())
+    return f'{background(i)}{text}{no_colour()}'
 
 
 def grounds_string(text, background_colour, foreground_colour):
@@ -92,4 +93,4 @@ def grounds_string(text, background_colour, foreground_colour):
 
 def prompt_string(text, i):
     string = foreground(i)
-    return '%s%s%s' % (prompt(string), text, no_prompt())
+    return f'{prompt(string)}{text}{no_prompt()}'

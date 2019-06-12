@@ -1,18 +1,32 @@
 import os
+import linecache
 import ast
 import imp
+from collections import defaultdict
 
 
 from pysyte import dictionaries
 
 
 class ImportVisitor(ast.NodeVisitor):
+
     def __init__(self):
-        dd = dictionaries.dd
-        self.froms = dd(list)
-        self.imports = dd(list)
-        self.used = dd(list)
-        super(ImportVisitor, self).__init__()
+        super().__init__()
+        self.imports = defaultdict(list)
+        self.froms = defaultdict(list)
+
+    def check_usage(self, name, line):
+        if not name:
+            return
+        found = name in self.imports
+        if found:
+            self.used[name].append(line)
+
+    def collect_names(self, node):
+        names = [(_.name, getattr(_, 'asname', None)) for _ in node.names]
+        for name, alias in names:
+            self.imports[alias if alias else name].append(node.lineno)
+        return names
 
     def find_value_id(self, node, attr=None):
         if not node:
@@ -43,25 +57,6 @@ class ImportVisitor(ast.NodeVisitor):
                 if name:
                     return name
         return None
-
-    def check_usage(self, name, line):
-        if not name:
-            return
-        found = name in self.imports
-        if found:
-            self.used[name].append(line)
-
-    def unused(self):
-        return {k: v for k, v in self.imports.items() if k not in self.used}
-
-    def multiples(self):
-        return {k: v for k, v in self.imports.items() if len(v) > 1}
-
-    def collect_names(self, node):
-        names = [(_.name, getattr(_, 'asname', None)) for _ in node.names]
-        for name, alias in names:
-            self.imports[alias if alias else name].append(node.lineno)
-        return names
 
     def visit_ImportFrom(self, node):
         if node.module != '__future__':
@@ -120,8 +115,34 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+class ImportAnalyser(ImportVisitor):
+    def __init__(self):
+        dd = defaultdict
+        super().__init__()
+        self.used = defaultdict(list)
+
+    def unused(self):
+        return {k: v for k, v in self.imports.items() if k not in self.used}
+
+    def unused_lines(self):
+        result = defaultdict(set)
+        for name, lines in self.unused().items():
+            for line in lines:
+                result[line].add(name)
+        return result
+
+    def multiples(self):
+        return {k: v for k, v in self.imports.items() if len(v) > 1}
+
+    def line(self, line_number, with_number=True):
+        line = linecache.getline(self.path, line_number).rstrip()
+        if not with_number:
+            return line
+        return f'{line_number:4d}: {line}'
+
+
 def find_imports(tree):
-    visitor = ImportVisitor()
+    visitor = ImportAnalyser()
     visitor.visit(tree)
     return visitor
 
@@ -134,7 +155,7 @@ def parse_python(path):
 def extract_imports(script):
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
-        raise ValueError('Not a file: %s' % script)
+        raise ValueError(f'Not a file: {script}')
     parse_tree = parse_python(script)
     result = find_imports(parse_tree)
     result.path = script
@@ -148,7 +169,7 @@ def load_module(package, module_name):
         def imp_load(a, b, c):
             return imp.load_module(full_name, a, b, c)
 
-        full_name = '%s.%s' % (package.__name__, module_name)
+        full_name = f'{package.__name__}.{module_name}'
         return imp_load(*imp.find_module(key, package.__path__))
 
     # pylint: disable=protected-access

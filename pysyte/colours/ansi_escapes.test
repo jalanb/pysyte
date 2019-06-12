@@ -1,10 +1,8 @@
 The ansi_escapes module
 =======================
 
-    >>> import ansi_escapes
-    >>> print ansi_escapes.__doc__
-    This module provides some known ANSI escape codes which work with terminals
-    ...
+    >>> from pysyte.colours import ansi_escapes
+    >>> assert 'ANSI escape codes' in ansi_escapes.__doc__
 
 Get a coloured text
 -------------------
@@ -13,9 +11,7 @@ Basic method of the module allows getting a string with color ANSI codes
     >>> colour_text = ansi_escapes.foreground_string('hello', 4)
 
 The given text is enbedded in the string
-    >>> 'hello' in colour_text
-    True
+    >>> assert 'hello' in colour_text
 
 The string always ends with a code to return to default colours
-    >>> colour_text.endswith(ansi_escapes.no_colour())
-    True
+    >>> assert colour_text.endswith(ansi_escapes.no_colour())

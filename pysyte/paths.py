@@ -21,19 +21,19 @@ class PathAssertions(object):
     def assert_exists(self):
         """Raise a PathError if this path does not exist on disk"""
         if not self.exists():
-            raise PathError('%s does not exist' % self)
+            raise PathError(f'{self} does not exist')
         return self
 
     def assert_isdir(self):
         """Raise a PathError if this path is not a directory on disk"""
         if not self.isdir():
-            raise PathError('%s is not a directory' % self)
+            raise PathError(f'{self} is not a directory')
         return self
 
     def assert_isfile(self):
         """Raise a PathError if this path is not a file on disk"""
         if not self.isfile():
-            raise PathError('%s is not a file' % self)
+            raise PathError(f'{self} is not a file')
         return self
 
 
@@ -45,9 +45,8 @@ class DotPath(PPath):
     # pylint: disable=abstract-method
 
     def __repr__(self):
-        return '<%s %s>' % (
-            self.__class__.__name__,
-            repr(str(self)))
+        string = repr(f'{self}')
+        return f'<{self.__class__.__name__} {string}>'
 
     # The / operator joins paths.
     def __div__(self, child):
@@ -65,8 +64,13 @@ class DotPath(PPath):
             result = str(self)  # pylint: disable=redefined-variable-type
         return self.as_existing_file(result)
 
+    __truediv__ = __div__
+
     def __cmp__(self, other):
         return cmp(str(self), str(other))
+
+    def _next_class(self, string):
+        return self.as_existing_file(string)
 
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
@@ -104,10 +108,21 @@ class DotPath(PPath):
         >>> p.paths == p.dirpaths()
         True
         """
+        parts = self.parts()
+        result = [DotPath(parts[0] or '/')]
+        for name in parts[1:]:
+            result.append(result[-1] / name)
+        return result
+
+    def parts(self):
+        """Split the path into parts like Pathlib
+
+        >>> expected = ['/', 'path', 'to', 'there']
+        >>> assert DotPath('/path/to/there').parts() == expected
+        """
         parts = self.split(os.path.sep)
-        root, rest = DotPath('/'), parts[1:]
-        return [makepath(root / os.path.sep.join(rest[:i]))
-                for i in range(len(parts))]
+        parts[0] = parts[0] and parts[0] or '/'
+        return parts
 
     def directories(self):
         """Split the dirname into individual directory names
@@ -150,11 +165,11 @@ class DotPath(PPath):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
-        ...     '/home/guido/build/python.tar')
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
+        ...     '/home/guido/build/python.tar'))
         ../build/python.tar
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to()
-        ...     '/mnt/guido/build/python.tar')
+        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
+        ...     '/mnt/guido/build/python.tar'))
         /mnt/guido/build/python.tar
         """
         relative = self.relpathto(destination)
@@ -212,8 +227,6 @@ class DotPath(PPath):
     def fnmatch_directories(self, glob):
         if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
             glob = glob.strip(os.path.sep)
-        else:
-            return
         strings = reversed(self.directory().splitall()[1:])
         for string in strings:
             if fnmatch(string, glob):
@@ -246,6 +259,12 @@ class DotPath(PPath):
 
     def same_path(self, other):
         return self.expandall() == other.expandall()
+
+    @property
+    def hidden(self):
+        """A 'hidden file' has a name starting with a '.'"""
+        s = str(self.basename())
+        return s and s[0] == '.'
 
 
 def ext_language(ext, exts=None):
@@ -307,6 +326,8 @@ class FilePath(DotPath, PathAssertions):
     def __div__(self, child):
         raise PathError('%r has no children' % self)
 
+    __truediv__ = __div__
+
     def __iter__(self):
         for line in self.stripped_lines():
             yield line
@@ -321,8 +342,8 @@ class FilePath(DotPath, PathAssertions):
         If lines can not be read (e.g. no such file) then an empty list
         """
         try:
-            return [l.rstrip() for l in self.lines()]
-        except IOError:
+            return [l.rstrip() for l in self.lines(retain=False)]
+        except (IOError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
@@ -352,7 +373,7 @@ class FilePath(DotPath, PathAssertions):
         filename, ext = os.path.splitext(copy)
         if ext == '.gz':
             filename, ext = os.path.splitext(filename)
-            ext = '%s.gz' % ext
+            ext = f'{ext}.gz'
         return self.__class__(filename), ext
 
     def as_python(self):
@@ -375,7 +396,7 @@ class FilePath(DotPath, PathAssertions):
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
-        return self.__class__('%s.%s' % (filename, extension.lstrip('.')))
+        return self.__class__(f'{filename}.{extension.lstrip(".")}')
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
@@ -396,7 +417,7 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             try:
-                first_line = self.lines()[0]
+                first_line = self.lines(retain=False)[0]
             except (OSError, UnicodeDecodeError):
                 return ''
             if first_line.startswith('#!'):
@@ -512,7 +533,7 @@ class DirectPath(DotPath, PathAssertions):
         if self.isdir():
             return False
         if os.path.exists(self):
-            raise PathError('%s exists but is not a directory' % self)
+            raise PathError(f'{self} exists but is not a directory')
         self.makedirs()
 
     def make_file_exist(self, filename=None):
@@ -550,19 +571,43 @@ class DirectPath(DotPath, PathAssertions):
         self.empty_directory()
 
     # pylint: disable=arguments-differ
+    def walkdirs(self, pattern=None, errors='strict', ignores=None):
+        ignored = ignore_globs(ignores)
+        for path_to_dir in super(DirectPath, self).walkdirs(pattern, errors):
+            if not ignored(path_to_dir.relpath(self)):
+                yield path_to_dir
+
+    # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors='strict', ignores=None):
-        def ignored(a_path):
-            for ignore in ignores:
-                if a_path.fnmatch_part(ignore):
-                    return True
-            return False
-
-        if not ignores:
-            ignores = []
-
+        ignored = ignore_globs(ignores)
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
-            if not ignored(path_to_file):
+            if not ignored(path_to_file.relpath(self)):
                 yield path_to_file
+
+    def listfiles(self, pattern=None, ignores=None):
+        ignored = ignore_globs(ignores)
+        return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
+
+    def has_vcs_dir(self):
+        parts = self.splitall()
+        for vcs_dir in ('.git', '.svn', '.hg'):
+            if self.fnmatch_part(vcs_dir):
+                return True
+        return False
+
+
+
+def ignore_globs(ignores):
+
+    def ignored(a_path):
+        if not ignores:
+            return False
+        for ignore in ignores:
+            if a_path.fnmatch_part(ignore):
+                return True
+        return False
+
+    return ignored
 
 
 class ChmodValues(object):
@@ -612,7 +657,7 @@ def cd(path_to):  # pylint: disable=invalid-name
     elif not os.path.exists(path_to):
         return False
     else:
-        raise PathError('Cannot cd to %s' % path_to)
+        raise PathError(f'Cannot cd to {path_to}')
     cd.previous = previous
     return True
 
@@ -645,6 +690,10 @@ def strings_to_paths(strings):
     return [makepath(s) for s in strings]
 
 
+def paths(strings):
+    return [p for p in strings_to_paths(strings) if p.exists()]
+
+
 def split_directories(strings):
     paths = strings_to_paths(strings)
     return [_
@@ -673,8 +722,8 @@ def directories(strings):
     return split_directories(strings)[0]
 
 
-def home():
-    return makepath('~')
+def home(sub_path = None):
+    return makepath('~') / sub_path
 
 
 def pwd():
@@ -791,3 +840,36 @@ def environ_path(key):
 
 def default_environ_path(key, default):
     return makepath(os.environ.get(key, default))
+
+
+def tab_complete(string):
+    """Finish file names "left short" by tab-completion
+
+    For example, if an argument is "fred."
+        and no file called "fred." exists
+        but "fred.py" does exist
+        then return fred.py
+    """
+    if is_option(string):
+        return string
+    if not missing_extension(string):
+        return string
+    if os.path.isfile(string):
+        return string
+    extended_files = [f for f in extend(string) if os.path.isfile(f)]
+    try:
+        return extended_files[0]
+    except IndexError:
+        return string
+
+
+def pyc_to_py(path_to_file):
+    """Change some file extensions to those which are more likely to be text
+
+    >>> pyc_to_py('vim.pyc') == 'vim.py'
+    True
+    """
+    stem, ext = os.path.splitext(path_to_file)
+    if ext == '.pyc':
+        return f'{stem}.py'
+    return path_to_file

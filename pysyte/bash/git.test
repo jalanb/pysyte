@@ -1,0 +1,30 @@
+The bash.git module
+===================
+
+    >>> from pysyte.bash import git
+    >>> assert 'cover many git commands' in git.__doc__
+
+More modules for test support
+-----------------------------
+
+    >>> import os
+
+Root of a clone
+---------------
+
+Get root of the current clone from the module under test
+    (Note that module under test is 2 sub-dirs under the root)
+    >>> pysyte_root = git.root_from(git.__file__)
+
+That is a directory
+    >>> assert os.path.isdir(pysyte_root)
+
+It is called "pysyte"
+    >>> assert os.path.basename(pysyte_root) == 'pysyte'
+
+And being a python project, it has an eponymous sub-dir
+    >>> assert os.path.isdir(os.path.join(pysyte_root, 'pysyte'))
+
+Similar method, but gets root from current directory
+    >>> os.chdir(os.path.dirname(git.__file__))
+    >>> assert pysyte_root == git.root()

@@ -110,7 +110,7 @@ class TestPaths(TestCase):
         self.assertFalse(path.any_line_has('Abnormal line'))
 
     def test_directory(self):
-        self.assertEquals(self.path.directory(), self.path.parent)
+        self.assertEqual(self.path.directory(), self.path.parent)
 
     def test_no_div_for_file(self):
         path = paths.FilePath(__file__)
@@ -123,3 +123,9 @@ class TestPaths(TestCase):
                 break
         else:
             self.fail('Could not find %s' % self.path)
+
+    def test_vcs_dirs(self):
+        self.assertTrue(paths.path('/usr/.git/fred').has_vcs_dir())
+        self.assertTrue(paths.path('/usr/local/.svn').has_vcs_dir())
+        self.assertTrue(paths.path('/.hg/etc').has_vcs_dir())
+        self.assertFalse(paths.path('/usr/local/bin').has_vcs_dir())

@@ -1,4 +1,4 @@
-"""Provide methods to handle colour values
+"""Provide methods to put colours in texts
 
 
 Inspired by http://stackoverflow.com/questions/384076/how-can-i-make-the-python-logging-output-to-be-colored  # noqa
@@ -7,7 +7,7 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 """
 
 
-from __future__ import print_function, absolute_import
+from __future__ import absolute_import
 import os
 
 from pysyte.colours import ansi_escapes
@@ -25,7 +25,7 @@ class ColouredTail(object):
         self._head = head
 
     def __repr__(self):
-        return '<%s %r%r>' % (self.__class__.__name__, self.head, self.tail)
+        return f'<{self.__class__.__name__} {self.head!r}{self.tail!r}>'
 
     def __str__(self):
         return ''.join((self.head, self.tail))

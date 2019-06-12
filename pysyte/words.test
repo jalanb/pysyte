@@ -1,0 +1,25 @@
+The words module
+================
+
+    >>> from pysyte import words
+    >>> assert 'English words' in words.__doc__
+
+Plurals
+-------
+
+Can find plurals of words
+    >>> assert words.pluralize('fred') == 'freds'
+
+Which preserves case
+    >>> assert words.pluralize('Freddy') == 'Freddys'
+
+Singulars
+---------
+
+We can also get singular forms,
+    >>> assert words.singularize('cows') == 'cow'
+
+Names for numbers
+-----------------
+
+    >>> assert words.number_name(-621.77) == 'minus six hundred and twenty-one point seven seven'

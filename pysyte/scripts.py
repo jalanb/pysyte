@@ -1,5 +1,4 @@
 """Framework for a script to be run from a shell"""
-from __future__ import print_function
 
 import argparse
 import os
@@ -21,7 +20,7 @@ def latest_version():
 
 
 def version():
-    print('%s %s' % (args, latest_version()))
+    print(f'{args} {latest_version()}')
     raise SystemExit
 
 
@@ -43,11 +42,7 @@ def parse_args(add_args, docstring):
     result = add_args(parser)
     parser = result if result else parser
     parser.add_argument('-v', '--version', action='store_true',
-                        help='Show version [default: %s]' % __version__)
-    # parser.add_argument('-q', '--quiet', action='store_true',
-    # help='Do not show stdout')
-    # parser.add_argument('-Q', '--quiet_errors', action='store_true',
-    # help='Do not show stderr')
+                        help=f'Show version [{__version__}]')
     global args  # pylint: disable=global-statement
     args = parser.parse_args()
     run_args()
@@ -75,7 +70,7 @@ def main(method, add_args, version=None,
     try:
         args = parse_args(
             add_args,
-            docstring and docstring or '%s()' % method.__name__)
+            docstring and docstring or f'{method.__name__}()')
         return _exit_ok if method(args) else _exit_fail
     except KeyboardInterrupt as e:
         ctrl_c = 3

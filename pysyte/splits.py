@@ -180,5 +180,5 @@ def rejoin(string, separator_regexp=None, spaced=False):
     strings = split_and_strip(string)
     if separator_regexp is None:
         separator_regexp = _default_separator()
-    joiner = spaced and '%s ' % separator_regexp or separator_regexp
+    joiner = spaced and f'{separator_regexp} ' or separator_regexp
     return joiner.join(strings)

@@ -1,18 +1,35 @@
 The dictionaries module
 =======================
 
-    >>> import dictionaries
-    >>> print(dictionaries.__doc__)
-    Some methods to help with the handling of dictionaries
+    >>> from pysyte import dictionaries
+    >>> assert 'help with the handling of dictionaries' in dictionaries.__doc__
+
+Default Dictionaries
+--------------------
+
+Better representation
+
+    >>> dd = dictionaries.DefaultDict(list)
+    >>> dd[1].append('one')
+    >>> dd[3].append('three')
+    >>> dd
+    <DefaultDict
+        {1: ['one'], 3: ['three']}
+    >
+
+A LazyDefaultDict initialises with a method (not a type), which takes a key
+    and that method provides the default value
 
     >>> def method(key):
     ...     return key < 10 and 'small' or 'big'
+
     >>> stuff = dictionaries.LazyDefaultDict(method)
-    >>> stuff[5] == 'small'
-    True
-    >>> stuff[198798] == 'big'
-    True
-    >>> print(stuff)
-    {5: 'small', 198798: 'big'}
-    >>> print(repr(stuff))
-    {5: 'small', 198798: 'big'}
+
+    >>> assert stuff[5] == 'small'
+    >>> assert stuff[198798] == 'big'
+
+Also has the better representation of DefaultDict
+    >>> stuff
+    <LazyDefaultDict
+        {5: 'small', 198798: 'big'}
+    >

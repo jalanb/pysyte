@@ -1,0 +1,99 @@
+The files_for_test module
+=========================
+
+    >>> from pysyte.testing import files_for_test as fft
+
+Imports for testing
+-------------------
+
+    >>> from pysyte.paths import makepath
+
+Handle files
+------------
+
+Unknown files raise an exception
+
+    >>> try:
+    ...    fft.paths_to_doctests(strings=['no_such_file'], recursive=False)
+    ...    assert False
+    ... except fft.MissingFiles as e:
+    ...    assert True
+
+
+We'll need to find all possible extension of a stem
+    >>> path_to_files_for_test = makepath(fft.__file__)
+    >>> path_to_test_stem, ext = path_to_files_for_test.splitext()
+    >>> path_to_test_directory = path_to_files_for_test.parent
+    >>> extended_files = [f.name for f in fft._existing_test_extensions(path_to_test_stem)]
+    >>> assert 'files_for_test.py' in extended_files
+    >>> assert 'files_for_test.tests' in extended_files
+
+Find test files related to a text file
+    >>> path_to_files_for_test = makepath(fft.__file__)
+    >>> path_to_tests = fft._get_path_to_test_directory([path_to_files_for_test])
+    >>> assert path_to_tests == path_to_test_directory
+
+Edge cases
+----------
+
+    >>> assert fft._get_path_to_test_directory([path_to_test_directory]) == path_to_test_directory
+    >>> try:
+    ...     fft._get_path_to_test_directory([str(path_to_test_directory / 'not_a_file')])
+    ...     assert False
+    ... except fft.MissingFiles:
+    ...     assert True
+    >>> try:
+    ...     fft._get_path_to_test_directory('/etc/httpd/conf')
+    ...     assert False
+    ... except fft.MissingFiles:
+    ...     assert True
+
+    >>> assert path_to_test_directory in fft._get_path_stems([str(path_to_test_directory)], True)
+    >>> assert fft.is_python_doctest_extension('.test')
+    >>> assert fft.is_python_doctest_extension('.tests')
+    >>> assert not fft.is_python_doctest_extension('.text')
+    >>> assert not fft.is_python_doctest_extension('.py')
+    >>> assert fft.has_python_doctest_extension('fred.test')
+    >>> assert fft.has_python_doctest_extension('fred/fred.tests')
+    >>> assert not fft.has_python_doctest_extension('fred.text')
+    >>> assert not fft.has_python_doctest_extension('fred/fred.py')
+
+    >>> path_to_test_stem.write_lines(['#! /usr/local/python', 'print 0'])
+    >>> assert path_to_test_stem in fft._expand_stems([path_to_test_stem])
+    >>> assert path_to_test_stem in fft.paths_to_doctests([path_to_test_stem], False)
+    >>> deleted = path_to_test_stem.remove()
+    >>> assert not deleted.exists()
+
+    >>> assert fft._first_line_is_python_shebang(['#! /usr/local/python', 'print 0'])
+    >>> assert not fft._first_line_is_python_shebang(['print 0', '#! /usr/local/python'])
+    >>> assert not fft._first_line_is_python_shebang([])
+
+    >>> import sys
+    >>> sys.stderr = sys.stdout
+    >>> sys.argv = ['try.py', 'not_a_file']
+    >>> fft.main() == 1
+    not_a_file.test*, not_a_file.py not found
+    True
+    >>> sys.stderr = sys.__stderr__
+
+    >>> assert not fft.has_doctests('not space    >>> print True')
+    >>> assert fft.has_doctests('not space\n    >>> print True')
+    >>> assert fft.has_doctests('not space\n\t>>> print True')
+    >>> assert fft.has_doctests('not space\n>>> print True')
+
+
+Adding sub_directories
+----------------------
+
+Derive some paths for testing from the module under test
+    >>> files_for_test_script = test.path.realpath()
+    >>> files_for_test_parent = files_for_test_script.parent
+    >>> files_for_test_grandparent = files_for_test_parent.parent
+
+The add_sub_dirs() method takes a list of paths
+    and gives a set of all sub_directories under them
+    So if we give it the grandparent directory it should give back the parent
+    >>> assert files_for_test_parent in fft.add_sub_dirs([files_for_test_grandparent])
+
+It also returns the grandparent
+    >>> assert files_for_test_grandparent in fft.add_sub_dirs([files_for_test_grandparent])

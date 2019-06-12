@@ -11,7 +11,6 @@ Adapted from
     And reducing down to just the tty version
         No need here for Windows/Carbon
 """
-from __future__ import print_function
 
 import re
 import signal
@@ -86,6 +85,18 @@ class TimerContext(object):
             return True
 
 
+_key_cache = []
+
+
+def cache_keys(keys):
+    """Allow debugging via PyCharm"""
+    d = known_keys()
+    known_names = dict(zip(d.values(), d.keys()))
+    for k in keys:
+        i = (ord(k),) if len(k) == 1 else known_names[k]
+        _key_cache.insert(0, i)
+
+
 def _get_keycodes():
     """Read keypress giving a tuple of key codes
 
@@ -93,6 +104,10 @@ def _get_keycodes():
 
     For example, pressing 'A' will give (65,)
     """
+    try:
+        return _key_cache.pop()
+    except IndexError:
+        pass
     result = []
     terminators = 'ABCDFHPQRS~'
     with TerminalContext():
@@ -118,8 +133,7 @@ def _get_keycodes():
 class ExtendedKey(Exception):
     """Raised for an unrecognised Extended key code"""
     def __init__(self, codes):
-        super(ExtendedKey, self).__init__(
-            'Too many key codes: %s' % repr(codes))
+        super(ExtendedKey, self).__init__(f'Too many key codes: {codes!r}')
         self.codes = codes
 
 
@@ -154,7 +168,7 @@ def get_key():
 def get_menu(**kwargs):
     key = get_key()
     for name, string in kwargs.items():
-        match = re.match('^%s$' % string, key)
+        match = re.match(f'^{string}$', key)
         if match:
             return name
         if key in name or key in string:
@@ -198,7 +212,8 @@ def get_as_key():
 
 def control_key_name(code):
     """Prefix the name of a control key with '^'"""
-    return '^%s' % (chr(code - 1 + ord('A')))
+    name = chr(code - 1 + ord('A'))
+    return f'^{name}'
 
 
 def get_extended_key_name(codes):
@@ -206,7 +221,11 @@ def get_extended_key_name(codes):
 
     Names are defined herein
     """
-    known_keys = {
+    return known_keys()[codes]
+
+
+def known_keys():
+    return {
         (27, 79, 70): 'end',
         (27, 79, 72): 'home',
         (27, 79, 80): 'F1',
@@ -222,15 +241,22 @@ def get_extended_key_name(codes):
         (27, 91, 50, 49, 126): 'F10',
         (27, 91, 50, 51, 126): 'F11',
         (27, 91, 50, 52, 126): 'F12',
+        (27, 91, 49, 59, 50, 80): 'F13',
+        (27, 91, 49, 59, 50, 83): 'F16',
+        (27, 91, 49, 53, 59, 50, 126): 'F17',
+        (27, 91, 49, 55, 59, 50, 126): 'F18',
+        (27, 91, 49, 56, 59, 50, 126): 'F19',
+        (27, 91, 51, 126): 'Del',
         (27, 91, 51): 'delete',
         (27, 91, 53): 'page up',
+        (27, 91, 53, 126): 'page up',
         (27, 91, 54): 'page down',
+        (27, 91, 54, 126): 'page down',
         (27, 91, 65): 'up',
         (27, 91, 66): 'down',
         (27, 91, 67): 'right',
         (27, 91, 68): 'left',
     }
-    return known_keys[codes]
 
 
 def _yielder(getter):
@@ -273,8 +299,8 @@ def yield_asciis_old():
 
 
 def ask_user(prompt, default=None):
-    prompt_default = str('[%s]' % default) if default else ''
-    print('%s %s? ' % (prompt, prompt_default), end='')
+    prompt_default = f'[{default}]' if default else ''
+    print(f'{prompt} {prompt_default}? ', end='')
     result = getch().lower().strip()
     print()
     return result or default

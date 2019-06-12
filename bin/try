@@ -1,0 +1,30 @@
+#! /usr/bin/env python3
+"""Run doctests in *.py and associated test files"""
+
+import sys
+import importlib
+
+from pysyte import args as arguments
+from pysyte.testing import trying
+from pysyte.testing import files_for_test
+
+# Module name prevents a normal import
+# try_ = importlib.import_module('try', 'pysyte.testing')
+
+
+def main():
+    """Run the program"""
+
+    try:
+        fails = trying.test()
+        return not fails
+    except files_for_test.UserMessage as e:
+        sys.stderr.write(str(e))
+    except KeyboardInterrupt as e:
+        sys.stderr.write('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c\n')
+        sys.stderr.write('Bye now\n')
+        sys.stderr.write(str(e))
+
+
+if __name__ == '__main__':
+    sys.exit(arguments.call_main(main))

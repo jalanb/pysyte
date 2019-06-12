@@ -1,0 +1,77 @@
+The words module
+================
+
+    >>> from pysyte import words
+
+This module handles some english words
+
+    >>> expected = [
+    ...     ('punch', 'punches'),
+    ...     ('fish', 'fish'),
+    ...     ('lunch', 'lunches'),
+    ...     ('bass', 'basses'),
+    ...     ('fax', 'faxes'),
+    ...     ('coach', 'coaches'),
+    ...     ('rash', 'rashes'),
+    ...     ('cheetah', 'cheetahs'),
+    ...     ('vacancy', 'vacancies'),
+    ...     ('day', 'days'),
+    ...     ('man', 'men'),
+    ...     ('woman', 'women'),
+    ...     ('human', 'humans'),
+    ...     ('mouse', 'mice'),
+    ...     ('louse', 'lice'),
+    ...     ('house', 'houses'),
+    ...     ('knife', 'knives'),
+    ...     ('wife', 'wives'),
+    ...     ('sheep', 'sheep'),
+    ...     ('deer', 'deer'),
+    ...     ('hero', 'heroes'),
+    ...     ('piano', 'pianos'),
+    ... ]
+    >>> for singular, plural in expected:
+    ...     assert words.pluralize(singular) == plural, singular
+
+    >>> words.pluralize('lowlife') == 'lowlifes'
+    True
+
+
+    >>> assert words.singularize('cats') == 'cat'
+    >>> assert words.singularize('fish') == 'fish'
+    >>> assert words.singularize('freds') == 'fred'
+    >>> assert words.singularize('freddies') == 'freddy'
+
+    >>> assert words.number_name('1') == 'one'
+    >>> assert words.number_name(0) == 'zero'
+    >>> assert words.number_name(-0) == 'zero'
+    >>> assert words.number_name(1) == 'one'
+    >>> assert words.number_name(11) == 'eleven'
+    >>> assert words.number_name(16) == 'sixteen'
+    >>> assert words.number_name(-16) == 'minus sixteen'
+    >>> assert words.number_name(20) == 'twenty'
+    >>> assert words.number_name(26) == 'twenty-six'
+    >>> assert words.number_name(400) == 'four hundred'
+    >>> assert words.number_name(606) == 'six hundred and six'
+    >>> assert words.number_name(876) == 'eight hundred and seventy-six'
+    >>> assert words.number_name(3006) == 'three thousand and six'
+    >>> assert words.number_name(3076) == 'three thousand and seventy-six'
+    >>> assert words.number_name(3870) == 'three thousand, eight hundred and seventy'
+    >>> assert words.number_name(23876) == 'twenty-three thousand, eight hundred and seventy-six'
+    >>> assert words.number_name(500000) == 'five hundred thousand'
+    >>> assert words.number_name(500002) == 'five hundred thousand and two'
+    >>> assert words.number_name(523876) == 'five hundred and twenty-three thousand, eight hundred and seventy-six'
+    >>> assert words.number_name(-523876) == 'minus five hundred and twenty-three thousand, eight hundred and seventy-six'
+    >>> assert words.number_name(1_000_000) == 'one million'
+    >>> assert words.number_name(1_000_001) == 'one million and one'
+    >>> assert words.number_name(1_000_100) == 'one million, one hundred'
+    >>> assert words.number_name(1_001_000) == 'one million, one thousand'
+    >>> assert words.number_name(1_001_005) == 'one million, one thousand and five'
+    >>> assert words.number_name(1_001_050) == 'one million, one thousand and fifty'
+    >>> assert words.number_name(1_001_500) == 'one million, one thousand, five hundred'
+    >>> assert words.number_name(1_001_555) == 'one million, one thousand, five hundred and fifty-five'
+    >>> assert words.number_name(5_050_050) == 'five million, fifty thousand and fifty'
+    >>> assert words.number_name(235_000_150) == 'two hundred and thirty-five million, one hundred and fifty'
+    >>> assert words.number_name(19_004_300_900) == 'nineteen billion, four million, three hundred thousand, nine hundred'
+    >>> assert words.number_name(33_000_000_000_000) == 'thirty-three trillion'
+    >>> import math
+    >>> assert words.number_name(-math.pi).startswith('minus three point one four one five nine')

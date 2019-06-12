@@ -52,8 +52,7 @@ def memoize(method):
         elif key in method.cache:
             del method.cache[key]
         else:
-            raise KeyError(
-                'Not prevously cached: %s(%s)' % (method.__name__, key))
+            raise KeyError(f'Not prevously cached: {method.__name__}({key})')
 
     def new_method(*arguments, **keyword_arguments):
         """Cache the arguments and return values of the call
@@ -68,7 +67,7 @@ def memoize(method):
         return method.cache[key]
     new_method.invalidate = invalidate
     new_method.__doc__ = method.__doc__
-    new_method.__name__ = 'memoize(%s)' % method.__name__
+    new_method.__name__ = f'memoize({method.__name__})'
     return new_method
 
 
@@ -85,7 +84,7 @@ def debug(method):
         except pdb.bdb.BdbQuit:
             sys.exit('Normal quit from debugger')
     new_method.__doc__ = method.__doc__
-    new_method.__name__ = 'debug(%s)' % method.__name__
+    new_method.__name__ = f'debug({method.__name__})'
     return new_method
 
 

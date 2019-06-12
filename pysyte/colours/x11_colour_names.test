@@ -1,0 +1,7 @@
+The x11_colour_names module
+===========================
+
+    >>> from pysyte.colours import x11_colour_names
+    >>> assert 'X11 names for colours' in x11_colour_names.__doc__
+
+    >>> assert 'red' in x11_colour_names.names()

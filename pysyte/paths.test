@@ -1,62 +1,60 @@
 The paths module
 ================
 
-    >>> import paths
+    >>> from pysyte import paths
+    >>> assert 'extended path classes' in paths.__doc__
 
 We'll need the os module for some of the tests below
 
     >>> import os
 
+pwd()
+-----
+
 The pwd() method is a synonym for os.getcwd()
 
     >>> start_here = paths.pwd()
-    >>> start_here == os.getcwd()
-    True
+    >>> assert start_here == os.getcwd()
+
+cd()
+----
 
 The cd() method (at least) calls os.chdir()
 It returns True if the change of directory is successful
 
-    >>> paths.cd('/no/such/path')
-    False
-    >>> paths.pwd() == '/usr/lib'
-    False
-    >>> paths.cd('/usr/lib')
-    True
-    >>> paths.pwd()
-    <DirectPath ...'/usr/lib'>
+    >>> assert not paths.cd('/no/such/path')
+    >>> assert paths.pwd() == start_here
+    >>> assert paths.cd('/usr/lib')
+    >>> assert paths.pwd() == '/usr/lib'
 
 cd() recognises the special value '-' to go back to the previous directory
 
-    >>> paths.cd('-') and paths.pwd() == start_here or 'fail'
-    True
+    >>> assert paths.cd('-')
+    >>> assert paths.pwd() == start_here
 
 If a cd() fails the value used gets ignored for going back
     >>> paths.cd('/no/such/path') and paths.pwd() or 'fail'
     'fail'
     >>> paths.cd('-') and paths.pwd() or 'fail'
-    <DirectPath ...'/usr/lib'>
+    <DirectPath '/usr/lib'>
 
 Calling using '-' repeatedly will toggle between two directories:
 
-    >>> paths.cd('/usr')
-    True
-    >>> paths.cd('/home')
-    True
+    >>> assert paths.cd('/usr')
+    >>> assert paths.cd('/opt')
     >>> for i in range(0,4):
     ...    _ = paths.cd('-')
     ...    print(paths.pwd())
     /usr
-    /home
+    /opt
     /usr
-    /home
+    /opt
 
 If the path to a file is given, cd() will change to that file's parent directory
     /bin/cp is present on nearly all systems
         (but it might be a link to /usr/bin/cp)
-    >>> paths.cd('/bin/cp')
-    True
-    >>> paths.pwd() in ('/bin', '/usr/bin')
-    True
+    >>> assert paths.cd('/bin/cp')
+    >>> assert paths.pwd() in ('/bin', '/usr/bin')
 
 DirectPath
 ----------
@@ -68,11 +66,15 @@ You can construct an instance of DirectPath directly:
 
 Or by using the method makepath
 
-    >>> p = makepath('.')
+    >>> p = paths.makepath('.')
 
 The difference is that makepath expands the string given
-    >>> makepath('~/..')[0] == '/'
-    True
+    >>> os_home = os.path.expanduser('~')
+    >>> assert paths.DirectPath('~') != os_home
+    >>> assert paths.makepath('~') == os_home
+    >>> if 'HOME' in os.environ:
+    ...     assert paths.DirectPath('$HOME') != os_home
+    ...     assert paths.makepath('$HOME') == os_home
 
 DirectPath is ako string, which shows the string in %s and %r
 
@@ -80,32 +82,29 @@ DirectPath is ako string, which shows the string in %s and %r
     >>> print('%s' % bin)
     /bin
     >>> print('%r' % bin)
-    <DirectPath ...'/bin'>
+    <DirectPath '/bin'>
 
 Path expansion at creation
 --------------------------
 
 The makepath method expands paths "normally"
     So both of these end up with the same (string) value:
-    >>> direct_home = paths.DirectPath(os.environ['HOME'])
-    >>> path_to_home = makepath('~')
-    >>> direct_home == path_to_home
-    True
+    >>> direct_home = paths.DirectPath(os_home)
+    >>> path_to_home = paths.makepath('~')
+    >>> assert direct_home == path_to_home
 
 And that is an expanded path
-    >>> path_to_home.startswith('/') and '~' not in path_to_home
-    True
+    >>> assert path_to_home.startswith('/') and '~' not in path_to_home
 
 The same works for the value if concatenation was applied to the path
     or is applied to the string
-    >>> path_to_bashrc = makepath('~/.bashrc')
-    >>> path_to_bashrc.same_path(path_to_home / '.bashrc')
-    True
+    >>> applied_to_path = path_to_home / 'fred'
+    >>> applied_to_string = paths.makepath('~/fred')
+    >>> assert applied_to_path == applied_to_string
 
 We are expecting ~/.bashrc to exist,
-    so the types should also be the same: both are FilePaths
-    >>> type(path_to_home / '.bashrc') == type(path_to_bashrc)
-    True
+    so the types here should also be the same: both are FilePaths
+    >>> assert type(applied_to_path) == type(applied_to_string)
 
 cd
 --
@@ -113,14 +112,13 @@ cd
 DirectPath adds the cd() method, which cd's to the path it represents
 It calls the module level cd() method with its own value, so it works as above.
 
-    >>> p = makepath('/bin/cp')
-    >>> p.cd()
-    True
-    >>> paths.pwd() in ('/bin', '/usr/bin')
-    True
+    >>> p = paths.makepath('/bin/cp')
+    >>> assert p.cd()
+    >>> assert paths.pwd() in ('/bin', '/usr/bin')
+
     >>> f = paths.DirectPath('/bin')
-    >>> f.cd() and paths.pwd() or 'fail'
-    <DirectPath .../bin'>
+    >>> assert f.cd()
+    >>> assert paths.pwd() == '/bin'
 
 DirectPath vs path
 ------------------
@@ -130,25 +128,25 @@ Using the / operator on a DirectPath or path gives an instance of the same class
     >>> home = path('~')
     >>> bashrc = home / '.bashrc'
     >>> type(bashrc)
-    <class 'path.path'>
+    <class 'path.Path'>
 
     >>> home = paths.DirectPath('~')
     >>> bashrc = home / '.bashrc'
     >>> type(bashrc)
-    <class 'paths.DirectPath'>
+    <class 'pysyte.paths.DirectPath'>
 
 Attributes of a DirectPath should also be DirectPaths (should not be path)
     >>> type(bashrc.parent)
-    <class 'paths.DirectPath'>
+    <class 'pysyte.paths.DirectPath'>
 
 The split_all_ext method
 ------------------------
 
     >>> p = paths.FilePath('/alan/was/here.tar.gz')
     >>> p.splitext()
-    (<FilePath ...'/alan/was/here.tar'>, ...'.gz')
+    (<FilePath '/alan/was/here.tar'>, '.gz')
     >>> p.split_all_ext()
-    (<FilePath ...'/alan/was/here'>, ...'.tar.gz')
+    (<FilePath '/alan/was/here'>, '.tar.gz')
 
 
 Whether sub_paths exist
@@ -158,46 +156,42 @@ This test assumes you have a ~/bin directory
     Also assumes you have a ~/.bashrc file, which is more likely
     >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
-    >>> show(real_paths)
-    [<FilePath ...'/.../.bashrc'>, <DirectPath ...'/.../bin'>]
+    >>> assert paths.home('.bashrc') in real_paths
+    >>> assert paths.home('bin') in real_paths
+    >>> assert paths.home('not a real path') not in real_paths
 
 Iteration of paths
 ------------------
 
 Iterating a directory gives directory entries (sub-directories and files)
-    >>> '.bashrc' in [p.name for p in paths.home() if p.isfile()]
-    True
+    >>> assert '.bashrc' in [p.name for p in paths.home() if p.isfile()]
 
 Iterating a file gives lines
-    >>> path_to_this_test = makepath(paths.__file__).extend_by('.test')
-    >>> print([l for l in path_to_this_test if 'paths' in l][0])
-    The paths module
+    >>> path_to_this_test = paths.makepath(paths.__file__).extend_by('.test')
+    >>> iteratings = [l for l in path_to_this_test if 'Iterating' in l]
+    >>> assert 'Iterating a file gives lines' in iteratings
 
 Sets of paths
 -------------
 
-    >>> '/usr/lib' in paths.list_sub_directories('/usr','l*')
-    True
-    >>> '/usr/lib' in paths.list_sub_directories('/usr','a*')
-    False
-    >>> '/bin/ls' in paths.set_files('/bin','l*')
-    True
-    >>> '/bin/ls' in paths.set_files('/bin','a*')
-    False
+    >>> assert '/usr/lib' in paths.list_sub_directories('/usr','l*')
+    >>> assert '/usr/lib' not in paths.list_sub_directories('/usr','a*')
+    >>> assert '/bin/ls' in paths.set_files('/bin','l*')
+    >>> assert '/bin/ls' not in paths.set_files('/bin','a*')
 
-List directories
+Search directories
 ----------------
 
-    >>> paths.contains_glob('/usr','*oca*')
-    True
-    >>> paths.contains_glob('/usr','*oca')
-    False
-    >>> paths.contains_file('/usr','*oca*')
-    False
-    >>> paths.contains_file('/usr','*oca')
-    False
-    >>> paths.contains_directory('/usr','*oca*')
-    True
-    >>> paths.contains_directory('/usr','*oca')
-    False
+    >>> assert paths.contains_glob('/usr','*oca*')
+    >>> assert paths.contains_directory('/usr','*oca*')
+    >>> assert not paths.contains_file('/usr','*oca*')
 
+    >>> assert not paths.contains_glob('/usr','*oca')
+    >>> assert not paths.contains_file('/usr','*oca')
+    >>> assert not paths.contains_directory('/usr','*oca')
+
+
+Parts and parents
+-----------------
+
+    >>> assert paths.home

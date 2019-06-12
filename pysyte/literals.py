@@ -86,4 +86,4 @@ class AnsiColourSequences(Literals):
 
     @classmethod
     def highlighted(cls, colour, text):
-        return '%s%s%s' % (colour, text, cls.off)
+        return f'{colour}{text}{cls.off}'

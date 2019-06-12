@@ -12,15 +12,15 @@ class DictionariesTest(unittest.TestCase):
 
     def test_get_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEquals(9, site.dictionaries.get_caselessly(things, 'fred'))
+        self.assertEqual(9, site.dictionaries.get_caselessly(things, 'fred'))
 
     def test_get_lower_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEquals(2, site.dictionaries.get_caselessly(things, 'B'))
+        self.assertEqual(2, site.dictionaries.get_caselessly(things, 'B'))
 
     def test_get_upper_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEquals(1, site.dictionaries.get_caselessly(things, 'a'))
+        self.assertEqual(1, site.dictionaries.get_caselessly(things, 'a'))
 
     def test_do_not_get_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
@@ -31,17 +31,17 @@ class DictionariesTest(unittest.TestCase):
         pythons = {'John': 'Cleese', 'Graham': 'Chapman', 'Eric': 'Idle'}
         expected = {'Cleese': 'John', 'Chapman': 'Graham', 'Idle': 'Eric'}
         actual = site.dictionaries.swap_dictionary(pythons)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
     def test_swap_empty_dictionary(self):
         actual = site.dictionaries.swap_dictionary({})
         expected = {}
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
     def test_swap_none(self):
         expected = None
         actual = site.dictionaries.swap_dictionary(None)
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
     def test_swap_not_a_dictionary(self):
         with self.assertRaises(AttributeError):
@@ -77,7 +77,7 @@ class DictionariesTest(unittest.TestCase):
             self.assertDictEqual(dictionary, expected, message)
 
     def test_extend_with_non_list(self):
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             TypeError,
             'Expected a list, got: 2',
             site.dictionaries.extend_values,

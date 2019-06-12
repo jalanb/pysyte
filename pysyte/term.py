@@ -1,10 +1,16 @@
-import pysyte as site
+from pysyte.bash import cmnds
+
+
+class NoTerminalAvailable(NotImplementedError):
+    pass
 
 
 def _tput(tput_command):
-    command = 'tput %s' % tput_command
-    status, output = site.cmnds.getstatusoutput(command)
+    command = f'tput {tput_command}'
+    status, output = cmnds.getstatusoutput(command)
     if status:
+        if 'No value for $TERM' in output:
+            raise NoTerminalAvailable(output)
         raise NotImplementedError(output)
     if not output:
         return 0

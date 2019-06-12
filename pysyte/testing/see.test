@@ -1,0 +1,49 @@
+The see module
+==============
+
+    >>> from pysyte.testing import see
+
+More imports for testing
+------------------------
+
+    >>> import sys
+
+see()
+-----
+
+The basic method is a better version of dir()
+    >>> see.see(sys)
+    help()    ...
+    ...
+
+
+Search by regexp
+    >>> see.see(sys, r="api")
+      .api_version
+
+Or search by glob
+    >>> see.see(sys, pattern=".call*")
+      .call_tracing()    .callstats()
+
+Hide attributes
+    >>> see.see(sys, r="api", attributes=False)
+
+Only include methods
+    >>> see.see(sys, pattern=".call*", methods=True)
+      .call_tracing()    .callstats()
+
+Convenience method to avoid having to use an arg !
+    >>> see.see_attributes(sys, r="api")
+      .api_version
+
+Another candidate for /r/badcode
+    >>> see.see_methods(sys, pattern=".call*")
+      .call_tracing()    .callstats()
+
+Spread out for display
+    >>> see.spread(sys)
+    <module
+    ...
+        path : [...]
+    ...
+    >

@@ -1,0 +1,70 @@
+The files_for_test module
+=========================
+
+    >>> from pysyte.testing import files_for_test
+    >>> assert 'methods to handle test files' in files_for_test.__doc__
+
+
+More modules for testing
+------------------------
+
+    >>> import os
+
+What's a test script
+--------------------
+
+There's a method to show what the module thinks are test files:
+    those with certain extensions
+
+Note the order here
+    which goes from more edge-case and detailed to more exemplary and short
+    >>> files_for_test.possible_test_extensions()
+    ['.tests', '.test', '.py', '']
+
+In some scenarios we may not want to include she-bang scripts
+    >>> files_for_test.positive_test_extensions()
+    ['.tests', '.test', '.py']
+
+Can test if something is a test extension
+    >>> assert files_for_test._is_possible_test_extension('.py')
+    >>> assert not files_for_test._is_possible_test_extension('.pyc')
+
+Or a file has one
+    >>> assert files_for_test._has_possible_test_extension('/path/fred.test')
+    >>> assert not files_for_test._has_possible_test_extension('path/fred.txt')
+
+A file without an extension might be a python file
+    and so might have tests
+    >>> assert files_for_test._has_possible_test_extension('fred')
+
+But is not definitely a python file
+    so we cant be positive about it
+    >>> assert not files_for_test._has_positive_test_extension('fred')
+
+paths_to_doctests()
+-------------------
+
+The method takes arguments of
+    1) a list of possible stems
+    2) whether to search directories recursively
+
+To test a bit more extensively we'll specify some known stems
+
+First stem to test with is the only file we're sure of:
+    the name of the module we are actually testing
+    >>> test_file_stem, ext = os.path.splitext(files_for_test.__file__)
+
+And we think there are also some files in same directory called "trying.*"
+    >>> test_file_name = os.path.basename(test_file_stem)
+    >>> try_stem = test_file_stem.replace(test_file_name, 'trying')
+
+Test with those stems
+    >>> stems = [test_file_stem, try_stem]
+    >>> paths_to_test_scripts = files_for_test.paths_to_doctests(stems, False)
+
+Only testing the names of those scripts
+    >>> test_script_names = [ p.name for p in paths_to_test_scripts]
+
+We expect to find files with the standard test extensions
+    >>> assert 'files_for_test.test' in test_script_names
+    >>> assert 'trying.py' in test_script_names
