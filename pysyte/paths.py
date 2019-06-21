@@ -5,6 +5,7 @@ The classes all inherit from the original path.path
 import os
 from fnmatch import fnmatch
 
+from .lists import flatten
 
 class PathError(Exception):
     """Something went wrong with a path"""
@@ -771,25 +772,23 @@ def _names_in_directory(path_to_directory):
         return []
 
 
-def make_needed(pattern, path_to_directory, wanted):
-    """Make a method to check if an item matches the pattern, and is wanted
+def fnmatcher(pattern, path_to_directory=None, wanted=lambda x: True):
+    """Gives a method to check if an item matches the pattern, and is wanted
 
-    If wanted is None just check the pattern
+    If path_to_directory is given then items are checked there
+    By default, every item is wanted
     """
-    if wanted:
-        def needed(name):
-            return fnmatch(name, pattern) and wanted(
-                os.path.join(path_to_directory, name))
-        return needed
-    else:
-        return lambda name: fnmatch(name, pattern)
+    return lambda x: fnmatch(x, pattern) and wanted(os.path.join(path_to_directory, x) if path_to_directory else x)
 
 
-def list_items(path_to_directory, pattern, wanted):
-    """All items in the given path which match the given glob and are wanted"""
+def list_items(path_to_directory, pattern, wanted=lambda x: True):
+    """All items in the given path which match the given glob and are wanted
+
+    By default, every path is wanted
+    """
     if not path_to_directory:
         return set()
-    needed = make_needed(pattern, path_to_directory, wanted)
+    needed = fnmatcher(pattern, path_to_directory, wanted)
     return [os.path.join(path_to_directory, name)
             for name in _names_in_directory(path_to_directory)
             if needed(name)]
@@ -809,11 +808,11 @@ def set_files(path_to_directory, pattern):
     return set_items(path_to_directory, pattern, os.path.isfile)
 
 
-def contains_glob(path_to_directory, pattern, wanted=None):
+def contains_glob(path_to_directory, pattern, wanted=lambda x: True):
     """Whether the given path contains an item matching the given glob"""
     if not path_to_directory:
         return False
-    needed = make_needed(pattern, path_to_directory, wanted)
+    needed = fnmatcher(pattern, path_to_directory, wanted)
     for name in _names_in_directory(path_to_directory):
         if needed(name):
             return True
@@ -842,25 +841,64 @@ def default_environ_path(key, default):
     return makepath(os.environ.get(key, default))
 
 
-def tab_complete(string):
-    """Finish file names "left short" by tab-completion
+def add_star(string):
+    """Add '.*' to string
 
-    For example, if an argument is "fred."
-        and no file called "fred." exists
-        but "fred.py" does exist
-        then return fred.py
+    >>> assert add_star('fred') == 'fred.*'
     """
-    if is_option(string):
-        return string
-    if not missing_extension(string):
-        return string
-    if os.path.isfile(string):
-        return string
-    extended_files = [f for f in extend(string) if os.path.isfile(f)]
+    suffix = '*' if '.' in string else '.*'
+    return f'{string}{suffix}'
+
+def add_stars(strings):
+    """Add '.*' to each string
+
+    >>> assert add_stars(['fred', 'Fred.']) == ['fred.*', 'Fred.*']
+    """
+    paths_ = [strings] if isinstance(strings, str) else strings
+    return [add_star(p) for p in paths_]
+
+
+def tab_complete_files(paths, globber):
+    return tab_complete(paths, globber, os.path.isfile)
+
+
+def tab_complete_dirs(paths, globber):
+    return tab_complete(paths, globber, os.path.isdir)
+
+
+def tab_complete(strings, globber=add_stars, select=os.path.exists):
+    """Finish path names "left short" by bash's tab-completion
+
+    strings is a string or strings
+        if any string exists as a path return those as paths
+
+    globber is a method which should return a list of globs
+        default: add_stars(['fred.']) == ['fred.*']
+            or, e.g: add_python(['fred', 'fred.']) == ['fred.py*']
+        if any expanded paths exist return those
+
+    select is a method to choose wanted paths
+        Defaults to selecting existing paths
+    """
+    strings_ = [strings] if isinstance(strings, str) else strings
+    globs = flatten([globber(s) for s in strings_])
+    here_ = here()
+    matches = []
+    for glob_ in globs:
+        if '/' in glob_:
+            directory, base = os.path.split(glob_)
+            dir_ = here_ / directory
+        else:
+            dir_ = here_
+            base = glob_
+        match = [p for p in dir_.listdir() if p.fnmatch_basename(base)]
+        matches.extend(match)
+    result = [p for p in set(matches) if select(p)]
     try:
-        return extended_files[0]
+        result[0]
+        return result
     except IndexError:
-        return string
+        return strings
 
 
 def pyc_to_py(path_to_file):

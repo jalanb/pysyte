@@ -190,6 +190,32 @@ Search directories
     >>> assert not paths.contains_file('/usr','*oca')
     >>> assert not paths.contains_directory('/usr','*oca')
 
+Tab completion
+--------------
+
+    >>> assert paths.add_star('fred') == 'fred.*'
+    >>> assert paths.add_star('fred.') == 'fred.*'
+    >>> assert paths.add_star('fred.p') == 'fred.p*'
+
+    >>> assert paths.add_stars(['fred', 'fred.', 'fred.py']) == ['fred.*', 'fred.*', 'fred.py*']
+    >>> assert paths.add_star('fred') == 'fred.*'
+
+Try tab completion on the module we're testing
+
+Filename of the module is ".../pysyte/paths.py"
+    Remove the extension
+    to get the stem ".../pysyte/paths"
+    >>> stem, _ = os.path.splitext(paths.__file__)
+
+Get the completions for that stem
+    >>> completions = paths.tab_complete([stem])
+
+And extract basenames for those completions
+    >>> stems = [str(p.basename()) for p in completions]
+
+Should give us the source and test files for the paths module
+    >>> assert 'paths.py' in stems
+    >>> assert 'paths.test' in stems
 
 Parts and parents
 -----------------
