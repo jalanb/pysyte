@@ -4,7 +4,7 @@
 import sys
 import importlib
 
-from pysyte import args as arguments
+from pysyte.arguments import args as arguments
 from pysyte.testing import trying
 from pysyte.testing import files_for_test
 

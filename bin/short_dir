@@ -8,7 +8,7 @@ from bdb import BdbQuit
 
 
 from pysyte import __version__
-from pysyte import args as arguments
+from pysyte.arguments import args as arguments
 from pysyte.paths import path
 from pysyte.paths import home
 

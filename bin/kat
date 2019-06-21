@@ -6,7 +6,7 @@ import re
 import sys
 
 from pysyte import __version__
-from pysyte import args as arguments
+from pysyte.arguments import args as arguments
 from pysyte import text_streams
 
 

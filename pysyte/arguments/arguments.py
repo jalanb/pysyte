@@ -1,0 +1,2 @@
+class Arguments(object):
+    pass
