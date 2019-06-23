@@ -70,8 +70,6 @@ def parser(description=None, usage=None):
         def sub(self, name, help=''):
             return self.arg(name, metavar=name, help=help, type=str)
 
-        args = strings
-
         def answer(self, answers=None):
             yes_no = {
                 'n': ('-n', '--no', 'Answer no'),
