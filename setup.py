@@ -59,6 +59,7 @@ setup(
     ],
     scripts=[
         'bin/kat',
+        'bin/get_key',
         'bin/short_dir',
         'bin/try',
         'bin/imports',

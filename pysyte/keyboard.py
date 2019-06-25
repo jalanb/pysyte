@@ -4,7 +4,8 @@
 import sys
 
 
-from pysyte import getch
+from pysyte.oss import getch
+
 
 
 def _get_chosen_chars(chooser):
