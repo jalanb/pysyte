@@ -8,7 +8,7 @@ from bdb import BdbQuit
 
 
 from pysyte import __version__
-from pysyte.arguments import args as arguments
+from pysyte import cli
 from pysyte.paths import path
 from pysyte.paths import home
 
@@ -19,14 +19,14 @@ class ScriptError(NotImplementedError):
 
 def parse_args(methods):
     """Parse out command line arguments"""
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('directories', default='.', type=str, nargs='*',
+    parser = cli.arguments.parser(__doc__)
+    parser.argss('directories', default='.', type=str, nargs='*',
                         help='paths to be abbreviated (default ".")')
-    parser.add_argument('-o', '--only_home', action='store_true',
+    parser.true('-o', '--only_home', action='store_true',
                         help='only replace $HOME with ~')
-    parser.add_argument('-x', '--exclude', type=str, nargs='*',
+    parser.true('-x', '--exclude', type=str, nargs='*',
                         help='exclude environment symbol')
-    parser.add_argument('-v', '--version', action='store_true',
+    parser.true('-v', '--version', action='store_true',
                         help='Show version')
     args = parser.parse_args()
     if args.version:
@@ -154,4 +154,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(arguments.call_main(main))
+    sys.exit(cli.main.call_main(main))

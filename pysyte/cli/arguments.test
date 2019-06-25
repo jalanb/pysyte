@@ -1,14 +1,14 @@
-The args module
-===============
+The arguments module
+====================
 
-    >>> from pysyte.args import args
-    >>> assert 'arguments from the command line' in args.__doc__
+    >>> from pysyte.arguments import arguments
+    >>> assert 'arguments from the command line' in arguments.__doc__
 
 Parsing Arguments
 -----------------
 
 Get an argument parser
-    >>> parser = args.parser('desciption', 'usage')
+    >>> parser = arguments.parser('desciption', 'usage')
 
 Which looks like the standard argparse parser
     >>> assert callable(parser.parse_args)

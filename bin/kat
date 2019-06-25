@@ -6,14 +6,13 @@ import re
 import sys
 
 from pysyte import __version__
-from pysyte.arguments import args as arguments
+from pysyte import cli
 from pysyte import text_streams
 
 
-def parse_args():
+def parse_args(parser):
     """Parse out command line arguments"""
-    parser = arguments.parser(__doc__)
-    parser.args('files', help='files to edit')
+    parser.argss('files', help='files to edit')
     parser.int('-a', '--at', default=None, help='Show line at the line number')
     parser.true('-p', '--paste', help='Paste text from clipboard')
     parser.true('-i', '--stdin', help='Wait for text from stdin')
@@ -91,9 +90,8 @@ def show_stream(stream, args):
         print(out)
 
 
-def main():
+def main(args):
     """Run the script"""
-    args = parse_args()
     streams = text_streams.args(args, 'files')
     for stream in streams:
         show_stream(stream, args)
@@ -101,4 +99,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(arguments.call_main(main))
+    cli.main.run(main, parse_args)

@@ -1,17 +1,9 @@
 """Handle arguments from the command line"""
 
 import argparse
-import os
 import sys
 from functools import partial
 from itertools import chain
-
-_exit_ok = os.EX_OK
-_exit_fail = not _exit_ok
-
-import stackprinter
-
-from pysyte.debuggers import DebugExit
 
 
 def extract_strings(names, name):
@@ -29,7 +21,7 @@ def extract_strings(names, name):
 
 
 def parser(description=None, usage=None):
-    """Parse out command line arguments"""
+    """Make a command line argument parser"""
 
     class ArgNamespace(object):
         def __init__(self, result):
@@ -54,9 +46,9 @@ def parser(description=None, usage=None):
     class ArgParser(object):
         def __init__(self, argument_parser):
             self.parser = argument_parser
-            self.parse = self.parse_args
             self._parsed = None
 
+            self.parse = self.parse_args
             self.arg = self.parser.add_argument
             self.opt = self.true = partial(self.arg, action='store_true')
             self.int = partial(self.arg, type=int)
@@ -67,17 +59,14 @@ def parser(description=None, usage=None):
         def parse_args(self, args=None):
             return ArgNamespace(self.parser.parse_args(args))
 
-        def sub(self, name, help=''):
-            return self.arg(name, metavar=name, help=help, type=str)
+        def args(self, *args, **kwargs):
+            """Add optional positional args"""
+            return self.arg(*args, **kwargs, nargs='*')
 
-        def answer(self, answers=None):
-            yes_no = {
-                'n': ('-n', '--no', 'Answer no'),
-                'y': ('-y', '--yes', 'Answer yes'),
-            }
-            options = yes_no
-            options.update(answers)
-            [self.true(options[o]) for o in options]
+        def argss(self, *args, **kwargs):
+            """Add mandatory positional args"""
+            return self.arg(*args, **kwargs, nargs='+')
+
 
     lines = description.splitlines()
     if not usage:
@@ -88,28 +77,3 @@ def parser(description=None, usage=None):
         epilog = None
     return ArgParser(
         argparse.ArgumentParser(usage=description))
-
-
-def call_main(main):
-
-    try:
-        return _exit_ok if main() else _exit_fail
-    except SystemExit as e:
-        return e.code
-    except KeyboardInterrupt as e:
-        ctrl_c = 3
-        return ctrl_c
-    except DebugExit:
-        return _exit_fail
-    except Exception as e:  # pylint: disable=broad-except
-        stackprinter.show(e, style='darkbg')
-
-
-def run_main(main, add_args):
-    def inner_main():
-        args = parser_.parse_args()
-        return main(args)
-
-    parser_ = parser(add_args.__module__.__doc__)
-    add_args(parser_)
-    sys.exit(call_main(inner_main))

@@ -7,8 +7,8 @@ from itertools import chain
 
 from six import StringIO
 
-from pysyte import arguments
 from pysyte import iteration
+from pysyte.cli import arguments
 from pysyte.platforms import get_clipboard_data
 
 def parse_args():
