@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 """Find imports in python files"""
 
 import sys
@@ -7,20 +7,16 @@ from collections import defaultdict
 
 from pysyte import imports
 from pysyte import scripts
+from pysyte.cli.main import run
 
 
 def add_args(parser):
     """Parse out command line arguments"""
-    import sys
-    import re
-    parser.add_argument('source',
-                        help='path to source(s) to be checked')
-    parser.add_argument('-e', '--edit', action='store_true',
-                        help='Show a command for editing')
-    parser.add_argument('-d', '--duplicate', action='store_true',
-                        help='Show duplicate imports')
-    parser.add_argument('-u', '--unused', action='store_true',
-                        help='Show unused imports')
+    p = parser
+    p.string('source', help='path to source(s) to be checked')
+    p.boolean('-e', '--edit', help='Show a command for editing')
+    p.boolean('-d', '--duplicate', help='Show duplicate imports')
+    p.boolean('-u', '--unused', help='Show unused imports')
 
 
 def show_unused(visitor):
@@ -58,5 +54,4 @@ def script(args):
     return bool(modules)
 
 
-if __name__ == '__main__':
-    sys.exit(scripts.main(script, add_args, docstring=__doc__))
+run(script, add_args)

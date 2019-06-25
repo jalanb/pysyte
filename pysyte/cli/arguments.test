@@ -1,7 +1,7 @@
 The arguments module
 ====================
 
-    >>> from pysyte.arguments import arguments
+    >>> from pysyte.cli import arguments
     >>> assert 'arguments from the command line' in arguments.__doc__
 
 Parsing Arguments

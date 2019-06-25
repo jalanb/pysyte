@@ -4,7 +4,7 @@
 import sys
 import importlib
 
-from pysyste import cli
+from pysyte.cli.main import run
 from pysyte.testing import trying
 from pysyte.testing import files_for_test
 
@@ -13,18 +13,13 @@ from pysyte.testing import files_for_test
 
 
 def main():
-    """Run the program"""
-
+    """Run the tests"""
     try:
         fails = trying.test()
         return not fails
     except files_for_test.UserMessage as e:
         sys.stderr.write(str(e))
-    except KeyboardInterrupt as e:
-        sys.stderr.write('^c ^C ^c ^C ^c ^C ^c ^C ^c ^C ^c\n')
-        sys.stderr.write('Bye now\n')
-        sys.stderr.write(str(e))
 
 
 if __name__ == '__main__':
-    sys.exit(cli.mains.call_main(main))
+    run(main)
