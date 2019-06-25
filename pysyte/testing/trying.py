@@ -15,7 +15,7 @@ from pprint import pprint
 
 
 from pysyte import __version__
-from pysyte.paths import path
+from pysyte.types.paths import path
 
 from pysyte.testing import files_for_test
 from pysyte.testing import try_plugins

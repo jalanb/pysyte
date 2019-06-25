@@ -9,8 +9,8 @@ from bdb import BdbQuit
 
 from pysyte import __version__
 from pysyte import cli
-from pysyte.paths import path
-from pysyte.paths import home
+from pysyte.types.paths import path
+from pysyte.types.paths import home
 
 
 class ScriptError(NotImplementedError):

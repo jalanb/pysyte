@@ -15,7 +15,7 @@ import argparse
 
 
 try:
-    from pysyte.paths import path
+    from pysyte.types.paths import path
 except ImportError:
     from dotsite.paths import path
 

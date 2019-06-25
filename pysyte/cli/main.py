@@ -2,7 +2,7 @@ import os
 
 import stackprinter
 
-import .arguments
+from . import arguments
 from ..debuggers import DebugExit
 
 _exit_ok = os.EX_OK
