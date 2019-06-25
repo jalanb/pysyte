@@ -3,7 +3,7 @@
 
 import re
 
-from pysyte import literals
+from pysyte.types import literals
 
 
 def _default_separator():

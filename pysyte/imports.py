@@ -5,7 +5,7 @@ import imp
 from collections import defaultdict
 
 
-from pysyte import dictionaries
+from pysyte.types import dictionaries
 
 
 class ImportVisitor(ast.NodeVisitor):
