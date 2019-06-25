@@ -17,7 +17,7 @@ But has methods to make adding args easier
     >>> arg = parser.arg('-a', '--add', help="Add stuff")
     >>> opt = parser.true('-o', help='On True')
     >>> num = parser.int('-i', help='An Integer')
-    >>> names = parser.args('--names', help='Some strings')
+    >>> names = parser.strings('--names', help='Some strings')
 
     >>> assert arg.dest == 'add'
     >>> assert arg.help == 'Add stuff'

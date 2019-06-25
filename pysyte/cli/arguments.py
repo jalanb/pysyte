@@ -56,6 +56,7 @@ def parser(description=None, usage=None):
             self.string = self.arg = self.parser.add_argument
             self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
             self.integer = self.int = partial(self.arg, type=int)
+            self.strings = partial(self.arg, type=str, nargs='*')
 
         def __repr__(self):
             return f'<{self.__class__.__name__}>'

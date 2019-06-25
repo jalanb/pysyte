@@ -5,7 +5,7 @@ The classes all inherit from the original path.path
 import os
 from fnmatch import fnmatch
 
-from .lists import flatten
+from pysyte.types.lists import flatten
 
 class PathError(Exception):
     """Something went wrong with a path"""

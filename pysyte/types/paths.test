@@ -1,7 +1,7 @@
 The paths module
 ================
 
-    >>> from pysyte import paths
+    >>> from pysyte.types import paths
     >>> assert 'extended path classes' in paths.__doc__
 
 We'll need the os module for some of the tests below
@@ -133,11 +133,11 @@ Using the / operator on a DirectPath or path gives an instance of the same class
     >>> home = paths.DirectPath('~')
     >>> bashrc = home / '.bashrc'
     >>> type(bashrc)
-    <class 'pysyte.paths.DirectPath'>
+    <class 'pysyte.types.paths.DirectPath'>
 
 Attributes of a DirectPath should also be DirectPaths (should not be path)
     >>> type(bashrc.parent)
-    <class 'pysyte.paths.DirectPath'>
+    <class 'pysyte.types.paths.DirectPath'>
 
 The split_all_ext method
 ------------------------
@@ -202,9 +202,9 @@ Tab completion
 
 Try tab completion on the module we're testing
 
-Filename of the module is ".../pysyte/paths.py"
+Filename of the module is ".../pysyte/types/paths.py"
     Remove the extension
-    to get the stem ".../pysyte/paths"
+    to get the stem ".../pysyte/types/paths"
     >>> stem, _ = os.path.splitext(paths.__file__)
 
 Get the completions for that stem
@@ -221,3 +221,4 @@ Parts and parents
 -----------------
 
     >>> assert paths.home
+    >>> assert paths.pwd()

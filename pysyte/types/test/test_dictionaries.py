@@ -4,7 +4,7 @@
 import unittest
 
 
-import pysyte as site
+from pysyte.types import dictionaries
 
 
 # pylint: disable=missing-docstring
@@ -12,40 +12,40 @@ class DictionariesTest(unittest.TestCase):
 
     def test_get_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEqual(9, site.dictionaries.get_caselessly(things, 'fred'))
+        self.assertEqual(9, dictionaries.get_caselessly(things, 'fred'))
 
     def test_get_lower_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEqual(2, site.dictionaries.get_caselessly(things, 'B'))
+        self.assertEqual(2, dictionaries.get_caselessly(things, 'B'))
 
     def test_get_upper_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
-        self.assertEqual(1, site.dictionaries.get_caselessly(things, 'a'))
+        self.assertEqual(1, dictionaries.get_caselessly(things, 'a'))
 
     def test_do_not_get_caselessly(self):
         things = {'Fred': 9, 'A': 1, 'b': 2}
         with self.assertRaises(KeyError):
-            site.dictionaries.get_caselessly(things, 'free')
+            dictionaries.get_caselessly(things, 'free')
 
     def test_swap(self):
         pythons = {'John': 'Cleese', 'Graham': 'Chapman', 'Eric': 'Idle'}
         expected = {'Cleese': 'John', 'Chapman': 'Graham', 'Idle': 'Eric'}
-        actual = site.dictionaries.swap_dictionary(pythons)
+        actual = dictionaries.swap_dictionary(pythons)
         self.assertEqual(expected, actual)
 
     def test_swap_empty_dictionary(self):
-        actual = site.dictionaries.swap_dictionary({})
+        actual = dictionaries.swap_dictionary({})
         expected = {}
         self.assertEqual(expected, actual)
 
     def test_swap_none(self):
         expected = None
-        actual = site.dictionaries.swap_dictionary(None)
+        actual = dictionaries.swap_dictionary(None)
         self.assertEqual(expected, actual)
 
     def test_swap_not_a_dictionary(self):
         with self.assertRaises(AttributeError):
-            site.dictionaries.swap_dictionary('not a dict')
+            dictionaries.swap_dictionary('not a dict')
 
     def test_append_value(self):
         dictionary = {}
@@ -57,7 +57,7 @@ class DictionariesTest(unittest.TestCase):
             ('one', None, {'one': [1, 2, 3, None], 'two': [2]}),
         ]
         for key, value, expected in data:
-            site.dictionaries.append_value(dictionary, key, value)
+            dictionaries.append_value(dictionary, key, value)
             message = 'append(%s, %s): %s != %s' % (
                 key, value, expected, dictionary)
             self.assertDictEqual(dictionary, expected, message)
@@ -71,7 +71,7 @@ class DictionariesTest(unittest.TestCase):
             ('one', [2, 3], {'one': [1, 2, 3, 2, 3], 'two': [2, 3]}),
         ]
         for key, value, expected in data:
-            site.dictionaries.extend_values(dictionary, key, value)
+            dictionaries.extend_values(dictionary, key, value)
             message = 'extend(%s, %s): %s != %s' % (
                 key, value, expected, dictionary)
             self.assertDictEqual(dictionary, expected, message)
@@ -80,5 +80,5 @@ class DictionariesTest(unittest.TestCase):
         self.assertRaisesRegex(
             TypeError,
             'Expected a list, got: 2',
-            site.dictionaries.extend_values,
+            dictionaries.extend_values,
             {}, 'one', 2)

@@ -165,8 +165,12 @@ def make_module(path_to_python):
     try:
         return sys.modules[name]
     except KeyError:
+        path_to_parent = path_to_python.directory()
+        path_to_init = path_to_parent / '__init__.py'
+        submodule_locations = [str(path_to_parent)] if path_to_init.isfile() else None
         spec = importlib.util.spec_from_file_location(
-            name, str(path_to_python))
+            name, str(path_to_python),
+            submodule_search_locations=submodule_locations)
         module = importlib.util.module_from_spec(spec)
         if path_to_python.isfile():
             spec.loader.exec_module(module)

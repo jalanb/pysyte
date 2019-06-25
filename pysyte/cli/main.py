@@ -9,8 +9,8 @@ import sys
 
 import stackprinter
 
-from . import arguments
-from ..debuggers import DebugExit
+from pysyte.cli import arguments
+from pysyte.debuggers import DebugExit
 
 
 def try_main(main):

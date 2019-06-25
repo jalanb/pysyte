@@ -6,7 +6,7 @@ The files_for_test module
 Imports for testing
 -------------------
 
-    >>> from pysyte.paths import makepath
+    >>> from pysyte.types.paths import makepath
 
 Handle files
 ------------

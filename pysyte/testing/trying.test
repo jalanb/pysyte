@@ -72,10 +72,9 @@ Edge cases
     >>> del sys.modules['see']
     >>> see = trying.make_module(test.path_to_py.parent / 'see.py')
     >>> show(see)
-    Help on module see:
+    Help on package see:
     ...
-        /.../testing/see.py
-    ...
+
     >>> mod = trying.make_module(test.path_to_py.parent / 'not_a_file.py')
     >>> assert isinstance(mod, type(trying))
     >>> assert mod.__name__, 'not_a_file'

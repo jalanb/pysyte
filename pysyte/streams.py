@@ -27,7 +27,7 @@ def swallow_stdout(stream=None):
 
     >>> string = StringIO()
     >>> with swallow_stdout(string):
-    ...     print('hello')
+    ...     print('hello', end='')
     >>> assert string.getvalue() == 'hello'
     """
     saved = sys.stdout
@@ -35,7 +35,7 @@ def swallow_stdout(stream=None):
         stream = StringIO()
     sys.stdout = stream
     try:
-        yield sys.stdout.getvalue()
+        yield
     finally:
         sys.stdout = saved
 
@@ -47,6 +47,6 @@ def swallow_stderr(stream=None):
         stream = StringIO()
     sys.stderr = stream
     try:
-        yield sys.stderr.getvalue()
+        yield
     finally:
         sys.stderr = saved

@@ -1,7 +1,7 @@
 The dictionaries module
 =======================
 
-    >>> from pysyte import dictionaries
+    >>> from pysyte.types import dictionaries
     >>> assert 'help with the handling of dictionaries' in dictionaries.__doc__
 
 Default Dictionaries
