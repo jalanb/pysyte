@@ -1,0 +1,30 @@
+The types.lines module
+======================
+
+    >>> from pysyte.types import lines
+    >>> assert 'handling lines (of text)' in lines.__doc__
+
+    >>> some_lines = """
+    ... fred
+    ... here
+    ...
+    ... here's fred
+    ...
+    ... """.splitlines()
+
+    >>> assert '' in some_lines
+
+Only lines that are full:
+    >>> assert "here's fred" in lines.full(some_lines)
+    >>> assert '' not in lines.full(some_lines)
+
+Search lines with a grepper
+    >>> grepper = lines.grep(some_lines)
+
+    >>> assert '' not in grepper('e')
+    >>> assert 'here' in grepper('e')
+
+    >>> assert 'here' not in grepper('fred')
+    >>> assert 'fred' in grepper('fred')
+    >>> assert "here's fred" in grepper('fred')
+
