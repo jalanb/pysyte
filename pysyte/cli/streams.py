@@ -1,4 +1,4 @@
-"""Module to handle streams of text"""
+"""Module to handle streams of text from cli arguments"""
 
 import os
 import sys
@@ -20,14 +20,18 @@ def parse_args():
     return parser.parse_args()
 
 
-def args(parsed_args, name=None):
+def args(parsed_args, name=None, files_only=False):
     """Interpret parsed args to streams"""
     strings = parsed_args.get_strings(name)
     files = [s for s in strings if os.path.isfile(s)]
     if files:
         streams = [open(f) for f in files]
+    elif files_only:
+        return []
     else:
         streams = []
+    if '-' in files or not files:
+        streams.append(sys.stdin)
     if getattr(parsed_args, 'paste', not files):
         streams.append(clipboard_stream())
     if getattr(parsed_args, 'stdin', False):
@@ -35,6 +39,24 @@ def args(parsed_args, name=None):
     elif not streams:
         streams = [sys.stdin]
     return streams
+
+def files(parsed_args, name=None):
+    return args(parsed_args, name, True)
+
+
+def all():
+    yielded = False
+    for path in _arg_paths():
+        yield open(path)
+        yielded = True
+    if not yielded or '-' in sys.argv:
+        yield sys.stdin
+
+
+def some():
+    if sys.argv[1:]:
+        assert _arg_files()
+    return any()
 
 
 def clipboard_stream(name=None):
@@ -53,29 +75,6 @@ def _arg_streams():
         yield open(path)
 
 
-def all():
-    yielded = False
-    for path in arg_paths():
-        yield open(path)
-        yielded = True
-    if not yielded or '-' in sys.argv:
-        yield sys.stdin
-
-
-def first():
-    return iteration.first(all())
-
-
-def last():
-    return iteration.last(all())
-
-
-def some():
-    if sys.argv[1:]:
-        assert _arg_files()
-    return any()
-
-
 def _any():
     try:
         stream = iteration.first(_arg_streams())
@@ -83,17 +82,3 @@ def _any():
             return _arg_streams()
     except ValueError:
         return iter([clipboard_stream(), sys.stdin])
-
-
-def first_file():
-    try:
-        return iteration.first(_arg_streams())
-    except ValueError:
-        return None
-
-
-def full_lines(stream):
-    for line in stream.readlines():
-        stripped = line.rstrip()
-        if stripped:
-            yield stripped
