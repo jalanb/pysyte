@@ -73,7 +73,7 @@ def parser(description=None, usage=None):
             return ArgumentsNamespace(self.parser.parse_args(args))
 
 
-    lines = description.splitlines()
+    lines = (description or "").splitlines()
     epilog = None
     if not usage:
         if len(lines) > 1 and not lines[1]:

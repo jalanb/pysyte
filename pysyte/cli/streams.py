@@ -30,14 +30,10 @@ def args(parsed_args, name=None, files_only=False):
         return []
     else:
         streams = []
-    if '-' in files or not files:
+    if '-' in files or not files or getattr(parsed_args, 'stdin', False):
         streams.append(sys.stdin)
     if getattr(parsed_args, 'paste', not files):
         streams.append(clipboard_stream())
-    if getattr(parsed_args, 'stdin', False):
-        streams.append(sys.stdin)
-    elif not streams:
-        streams = [sys.stdin]
     return streams
 
 def files(parsed_args, name=None):

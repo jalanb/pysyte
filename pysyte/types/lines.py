@@ -34,8 +34,8 @@ def _chop(lines_in, at, first, last):
 
     length_read = len(lines_in)
     first, last = _boundaries()
-    lines_out = [] if first > length_read else lines_in[first:last]
-    return lines_out, first
+    rest = [] if first > length_read else lines_in[first:last]
+    return first, rest
 
 
 def first_and_rest(text_stream, at=None, first=1, last=-1):
@@ -50,12 +50,13 @@ def first_and_rest(text_stream, at=None, first=1, last=-1):
     """
     text = text_stream.read()
     lines_in = text.splitlines()
-    lines_out, first = _chop(lines_in, at - 1, first - 1, last)
+    return _chop(lines_in, at, first, last)
 
 
 def reformat_lines(lines, first, numbers, width):
-    line_format_ = _number_format(len(lines_out))
-    for i, line in enumerate(lines_out, first):
+    line_format_ = _number_format(len(lines))
+    outs = []
+    for i, line in enumerate(lines, first):
         if numbers:
             prefix = line_format_ % (i + 1)
             out = ' '.join((prefix, line.rstrip()))
@@ -63,6 +64,12 @@ def reformat_lines(lines, first, numbers, width):
             out = line.rstrip()
         if width:
             out = out[:width]
+        outs.append(out)
+    return outs
+
+
+def text(lines):
+    return '\n'.join(lines)
 
 
 def _number_format(count=999):
