@@ -1,0 +1,40 @@
+The verbs module
+================
+
+    >>> from pysyte.prototypes import verbs
+    >>> assert 'methods as verbs' in verbs.__doc__
+
+pull
+----
+
+    >>> class Git(object):
+    ...     def pull(self, branch, origin):
+    ...         out = f'{origin}/' if origin else ''
+    ...         return f'git pull {out}{branch}'
+
+Could register the methods on a class
+    >>> # verbs.register_methods(Git)
+
+But, we also have a `pull()` in a module
+    >>> from pysyte.prototypes import git_pull
+    >>> verbs.register_methods(Git, git_pull)
+
+    >>> pull = verbs.pull
+
+If pull gets a thing that can pull, it defers to that
+    >>> git = Git()
+    >>> assert pull(git, 'master', 'origin') == 'git pull origin/master'
+
+Otherwise it has a default implementation
+    >>> assert pull('fred', 'os', 'python') == 'fred pulls os from python'
+
+pull() allows some default args
+    >>> assert pull('fred', 'os') == 'fred pulls os'
+
+Other things might handle args differently
+    >>> try:
+    ...     assert pull(git, 'master') == 'git pull master'
+    ... except TypeError as e:
+    ...     assert "required positional argument: 'origin'" in str(e)
+
+
