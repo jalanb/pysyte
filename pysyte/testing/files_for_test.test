@@ -1,7 +1,7 @@
 The files_for_test module
 =========================
 
-    >>> from pysyte.testing import files_for_test
+    >>> from trying import files_for_test
     >>> assert 'methods to handle test files' in files_for_test.__doc__
 
 

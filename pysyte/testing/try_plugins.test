@@ -1,8 +1,8 @@
 The try_plugins module
 ======================
 
-    >>> from pysyte.testing import try_plugins
-    >>> assert try_plugins.__doc__ == 'This module holds plugins for try.py'
+    >>> from trying import try_plugins
+    >>> assert try_plugins.__doc__ == 'This module holds plugins for trying'
 
 Plugin methods
 --------------

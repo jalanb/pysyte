@@ -1,7 +1,7 @@
 The files_for_test module
 =========================
 
-    >>> from pysyte.testing import files_for_test as fft
+    >>> from trying import files_for_test as fft
 
 Imports for testing
 -------------------
@@ -21,7 +21,7 @@ Unknown files raise an exception
 
 
 We'll need to find all possible extension of a stem
-    >>> path_to_files_for_test = makepath(fft.__file__)
+    >>> path_to_files_for_test = path(fft.__file__)
     >>> path_to_test_stem, ext = path_to_files_for_test.splitext()
     >>> path_to_test_directory = path_to_files_for_test.parent
     >>> extended_files = [f.name for f in fft._existing_test_extensions(path_to_test_stem)]
@@ -29,7 +29,7 @@ We'll need to find all possible extension of a stem
     >>> assert 'files_for_test.tests' in extended_files
 
 Find test files related to a text file
-    >>> path_to_files_for_test = makepath(fft.__file__)
+    >>> path_to_files_for_test = path(fft.__file__)
     >>> path_to_tests = fft._get_path_to_test_directory([path_to_files_for_test])
     >>> assert path_to_tests == path_to_test_directory
 

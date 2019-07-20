@@ -64,9 +64,8 @@ setup(
         'bin/try',
         'bin/imports',
     ],
-    test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=['py.test', 'trying'],
     extras_require={
-        'testing': ['nose'],
+        'testing': ['py.test', 'trying'],
     }
 )
