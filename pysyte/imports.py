@@ -1,7 +1,6 @@
 import os
 import linecache
 import ast
-import imp
 from collections import defaultdict
 
 
@@ -165,12 +164,14 @@ def extract_imports(script):
 def load_module(package, module_name):
 
     def default_value(key):
+        import imp
 
         def imp_load(a, b, c):
             return imp.load_module(full_name, a, b, c)
 
         full_name = f'{package.__name__}.{module_name}'
-        return imp_load(*imp.find_module(key, package.__path__))
+        module = imp.find_module(key, package.__path__)
+        return imp_load(*module)
 
     # pylint: disable=protected-access
     try:

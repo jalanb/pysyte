@@ -23,6 +23,8 @@ except ImportError:
         return status, output
 
     def run(command :str, *args, **kwargs):
+        if not command:
+            return
         run_out = partial(subprocess.run, capture_output=True, encoding='utf-8')
         completed = run_out(command, *args, **kwargs)
         if completed.returncode:
