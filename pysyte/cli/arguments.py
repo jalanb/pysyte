@@ -8,6 +8,11 @@ import sys
 from functools import partial
 from itertools import chain
 
+from pysyte.cli.config import user
+
+
+def config(arguments):
+    return user(arguments.prog)
 
 def extract_strings(names, name):
     result = {}
@@ -23,55 +28,59 @@ def extract_strings(names, name):
         return []
 
 
-def parser(description=None, usage=None):
-    """Make a command line argument parser"""
+class ArgumentsParser(object):
+    def __init__(self, usage, epilog):
+        self.parser = argparse.ArgumentParser(usage=usage, epilog=epilog)
+        self._parsed = None
 
-    class ArgumentsNamespace(object):
-        def __init__(self, result):
-            self._result = result
+        self.parse = self.parse_args
 
-        def __getattr__(self, name):
-            try:
-                super(ArgumentsNamespace, self).__getattr__(name)
-            except AttributeError:
-                return getattr(self._result, name)
+        self.string = self.arg = self.parser.add_argument
+        self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
+        self.integer = self.int = partial(self.arg, type=int)
+        self.strings = partial(self.arg, type=str, nargs='*')
 
-        def get_arg(self, name):
-            if not self._result:
-                return None
+    def __repr__(self):
+        return f'<{self.__class__.__name__}>'
+
+    def positional(self, *args, **kwargs):
+        """Add optional positional args"""
+        return self.string(*args, **kwargs, nargs='*')
+
+    def positionals(self, *args, **kwargs):
+        """Add mandatory positional args"""
+        return self.string(*args, **kwargs, nargs='+')
+
+    def parse_args(self, arguments=None, post_parser=None):
+        post_parse = post_parser if post_parser else getattr(
+            self, 'post_parser', False)
+        poster = post_parse if post_parse else lambda x: x
+        return poster(ArgumentsNamespace(self.parser.parse_args(arguments)))
+
+
+class ArgumentsNamespace(object):
+    def __init__(self, result):
+        self._result = result
+
+    def __getattr__(self, name):
+        try:
+            super(ArgumentsNamespace, self).__getattr__(name)
+        except AttributeError:
             return getattr(self._result, name)
 
-        def get_strings(self, name):
-            if not self._result:
-                return None
-            return extract_strings(self._result.__dict__, name)
+    def get_arg(self, name):
+        if not self._result:
+            return None
+        return getattr(self._result, name)
 
-    class ArgumentsParser(object):
-        def __init__(self, usage, epilog):
-            self.parser = argparse.ArgumentParser(usage=usage, epilog=epilog)
-            self._parsed = None
+    def get_strings(self, name):
+        if not self._result:
+            return None
+        return extract_strings(self._result.__dict__, name)
 
-            self.parse = self.parse_args
 
-            self.string = self.arg = self.parser.add_argument
-            self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
-            self.integer = self.int = partial(self.arg, type=int)
-            self.strings = partial(self.arg, type=str, nargs='*')
-
-        def __repr__(self):
-            return f'<{self.__class__.__name__}>'
-
-        def positional(self, *args, **kwargs):
-            """Add optional positional args"""
-            return self.string(*args, **kwargs, nargs='*')
-
-        def positionals(self, *args, **kwargs):
-            """Add mandatory positional args"""
-            return self.string(*args, **kwargs, nargs='+')
-
-        def parse_args(self, args=None):
-            return ArgumentsNamespace(self.parser.parse_args(args))
-
+def parser(description=None, usage=None):
+    """Make a command line argument parser"""
 
     lines = (description or "").splitlines()
     epilog = None

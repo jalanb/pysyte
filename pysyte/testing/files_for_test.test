@@ -67,4 +67,3 @@ Only testing the names of those scripts
 
 We expect to find files with the standard test extensions
     >>> assert 'files_for_test.test' in test_script_names
-    >>> assert 'trying.py' in test_script_names

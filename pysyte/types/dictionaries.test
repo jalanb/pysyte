@@ -33,3 +33,38 @@ Also has the better representation of DefaultDict
     <LazyDefaultDict
         {5: 'small', 198798: 'big'}
     >
+
+Reading a dictionary into attributes
+------------------------------------
+
+A class is provided, which is initialised with a dictionary
+    and offers those keys as attributes
+
+    >>> dictionary = {'stuff': 1, 'non sense': 2}
+    >>> shallow = dictionaries.DictionaryAttributes(dictionary)
+    >>> assert shallow.stuff == 1
+
+It still acts as a dictionary
+    >>> assert shallow['stuff'] == 1
+
+Any names which can't be converted aren't
+    >>> try:
+    ...     shallow.getattr('non sense')
+    ...     assert False
+    ... except AttributeError:
+    ...     assert shallow['non sense'] == 2
+
+It adds only only level of attributes
+    >>> dictionary = {'stuff': 1, 'names': {'alan': 1, 'fred': 2}}
+    >>> shallow = dictionaries.DictionaryAttributes(dictionary)
+    >>> assert shallow.names
+    >>> try:
+    ...     shallow.names.fred
+    ...     assert False
+    ... except AttributeError:
+    ...     pass
+
+A second class goes deeper
+    >>> deep = dictionaries.RecursiveDictionaryAttributes(dictionary)
+    >>> assert deep['names']['fred'] == deep.names.fred
+

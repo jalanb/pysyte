@@ -9,7 +9,7 @@ from pysyte.cli.main import run
 from pysyte.types import lines
 
 
-def parse_args(parser):
+def add_args(parser):
     """Parse out command line arguments"""
     p = parser
     p.positionals('files', help='files to edit')
@@ -20,9 +20,8 @@ def parse_args(parser):
                help='number/regexp of last line to show')
     p.boolean('-p', '--paste', help='Paste text from clipboard')
     p.boolean('-i', '--stdin', help='Wait for text from stdin')
-    p.boolean('-n', '--numbers', help='Show line numbers')
-    p.int('-w', '--width', help='Max width of shown line')
-    p.boolean('-v', '--version', help='Show version')
+    p.lines()
+    p.version()
 
 
 def post_parse(args):
@@ -54,10 +53,9 @@ def main(args):
             first,
             last
         )
-        lines_out = lines.reformat_lines(
-            lines_in, start, args.numbers, args.width)
+        lines_out = args.sed(lines_in, start)
         print(lines.text(lines_out))
     return True
 
 
-run(main, parse_args, post_parse)
+run(main, add_args, post_parse)

@@ -53,10 +53,27 @@ def first_and_rest(text_stream, at=None, first=1, last=-1):
     return _chop(lines_in, at, first, last)
 
 
-def reformat_lines(lines, first, numbers, width):
+def set_width(line, width):
+    if not width:
+        return line
+    return line[:width]
+
+def add_numbers(lines, numbers=True):
+    if not numbers or not lines:
+        return lines
+
+    def numbered(line_):
+        prefix = line_format_ % (i + 1)
+        return ' '.join((prefix, line_.rstrip()))
+
     line_format_ = _number_format(len(lines))
+    for i, line in enumerate(lines):
+        yield numbered(line)
+
+
+def reformat_lines(lines, first, numbers, width):
     outs = []
-    for i, line in enumerate(lines, first):
+    for line in add_numbers(lines, numbers):
         if numbers:
             prefix = line_format_ % (i + 1)
             out = ' '.join((prefix, line.rstrip()))

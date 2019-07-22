@@ -11,6 +11,7 @@ import stackprinter
 
 from pysyte.cli import arguments
 from pysyte.debuggers import DebugExit
+from pysyte.cli.config import user
 
 
 def try_main(main):
@@ -28,32 +29,44 @@ def try_main(main):
     except Exception as e:  # pylint: disable=broad-except
         stackprinter.show(e, style='darkbg')
 
-
-def run(main_method, add_args=None, post_parse=None):
+def run(main_method, add_args=None, post_parse=None, config=None):
     """Run a main_method from command line, parsing arguments
 
     if add_args(parser) is given it should add arguments to the parser
     if post_parse(args) is given then it is called with parsed args
         if it returns the args they will be used
-    Then call:
-        main_method(args)
+    if config is true then
+        is config is True then set config to program name
+        read ~/.config/config
+        call main_method(args, config)
+    Else
+        call main_method(args)
     """
 
     module = inspect.getmodule(main_method)
-    if not add_args:
+    if not main_method.__code__.co_argcount:
         main = main_method
-        assert not main_method.__code__.co_argcount
     else:
         def main():
+            parser.post_parser = post_parse
             args = parser.parse_args()
             if post_parse:
                 parsed = post_parse(args)
                 if parsed:
                     args = parsed
+            args.prog = parser.parser.prog
+            if config:
+                config_name = args.prog if config is True else config
+                try:
+                    configuration = user(config_name)
+                    return main_method(args, configuration)
+                except FileNotFoundError:
+                    pass
             return main_method(args)
 
         parser = arguments.parser(module.__doc__)
-        add_args(parser)
+        if add_args:
+            add_args(parser)
 
     if module.__name__ == '__main__':
         sys.exit(try_main(main))

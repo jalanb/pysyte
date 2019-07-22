@@ -102,3 +102,29 @@ class LazyDefaultDict(DefaultDict):
         result = self.method(key)
         self[key] = result
         return result
+
+
+class DictionaryAttributes(dict):
+    """Convert dictionary keys to attributes of self
+
+    >>> assert DictionaryAttributes({'fred': 1}).fred == 1
+    """
+    def __init__(self, *args, **kwargs):
+        """>>> assert DictionaryAttributes({'fred': 1}).fred == 1"""
+        super(DictionaryAttributes, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
+class RecursiveDictionaryAttributes(DictionaryAttributes):
+    """Convert dictionary keys to attributes of self, recursively
+
+    >>> instance = RecursiveDictionaryAttributes({'fred': {'mary': 1}})
+    >>> assert instance.fred.mary == 1
+    """
+    def __init__(self, thing):
+        data = {}
+        for key, value in thing.items():
+            data[key] = (RecursiveDictionaryAttributes(value)
+                if isinstance(value, dict)
+                else value)
+        super(RecursiveDictionaryAttributes, self).__init__(data)

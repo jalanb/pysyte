@@ -1,5 +1,5 @@
-The paths module
-================
+The psyyte.types.paths module
+=============================
 
     >>> from pysyte.types import paths
     >>> assert 'extended path classes' in paths.__doc__
@@ -74,7 +74,7 @@ The difference is that makepath expands the string given
     >>> assert paths.makepath('~') == os_home
     >>> if 'HOME' in os.environ:
     ...     assert paths.DirectPath('$HOME') != os_home
-    ...     assert paths.makepath('$HOME') == os_home
+    ...     assert paths.makepath('$HOME') == os_home, f'{paths.makepath("$HOME")}, {os_home}'
 
 DirectPath is ako string, which shows the string in %s and %r
 
@@ -164,7 +164,6 @@ Iteration of paths
 ------------------
 
 Iterating a directory gives directory entries (sub-directories and files)
-    >>> assert '.bashrc' in [p.name for p in paths.home() if p.isfile()]
 
 Iterating a file gives lines
     >>> path_to_this_test = paths.makepath(paths.__file__).extend_by('.test')

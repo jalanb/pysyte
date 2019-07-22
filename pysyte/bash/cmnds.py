@@ -1,5 +1,7 @@
 # pylint: disable=unused-import
 
+from functools import partial
+
 try:
     from commands import getstatusoutput
     from commands import getoutput
@@ -9,9 +11,20 @@ except ImportError:
 
     from subprocess import getoutput
 
+    class CommandError(ValueError):
+        pass
+
+
     def getstatusoutput(command):
         status, output = subprocess.getstatusoutput(command)
         if os.name != 'nt':
             # convert status to be interpreted according to the wait() rules
             status = status << 8
         return status, output
+
+    def run(command :str, *args, **kwargs):
+        run_out = partial(subprocess.run, capture_output=True, encoding='utf-8')
+        completed = run_out(command, *args, **kwargs)
+        if completed.returncode:
+            raise CommandError(completed.stderr or completed.stdout)
+        return completed.stdout

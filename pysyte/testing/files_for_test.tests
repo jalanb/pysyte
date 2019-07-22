@@ -21,7 +21,7 @@ Unknown files raise an exception
 
 
 We'll need to find all possible extension of a stem
-    >>> path_to_files_for_test = path(fft.__file__)
+    >>> path_to_files_for_test = makepath(fft.__file__)
     >>> path_to_test_stem, ext = path_to_files_for_test.splitext()
     >>> path_to_test_directory = path_to_files_for_test.parent
     >>> extended_files = [f.name for f in fft._existing_test_extensions(path_to_test_stem)]
@@ -29,7 +29,7 @@ We'll need to find all possible extension of a stem
     >>> assert 'files_for_test.tests' in extended_files
 
 Find test files related to a text file
-    >>> path_to_files_for_test = path(fft.__file__)
+    >>> path_to_files_for_test = makepath(fft.__file__)
     >>> path_to_tests = fft._get_path_to_test_directory([path_to_files_for_test])
     >>> assert path_to_tests == path_to_test_directory
 
@@ -67,14 +67,6 @@ Edge cases
     >>> assert fft._first_line_is_python_shebang(['#! /usr/local/python', 'print 0'])
     >>> assert not fft._first_line_is_python_shebang(['print 0', '#! /usr/local/python'])
     >>> assert not fft._first_line_is_python_shebang([])
-
-    >>> import sys
-    >>> sys.stderr = sys.stdout
-    >>> sys.argv = ['try.py', 'not_a_file']
-    >>> fft.main() == 1
-    not_a_file.test*, not_a_file.py not found
-    True
-    >>> sys.stderr = sys.__stderr__
 
     >>> assert not fft.has_doctests('not space    >>> print True')
     >>> assert fft.has_doctests('not space\n    >>> print True')

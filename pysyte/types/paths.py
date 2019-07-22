@@ -73,6 +73,13 @@ class DotPath(PPath):
     def _next_class(self, string):
         return self.as_existing_file(string)
 
+    def basename(self):
+        return str(super().basename())
+
+    @property
+    def name(self):
+        return str(super().name)
+
     def as_existing_file(self, filepath):
         """Return the file class for existing files only"""
         if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
@@ -267,6 +274,32 @@ class DotPath(PPath):
         s = str(self.basename())
         return s and s[0] == '.'
 
+    def add_ext(self, *args):
+        """Join all args as extensions
+
+        Strip any leading `.` from args
+
+        >>> source = makepath(__file__)
+        >>> new = source.add_ext('txt', '.new')
+        >>> assert new.name.endswith('.py.txt.new')
+        """
+        exts = [(a[1:] if a[0] == '.' else a) for a in args]
+        string = '.'.join([self] + list(exts))
+        return makepath(string)
+
+    def add_missing_ext(self, ext):
+        """Add that extension, if it is missing
+
+        >>> source = makepath(__file__)
+        >>> assert source.add_missing_ext('.py') == source
+        >>> assert source.add_missing_ext('.txt').endswith('.py.txt')
+        """
+        copy = self[:]
+        stem, old = os.path.splitext(copy)
+        if old == ext:
+            return makepath(self)
+        return self.add_ext(ext)
+
 
 def ext_language(ext, exts=None):
     """Language of the extension in those extensions
@@ -377,6 +410,8 @@ class FilePath(DotPath, PathAssertions):
             ext = f'{ext}.gz'
         return self.__class__(filename), ext
 
+    split_ext = split_all_ext
+
     def as_python(self):
         """The path to the file with a .py extension
 
@@ -468,6 +503,16 @@ class DirectPath(DotPath, PathAssertions):
     def __iter__(self):
         for a_path in DotPath.listdir(self):
             yield a_path
+
+    def __contains__(self, thing):
+        return self.contains(thing)
+
+    def contains(self, thing):
+        try:
+            _ = thing.contains
+            return str(thing).startswith(str(self))
+        except AttributeError:
+            return thing in str(self)
 
     def directory(self):
         """Return a path to a directory.
@@ -625,6 +670,8 @@ def makepath(s, as_file=False):
     """
     if s is None:
         return None
+    if isinstance(s, DotPath):
+        return s
     result = FilePath(s) if (os.path.isfile(s) or as_file) else DirectPath(s)
     return result.expandall()
 

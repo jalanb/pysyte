@@ -1,0 +1,12 @@
+The platforms module
+====================
+
+    >>> from pysyte.oss import platforms
+    >>> assert 'different OS platforms' in platforms.__doc__
+
+Clipboard
+=========
+
+    >>> fred = 'fred was here'
+    >>> platforms.put_clipboard_data(fred)
+    >>> assert platforms.get_clipboard_data() == fred
