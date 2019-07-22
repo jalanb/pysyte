@@ -24,3 +24,4 @@ def xdg_config_file(filename):
 
 
 bash_paste = None
+bash_copy = None
