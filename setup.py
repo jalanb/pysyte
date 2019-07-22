@@ -63,8 +63,8 @@ setup(
         'bin/short_dir',
         'bin/imports',
     ],
-    tests_require=['py.test', 'trying'],
+    tests_require=['py.test'],
     extras_require={
-        'testing': ['py.test', 'trying'],
+        'testing': ['py.test'],
     }
 )
