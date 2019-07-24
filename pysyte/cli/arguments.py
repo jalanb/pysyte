@@ -45,6 +45,10 @@ class ArgumentsParser(object):
     def __repr__(self):
         return f'<{self.__class__.__name__}>'
 
+    def optional(self, *args, **kwargs):
+        """Add an optional positional arg"""
+        return self.string(*args, **kwargs, nargs='?')
+
     def positional(self, *args, **kwargs):
         """Add optional positional args"""
         return self.string(*args, **kwargs, nargs='*')
