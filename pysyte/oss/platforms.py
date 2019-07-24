@@ -10,8 +10,14 @@ platform = imports.load_module(oss, _platform_name)
 
 
 def put_clipboard_data(data):
-    cmnds.run(platform.bash_copy, input=data)
+    try:
+        cmnds.run(platform.bash_copy, input=data)
+    except cmnds.CommandError:
+        pass
 
 
 def get_clipboard_data():
-    return cmnds.run(platform.bash_paste)
+    try:
+        return cmnds.run(platform.bash_paste)
+    except cmnds.CommandError:
+        return ''

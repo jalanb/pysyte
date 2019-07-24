@@ -26,7 +26,10 @@ except ImportError:
         if not command:
             return
         run_out = partial(subprocess.run, capture_output=True, encoding='utf-8')
-        completed = run_out(command, *args, **kwargs)
+        try:
+            completed = run_out(command, *args, **kwargs)
+        except FileNotFoundError:
+            raise CommandError(f'Not found: {command}')
         if completed.returncode:
             raise CommandError(completed.stderr or completed.stdout)
         return completed.stdout
