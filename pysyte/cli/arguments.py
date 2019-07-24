@@ -4,6 +4,7 @@ This module is a simplifying proxy to stdlib's argparse
 """
 
 import argparse
+import re
 import sys
 from functools import partial
 from itertools import chain
@@ -29,8 +30,9 @@ def extract_strings(names, name):
 
 
 class ArgumentsParser(object):
-    def __init__(self, usage, epilog):
-        self.parser = argparse.ArgumentParser(usage=usage, epilog=epilog)
+    def __init__(self, description, usage, epilog):
+        self.parser = argparse.ArgumentParser(
+            description=description, usage=usage, epilog=epilog)
         self._parsed = None
 
         self.parse = self.parse_args
@@ -79,14 +81,17 @@ class ArgumentsNamespace(object):
         return extract_strings(self._result.__dict__, name)
 
 
-def parser(description=None, usage=None):
+def parser(description=None, usage=None, epilog=None):
     """Make a command line argument parser"""
 
+    if usage:
+        return ArgumentsParser(description, usage, epilog)
+    match = lambda x: re.match('^[uU]sage:', x)
     lines = (description or "").splitlines()
-    epilog = None
-    if not usage:
-        if len(lines) > 1 and not lines[1]:
-            usage, epilog = lines[0], '\n\n'.join(lines[2:])
-    else:
-        usage = description = lines[0]
-    return ArgumentsParser(usage, epilog)
+    usages = [l for l in lines if match(l)]
+    if usages:
+        usage = usages.pop()
+        epilog = '\n\n'.join([l for l in lines if l != usage])
+    elif len(lines) > 1 and not lines[1]:
+        usage, description = lines[0], '\n\n'.join(lines[2:])
+    return ArgumentsParser(description, usage, epilog)
