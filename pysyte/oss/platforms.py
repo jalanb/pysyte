@@ -5,8 +5,8 @@ from pysyte import imports
 from pysyte import oss
 from pysyte.bash import cmnds
 
-_platform_name = python_platform.system().lower()
-platform = imports.load_module(oss, _platform_name)
+name = python_platform.system().lower()
+platform = imports.load_module(oss, name)
 
 
 def put_clipboard_data(data):

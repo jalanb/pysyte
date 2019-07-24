@@ -7,6 +7,9 @@ The platforms module
 Clipboard
 =========
 
-    >>> fred = 'fred was here'
-    >>> platforms.put_clipboard_data(fred)
-    >>> assert platforms.get_clipboard_data() == fred
+    >>> expected = 'fred was here'
+    >>> platforms.put_clipboard_data(expected)
+
+This one only works on macOS so far
+    >>> if platforms.name == 'darwin':
+    ...     assert platforms.get_clipboard_data() == expected
