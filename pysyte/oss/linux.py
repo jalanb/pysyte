@@ -23,5 +23,5 @@ def xdg_config_file(filename):
     return paths.path(os.path.join(xdg_config_home(), filename))
 
 
-bash_paste = None
-bash_copy = None
+bash_paste = 'xsel --clipboard --input'
+bash_copy = 'xsel --clipboard --output'
