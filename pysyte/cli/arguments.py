@@ -74,6 +74,10 @@ class ArgumentsNamespace(object):
         except AttributeError:
             return getattr(self._result, name)
 
+    def get_args(self):
+        attributes = [a for a in dir(self._result) if a[0] != '_']
+        return {a: getattr(self._result, a) for a in attributes}
+
     def get_arg(self, name):
         if not self._result:
             return None
