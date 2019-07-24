@@ -6,7 +6,6 @@ import os
 from collections import defaultdict
 
 from pysyte import imports
-from pysyte import scripts
 from pysyte.cli.main import run
 
 
