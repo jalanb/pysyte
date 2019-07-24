@@ -1,8 +1,9 @@
+#! /usr/bin/env python3
 """Script to display a collection of paths after inserting one new path
 
 Usage:
-    add_to_a_path.py [-U] PATHS PATH
-    add_to_a_path.py [-U] (-s | -i INDEX ) PATHS PATH
+    %(prog) [-U] PATHS PATH
+    %(prog) [-U] (-s | -i INDEX ) PATHS PATH
 
 Options:
     -h, --help               Show this help and exit
@@ -14,11 +15,14 @@ Options:
 Examples of use:
     $ export PATH=/bin:/usr/bin
 
-    $ add_to_a_path.py PATH /usr/local/bin
+    $ %(prog) PATH /usr/local/bin
     PATH=/bin:/usr/bin:/usr/local/bin
 
-    $ add_to_a_path.py PATH /usr/local/bin --start
+    $ %(prog) PATH /usr/local/bin --start
     PATH=/usr/local/bin:/bin:/usr/bin
+
+    $ %(prog) PATH /usr/local/bin -i1
+    PATH=/bin:/usr/local/bin:/usr/bin
 """
 
 
@@ -29,32 +33,29 @@ import argparse
 from bdb import BdbQuit
 
 
-__version__ = '0.1.0'
+from pysyte import __version__
+from pysyte.cli.main import run
 
 
 class ScriptError(NotImplementedError):
     pass
 
 
-def version():
-    print('%s %s' % (args, __version__))
-    raise SystemExit
-
-
-def parse_args():
-    """Parse out command line arguments"""
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument('symbol', help='The bash symbol to be changed')
-    parser.add_argument('path', help='The path to be added')
-    parser.add_argument('-s', '--start', action='store_true',
+def add_args(parser):
+    """Add arguments to the command line parser"""
+    parser.positional('symbol', help='The bash symbol to be changed')
+    parser.positional('path', help='The path to be added')
+    parser.boolean('-s', '--start',
                         help='Add the path at start of list of paths')
-    parser.add_argument('-i', '--index', type=int,
+    parser.integer('-i', '--index', type=int,
                         help='The index at which the path will be inserted')
-    parser.add_argument('-v', '--version', action='store_true',
-                        help='Show version')
-    args = parser.parse_args()
+    parser.boolean('-v', '--version', help='Show version')
+
+
+def post_parse(args):
     if args.version:
-        version()
+        sys.stdout.write(f'{sys.argv[0]} version: {__version__}')
+        raise SystemExit
     if not args.index:
         if args.start:
             args.index = 0
@@ -122,15 +123,13 @@ def script(args):
     return True
 
 
-def main():
+def main(args):
     """Run the script"""
     try:
-        args = parse_args()
         return os.EX_OK if script(args) else not os.EX_OK
     except (SystemExit, BdbQuit):
         pass
     return os.EX_OK
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+run(main, add_args, post_parse)

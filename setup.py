@@ -62,6 +62,8 @@ setup(
         'bin/get_key',
         'bin/short_dir',
         'bin/imports',
+        'bin/rePATH',
+        'bin/std',
     ],
     tests_require=['py.test'],
     extras_require={

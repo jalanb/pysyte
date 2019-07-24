@@ -6,13 +6,14 @@ import sys
 from pysyte import __version__
 from pysyte.cli import streams
 from pysyte.cli.main import run
+from pysyte.cli.functions import parser
 from pysyte.types import lines
 
 
-def add_args(parser):
+def add_args(_):
     """Parse out command line arguments"""
-    p = parser
-    p.positionals('files', help='files to edit')
+    p = parser()
+    p.positional('files', help='files to edit')
     p.string('-a', '--at', default="", help='Show line at the line number')
     p.string('-f', '--first', default="1",
                help='number/regexp of first line to show')
@@ -22,13 +23,7 @@ def add_args(parser):
     p.boolean('-i', '--stdin', help='Wait for text from stdin')
     p.lines()
     p.version()
-
-
-def post_parse(args):
-    if args.version:
-        print(f'{sys.argv[0]} version: {__version__}')
-        sys.exit(0)
-    return args
+    return p
 
 
 def fill_arg(arg):
@@ -58,4 +53,4 @@ def main(args):
     return True
 
 
-run(main, add_args, post_parse)
+run(main, add_args)

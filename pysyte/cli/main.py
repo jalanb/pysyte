@@ -29,6 +29,7 @@ def try_main(main):
     except Exception as e:  # pylint: disable=broad-except
         stackprinter.show(e, style='darkbg')
 
+
 def run(main_method, add_args=None, post_parse=None, config=None, usage=None, epilog=None):
     """Run a main_method from command line, parsing arguments
 
@@ -48,7 +49,8 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
         main = main_method
     else:
         def main():
-            parser.post_parser = post_parse
+            if post_parse:
+                parser.post_parser = post_parse
             args = parser.parse_args()
             if post_parse:
                 parsed = post_parse(args)
@@ -66,7 +68,8 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
 
         parser = arguments.parser(module.__doc__, usage, epilog)
         if add_args:
-            add_args(parser)
+            added_parser = add_args(parser)
+            parser = added_parser if added_parser else parser
 
     if module.__name__ == '__main__':
         sys.exit(try_main(main))

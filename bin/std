@@ -4,7 +4,7 @@
 from pysyte.cli.main import run
 from pysyte.cli.functions import parser
 
-def add_args(parser_):
+def add_args(_):
     """Parse out command line arguments"""
     p = parser()
     # p.string('-a', '--at', default="", help='Show line at the line number')
@@ -12,6 +12,7 @@ def add_args(parser_):
     p.boolean('-e', '--no-stderr', help="Don't decorate stderr")
     p.version()
     p.lines()
+    return p
 
 
 def main(args):

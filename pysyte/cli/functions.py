@@ -14,13 +14,14 @@ class FunctionsParser(ArgumentsParser):
         self.boolean('-n', '--numbers', help='Show line numbers')
         self.int('-w', '--width', help='Max width of shown line')
 
-    def post_parser(args):
+    def post_parser(self, args):
         if args.version and self.version:
-            sys.stdout.write(self.version)
-            sys.exit()
+            sys.stdout.write(f'{sys.argv[0]} version: {self.version}')
+            raise SystemExit
+        return args
 
     def sed(self, lines, first):
         return pylines.reformat_lines(lines, first, self.numbers, self.width)
 
-def parser(description=None, usage=None):
-    return FunctionsParser(usage, epilog)
+def parser(description=None, usage=None, epilog=None):
+    return FunctionsParser(description, usage, epilog)
