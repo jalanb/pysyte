@@ -37,9 +37,9 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
     if post_parse(args) is given then it is called with parsed args
         if it returns the args they will be used
     if config is true then
-        is config is True then set config to program name
-        read ~/.config/config
-        call main_method(args, config)
+        is config is not a name then set config to program name
+        read ~/.config/name.yml to data
+        call main_method(args, data)
     Else
         call main_method(args)
     """
@@ -58,7 +58,7 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
                     args = parsed
             args.prog = parser.parser.prog
             if config:
-                config_name = args.prog if config is True else config
+                config_name = config if isinstance(config, str) else args.prog
                 try:
                     configuration = user(config_name)
                     return main_method(args, configuration)
