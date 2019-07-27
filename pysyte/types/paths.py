@@ -290,9 +290,9 @@ class DotPath(PPath):
     def add_missing_ext(self, ext):
         """Add that extension, if it is missing
 
-        >>> source = makepath(__file__)
-        >>> assert source.add_missing_ext('.py') == source
-        >>> assert source.add_missing_ext('.txt').endswith('.py.txt')
+        >>> fred = makepath('fred.py')
+        >>> assert fred.add_missing_ext('.py') == fred
+        >>> assert fred.add_missing_ext('.txt').endswith('.py.txt')
         """
         copy = self[:]
         stem, old = os.path.splitext(copy)

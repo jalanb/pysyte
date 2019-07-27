@@ -123,7 +123,7 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
     """
     def __init__(self, thing):
         data = {}
-        for key, value in thing.items():
+        for key, value in (thing or {}).items():
             data[key] = (RecursiveDictionaryAttributes(value)
                 if isinstance(value, dict)
                 else value)

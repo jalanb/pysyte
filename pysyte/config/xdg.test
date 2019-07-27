@@ -1,0 +1,18 @@
+The pysyte.config.xdg module
+=============================
+
+    >>> from pysyte.config import xdg
+    >>> assert 'XDG config files' in xdg.__doc__
+
+More imports for testing
+------------------------
+
+    >>> import os
+    >>> from pysyte.types import paths
+
+    >>> fred = xdg.xdg_config('fred')
+    >>> assert not fred
+    >>> wwts = xdg.xdg_config('wwts')
+    >>> assert wwts.clones is not None
+    >>> pysyte = xdg.xdg_config('pysyte')
+    >>> assert pysyte is not None

@@ -1,0 +1,16 @@
+The pysyte.cli.configs module
+=============================
+
+    >>> from pysyte.cli import config
+    >>> assert 'configs from program' in config.__doc__
+
+User configs
+------------
+
+    >>> fred = config.user('fred')
+    >>> assert not fred, f'{fred!r}'
+
+    >>> wwts = config.user('wwts')
+    >>> assert wwts
+    >>> pysyte = config.user('pysyte')
+    >>> assert pysyte

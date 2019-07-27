@@ -4,15 +4,18 @@ import os
 
 from pysyte.types import paths
 
+class XDG:
+    class Config:
+        @property
+        def HOME(self):
+            return paths.path(
+                os.environ.get(
+                    'XDG_CONFIG_HOME',
+                    str(paths.home('.config'))
+                )
+            )
 
-def xdg_config_home():
-    """Find $XDG_CONFIG_HOME from environment
-
-    If not set in enviroment use $HOME/.config
-    """
-    if 'XDG_CONFIG_HOME' in os.environ:
-        return paths.path(os.environ['XDG_CONFIG_HOME'])
-    return paths.home('.config')
+    CONFIG = Config()
 
 
 def xdg_config_file(filename):
@@ -20,7 +23,7 @@ def xdg_config_file(filename):
 
     >>> assert xdg_config_file('fred') == os.path.expanduser('~/.config/fred')
     """
-    return paths.path(os.path.join(xdg_config_home(), filename))
+    return paths.path(os.path.join(XDG.CONFIG.HOME, filename))
 
 
 bash_paste = 'xclip -selection clipboard'
