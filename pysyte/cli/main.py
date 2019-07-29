@@ -70,6 +70,12 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
         if add_args:
             added_parser = add_args(parser)
             parser = added_parser if added_parser else parser
+        else:
+            if main_method.__code__.co_argcount == 1:
+                def main():
+                    return main_method(sys.argv)
+            else:
+                raise ValueError('Too many arguments to main')
 
     if module.__name__ == '__main__':
         sys.exit(try_main(main))
