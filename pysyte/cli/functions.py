@@ -1,8 +1,11 @@
 import sys
+import atexit
+from functools import partial
 
 from pysyte import __version__
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.types import lines as pylines
+from pysyte.bash.shell import run
 
 class FunctionsParser(ArgumentsParser):
     """Add option sets to the parser"""
@@ -18,10 +21,22 @@ class FunctionsParser(ArgumentsParser):
         if args.version and self.version:
             sys.stdout.write(f'{sys.argv[0]} version: {self.version}')
             raise SystemExit
+        args.sed = partial(
+            pylines.reformat_lines, numbers=args.numbers, width=args.width)
+        args.alt_screen = get_alt_screen()
         return args
-
-    def sed(self, lines, first):
-        return pylines.reformat_lines(lines, first, self.numbers, self.width)
 
 def parser(description=None, usage=None, epilog=None):
     return FunctionsParser(description, usage, epilog)
+
+
+def get_alt_screen():
+
+    def stop_alt_screen():
+        run('tput rmcup')
+
+    def start_alt_screen():
+        atexit.register(stop_alt_screen)
+        run('tput smcup')
+
+    return start_alt_screen

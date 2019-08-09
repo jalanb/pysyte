@@ -4,6 +4,8 @@ import logging
 import os
 from contextlib import contextmanager
 
+from boltons.setutils import IndexedSet
+
 from pysyte.bash.cmnds import getstatusoutput
 
 logger = logging.getLogger(__name__)
@@ -33,13 +35,13 @@ def pushd(path):
 
 
 def _get_path():
-    """Guarantee that /usr/local/bin and /usr/bin are in PATH"""
+    """Guarantee that /usr/local/bin, /usr/bin, /bin are in PATH"""
     if _path:
         return _path[0]
-    environ_paths = set(os.environ['PATH'].split(':'))
-    environ_paths.add('/usr/local/bin')
-    environ_paths.add('/usr/bin')
-    _path.append(':'.join(environ_paths))
+    environ_paths = IndexedSet(os.environ['PATH'].split(':'))
+    minimal_paths = IndexedSet(['/usr/local/bin', '/usr/bin', '/bin'])
+    all_paths = environ_paths | minimal_paths
+    _path.append(':'.join(all_paths))
     logger.debug('PATH = %s', _path[-1])
     return _path[0]
 

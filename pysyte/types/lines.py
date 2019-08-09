@@ -58,44 +58,35 @@ def set_width(line, width):
         return line
     return line[:width]
 
-def add_numbers(lines, numbers=True):
-    if not numbers or not lines:
-        return lines
-
-    def numbered(line_):
-        prefix = line_format_ % (i + 1)
-        return ' '.join((prefix, line_.rstrip()))
-
-    line_format_ = _number_format(len(lines))
-    for i, line in enumerate(lines):
-        yield numbered(line)
-
-
-def reformat_lines(lines, first, numbers, width):
-    outs = []
-    for line in add_numbers(lines, numbers):
-        if numbers:
-            prefix = line_format_ % (i + 1)
-            out = ' '.join((prefix, line.rstrip()))
-        else:
-            out = line.rstrip()
-        if width:
-            out = out[:width]
-        outs.append(out)
-    return outs
-
-
-def text(lines):
-    return '\n'.join(lines)
-
-
 def _number_format(count=999):
     """A string format for line numbers
 
-    Should give a '%d' format with width bug enough to `count` lines
+    Should give a '%d' format with width big enough to `count` lines
+
+    >>> assert _number_format(77) == '%2d'
     """
     digits = len(str(count))
     return '%%%dd: ' % digits
+
+
+def add_numbers(lines, numbers=True):
+    if not numbers:
+        numbered = lambda x, y: x
+    else:
+        def numbered(line_, line_format_):
+            prefix = line_format_ % (i + 1)
+            return ' '.join((prefix, line_.rstrip()))
+
+    for i, line in enumerate(lines):
+        yield numbered(line, _number_format(len(lines)))
+
+
+def reformat_lines(lines, first, numbers, width):
+    return [l[:width] if width else l for l in add_numbers(lines, numbers)]
+
+
+def as_text(lines):
+    return '\n'.join(lines)
 
 
 def select(predicate, lines):

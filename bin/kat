@@ -41,15 +41,14 @@ def main(args):
     at = fill_arg(args.at)
     first = fill_arg(args.first) or 1
     last = fill_arg(args.last) or -1
+    main_screen = True
     for stream in streams.args(args, 'files'):
-        start, lines_in = lines.first_and_rest(
-            stream,
-            at,
-            first,
-            last
-        )
+        start, lines_in = lines.first_and_rest(stream, at, first, last)
         lines_out = args.sed(lines_in, start)
-        print(lines.text(lines_out))
+        if main_screen and len(lines_out) > 40:
+            main_screen = False
+            args.alt_screen()
+        print(lines.as_text(lines_out))
     return True
 
 
