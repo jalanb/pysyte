@@ -1,0 +1,88 @@
+#! /usr/bin/env python
+
+"""Search & replace text
+
+Commands:
+
+    /fred        show all freds in text
+    /fred/       show only lines with fred
+    /fred/.../c  find fred and replace with ... (ask for each confirmation: ynqa)
+    =fred        remove all lines with fred
+"""
+
+import doctest
+import os
+import re
+import sys
+
+from pysyte.cli.main import run
+
+
+def add_args(parser):
+    parser.positional('commands', help='What to do')
+    parser.boolean('-y', '--yes', help='always confirm')
+    parser.boolean('-n', '--no', help='never confirm')
+
+
+def match_show(string, separator='/'):
+    regexp = re.compile(f'''
+        [{separator}]
+        (
+            (?P<old>[^{separator}]+)
+            (
+                [{separator}]
+                (?P<new>[^{separator}]+)
+                (
+                    [{separator}]
+                    (?P<qualifiers>[gc]+)
+                )
+            )
+        )
+    ''')
+    match = regexp.match(string)
+    if not match:
+        return {}
+    result = match.groupdict()
+    result['separator'] = separator
+    return result
+
+
+def match_remove(string, separator='='):
+    regexp = re.compile(f'''
+        [{separator}]
+        (?P<old>[^{separator}]+)
+    ''')
+    match = regexp.match(string)
+    if not match:
+        return {}
+    return match.groupdict()
+
+
+def post_parse(args):
+    args.actions = []
+    for command in args.commands:
+        match = match_show(command)
+        if match:
+            args.actions.append(match)
+            continue
+        match = match_remove(command)
+        if match:
+            args.actions.append(match)
+            continue
+    return args
+
+def main(args):
+    for action in args.actions:
+        new = action.get('new', '')
+        old = action.get('old', '')
+        separator = action.get('separator', '')
+        if separator == '/':
+            if new:
+                print(f'Substitute {new} for {old}')
+            else:
+                print(f'Find {old}')
+        else:
+            print(f'Remove old')
+
+
+run(main, add_args, post_parse)

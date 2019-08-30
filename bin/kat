@@ -1,5 +1,9 @@
 #! /usr/bin/env python3
-"""Show some lines from files"""
+"""Show some lines from files
+
+Usage: %(prog)s [options] [files]
+
+"""
 
 import sys
 
@@ -10,10 +14,10 @@ from pysyte.cli.functions import parser
 from pysyte.types import lines
 
 
-def add_args(_):
+def add_args(parser_):
     """Parse out command line arguments"""
-    p = parser()
-    p.positional('files', help='files to edit')
+    p = parser(parser_)
+    p.positional('files', help='files to show (or "-" for stdin)')
     p.string('-a', '--at', default="", help='Show line at the line number')
     p.string('-f', '--first', default="1",
                help='number/regexp of first line to show')
