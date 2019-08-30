@@ -6,8 +6,8 @@ Usage: %(prog)s searches [files]
 
 Searches ("fred" is a regular expression):
 
-    /fred        show only lines with fred
-    =fred        remove all lines with fred
+    =fred        show only lines with fred
+    =-fred       remove all lines with fred
 
 """
 
@@ -44,20 +44,35 @@ def parse_sought(string, separator):
     return result
 
 
+def parse_action(search):
+    sought = search[1:]
+    action = {
+        'separator': '=',
+        'sought': sought,
+    }
+    if sought[0] == '-':
+        action['separator'] = '.'
+        action['sought'] = sought[1:]
+    return action
+
 def post_parse(args):
-    matchers = (partial(parse_sought, separator=s) for s in '/=')
-    matches = [m(c) for m in matchers for c in args.searches]
-    args.actions = [m for m in matches if m]
+    files = []
+    actions = []
+    for search in args.searches:
+        if search[0] == '=':
+            actions.append(parse_action(search))
+        else:
+            files.append(search)
+    args.actions = actions
+    args._result.files = files
     return args
 
 def main(args):
+    print(f'Files: {args.files}')
     for action in args.actions:
         sought = action.get('sought', '')
         separator = action.get('separator', '')
-        if separator == '/':
-            print(f'Find {sought}')
-        else:
-            print(f'Remove {sought}')
+        print(f'{"Find" if separator == "=" else "Remove"} {sought}')
 
 
 run(main, add_args, post_parse)
