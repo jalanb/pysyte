@@ -26,7 +26,21 @@ class FunctionsParser(ArgumentsParser):
         args.alt_screen = get_alt_screen()
         return args
 
+
 def parser(description=None, usage=None, epilog=None):
+    """Create a new parser with those texts
+
+    If description is a parser
+        then take all texts from that
+    """
+    if usage is None and epilog is None:
+        try:
+            parser_ = description.parser
+            description = parser_.description
+            usage = parser_.usage
+            epilog = parser_.epilog
+        except AttributeError:
+            pass
     return FunctionsParser(description, usage, epilog)
 
 

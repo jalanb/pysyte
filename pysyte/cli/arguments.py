@@ -32,7 +32,10 @@ def extract_strings(names, name):
 class ArgumentsParser(object):
     def __init__(self, description, usage, epilog):
         self.parser = argparse.ArgumentParser(
-            description=description, usage=usage, epilog=epilog)
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description=description,
+            usage=usage,
+            epilog=epilog)
         self._parsed = None
 
         self.parse = self.parse_args
