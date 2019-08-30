@@ -2,12 +2,16 @@
 
 """Search & replace text
 
-Commands:
+Usage: %(prog)s searches [paths]
+
+Searches ("fred" is a regular expression):
 
     /fred        show all freds in text
     /fred/       show only lines with fred
-    /fred/.../c  find fred and replace with ... (ask for each confirmation: ynqa)
+    /fred/.../c  find fred and replace with ... (confirming each)
     =fred        remove all lines with fred
+    =fred=c      remove all lines with fred (confirming each)
+
 """
 
 import doctest
@@ -15,13 +19,20 @@ import os
 import re
 import sys
 
+from pysyte import __version__
+from pysyte.cli.functions import parser
 from pysyte.cli.main import run
 
 
-def add_args(parser):
-    parser.positional('commands', help='What to do')
-    parser.boolean('-y', '--yes', help='always confirm')
-    parser.boolean('-n', '--no', help='never confirm')
+def add_args(parser_):
+    p = parser(parser_)
+    p.positional('searches', help='What to search for')
+    p.positional('files', help='files to show (or "-" for stdin)')
+    p.boolean('-o', '--no', help='never confirm')
+    p.boolean('-y', '--yes', help='always confirm')
+    p.lines()
+    p.version()
+    return p
 
 
 def match_show(string, separator='/'):
@@ -34,11 +45,15 @@ def match_show(string, separator='/'):
                 (?P<new>[^{separator}]+)
                 (
                     [{separator}]
-                    (?P<qualifiers>[gc]+)
-                )
-            )
+                    (
+                        (?P<qualifiers>[gc]+)
+                        |
+                        (?P<rest>[^{separator}]+)
+                    )
+                )?
+            )?
         )
-    ''')
+    ''', re.VERBOSE)
     match = regexp.match(string)
     if not match:
         return {}
@@ -50,8 +65,8 @@ def match_show(string, separator='/'):
 def match_remove(string, separator='='):
     regexp = re.compile(f'''
         [{separator}]
-        (?P<old>[^{separator}]+)
-    ''')
+        (?P<old>[^{separator}]+)?
+    ''', re.VERBOSE)
     match = regexp.match(string)
     if not match:
         return {}
@@ -59,22 +74,17 @@ def match_remove(string, separator='='):
 
 
 def post_parse(args):
-    args.actions = []
-    for command in args.commands:
-        match = match_show(command)
-        if match:
-            args.actions.append(match)
-            continue
-        match = match_remove(command)
-        if match:
-            args.actions.append(match)
-            continue
+    matchers = (match_show, match_remove)
+    matches = [m(c) for m in matchers for c in args.searches]
+    args.actions = [m for m in matches if m]
     return args
 
 def main(args):
     for action in args.actions:
         new = action.get('new', '')
         old = action.get('old', '')
+        qualifiers = action.get('qualifiers', '')
+        rest = action.get('rest', '')
         separator = action.get('separator', '')
         if separator == '/':
             if new:
