@@ -61,7 +61,8 @@ class ArgumentsParser(object):
         post_parse = post_parser if post_parser else getattr(
             self, 'post_parser', False)
         poster = post_parse if post_parse else lambda x: x
-        return poster(ArgumentsNamespace(self.parser.parse_args(arguments)))
+        self.args = poster(ArgumentsNamespace(self.parser.parse_args(arguments)))
+        return self.args
 
 
 class ArgumentsNamespace(object):
@@ -94,12 +95,13 @@ def parser(description=None, usage=None, epilog=None):
 
     if usage:
         return ArgumentsParser(description, usage, epilog)
-    match = lambda x: re.match('^[uU]sage:', x)
     lines = (description or "").splitlines()
-    usages = [l for l in lines if match(l)]
+    regexp = re.compile('^[uU]sage:')
+    usages = [l for l in lines if regexp.match(l)]
     if usages:
-        usage = usages.pop()
-        epilog = '\n\n'.join([l for l in lines if l != usage])
+        usage_line = usages.pop()
+        usage = usage_line.split(':', 1)[1]
+        description = '\n'.join([l for l in lines if l != usage_line])
     elif len(lines) > 1 and not lines[1]:
-        usage, description = lines[0], '\n\n'.join(lines[2:])
+        usage, description = lines[0], '\n'.join(lines[2:])
     return ArgumentsParser(description, usage, epilog)
