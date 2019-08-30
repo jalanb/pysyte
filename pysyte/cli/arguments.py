@@ -61,11 +61,13 @@ class ArgumentsParser(object):
         return self.string(*args, **kwargs, nargs='+')
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = post_parser if post_parser else getattr(
-            self, 'post_parser', False)
-        poster = post_parse if post_parse else lambda x: x
-        self.args = poster(ArgumentsNamespace(self.parser.parse_args(arguments)))
-        return self.args
+        same = lambda x: x
+        parsed_args = ArgumentsNamespace(self.parser.parse_args(arguments))
+        my_args = getattr(self, 'post_parser', same)(parsed_args)
+        program_args = (post_parser if post_parser else same)(my_args)
+        self.args = program_args
+        program_args .prog = self.parser.prog
+        return program_args
 
 
 class ArgumentsNamespace(object):

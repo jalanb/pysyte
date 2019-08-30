@@ -1,16 +1,13 @@
 #! /usr/bin/env python
 
-"""Search & replace text
+"""Search text
 
-Usage: %(prog)s searches [paths]
+Usage: %(prog)s searches [files]
 
 Searches ("fred" is a regular expression):
 
-    /fred        show all freds in text
-    /fred/       show only lines with fred
-    /fred/.../c  find fred and replace with ... (confirming each)
+    /fred        show only lines with fred
     =fred        remove all lines with fred
-    =fred=c      remove all lines with fred (confirming each)
 
 """
 
@@ -18,6 +15,7 @@ import doctest
 import os
 import re
 import sys
+from functools import partial
 
 from pysyte import __version__
 from pysyte.cli.functions import parser
@@ -27,32 +25,16 @@ from pysyte.cli.main import run
 def add_args(parser_):
     p = parser(parser_)
     p.positional('searches', help='What to search for')
-    p.positional('files', help='files to show (or "-" for stdin)')
-    p.boolean('-o', '--no', help='never confirm')
-    p.boolean('-y', '--yes', help='always confirm')
+    p.positional('files', help='files to search (if none: search stdin)')
     p.lines()
     p.version()
     return p
 
 
-def match_show(string, separator='/'):
+def parse_sought(string, separator):
     regexp = re.compile(f'''
-        [{separator}]
-        (
-            (?P<old>[^{separator}]+)
-            (
-                [{separator}]
-                (?P<new>[^{separator}]+)
-                (
-                    [{separator}]
-                    (
-                        (?P<qualifiers>[gc]+)
-                        |
-                        (?P<rest>[^{separator}]+)
-                    )
-                )?
-            )?
-        )
+        (?P<separator>[{separator}])
+        (?P<sought>[^{separator}]+)
     ''', re.VERBOSE)
     match = regexp.match(string)
     if not match:
@@ -62,37 +44,20 @@ def match_show(string, separator='/'):
     return result
 
 
-def match_remove(string, separator='='):
-    regexp = re.compile(f'''
-        [{separator}]
-        (?P<old>[^{separator}]+)?
-    ''', re.VERBOSE)
-    match = regexp.match(string)
-    if not match:
-        return {}
-    return match.groupdict()
-
-
 def post_parse(args):
-    matchers = (match_show, match_remove)
+    matchers = (partial(parse_sought, separator=s) for s in '/=')
     matches = [m(c) for m in matchers for c in args.searches]
     args.actions = [m for m in matches if m]
     return args
 
 def main(args):
     for action in args.actions:
-        new = action.get('new', '')
-        old = action.get('old', '')
-        qualifiers = action.get('qualifiers', '')
-        rest = action.get('rest', '')
+        sought = action.get('sought', '')
         separator = action.get('separator', '')
         if separator == '/':
-            if new:
-                print(f'Substitute {new} for {old}')
-            else:
-                print(f'Find {old}')
+            print(f'Find {sought}')
         else:
-            print(f'Remove old')
+            print(f'Remove {sought}')
 
 
 run(main, add_args, post_parse)

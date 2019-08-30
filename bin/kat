@@ -9,8 +9,8 @@ import sys
 
 from pysyte import __version__
 from pysyte.cli import streams
-from pysyte.cli.main import run
 from pysyte.cli.functions import parser
+from pysyte.cli.main import run
 from pysyte.types import lines
 
 
