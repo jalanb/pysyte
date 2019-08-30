@@ -49,8 +49,6 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
         main = main_method
     else:
         def main():
-            if post_parse:
-                parser.post_parser = post_parse
             args = parser.parse_args()
             if post_parse:
                 parsed = post_parse(args)
