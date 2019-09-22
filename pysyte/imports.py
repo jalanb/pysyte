@@ -159,23 +159,3 @@ def extract_imports(script):
     result = find_imports(parse_tree)
     result.path = script
     return result
-
-
-def load_module(package, module_name):
-
-    def default_value(key):
-        import imp
-
-        def imp_load(a, b, c):
-            return imp.load_module(full_name, a, b, c)
-
-        full_name = f'{package.__name__}.{module_name}'
-        module = imp.find_module(key, package.__path__)
-        return imp_load(*module)
-
-    # pylint: disable=protected-access
-    try:
-        _loaded = package._loaded
-    except AttributeError:
-        _loaded = package._loaded = dictionaries.LazyDefaultDict(default_value)
-    return _loaded[module_name]
