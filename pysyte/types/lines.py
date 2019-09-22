@@ -63,7 +63,7 @@ def _number_format(count=999):
 
     Should give a '%d' format with width big enough to `count` lines
 
-    >>> assert _number_format(77) == '%2d'
+    >>> assert _number_format(77) == '%2d: '
     """
     digits = len(str(count))
     return '%%%dd: ' % digits
