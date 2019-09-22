@@ -13,6 +13,6 @@ User configs
     >>> fred = config.user('fred')
     >>> assert not fred, f'{fred!r}'
 
-    >>> pysyte = config.user('pysyte')
-    >>> if paths.path('~/.config/pysyte.yml'):
+    >>> if paths.path('~/.config/pysyte.yml').isfile():
+    ...     pysyte = config.user('pysyte')
     ...     assert pysyte

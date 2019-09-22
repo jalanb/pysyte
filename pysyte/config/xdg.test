@@ -12,6 +12,6 @@ User configs
 ------------
     >>> fred = xdg.xdg_config('fred')
     >>> assert not fred
-    >>> pysyte = xdg.xdg_config('pysyte')
-    >>> if paths.path('~/.config/pysyte.yml'):
+    >>> if paths.path('~/.config/pysyte.yml').isfile():
+    ...     pysyte = xdg.xdg_config('pysyte')
     ...     assert pysyte is not None
