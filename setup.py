@@ -57,6 +57,7 @@ setup(
         'six',
         'stackprinter',
         'pyyaml',
+        'boltons',
     ],
     scripts=[
         'bin/kat',
