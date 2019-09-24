@@ -1,27 +1,16 @@
 #! /usr/bin/env python3
 """Script to display a collection of paths after inserting one new path
 
-Usage:
-    %(prog) [-U] PATHS PATH
-    %(prog) [-U] (-s | -i INDEX ) PATHS PATH
-
-Options:
-    -h, --help               Show this help and exit
-    -v, --version            Show version number and exit
-    -s, --start              Add the path at start of list of paths
-    -i INDEX, --index=INDEX  The index at which the path will be inserted
-
-
 Examples of use:
     $ export PATH=/bin:/usr/bin
 
-    $ %(prog) PATH /usr/local/bin
+    $ %(prog)s PATH /usr/local/bin
     PATH=/bin:/usr/bin:/usr/local/bin
 
-    $ %(prog) PATH /usr/local/bin --start
+    $ %(prog)s PATH /usr/local/bin --start
     PATH=/usr/local/bin:/bin:/usr/bin
 
-    $ %(prog) PATH /usr/local/bin -i1
+    $ %(prog)s PATH /usr/local/bin -i1
     PATH=/bin:/usr/local/bin:/usr/bin
 """
 
@@ -43,8 +32,8 @@ class ScriptError(NotImplementedError):
 
 def add_args(parser):
     """Add arguments to the command line parser"""
-    parser.positional('symbol', help='The bash symbol to be changed')
-    parser.positional('path', help='The path to be added')
+    parser.string('symbol', help='The bash symbol to be changed')
+    parser.string('path', help='The path to be added')
     parser.boolean('-s', '--start',
                         help='Add the path at start of list of paths')
     parser.integer('-i', '--index', type=int,
