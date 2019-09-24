@@ -56,6 +56,7 @@ setup(
         'path.py==7.7.1',
         'six',
         'stackprinter',
+        'pyyaml',
     ],
     scripts=[
         'bin/kat',
