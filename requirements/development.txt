@@ -1,0 +1,6 @@
+bumpversion
+ipython
+pprintpp
+pudb
+requests
+sh

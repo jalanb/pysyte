@@ -1,0 +1,8 @@
+coverage
+mock
+nose
+nose-progressive
+pinocchio
+pytest
+pytest-cov
+requests_mock
