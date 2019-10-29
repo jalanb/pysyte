@@ -434,6 +434,7 @@ class FilePath(DotPath, PathAssertions):
         filename, _ = os.path.splitext(copy)
         return self.__class__(f'{filename}.{extension.lstrip(".")}')
 
+
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
         self.chmod(ChmodValues.readonly_file)

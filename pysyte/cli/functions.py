@@ -9,6 +9,7 @@ from pysyte.bash.shell import run
 
 class FunctionsParser(ArgumentsParser):
     """Add option sets to the parser"""
+
     def version(self, version_=None):
         self.version = version_ if version_ else __version__
         self.boolean('-v', '--version', help='Show version')

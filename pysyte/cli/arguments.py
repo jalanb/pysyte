@@ -10,6 +10,7 @@ from functools import partial
 from itertools import chain
 
 from pysyte.cli.config import user
+from pysyte.types.numbers import inty
 
 
 def config(arguments):
@@ -28,6 +29,12 @@ def extract_strings(names, name):
     except TypeError:
         return []
 
+class IntyAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        inty_values = inty(values)
+        raise TypeError(self.type)
+        setattr(namespace, self.dest, inty_values)
+
 
 class ArgumentsParser(object):
     def __init__(self, description, usage, epilog):
@@ -43,7 +50,8 @@ class ArgumentsParser(object):
         self.string = self.arg = self.parser.add_argument
         self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
         self.integer = self.int = partial(self.arg, type=int)
-        self.strings = partial(self.arg, type=str, nargs='*')
+        self.inty = partial(self.arg, action=IntyAction)
+        self.strings = partial(self.positional, type=str)
 
     def __repr__(self):
         return f'<{self.__class__.__name__}>'
@@ -61,13 +69,12 @@ class ArgumentsParser(object):
         return self.string(*args, **kwargs, nargs='+')
 
     def parse_args(self, arguments=None, post_parser=None):
-        same = lambda x: x
-        parsed_args = ArgumentsNamespace(self.parser.parse_args(arguments))
-        my_args = getattr(self, 'post_parser', same)(parsed_args)
-        program_args = (post_parser if post_parser else same)(my_args)
-        self.args = program_args
-        program_args .prog = self.parser.prog
-        return program_args
+        post_parse = post_parser if post_parser else getattr(
+            self, 'post_parser', False)
+        post_parser_ = post_parse if post_parse else lambda x: x
+        parsed_args = self.parser.parse_args(arguments)
+        argument_namespace = ArgumentsNamespace(parsed_args)
+        return post_parser_(argument_namespace)
 
 
 class ArgumentsNamespace(object):

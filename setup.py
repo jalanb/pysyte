@@ -59,6 +59,11 @@ setup(
         'pyyaml',
         'boltons',
     ],
+#     entry_points = {
+#         'console_scripts': [
+#             'kat = pysyte.cli.bin:kat'
+#         ]
+#     },
     scripts=[
         'bin/kat',
         'bin/get_key',
