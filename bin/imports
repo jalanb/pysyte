@@ -18,26 +18,40 @@ def add_args(parser):
     p.boolean('-u', '--unused', help='Show unused imports')
 
 
+class TextVisitor(object):
+
+    def __init__(self, visitor):
+        self.visitor = visitor
+
+    def text(self, line):
+        string = '% 4d: %s' % (
+            line, 
+            linecache.getline(self.visitor.path, line)
+        )
+        return string.rstrip()
+
+
 def show_unused(visitor):
-    lines = visitor.unused_lines()
-    if not lines:
+    unused_lines = sorted(visitor.unused_lines())
+    if not unused_lines:
         return []
+    text = texter(visitor)
     print('Unused:')
-    for line in sorted(lines):
-        names_string = ','.join(lines[line])
+    for line in unused_lines:
+        names_string = ','.join(unused_lines[line])
         print(f'{names_string}\n{visitor.line(line, True)}')
     return visitor.unused().keys()
 
 
 def show_duplicates(visitor):
-    duplcates = visitor.multiples()
-    if duplcates:
+    multiples = visitor.multiples()
+    if multiples:
         print('Duplicates:')
-    for name, lines in duplcates.items():
+    for name, lines in multiples.items():
         instances = [visitor.line(_, True) for _ in lines]
         lines = [name] + instances
         print('\n'.join(lines))
-    return duplcates.keys()
+    return multiples.keys()
 
 
 def script(args):
