@@ -47,7 +47,7 @@ class ArgumentsParser(object):
 
         self.parse = self.parse_args
 
-        self.string = self.arg = self.parser.add_argument
+        self.string = self.arg = self.add_argument
         self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
         self.integer = self.int = partial(self.arg, type=int)
         self.inty = partial(self.arg, action=IntyAction)
@@ -55,6 +55,58 @@ class ArgumentsParser(object):
 
     def __repr__(self):
         return f'<{self.__class__.__name__}>'
+
+    def add_to(self, name=None, group=None, type_=None, default=None, *args, **kwargs):
+        args_= args[:]
+        kwargs_ = kwargs.copy()
+        name_ = name if name else ""
+        group_ = group if group else name_
+        kwargs_['default'] = default if default else group_ if group_ else name_ if name_ else None
+        args_ = [name_] + args
+        self.add_argument(*args_, **kwargs_)
+
+    def add_argument(self, *args, **kwargs):
+        args_, name, i = args[:], '', 0
+        arg, args_ = args_[0], args_[1:]
+        if arg[0] == '-':
+            i = 2 if arg[1] == '-' else 1
+            name = arg[i:]
+        else:
+            name = arg
+            assert not args_[0].startswith('--'):
+        arg = args_[0]
+        if arg[0:1] == '--':
+            if not name:
+                name = arg[2:]
+            args_ = args_[1:]
+        if name:
+            name_option = f'--{name}'
+            initial_option = f'-{name[0]}'
+            adds = [initial_option, name_option, args_]
+        else:
+            adds = args_
+        self.parser.add_argument(initial_option, name_option, *adds, **kwargs)
+        return self
+    else:
+
+    def add_argument(self, *args, **kwargs):
+        name = ''
+        args_ = args[:]
+        arg = args_[0]
+        if arg[0] == '-':
+            initial = arg[1]
+            rest = args[1:]
+            if args_[1].startswith('--'):
+                name = args_[1][2:]
+                rest = args[2:]
+            self.parser.add_argument(f'-{initial}', f'--{name}', *rest, **kwargs)
+        else:
+            if args_[1:]:
+                assert not args_[1].startswith('--')
+            name = args_[0]
+            rest = args[1:]
+            self.parser.add_argument(f'{name}', *rest, **kwargs)
+        return self
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""
@@ -68,13 +120,20 @@ class ArgumentsParser(object):
         """Add mandatory positional args"""
         return self.string(*args, **kwargs, nargs='+')
 
+    def post_parser(self, args):
+        """No-op for specialisation"""
+        return args
+
     def parse_args(self, arguments=None, post_parser=None):
         post_parse = post_parser if post_parser else getattr(
             self, 'post_parser', False)
         post_parser_ = post_parse if post_parse else lambda x: x
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
-        return post_parser_(argument_namespace)
+        posted_args =  post_parser_(argument_namespace)
+        self.args = posted_args
+        self.args.prog = self.parser.prog
+        return self.args
 
 
 class ArgumentsNamespace(object):

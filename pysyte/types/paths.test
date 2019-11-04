@@ -221,3 +221,11 @@ Parts and parents
 
     >>> assert paths.home
     >>> assert paths.pwd()
+
+Splitting off extenstions
+--------------------------
+
+   >>> p = path(paths.__file__)
+   >>> assert p.ext in {'.py', '.pyc'}
+   >>> stem, ext = p.split_ext()
+   >>> assert f'{stem}.{ext}' == paths.__file__

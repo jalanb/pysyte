@@ -28,17 +28,17 @@ extra_files = package_files('pysyte')
 
 setup(
     name=pysyte.__name__,
+    version=pysyte.__version__,
+    description=description.splitlines()[0],
+    long_description=description,
+    url='https://github.com/jalanb/%s' % pysyte.__name__,
     packages=find_packages(),
     package_data={'': package_files('pysyte')},
-    version=pysyte.__version__,
-    url='https://github.com/jalanb/%s' % pysyte.__name__,
     download_url='https://github.com/jalanb/%s/tarball/v%s' % (
         pysyte.__name__, pysyte.__version__),
     license='MIT License',
-    author='J Alan Brogan',
+    author='jalanb',
     author_email='github@al-got-rhythm.net',
-    description=description.splitlines()[0],
-    long_description=description,
     platforms='any',
     classifiers=[
         'Programming Language :: Python :: 3.7',
@@ -58,6 +58,7 @@ setup(
         'stackprinter',
         'pyyaml',
         'boltons',
+        'python-magic',
     ],
 #     entry_points = {
 #         'console_scripts': [

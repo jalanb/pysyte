@@ -5,7 +5,7 @@ from functools import partial
 
 def _chop(lines_in, at, first, last):
 
-    def as_int(string, at, start, end):
+    def as_int(string, start, end):
         try:
             return int(string)
         except (ValueError, TypeError):
@@ -26,7 +26,7 @@ def _chop(lines_in, at, first, last):
         if at:
             start = first if first else 0
             end = last if last else -1
-            first_ = _line(as_int(at, at, start, end))
+            first_ = _line(as_int(at, start, end) - 1)
             return first_, first_ + 1
         first_ = _line(as_int(first, 0, 0, -1) - 1)
         last_ = _line(as_int(last, 0, first, -1) or -1)

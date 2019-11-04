@@ -72,3 +72,5 @@ def run(main_method, add_args=None, post_parse=None, config=None, usage=None, ep
 
     if module.__name__ == '__main__':
         sys.exit(try_main(main))
+
+args = {}

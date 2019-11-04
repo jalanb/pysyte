@@ -64,10 +64,14 @@ def _small_colour_number(i):
 
 
 def foreground(i):
+    if not i:
+        return ''
     return _small_colour_number(i) and _foreground_16(i) or _foreground_256(i)
 
 
 def background(i):
+    if not i:
+        return ''
     return _small_colour_number(i) and _background_16(i) or _background_256(i)
 
 
@@ -75,12 +79,17 @@ def prompt(string):
     return f'\001{string}\002'
 
 
+def colour_string(colour, text):
+    stop = no_colour()
+    return f'{colour}{text}{stop}'
+
+
 def foreground_string(text, i):
-    return f'{foreground(i)}{text}{no_colour()}'
+    return colour_string(foreground(i), text)
 
 
 def background_string(text, i):
-    return f'{background(i)}{text}{no_colour()}'
+    return colour_string(background(i), text)
 
 
 def grounds_string(text, background_colour, foreground_colour):

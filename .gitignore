@@ -72,6 +72,10 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+# Packaged stuff
+*.gz
+*.zip
+
 # Sphinx documentation
 docs/_build/
 
@@ -99,6 +103,7 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
+.cd
 .pysyte
 .env
 .venv

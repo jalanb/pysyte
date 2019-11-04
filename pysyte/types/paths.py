@@ -301,7 +301,7 @@ class DotPath(PPath):
         return self.add_ext(ext)
 
 
-def ext_language(ext, exts=None):
+def ext_language(ext, exts=None, simple=True):
     """Language of the extension in those extensions
 
     If exts is supplied, then restrict recognition to those exts only
@@ -312,17 +312,23 @@ def ext_language(ext, exts=None):
     """
     languages = {
         '.py': 'python',
-        '.py2': 'python2',
-        '.py3': 'python3',
+        '.py2': 'python' if simple else 'python2',
+        '.py3': 'python' if simple else 'python3',
         '.sh': 'bash',
         '.bash': 'bash',
         '.pl': 'perl',
-        '.js': 'javascript',
         '.txt': 'english',
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
 
+def mime_language(ext, exts=None):
+    if ext == '.txt':
+        return 'txt'
+    language = ext_language(ext, exts, True)
+    if language:
+        return f'txt/{language}'
+    return ''
 
 def find_language(script, exts=None):
     """Determine the script's language  extension
@@ -352,6 +358,7 @@ def find_language(script, exts=None):
 
 
 del PPath
+
 
 
 class FilePath(DotPath, PathAssertions):
@@ -402,7 +409,12 @@ class FilePath(DotPath, PathAssertions):
                 return True
         return False
 
-    def split_all_ext(self):
+    def split_exts(self):
+        """Split all extensions from the path
+
+        >>> p = path('here/fred.tar.gz')
+        >>> assert p.split_exts() == 'here/fred', 'tar.gz'
+        """
         copy = self[:]
         filename, ext = os.path.splitext(copy)
         if ext == '.gz':
@@ -410,7 +422,7 @@ class FilePath(DotPath, PathAssertions):
             ext = f'{ext}.gz'
         return self.__class__(filename), ext
 
-    split_ext = split_all_ext
+    split_all_ext = split_ext = split_exts
 
     def as_python(self):
         """The path to the file with a .py extension
@@ -491,6 +503,12 @@ class FilePath(DotPath, PathAssertions):
     def choose_language(self, exts):
         self._exts = exts
         self._language = ext_language(self.ext, exts)
+
+    def mimetype(self):
+        result = mime.from_file(str(self))
+        if result.startswith('txt'):
+            return mime_language(self.ext)
+        return result
 
 
 class DirectPath(DotPath, PathAssertions):
@@ -619,20 +637,20 @@ class DirectPath(DotPath, PathAssertions):
 
     # pylint: disable=arguments-differ
     def walkdirs(self, pattern=None, errors='strict', ignores=None):
-        ignored = ignore_globs(ignores)
+        ignored = ignore_fnmatches(ignores)
         for path_to_dir in super(DirectPath, self).walkdirs(pattern, errors):
             if not ignored(path_to_dir.relpath(self)):
                 yield path_to_dir
 
     # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors='strict', ignores=None):
-        ignored = ignore_globs(ignores)
+        ignored = ignore_fnmatches(ignores)
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
             if not ignored(path_to_file.relpath(self)):
                 yield path_to_file
 
     def listfiles(self, pattern=None, ignores=None):
-        ignored = ignore_globs(ignores)
+        ignored = ignore_fnmatches(ignores)
         return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
     def has_vcs_dir(self):
@@ -644,7 +662,7 @@ class DirectPath(DotPath, PathAssertions):
 
 
 
-def ignore_globs(ignores):
+def ignore_fnmatches(ignores):
 
     def ignored(a_path):
         if not ignores:

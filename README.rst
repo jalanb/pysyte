@@ -3,6 +3,8 @@ pysyte
 
 Python modules often used from dotfiles
 
+Installing libmagic in Mac OS (for Python-magic): https://www.jianshu.com/p/153baf8d07ab
+
 Latest PyPi Package
 -------------------
 

@@ -1,8 +1,8 @@
 The colour_numbers module
 =========================
 
-    >>> from pysyte.colours import colour_numbers
-    >>> assert 'numbers known to represent colours' in  colour_numbers.__doc__
+    >>> from pysyte.colours import colour_numbers as cn
+    >>> assert 'numbers known to represent colours' in  cn.__doc__
 
 Convert html strings to integers
 --------------------------------
@@ -12,24 +12,24 @@ A "web colour" is represented by a string with 3 hex values for R, G, B
     >>> html = '#00FF00'
 
 Converting that to an integer and back gives itself
-    >>> assert html == colour_numbers.integer_to_html(colour_numbers.html_to_int(html))
+    >>> assert html == cn.integer_to_html(cn.html_to_int(html))
 
 Same result if we start with slight variations on the string
-    >>> assert html == colour_numbers.integer_to_html(colour_numbers.html_to_int(html.lower()))
-    >>> assert html == colour_numbers.integer_to_html(colour_numbers.html_to_int(html.replace('#','0x')))
+    >>> assert html == cn.integer_to_html(cn.html_to_int(html.lower()))
+    >>> assert html == cn.integer_to_html(cn.html_to_int(html.replace('#','0x')))
 
 We can also use 3 single chars
-    >>> assert html == colour_numbers.integer_to_html(colour_numbers.html_to_int('0x0F0'))
+    >>> assert html == cn.integer_to_html(cn.html_to_int('0x0F0'))
 
 Any 3-char hex string is same as the 6-char version by just doubling the characters
     (http://en.wikipedia.org/wiki/Web_colors#Shorthand_hexadecimal_form)
-    >>> assert colour_numbers.html_to_int('0x09C') == colour_numbers.html_to_int('#0099cc')
+    >>> assert cn.html_to_int('0x09C') == cn.html_to_int('#0099cc')
 
 Fixing HTML strings
 -------------------
 
-    >>> assert colour_numbers.html_to_html('f00') == 'FF0000'
-    >>> assert colour_numbers.hashed_html('f00') == '#FF0000'
+    >>> assert cn.html_to_html('f00') == 'FF0000'
+    >>> assert cn.hashed_html('f00') == '#FF0000'
 
 Converting html colours to ANSI colours
 ---------------------------------------
@@ -38,10 +38,10 @@ Convert an HTML colour string to an ANSI code (which is a number)
     (Test values here come from https://github.com/twoerner/xterm-256colour/blob/master/xtermcolours.sh)
 
     >>> html, ansi = '#875F5F', 95
-    >>> assert colour_numbers.html_to_ansi(html) == ansi
+    >>> assert cn.html_to_ansi(html) == ansi
 
 And back again
-    >>> # assert colour_numbers.ansi_to_html(ansi) == html
+    >>> # assert cn.ansi_to_html(ansi) == html
 
 VGA colours
 -----------
@@ -51,19 +51,26 @@ VGA colours
     For example, blue:
 
 Dark blue
-    >>> assert colour_numbers.ansi_to_html(4) == '#000080'
+    >>> assert cn.ansi_to_html(4) == '#000080'
 
 Lighter blue:
-    >>> assert colour_numbers.ansi_to_html(12) == '#0000FF'
+    >>> assert cn.ansi_to_html(12) == '#0000FF'
 
 Names to numbers
 ----------------
 
 Recognises colour names from English, case-insensitively
-    >>> assert colour_numbers.name_to_int('green') == 2 == colour_numbers.name_to_int('GREEN')
+    >>> assert cn.name_to_id('green') == 2 == cn.name_to_id('GREEN')
 
 And other languages
-    >>> assert colour_numbers.name_to_int('light red') == colour_numbers.name_to_int('f00')
+    >>> assert cn.name_to_id('light red') == cn.name_to_id('f00')
 
 Colour names are case-insensitive
-    >>> assert colour_numbers.name_to_int('FF0000') == colour_numbers.name_to_int('f00')
+    >>> assert cn.name_to_id('FF0000') == cn.name_to_id('f00')
+
+Numbers to names
+----------------
+
+    >>> assert cn.id_to_name(cn.name_to_id('green')) == 'green'
+    >>> assert cn.id_to_name(cn.name_to_id('light red')) == 'light red'
+    >>> cn.id_to_name(56)

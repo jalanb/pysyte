@@ -177,13 +177,27 @@ def ansi_to_html(ansi):
     return integer_to_html(i)
 
 
-def name_to_int(name):
+def name_to_id(name):
     """Get a number for that colour name
 
     if not a name, then not a number
+
+    >>> assert name_to_id('red') == 1
     """
     if not name:
-        return float('nan')
+        return None
     lower = name.lower()
     cga_names = {s: i for i, s in enumerate(colour_names.cga())}
     return cga_names.get(lower) or html_to_small_ansi(lower)
+
+
+def id_to_name(i):
+    """get the name of the colour with that id
+
+    >>> assert id_to_name(1) == 'red'
+    """
+    assert i >= 0
+    cgas = colour_names.cga()
+    if i < len(cgas):
+        return cgas[i].lower()
+    return ansi_to_html(i)
