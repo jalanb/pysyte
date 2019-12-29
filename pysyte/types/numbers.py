@@ -1,11 +1,13 @@
+from functools import partial
 
-
-def inty(thing):
-    """Try to make an int from thing"""
-    if not thing:
-        return 0
+def _as_number(value, type_, default=None):
+    """Try to use that value as that type"""
+    if not value:
+        return default
     try:
-        return int(thing)
+        return type_(value)
     except TypeError:
-        return thing
+        return value
 
+inty = partial(_as_number, type_=int, default=0)
+floaty = partial(_as_number, type_=float, default=0.0)

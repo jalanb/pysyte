@@ -1,20 +1,21 @@
 import sys
-import atexit
 from functools import partial
 
 from pysyte import __version__
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.types import lines as pylines
-from pysyte.bash.shell import run
+from pysyte.bash.screen import alt_screen
 
 class FunctionsParser(ArgumentsParser):
     """Add option sets to the parser"""
-    def __init__(self):
+    def __init__(self, parser_):
+        super().__init__(parser_)
         self.version = __version__
         self.groups = dict(args=[])
 
     def add_version(self, version_=None):
-        self.version = version_ if version_
+        if version_:
+            self.version = version_
         self.boolean('-v', '--version', help='Show version',)
         return self
 
@@ -34,22 +35,21 @@ class FunctionsParser(ArgumentsParser):
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
         default_ = default if default else ''
-        args_ = [letter, name_] + args
         type_name = type_ if type_ else 'string'
-        method = getattr(self, type_, False)
+        method = getattr(self, type_, "not a method")
         assert callable(method), f'self.{type_}() is {method}'
         self.groups[group].append(self.add_argument(letter, name, default=default_, help=help))
 
     def add_functions(self):
         args = {
-            'a': ['at', 'lines', 'string' 'Show line at the line number'],
+            'a': ['at', 'lines', 'inty' 'Show line at the line number'],
             'b': ['numbers', 'lines', 'boolean' 'Show line numbers'],
             'c': ['copy', 'clipboard', 'boolean' 'Copy text to clipboard'],
            #'d': ['delete', 'lines', 'string', 'lines to be deleted'],
             'e': ['expression', 'ed', 'string' 'sed expression to be executed'],
-            'f': ['first', 'lines', 'string' 'number/regexp of first line to show', '1'],
+            'f': ['first', 'lines', 'inty' 'number/regexp of first line to show', '1'],
             'i': ['stdin', 'stdin', 'boolean' '(aka -) Wait for text from stdin'],
-            'l': ['last', 'lines', 'string' 'number/regexp of last line to show', '0'],
+            'l': ['last', 'lines', 'inty' 'number/regexp of last line to show', '0'],
             'p': ['paste', 'clipboard', 'boolean' 'Paste text from clipboard'],
             't': ['editor', 'ed', 'string' 'edit with, e.g., vim'],
             'v': ['version', 'version', 'boolean' 'Show version'],
@@ -64,35 +64,10 @@ class FunctionsParser(ArgumentsParser):
             raise SystemExit
         args.sed = partial(
             pylines.reformat_lines, numbers=args.numbers, width=args.width)
-        args.alt_screen = get_alt_screen()
+        args.alt_screen = alt_screen()
         return args
 
 
 def parser(parser_):
-    """Create a new parser with those texts
-
-    If description is a parser
-        then take all texts from that
-    """
-    if usage is None and epilog is None:
-        try:
-            parser_ = description.parser
-            description = parser_.description
-            usage = parser_.usage
-            epilog = parser_.epilog
-        except AttributeError:
-            pass
-    p = parser_
-    return FunctionsParser(p.description, p.usage, p.epilog)
-
-
-def get_alt_screen():
-
-    def stop_alt_screen():
-        run('tput rmcup')
-
-    def start_alt_screen():
-        atexit.register(stop_alt_screen)
-        run('tput smcup')
-
-    return start_alt_screen
+    """Create a new parser to handle some functions from given parser"""
+    return FunctionsParser(parser_.parser)

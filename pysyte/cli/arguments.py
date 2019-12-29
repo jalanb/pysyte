@@ -37,12 +37,10 @@ class IntyAction(argparse.Action):
 
 
 class ArgumentsParser(object):
-    def __init__(self, description, usage, epilog):
-        self.parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description=description,
-            usage=usage,
-            epilog=epilog)
+    """Add more attriubtes and methods to an argparse.ArgumentParser"""
+
+    def __init__(self, parser_):
+        self.parser = parser_
         self._parsed = None
 
         self.parse = self.parse_args
@@ -73,7 +71,7 @@ class ArgumentsParser(object):
             name = arg[i:]
         else:
             name = arg
-            assert not args_[0].startswith('--'):
+            assert not args_[0].startswith('--')
         arg = args_[0]
         if arg[0:1] == '--':
             if not name:
@@ -87,7 +85,6 @@ class ArgumentsParser(object):
             adds = args_
         self.parser.add_argument(initial_option, name_option, *adds, **kwargs)
         return self
-    else:
 
     def add_argument(self, *args, **kwargs):
         name = ''
@@ -136,6 +133,16 @@ class ArgumentsParser(object):
         return self.args
 
 
+class DescribedParser(ArgumentsParser):
+    """An argparse.ArgumentParser with a description, usage and epilog"""
+    def __init__(self, description, usage, epilog):
+        super().__init(argparse.ArgumentParser(
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description=description,
+            usage=usage,
+            epilog=epilog))
+
+
 class ArgumentsNamespace(object):
     def __init__(self, result):
         self._result = result
@@ -165,7 +172,7 @@ def parser(description=None, usage=None, epilog=None):
     """Make a command line argument parser"""
 
     if usage:
-        return ArgumentsParser(description, usage, epilog)
+        return DescribedParser(new_argparse_parser(description, usage, epilog))
     lines = (description or "").splitlines()
     regexp = re.compile('^[uU]sage:')
     usages = [l for l in lines if regexp.match(l)]
@@ -175,4 +182,4 @@ def parser(description=None, usage=None, epilog=None):
         description = '\n'.join([l for l in lines if l != usage_line])
     elif len(lines) > 1 and not lines[1]:
         usage, description = lines[0], '\n'.join(lines[2:])
-    return ArgumentsParser(description, usage, epilog)
+    return DescribedParser(description, usage, epilog)

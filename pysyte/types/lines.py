@@ -38,8 +38,8 @@ def _chop(lines_in, at, first, last):
     return first, rest
 
 
-def first_and_rest(text_stream, at=None, first=1, last=-1):
-    """Retrn first line, and rest of lines from that text stream
+def first_and_rest(text, at=None, first=1, last=-1):
+    """First line, and rest of those lines from that text
 
     at, first, last :
         each can choose a line by number or regexp
@@ -48,7 +48,6 @@ def first_and_rest(text_stream, at=None, first=1, last=-1):
     first: first line to choose
     last: last line to choose
     """
-    text = text_stream.read()
     lines_in = text.splitlines()
     return _chop(lines_in, at, first, last)
 

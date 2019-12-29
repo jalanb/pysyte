@@ -62,12 +62,12 @@ def minkowski(x, y):
     Synonyms of Minkowski:
     Different names for the Minkowski distance or Minkowski metric arise from the order:
 
-	λ = 1 is the Manhattan distance. Synonyms are L1-Norm, Taxicab or City-Block distance. For two vectors of ranked ordinal variables, the Manhattan distance is sometimes called Foot-ruler distance.
-	λ = 2 is the Euclidean distance. Synonyms are L2-Norm or Ruler distance. For two vectors of ranked ordinal variables, the Euclidean distance is sometimes called Spear-man distance.
-	λ = ∞ is the Chebyshev distance. Synonyms are Lmax-Norm or Chessboard distance.
+    λ = 1 is the Manhattan distance. Synonyms are L1-Norm, Taxicab or City-Block distance. For two vectors of ranked ordinal variables, the Manhattan distance is sometimes called Foot-ruler distance.
+    λ = 2 is the Euclidean distance. Synonyms are L2-Norm or Ruler distance. For two vectors of ranked ordinal variables, the Euclidean distance is sometimes called Spear-man distance.
+    λ = ∞ is the Chebyshev distance. Synonyms are Lmax-Norm or Chessboard distance.
     """
     def nth_root(value, n_root):
-	root_value = 1/float(n_root)
+        root_value = 1/float(n_root)
         return round (Decimal(value) ** Decimal(root_value),3)
 
     return nth_root(sum(pow(abs(a-b),p_value) for a,b in zip(x, y)),p_value)
