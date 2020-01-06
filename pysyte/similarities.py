@@ -53,7 +53,7 @@ def manhattan(x, y):
     return sum(abs(a-b) for a,b in zip(x,y))
 
 
-def minkowski(x, y):
+def minkowski(x, y, p_value):
     """Minkowski distance is a generalized metric form of Euclidean distance and Manhattan distance
     In the equation, d^MKD is the Minkowski distance between the data record i and j, k the index of a variable, n the total number of variables y and λ the order of the Minkowski metric. Although it is defined for any λ > 0, it is rarely used for values other than 1, 2 and ∞.
 
@@ -68,6 +68,6 @@ def minkowski(x, y):
     """
     def nth_root(value, n_root):
         root_value = 1/float(n_root)
-        return round (Decimal(value) ** Decimal(root_value),3)
+        return float(round (Decimal(value) ** Decimal(root_value),3))
 
     return nth_root(sum(pow(abs(a-b),p_value) for a,b in zip(x, y)),p_value)

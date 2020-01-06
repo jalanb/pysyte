@@ -73,4 +73,4 @@ Numbers to names
 
     >>> assert cn.id_to_name(cn.name_to_id('green')) == 'green'
     >>> assert cn.id_to_name(cn.name_to_id('light red')) == 'light red'
-    >>> cn.id_to_name(56)
+    >>> assert cn.id_to_name(56) == '#6351D7'

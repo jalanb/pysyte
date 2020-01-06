@@ -47,7 +47,12 @@ class ColouredTail(object):
         return str(self) == str(other)
 
     def colour_text(self, *args):
-        new = colour_text(*args, head='')
+        try:
+            colour_name, text = args
+        except ValueError as e:
+            colour_name = None
+            text = args[0]
+        new = colour_text(colour_name, text, head='')
         return ColouredTail(str(self), new)
 
     colour = text = colour_text
