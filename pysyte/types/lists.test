@@ -1,0 +1,25 @@
+The lists module
+================
+
+    >>> from pysyte.types import lists
+    >>> assert 'handles lists' in lists.__doc__
+
+Uniques
+-------
+
+Uniques specialises built-in lists so that they ignore duplicates
+
+    >>> assert lists.Uniques([1, 2, 1]) == [1, 2]
+
+UniquelyTrues specialises it further, to ingore falsey items
+
+    >>> assert lists.UniquelyTrues([0, 1, 0, 1, 2, 1]) == [1, 2]
+
+Flattening lists
+----------------
+
+To flatten a lists reduces any lists of lists to lists of items
+    >>> assert lists.flatten([[1], [2, 3]]) == [1, 2, 3]
+
+There's another method that does same
+    >>> assert lists.flatten_([[1], [2, 3]]) == lists.flatten([[1], [2, 3]])
