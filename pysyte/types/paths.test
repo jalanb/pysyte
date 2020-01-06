@@ -7,6 +7,7 @@ The psyyte.types.paths module
 We'll need the os module for some of the tests below
 
     >>> import os
+    >>> import sys
 
 pwd()
 -----
@@ -149,6 +150,13 @@ The split_all_ext method
     (<FilePath '/alan/was/here'>, '.tar.gz')
 
 
+Whether paths exist
+-------------------
+
+    >>> assert paths.path(paths.__file__).isfile()
+    >>> assert paths.path(paths.__file__).parent.isdir()
+    >>> assert paths.path(sys.executable).is_executable()
+
 Whether sub_paths exist
 -----------------------
 
@@ -225,7 +233,8 @@ Parts and parents
 Splitting off extenstions
 --------------------------
 
-   >>> p = path(paths.__file__)
+   >>> p = paths.path(paths.__file__)
    >>> assert p.ext in {'.py', '.pyc'}
    >>> stem, ext = p.split_ext()
-   >>> assert f'{stem}.{ext}' == paths.__file__
+   >>> assert ext[0] == '.'
+   >>> assert f'{stem}{ext}' == paths.__file__

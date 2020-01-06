@@ -15,11 +15,12 @@ Which looks like the standard argparse parser
 
 But has methods to make adding args easier
     >>> arg = parser.arg('-a', '--add', help="Add stuff")
-    >>> opt = parser.true('-o', help='On True')
-    >>> num = parser.int('-i', help='An Integer')
-    >>> names = parser.strings('--names', help='Some strings')
+    >>> opt = parser.true('-o', 'option', help='On True')
+    >>> num = parser.int('i', '--integer', help='An Integer')
+    >>> names = parser.strings('names', help='Some strings')
 
     >>> assert arg.dest == 'add'
+    >>> assert opt.dest == 'option'
     >>> assert arg.help == 'Add stuff'
     >>> assert arg.default is None and opt.default is False
     >>> assert num.type is int
@@ -28,12 +29,11 @@ But has methods to make adding args easier
 Parse actual args
     This call would normally be empty, and args taken from sys.argv
     But a list can be used for testing
-    >>> args = parser.parse_args(
-    ...     ['-i', '3', '-a', '3', '--names', 'a', 'b'])
+    >>> args = parser.parse_string('-i 3 -a 3 one two')
     >>> assert args.add == '3'
-    >>> assert args.i == 3
-    >>> assert args.o is False
-    >>> assert args.names == ['a', 'b']
+    >>> assert args.integer == 3
+    >>> assert args.option is False
+    >>> assert args.names == ['one', 'two']
 
 Method to get strings from args indirectly
     Useful for methods that are called from scripts
@@ -43,5 +43,6 @@ Method to get strings from args indirectly
 Similar method, guarantees to return a list of strings
     ignoring other types
     >>> assert args.get_strings('add') == [args.add]
-    >>> assert args.get_strings('i') == []
+    >>> assert args.get_strings('option') == []
+    >>> assert args.get_strings('fred') == []
 

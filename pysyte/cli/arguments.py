@@ -5,11 +5,13 @@ This module is a simplifying proxy to stdlib's argparse
 
 import argparse
 import re
+import shlex
 import sys
 from functools import partial
 from itertools import chain
 
 from pysyte.cli.config import user
+from pysyte.iteration import SequenceIterator
 from pysyte.types.numbers import inty
 
 
@@ -32,7 +34,6 @@ def extract_strings(names, name):
 class IntyAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         inty_values = inty(values)
-        raise TypeError(self.type)
         setattr(namespace, self.dest, inty_values)
 
 
@@ -60,62 +61,26 @@ class ArgumentsParser(object):
         name_ = name if name else ""
         group_ = group if group else name_
         kwargs_['default'] = default if default else group_ if group_ else name_ if name_ else None
-        args_ = [name_] + args
+        args_ = [name_[0], name_] + args
         self.add_argument(*args_, **kwargs_)
 
-    def add_argument(self, *args, **kwargs):
-        args_, name, i = args[:], '', 0
-        arg, args_ = args_[0], args_[1:]
-        if arg[0] == '-':
-            i = 2 if arg[1] == '-' else 1
-            name = arg[i:]
-        else:
-            name = arg
-            assert not args_[0].startswith('--')
-        arg = args_[0]
-        if arg[0:1] == '--':
-            if not name:
-                name = arg[2:]
-            args_ = args_[1:]
-        if name:
-            name_option = f'--{name}'
-            initial_option = f'-{name[0]}'
-            adds = [initial_option, name_option, args_]
-        else:
-            adds = args_
-        self.parser.add_argument(initial_option, name_option, *adds, **kwargs)
-        return self
-
-    def add_argument(self, *args, **kwargs):
-        name = ''
-        args_ = args[:]
-        arg = args_[0]
-        if arg[0] == '-':
-            initial = arg[1]
-            rest = args[1:]
-            if args_[1].startswith('--'):
-                name = args_[1][2:]
-                rest = args[2:]
-            self.parser.add_argument(f'-{initial}', f'--{name}', *rest, **kwargs)
-        else:
-            if args_[1:]:
-                assert not args_[1].startswith('--')
-            name = args_[0]
-            rest = args[1:]
-            self.parser.add_argument(f'{name}', *rest, **kwargs)
-        return self
+    def add_argument(self, initial, name, *args, **kwargs):
+        return self.parser.add_argument(
+            f'-{initial.lstrip("-")}',
+            f'--{name.lstrip("-")}',
+            *args, **kwargs)
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""
-        return self.string(*args, **kwargs, nargs='?')
+        return self.parser.add_argument(*args, **kwargs, nargs='?')
 
     def positional(self, *args, **kwargs):
         """Add optional positional args"""
-        return self.string(*args, **kwargs, nargs='*')
+        return self.parser.add_argument(*args, **kwargs, nargs='*')
 
     def positionals(self, *args, **kwargs):
         """Add mandatory positional args"""
-        return self.string(*args, **kwargs, nargs='+')
+        return self.parser.add_argument(*args, **kwargs, nargs='+')
 
     def post_parser(self, args):
         """No-op for specialisation"""
@@ -132,11 +97,14 @@ class ArgumentsParser(object):
         self.args.prog = self.parser.prog
         return self.args
 
+    def parse_string(self, string):
+        return self.parse_args(shlex.split(string))
+
 
 class DescribedParser(ArgumentsParser):
     """An argparse.ArgumentParser with a description, usage and epilog"""
     def __init__(self, description, usage, epilog):
-        super().__init(argparse.ArgumentParser(
+        super().__init__(argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description=description,
             usage=usage,
@@ -148,10 +116,10 @@ class ArgumentsNamespace(object):
         self._result = result
 
     def __getattr__(self, name):
-        try:
-            super(ArgumentsNamespace, self).__getattr__(name)
-        except AttributeError:
-            return getattr(self._result, name)
+        return getattr(self._result, name)
+
+    def __iter__(self):
+        return SequenceIterator(self.get_args())
 
     def get_args(self):
         attributes = [a for a in dir(self._result) if a[0] != '_']
@@ -167,12 +135,15 @@ class ArgumentsNamespace(object):
             return None
         return extract_strings(self._result.__dict__, name)
 
+    def set_arg(self, name, value):
+        setattr(self._result, name, value)
+
 
 def parser(description=None, usage=None, epilog=None):
     """Make a command line argument parser"""
 
     if usage:
-        return DescribedParser(new_argparse_parser(description, usage, epilog))
+        return DescribedParser(description, usage, epilog)
     lines = (description or "").splitlines()
     regexp = re.compile('^[uU]sage:')
     usages = [l for l in lines if regexp.match(l)]
