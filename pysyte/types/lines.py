@@ -28,8 +28,8 @@ def _chop(lines_in, at, first, last):
             end = last if last else -1
             first_ = _line(as_int(at, start, end) - 1)
             return first_, first_ + 1
-        first_ = _line(as_int(first, 0, 0, -1) - 1)
-        last_ = _line(as_int(last, 0, first, -1) or -1)
+        first_ = _line(as_int(first, 0, -1) - 1)
+        last_ = _line(as_int(last, first_, -1) or -1)
         return first_, last_
 
     length_read = len(lines_in)
@@ -38,8 +38,8 @@ def _chop(lines_in, at, first, last):
     return first, rest
 
 
-def first_and_rest(text_stream, at=None, first=1, last=-1):
-    """Retrn first line, and rest of lines from that text stream
+def first_and_rest(text, at=None, first=1, last=-1):
+    """First line, and rest of those lines from that text
 
     at, first, last :
         each can choose a line by number or regexp
@@ -48,7 +48,6 @@ def first_and_rest(text_stream, at=None, first=1, last=-1):
     first: first line to choose
     last: last line to choose
     """
-    text = text_stream.read()
     lines_in = text.splitlines()
     return _chop(lines_in, at, first, last)
 
@@ -69,12 +68,12 @@ def _number_format(count=999):
     return '%%%dd: ' % digits
 
 
-def add_numbers(lines, numbers=True):
+def add_numbers(lines, first, numbers):
     if not numbers:
         numbered = lambda x, y: x
     else:
         def numbered(line_, line_format_):
-            prefix = line_format_ % (i + 1)
+            prefix = line_format_ % (first + i + 1)
             return ' '.join((prefix, line_.rstrip()))
 
     for i, line in enumerate(lines):
@@ -82,7 +81,7 @@ def add_numbers(lines, numbers=True):
 
 
 def reformat_lines(lines, first, numbers, width):
-    return [l[:width] if width else l for l in add_numbers(lines, numbers)]
+    return [l[:width] if width else l for l in add_numbers(lines, first, numbers)]
 
 
 def as_text(lines):

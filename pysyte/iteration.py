@@ -4,6 +4,19 @@ except ImportError:
     ifilter = filter
 
 
+class SequenceIterator(object):
+    def __init__(self, items):
+        self.items = items
+        self.i = -1
+
+    def next(self):
+        try:
+            self.i += 1
+            return self.items[self.i]
+        except IndexError:
+            raise StopIteration
+
+
 def first(sequence, message=None):
     """The first item in that sequence
 

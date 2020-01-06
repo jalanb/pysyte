@@ -53,7 +53,7 @@ def manhattan(x, y):
     return sum(abs(a-b) for a,b in zip(x,y))
 
 
-def minkowski(x, y):
+def minkowski(x, y, p_value):
     """Minkowski distance is a generalized metric form of Euclidean distance and Manhattan distance
     In the equation, d^MKD is the Minkowski distance between the data record i and j, k the index of a variable, n the total number of variables y and λ the order of the Minkowski metric. Although it is defined for any λ > 0, it is rarely used for values other than 1, 2 and ∞.
 
@@ -62,12 +62,12 @@ def minkowski(x, y):
     Synonyms of Minkowski:
     Different names for the Minkowski distance or Minkowski metric arise from the order:
 
-	λ = 1 is the Manhattan distance. Synonyms are L1-Norm, Taxicab or City-Block distance. For two vectors of ranked ordinal variables, the Manhattan distance is sometimes called Foot-ruler distance.
-	λ = 2 is the Euclidean distance. Synonyms are L2-Norm or Ruler distance. For two vectors of ranked ordinal variables, the Euclidean distance is sometimes called Spear-man distance.
-	λ = ∞ is the Chebyshev distance. Synonyms are Lmax-Norm or Chessboard distance.
+    λ = 1 is the Manhattan distance. Synonyms are L1-Norm, Taxicab or City-Block distance. For two vectors of ranked ordinal variables, the Manhattan distance is sometimes called Foot-ruler distance.
+    λ = 2 is the Euclidean distance. Synonyms are L2-Norm or Ruler distance. For two vectors of ranked ordinal variables, the Euclidean distance is sometimes called Spear-man distance.
+    λ = ∞ is the Chebyshev distance. Synonyms are Lmax-Norm or Chessboard distance.
     """
     def nth_root(value, n_root):
-	root_value = 1/float(n_root)
-        return round (Decimal(value) ** Decimal(root_value),3)
+        root_value = 1/float(n_root)
+        return float(round (Decimal(value) ** Decimal(root_value),3))
 
     return nth_root(sum(pow(abs(a-b),p_value) for a,b in zip(x, y)),p_value)

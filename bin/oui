@@ -18,12 +18,12 @@ import sys
 from functools import partial
 
 from pysyte import __version__
-from pysyte.cli.functions import parser
+from pysyte.cli.functions import FunctionsParser
 from pysyte.cli.main import run
 
 
 def add_args(parser_):
-    p = parser(parser_)
+    p = FunctionsParser(parser_)
     p.positional('searches', help='What to search for')
     p.positional('files', help='files to search (if none: search stdin)')
     p.lines()

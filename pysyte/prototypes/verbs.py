@@ -21,5 +21,4 @@ def register_methods(type_, source=None):
 @singledispatch
 def pull(subject, object_=None, from_=None):
     from_out = f' from {from_}' if from_ else ''
-    return f'prototying {subject} is pulling {object_}{from_out}'
-
+    return f'{subject} is pulling {object_}{from_out}'

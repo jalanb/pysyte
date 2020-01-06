@@ -80,7 +80,7 @@ def prompt(string):
 
 
 def colour_string(colour, text):
-    stop = no_colour()
+    stop = no_colour() if colour else ''
     return f'{colour}{text}{stop}'
 
 

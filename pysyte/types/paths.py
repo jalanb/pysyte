@@ -3,6 +3,7 @@
 The classes all inherit from the original path.path
 """
 import os
+import stat
 from fnmatch import fnmatch
 
 from pysyte.types.lists import flatten
@@ -397,6 +398,18 @@ class FilePath(DotPath, PathAssertions):
                 for l in self.stripped_whole_lines()
                 if not l.startswith('#')]
 
+    def is_executable(self):
+        """Whether the file has any executable bits set
+
+        """
+        executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
+        try:
+            return bool(os.stat(self).st_mode & executable_bits)
+        except OSError:
+            return False
+
+    isexec = is_executable
+
     def has_line(self, string):
         for line in self:
             if string == line:
@@ -412,8 +425,8 @@ class FilePath(DotPath, PathAssertions):
     def split_exts(self):
         """Split all extensions from the path
 
-        >>> p = path('here/fred.tar.gz')
-        >>> assert p.split_exts() == 'here/fred', 'tar.gz'
+        >>> p = FilePath('here/fred.tar.gz')
+        >>> assert p.split_exts() == ('here/fred', '.tar.gz')
         """
         copy = self[:]
         filename, ext = os.path.splitext(copy)

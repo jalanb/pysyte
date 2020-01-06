@@ -12,6 +12,7 @@ Available on guthub and pypi for ease of access
 But probably not of great interest to others
 """
 
+
 def package_files(directory):
     paths = []
     test_extensions = ('.test', '.tests')
@@ -22,6 +23,7 @@ def package_files(directory):
                 continue
             paths.append(os.path.join('..', path, filename))
     return paths
+
 
 extra_files = package_files('pysyte')
 
@@ -60,21 +62,21 @@ setup(
         'boltons',
         'python-magic',
     ],
-#     entry_points = {
-#         'console_scripts': [
-#             'kat = pysyte.cli.bin:kat'
-#         ]
-#     },
+    # entry_points = {
+    #     'console_scripts': [
+    #         'kat = pysyte.cli.bin:kat'
+    #     ]
+    # },
     scripts=[
         'bin/kat',
-        'bin/get_key',
+        'bin/getkey',
         'bin/short_dir',
         'bin/imports',
         'bin/rePATH',
         'bin/std',
     ],
-    tests_require=['py.test'],
+    tests_require=['pytest'],
     extras_require={
-        'testing': ['py.test'],
+        'testing': ['pytest'],
     }
 )

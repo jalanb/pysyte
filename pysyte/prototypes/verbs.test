@@ -13,45 +13,45 @@ A git repository can handle "pull" messages
     >>> class GitRepository(object):
     ...     def pull(self, branch, origin):
     ...         out = f'{origin}/' if origin else ''
-    ...         return f'git pull {out}{branch}'
+    ...         return f'self.git pull {out}{branch}'
+    >>> assert callable(GitRepository.pull)
+
+So can a python module that has "pull" method
     >>> assert callable(GitRepository.pull)
 
 Or, one could "pull a fast one"
     >>> class FastOne(object):
     ...     def pull(self, message=None):
-    ...          message_ = message if message else 'Gotcha'
-    ...          return (f'a {message_},'
-    ...                  'that seemed like a hour, '
-    ...                  'but was only a {message_}, '
-    ...                  ' quickly passed',
-    ...                 )
-
-So can a python module that has "pull" method
-    >>> assert callable(git_pull.pull)
+    ...         return 'Gotcha' if not message else f'{message} got pulled'
 
 Lets register those
-    >>> verbs.register_methods(GitRepository, git_pull)
+    >>> verbs.register_methods(GitRepository)
+    >>> verbs.register_methods(FastOne)
 
 We now have a verb called pull
     >>> pull = verbs.pull
 
 If pull() gets an arg that can pull, then it defers to that
     >>> git = GitRepository()
+    >>> assert 'self.git pull origin/master' == pull(git, 'master', 'origin')
+
+Or, we can register some other method
+    >>> verbs.register_methods(GitRepository, git_pull)
     >>> assert 'git pull origin/master' == pull(git, 'master', 'origin')
-    >>> assert 'seemed like a hour' in pull(FastOne())
+
+Other classes may take different args
+    >>> quickie = FastOne()
+    >>> assert 'hello got pulled' == pull(quickie, 'hello')
 
 If the type can't pull the there's a default implementation
     >>> assert 'fred is pulling os from python' in pull('fred', 'os', 'python')
 
 The default pull() allows some default args
-    >>> assert 'fred pulls os' == pull('fred', 'os')
+    >>> assert 'fred is pulling os' == pull('fred', 'os')
 
 Other versions of pull() can handle args differently
     >>> try:
     ...     assert pull(git, 'master') == 'git pull master'
+    ...     assert False
     ... except TypeError as e:
     ...     assert "required positional argument: 'origin'" in str(e)
-
-    >>> quickie = FastOne()
-    >>> assert pull(quickie, git, 'master') == 'git pull master'
-
