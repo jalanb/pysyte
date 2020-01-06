@@ -3,16 +3,39 @@
 import itertools
 
 
+class Uniques(list):
+    """A list of unique items"""
+    def __init__(self, items=None):
+        super().__init__([])
+        self.extend(items or [])
+
+    def predicate(self, item):
+        return True
+
+    def append(self, item):
+        if item in self:
+            return False
+        if not self.predicate(item):
+            return False
+        super().append(item)
+
+    def extend(self, items):
+        for item in items:
+            self.append(item)
+
+
+class UniquelyTrues(Uniques):
+    """A unique list of items all being true-ish"""
+    def predicate(self, item):
+        return bool(item)
+
+
 def de_duplicate(items):
     """Remove any duplicate item, preserving order
 
     >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2]) == [1, 9, 2, 8, 7]
     """
-    result = []
-    for item in items:
-        if item not in result:
-            result.append(item)
-    return result
+    return list(Uniques(items))
 
 
 def flatten(list_of_lists):

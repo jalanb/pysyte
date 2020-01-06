@@ -1,0 +1,25 @@
+pytest's numbers module
+=======================
+
+    >>> from pysyte.types import numbers
+    >>> assert 'handles numbers' in numbers.__doc__
+
+Nearly a number
+---------------
+
+Methods to convert strings to numbers
+    >>> assert numbers.inty(77) == 77 == numbers.inty('77')
+    >>> assert numbers.floaty(77.7) == 77.7 == numbers.floaty('77.7')
+
+If they can't convert, then gigo
+    >>> assert numbers.inty('seventy seven') == 'seventy seven'
+    >>> assert numbers.floaty('seventy seven') == 'seventy seven'
+
+The to_...() methods will also convert if possible
+    >>> assert numbers.to_int(77) == 77 == numbers.to_int('77')
+    >>> assert numbers.to_float(77.7) == 77.7 == numbers.to_float('77.7')
+
+If not, they give None
+    >>> numbers.to_int('seventy seven')
+    >>> assert numbers.to_int('seventy seven') is None
+    >>> assert numbers.to_float('seventy seven') is None
