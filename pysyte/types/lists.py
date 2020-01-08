@@ -9,7 +9,9 @@ class Uniques(list):
         super().__init__([])
         self.extend(items or [])
 
-    def predicate(self, item):
+    def predicate(self, _):
+        """Subclasses can exclude items which return False"""
+        # pylint: disable=no-self-use
         return True
 
     def append(self, item):
@@ -18,10 +20,14 @@ class Uniques(list):
         if not self.predicate(item):
             return False
         super().append(item)
+        return True
 
     def extend(self, items):
-        for item in items:
-            self.append(item)
+        result = False
+        for item in items or []:
+            if self.append(item):
+                result = True
+        return result
 
 
 class UniquelyTrues(Uniques):
@@ -58,6 +64,3 @@ def flatten_(list_of_lists):
         https://stackoverflow.com/a/716482/500942
     """
     return list(itertools.chain.from_iterable(list_of_lists))
-
-
-
