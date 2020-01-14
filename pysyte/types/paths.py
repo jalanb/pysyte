@@ -81,6 +81,7 @@ class DotPath(PPath):
 
     def _next_class(self, string):
         # pylint: disable=arguments-differ
+        # pylint: disable=invalid-overridden-method
         return self.as_existing_file(string)
 
     def basename(self):
@@ -139,7 +140,7 @@ class DotPath(PPath):
         >>> assert DotPath('/path/to/there').parts() == expected
         """
         parts = self.split(os.path.sep)
-        parts[0] = parts[0] if parts[0] else '/'
+        parts[0] = parts[0] if parts[0:] and parts[0] else '/'
         return parts
 
     def directories(self):
@@ -535,7 +536,7 @@ class FilePath(DotPath, PathAssertions):
         self._language = ext_language(self.ext, exts)
 
     def mimetype(self):
-        import magic
+        import magic  # pylint: disable=import-outside-toplevel
         result = magic.from_file(str(self))
         if result.startswith('txt'):
             return mime_language(self.ext)
@@ -596,7 +597,7 @@ class DirectPath(DotPath, PathAssertions):
         Including any sub-directories and their contents"""
         for child in self.walkfiles():
             child.remove()
-        for child in reversed([d for d in self.walkdirs()]):
+        for child in reversed([self.walkdirs()]):
             if child == self or not child.isdir():
                 continue
             child.rmdir()

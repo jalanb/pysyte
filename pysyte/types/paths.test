@@ -234,8 +234,19 @@ Parts and parents
 Splitting off extenstions
 --------------------------
 
-   >>> p = paths.path(paths.__file__)
-   >>> assert p.ext in {'.py', '.pyc'}
-   >>> stem, ext = p.split_ext()
-   >>> assert ext[0] == '.'
-   >>> assert f'{stem}{ext}' == paths.__file__
+    >>> path_to_paths = paths.path(paths.__file__)
+    >>> assert path_to_paths.ext in {'.py', '.pyc'}
+    >>> stem, ext = path_to_paths.split_ext()
+    >>> assert ext[0] == '.'
+    >>> assert f'{stem}{ext}' == paths.__file__
+
+Splitting out parts
+-------------------
+
+parts() method splits a path into a list of dictionary names
+    (last one is, technically, a filename, if it's a file)
+    >>> parts = path_to_paths.parts()
+    >>> assert parts[-1] == path_to_paths.name
+    >>> assert parts[-2] == path_to_paths.parent.name
+    >>> assert parts[-2] == path_to_paths.parent.parts()[-1]
+    >>> assert parts.count('pysyte') == 2
