@@ -12,4 +12,5 @@ Clipboard
 
 This one only works on macOS so far
     >>> if platforms.name == 'darwin':
-    ...     assert platforms.get_clipboard_data() == expected
+    ...     actual = platforms.get_clipboard_data()
+    ...     assert actual == expected
