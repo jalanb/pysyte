@@ -8,6 +8,7 @@ from fnmatch import fnmatch
 
 from pysyte.types.lists import flatten
 
+
 class PathError(Exception):
     """Something went wrong with a path"""
     prefix = 'Path Error'
@@ -16,7 +17,7 @@ class PathError(Exception):
         Exception.__init__(self, message)
 
 
-class PathAssertions(object):
+class PathAssertions:
     """Assertions that can be made about paths"""
     # pylint: disable=no-member
 
@@ -39,12 +40,16 @@ class PathAssertions(object):
         return self
 
 
-from path import Path as PPath  # pylint: disable=wrong-import-position
+from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-import-position
 
 
 class DotPath(PPath):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
+    # pylint: disable=too-many-public-methods
+
+    def __hash__(self):
+        return hash(str(self))
 
     def __repr__(self):
         string = repr(f'{self}')
@@ -63,15 +68,19 @@ class DotPath(PPath):
         if child:
             result = os.path.join(self, child)
         else:
-            result = str(self)  # pylint: disable=redefined-variable-type
+            result = str(self)  # pylint: disable=bad-option-value
         return self.as_existing_file(result)
 
     __truediv__ = __div__
 
-    def __cmp__(self, other):
-        return cmp(str(self), str(other))
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __lt__(self, other):
+        return str(self) < str(other)
 
     def _next_class(self, string):
+        # pylint: disable=arguments-differ
         return self.as_existing_file(string)
 
     def basename(self):
@@ -130,7 +139,7 @@ class DotPath(PPath):
         >>> assert DotPath('/path/to/there').parts() == expected
         """
         parts = self.split(os.path.sep)
-        parts[0] = parts[0] and parts[0] or '/'
+        parts[0] = parts[0] if parts[0] else '/'
         return parts
 
     def directories(self):
@@ -205,7 +214,7 @@ class DotPath(PPath):
         """
         if not levels:
             yield self
-            raise StopIteration
+            return
         levels -= 1
         for child in self.dirs():
             if pattern is None or child.fnmatch(pattern):
@@ -296,10 +305,26 @@ class DotPath(PPath):
         >>> assert fred.add_missing_ext('.txt').endswith('.py.txt')
         """
         copy = self[:]
-        stem, old = os.path.splitext(copy)
+        _stem, old = os.path.splitext(copy)
         if old == ext:
             return makepath(self)
         return self.add_ext(ext)
+
+    def is_executable(self):
+        """Whether the path is executable"""
+        # pylint: disable=no-self-use
+        return False
+
+    def isexec(self):
+        return self.is_executable()
+
+    def has_executable(self):
+        """Whether the path has any executable bits set """
+        executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
+        try:
+            return bool(os.stat(self).st_mode & executable_bits)
+        except OSError:
+            return False
 
 
 def ext_language(ext, exts=None, simple=True):
@@ -355,7 +380,7 @@ def find_language(script, exts=None):
     if script.ext:
         return ext_language(script.ext, exts)
     shebang = script.shebang()
-    return shebang and str(shebang.name) or None
+    return shebang if (shebang and str(shebang.name)) else None
 
 
 del PPath
@@ -399,16 +424,8 @@ class FilePath(DotPath, PathAssertions):
                 if not l.startswith('#')]
 
     def is_executable(self):
-        """Whether the file has any executable bits set
-
-        """
-        executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
-        try:
-            return bool(os.stat(self).st_mode & executable_bits)
-        except OSError:
-            return False
-
-    isexec = is_executable
+        """Whether the file has any executable bits set"""
+        return self.has_executable()
 
     def has_line(self, string):
         for line in self:
@@ -518,7 +535,8 @@ class FilePath(DotPath, PathAssertions):
         self._language = ext_language(self.ext, exts)
 
     def mimetype(self):
-        result = mime.from_file(str(self))
+        import magic
+        result = magic.from_file(str(self))
         if result.startswith('txt'):
             return mime_language(self.ext)
         return result
@@ -613,6 +631,7 @@ class DirectPath(DotPath, PathAssertions):
         if os.path.exists(self):
             raise PathError(f'{self} exists but is not a directory')
         self.makedirs()
+        return True
 
     def make_file_exist(self, filename=None):
         """Make the directory exist, then touch the file
@@ -623,10 +642,9 @@ class DirectPath(DotPath, PathAssertions):
             path_to_file = FilePath(self)
             path_to_file.make_file_exist()
             return path_to_file
-        else:
-            self.make_directory_exist()
-            path_to_file = self.touch_file(filename)
-            return FilePath(path_to_file)
+        self.make_directory_exist()
+        path_to_file = self.touch_file(filename)
+        return FilePath(path_to_file)
 
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
@@ -667,12 +685,10 @@ class DirectPath(DotPath, PathAssertions):
         return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
     def has_vcs_dir(self):
-        parts = self.splitall()
         for vcs_dir in ('.git', '.svn', '.hg'):
             if self.fnmatch_part(vcs_dir):
                 return True
         return False
-
 
 
 def ignore_fnmatches(ignores):
@@ -688,7 +704,7 @@ def ignore_fnmatches(ignores):
     return ignored
 
 
-class ChmodValues(object):
+class ChmodValues:
     # pylint: disable=too-few-public-methods
     readonly_file = 0o444
     readonly_directory = 0o555
@@ -775,23 +791,23 @@ def paths(strings):
 
 
 def split_directories(strings):
-    paths = strings_to_paths(strings)
+    paths_ = strings_to_paths(strings)
     return [_
-            for _ in paths
-            if _.isdir()], [_ for _ in paths if not _.isdir()]
+            for _ in paths_
+            if _.isdir()], [_ for _ in paths_ if not _.isdir()]
 
 
 def split_files(strings):
-    paths = strings_to_paths(strings)
-    return ([_ for _ in paths if _.isfile()],
-            [_ for _ in paths if not _.isfile()])
+    paths_ = strings_to_paths(strings)
+    return ([_ for _ in paths_ if _.isfile()],
+            [_ for _ in paths_ if not _.isfile()])
 
 
 def split_directories_files(strings):
-    paths = strings_to_paths(strings)
-    return ([_ for _ in paths if _.isdir()],
-            [_ for _ in paths if _.isfile()],
-            [_ for _ in paths if not (_.isfile() or _.isdir())])
+    paths_ = strings_to_paths(strings)
+    return ([_ for _ in paths_ if _.isdir()],
+            [_ for _ in paths_ if _.isfile()],
+            [_ for _ in paths_ if not (_.isfile() or _.isdir())])
 
 
 def files(strings):
@@ -802,7 +818,7 @@ def directories(strings):
     return split_directories(strings)[0]
 
 
-def home(sub_path = None):
+def home(sub_path=None):
     return makepath('~') / sub_path
 
 
@@ -857,7 +873,8 @@ def fnmatcher(pattern, path_to_directory=None, wanted=lambda x: True):
     If path_to_directory is given then items are checked there
     By default, every item is wanted
     """
-    return lambda x: fnmatch(x, pattern) and wanted(os.path.join(path_to_directory, x) if path_to_directory else x)
+    return lambda x: fnmatch(x, pattern) and wanted(
+        os.path.join(path_to_directory, x) if path_to_directory else x)
 
 
 def list_items(path_to_directory, pattern, wanted=lambda x: True):
@@ -937,12 +954,12 @@ def add_stars(strings):
     return [add_star(p) for p in paths_]
 
 
-def tab_complete_files(paths, globber):
-    return tab_complete(paths, globber, os.path.isfile)
+def tab_complete_files(paths_, globber):
+    return tab_complete(paths_, globber, os.path.isfile)
 
 
-def tab_complete_dirs(paths, globber):
-    return tab_complete(paths, globber, os.path.isdir)
+def tab_complete_dirs(paths_, globber):
+    return tab_complete(paths_, globber, os.path.isdir)
 
 
 def tab_complete(strings, globber=add_stars, select=os.path.exists):
@@ -973,11 +990,7 @@ def tab_complete(strings, globber=add_stars, select=os.path.exists):
         match = [p for p in dir_.listdir() if p.fnmatch_basename(base)]
         matches.extend(match)
     result = [p for p in set(matches) if select(p)]
-    try:
-        result[0]
-        return result
-    except IndexError:
-        return strings
+    return result if result[1:] else strings
 
 
 def pyc_to_py(path_to_file):

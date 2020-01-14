@@ -8,10 +8,12 @@ repos:
     -   id: check-executables-have-shebangs
     -   id: check-merge-conflict
     -   id: check-yaml
-    -   id: flake8
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.4.4
+-   repo: local
     hooks:
     -   id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
