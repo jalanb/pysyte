@@ -155,7 +155,8 @@ Whether paths exist
 
     >>> assert paths.path(paths.__file__).isfile()
     >>> assert paths.path(paths.__file__).parent.isdir()
-    >>> assert paths.path(sys.executable).is_executable()
+    >>> assert paths.path(sys.executable).isexec()
+    >>> assert not paths.path(sys.executable).parent.isexec()
 
 Whether sub_paths exist
 -----------------------
