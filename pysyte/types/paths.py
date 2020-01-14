@@ -380,7 +380,7 @@ def find_language(script, exts=None):
     if script.ext:
         return ext_language(script.ext, exts)
     shebang = script.shebang()
-    return shebang if str(shebang.name) else None
+    return shebang if (shebang and str(shebang.name)) else None
 
 
 del PPath
