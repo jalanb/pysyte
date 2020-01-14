@@ -1,0 +1,20 @@
+The bash.cmnds module
+=====================
+
+    >>> from pysyte.bash import cmnds
+    >>> assert 'bash commands' in cmnds.__doc__
+
+Run bash commands
+-----------------
+
+    >>> path = cmnds.__file__
+
+Can run a string as a bash command
+    >>> stdout = cmnds.run(f'ls -l {path}')
+    >>> assert stdout.rstrip().endswith(path)
+
+Can split the string into separate args
+    >>> assert stdout == cmnds.run('ls', '-l', path)
+
+Or split it into a list
+    >>> assert stdout == cmnds.run(['ls', '-l', path])
