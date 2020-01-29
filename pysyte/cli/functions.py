@@ -78,3 +78,9 @@ def parser(parser_):
     result = FunctionsParser(parser_.parser)
     result.add_functions()
     return result
+
+
+def add_args(parser):
+    p = parser(parser)
+    p.strings('files', help='files to edit')
+    return p
