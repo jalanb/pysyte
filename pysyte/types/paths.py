@@ -97,10 +97,21 @@ class DotPath(PPath):
             return self.__file_class__(filepath)  # pylint: disable=no-member
         return self.__class__(filepath)
 
+    def isroot(self):
+        return str(self) == '/'
+
     def parent_directory(self):
-        if str(self) == '/':
+        if self.isroot():
             return None
         return self.parent
+
+    def parent_directories(self):
+        if self.isroot():
+            return []
+        parent = self.parent
+        if not parent:
+            return []
+        return [parent] + parent.parent_directories()
 
     def directory(self):
         """Return a path to the path's directory"""
@@ -116,7 +127,7 @@ class DotPath(PPath):
         >>> DotPath(u'path/to/module.py').dirnames() == [u'path', u'to']
         True
         """
-        return self.dirname().split(os.path.sep)
+        return [_ for _ in self.dirname().split(os.path.sep) if _]
 
     def dirpaths(self):
         """Split the dirname into individual directory names
