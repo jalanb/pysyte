@@ -26,30 +26,23 @@ class FunctionsParser(ArgumentsParser):
         self.positional(name_, help=f'{name_} to show')
         return self
 
-    def add_to(self, letter, name, group, type_, help, default=None):
-        def add_group(group_):
-            def add_arg(self):
-                setattr(self, f'add_{group}', add_group(group))
-                return self
-
-            return method
-
+    def add_to(self, letter, name, group, type_, help_, default=None):
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
         default_ = default if default else 0 if type_ == 'integer' else ''
         method = getattr(self, type_, f"not a method for {letter},{name}")
         assert callable(method), f'self.{type_}() is {method}'
         if type_ == 'boolean':
-            arg = method(letter_, name_, help=help)
+            arg = method(letter_, name_, help=help_)
         else:
-            arg = method(letter_, name_, help=help, default=default_)
+            arg = method(letter_, name_, help=help_, default=default_)
         self.groups[group].append(arg)
 
     def add_functions(self):
         args = {
             'a': ['at', 'lines', 'inty', 'Show line at the line number'],
             'c': ['copy', 'clipboard', 'boolean', 'Copy text to clipboard'],
-           #'d': ['delete', 'lines', 'string', 'lines to be deleted'],
+            # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
             'e': ['expression', 'ed', 'string', 'sed expression to be executed'],
             'f': ['first', 'lines', 'inty', 'number/regexp of first line to show', '1'],
             'i': ['stdin', 'stdin', 'boolean', '(aka -) Wait for text from stdin'],
