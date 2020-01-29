@@ -826,8 +826,6 @@ def home(sub_path=None):
 def pwd():
     return makepath(os.getcwd())
 
-here = pwd  # pylint: disable=invalid-name
-
 
 def first_dir(path_string):
     """Get the first directory in that path
@@ -979,7 +977,7 @@ def tab_complete(strings, globber=add_stars, select=os.path.exists):
     """
     strings_ = [strings] if isinstance(strings, str) else strings
     globs = flatten([globber(s) for s in strings_])
-    here_ = here()
+    here_ = pwd()
     matches = []
     for glob_ in globs:
         if '/' in glob_:
