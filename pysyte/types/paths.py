@@ -3,8 +3,11 @@
 The classes all inherit from the original path.path
 """
 import os
+import re
 import stat
+import importlib
 from fnmatch import fnmatch
+from functools import singledispatch
 
 from pysyte.types.lists import flatten
 
@@ -722,20 +725,71 @@ class ChmodValues:
     readonly_directory = 0o555
 
 
-def makepath(s, as_file=False):
+@singledispatch
+def makepath(arg):
+    attribute = getattr(arg, 'path', False)
+    return makepath(attribute) if attribute else makepath(str(arg))
+
+
+path = makepath
+
+
+@makepath.register(type(None))
+def _(arg):
+    return None
+
+
+@makepath.register(DotPath)
+def _(arg):
+    return arg
+
+
+@makepath.register(str)
+def _(arg):
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
     """
-    if s is None:
+    if not arg:
         return None
-    if isinstance(s, DotPath):
-        return s
-    result = FilePath(s) if (os.path.isfile(s) or as_file) else DirectPath(s)
+    result = FilePath(arg) if (os.path.isfile(arg)) else DirectPath(arg)
     return result.expandall()
 
-path = makepath  # pylint: disable=invalid-name
+
+@makepath.register(type(os))
+def _(arg):
+    """Make a path from a module"""
+    if arg == 'builtins':
+        return None
+    return makepath(arg.__file__)
+
+
+def _make_module_path(arg):
+    """Make a path from a thing that has a module
+
+    classes and functions have modules, they'll be needing this
+    """
+    try:
+        return makepath(importlib.import_module(arg.__module__))
+    except (AttributeError, ModuleNotFoundError):
+        return None
+
+
+@makepath.register(type(makepath))
+def _(arg):
+    """Make a path from a function's module"""
+    terminal_regexp = re.compile('<(stdin|.*python-input.*)>')
+    filename = arg.__code__.co_filename
+    if terminal_regexp.match(filename):
+        return None
+    return _make_module_path(arg)
+
+
+@makepath.register(type(DotPath))
+def _(arg):
+    """Make a path from a class's module"""
+    return _make_module_path(arg)
 
 
 def cd(path_to):  # pylint: disable=invalid-name
