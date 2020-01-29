@@ -85,6 +85,31 @@ DirectPath is ako string, which shows the string in %s and %r
     >>> print('%r' % bin)
     <DirectPath '/bin'>
 
+makepath() handles many types of things
+nothings:
+    >>> assert paths.makepath(None) is None
+    >>> assert paths.makepath('') is None
+
+other paths:
+    >>> assert paths.makepath(p) is p
+
+strings, and things than can change to strings, e.g. an int
+    >>> assert paths.makepath('/some/words/here').name == 'here'
+    >>> assert paths.makepath('.').isdir()
+    >>> assert paths.makepath(37).name == '37'
+
+including python things, like modules, classes, functions
+    >>> path_to_paths = paths.makepath(paths)
+    >>> assert path_to_paths.name in ('paths.py', 'paths.pyc')
+    >>> assert path_to_paths == paths.makepath(paths.DotPath)
+    >>> assert path_to_paths == paths.makepath(paths.makepath)
+
+and other things that have paths
+    >>> class Fred:
+    ...     path = paths.makepath('/hello/world')
+    >>> fred = Fred()
+    >>> assert paths.makepath(fred) is fred.path
+
 Path expansion at creation
 --------------------------
 
@@ -231,6 +256,16 @@ Parts and parents
     >>> assert paths.home
     >>> assert paths.pwd()
 
+Get the parent directory
+
+    >>> assert paths.path('/one/two/three').parent == '/one/two'
+
+Or all parents
+    >>> parents = paths.path('/one/two/three').parent_directories()
+    >>> assert parents[0] == '/one/two'
+    >>> assert parents[1] == '/one'
+    >>> assert parents[-1].isroot()
+
 Splitting off extenstions
 --------------------------
 
@@ -250,3 +285,5 @@ parts() method splits a path into a list of dictionary names
     >>> assert parts[-2] == path_to_paths.parent.name
     >>> assert parts[-2] == path_to_paths.parent.parts()[-1]
     >>> assert parts.count('pysyte') == 2
+
+
