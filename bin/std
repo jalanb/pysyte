@@ -2,11 +2,11 @@
 """Run a command and decorate stdout and stderr, interleaved"""
 
 from pysyte.cli.main import run
-from pysyte.cli.functions import FunctionsParser
+from pysyte.cli.lines import LinesParser
 
 def add_args(parser_):
     """Parse out command line arguments"""
-    p = FunctionsParser(parser_)
+    p = LinesParser(parser_)
     p.boolean('-o', '--no-stdout', help="Don't decorate stdout")
     p.boolean('-e', '--no-stderr', help="Don't decorate stderr")
     p.version()

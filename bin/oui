@@ -18,7 +18,7 @@ import sys
 from functools import partial
 
 from pysyte import __version__
-from pysyte.cli.functions import FunctionsParser
+from pysyte.cli.lines import LinesParser
 from pysyte.cli.main import run
 
 

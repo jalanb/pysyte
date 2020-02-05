@@ -8,7 +8,7 @@ from pysyte.types import lines as pylines
 from pysyte.bash.screen import alt_screen
 
 
-class FunctionsParser(ArgumentsParser):
+class LinesParser(ArgumentsParser):
     """Add option sets to the parser"""
     def __init__(self, parser_):
         super().__init__(parser_)
@@ -29,7 +29,7 @@ class FunctionsParser(ArgumentsParser):
     def add_to(self, letter, name, group, type_, help_, default=None):
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
-        default_ = default if default else 0 if type_ == 'integer' else ''
+        default_ = default if default else 0 if str(type_).startswith('int') else ''
         method = getattr(self, type_, f"not a method for {letter},{name}")
         assert callable(method), f'self.{type_}() is {method}'
         if type_ == 'boolean':
@@ -40,20 +40,20 @@ class FunctionsParser(ArgumentsParser):
 
     def add_functions(self):
         args = {
-            'a': ['at', 'lines', 'inty', 'Show line at the line number'],
-            'c': ['copy', 'clipboard', 'boolean', 'Copy text to clipboard'],
+            'a': ['at', 'lines', 'inty', 'show that line'],
+            'c': ['copy', 'clipboard', 'boolean', 'copy text to clipboard'],
             # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
-            'e': ['expression', 'ed', 'string', 'sed expression to be executed'],
-            'f': ['first', 'lines', 'inty', 'number/regexp of first line to show', '1'],
-            'i': ['stdin', 'stdin', 'boolean', '(aka -) Wait for text from stdin'],
-            'l': ['last', 'lines', 'inty', 'number/regexp of last line to show', '0'],
-            'n': ['numbers', 'lines', 'boolean', 'Show line numbers'],
-            'p': ['paste', 'clipboard', 'boolean', 'Paste text from clipboard'],
-            't': ['editor', 'ed', 'string', 'edit with, e.g., vim'],
-            'v': ['version', 'version', 'boolean', 'Show version'],
-            'w': ['width', 'lines', 'integer', 'Max width of shown line'],
+            'e': ['editor', 'ed', 'string', 'edit with, e.g., vim'],
+            'f': ['first', 'lines', 'inty', 'the first line to show', '1'],
+            'i': ['stdin', 'stdin', 'boolean', '(aka -) wait for text from stdin'],
+            'l': ['last', 'lines', 'inty', 'the last line to show', '0'],
+            'n': ['numbers', 'lines', 'boolean', 'show line numbers'],
+            'p': ['paste', 'clipboard', 'boolean', 'paste text from clipboard'],
+            's': ['expression', 'ed', 'string', 'sed expression to be executed'],
+            'v': ['version', 'version', 'boolean', 'show version'],
+            'w': ['width', 'lines', 'integer', 'max width of lines', '80'],
         }
-        [ self.add_to(letter, *args) for letter, args in args.items()]
+        [self.add_to(letter, *args) for letter, args in args.items()]
         return self
 
     def post_parser(self, args):
@@ -68,12 +68,12 @@ class FunctionsParser(ArgumentsParser):
 
 def parser(parser_):
     """Create a new parser to handle some functions from given parser"""
-    result = FunctionsParser(parser_.parser)
+    result = LinesParser(parser_.parser)
     result.add_functions()
     return result
 
 
-def add_args(parser):
-    p = parser(parser)
+def add_args(parser_):
+    p = parser(parser_)
     p.strings('files', help='files to edit')
     return p

@@ -3,10 +3,12 @@
 
 Usage: %(prog)s [options] [files]
 
+Any option mentioning "a line" means either a number or a regexp
+
 """
 from pysyte.cli import main
 from pysyte.cli import streams
-from pysyte.cli import functions
+from pysyte.cli import lines
 from pysyte import types
 
 
