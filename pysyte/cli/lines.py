@@ -1,3 +1,5 @@
+"""Any option mentioning "a line" means either a number or a regexp"""
+
 import sys
 from collections import defaultdict
 from functools import partial
@@ -21,40 +23,45 @@ class LinesParser(ArgumentsParser):
         self.boolean('-v', '--version', help='Show version',)
         return self
 
-    def add_files(self, name=None):
+    def add_files(self, name=None, action=None):
         name_ = name if name else 'files'
-        self.positional(name_, help=f'{name_} to show')
+        action_ = action if action else 'show'
+        self.positional(name_, help=f'{name_} to {action_}')
         return self
 
     def add_to(self, letter, name, group, type_, help_, default=None):
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
-        default_ = default if default else 0 if str(type_).startswith('int') else ''
+        safe_default = (
+            default if default
+            else 0 if str(type_).startswith('int')
+            else '')
         method = getattr(self, type_, f"not a method for {letter},{name}")
         assert callable(method), f'self.{type_}() is {method}'
         if type_ == 'boolean':
             arg = method(letter_, name_, help=help_)
         else:
-            arg = method(letter_, name_, help=help_, default=default_)
+            arg = method(letter_, name_, help=help_, default=safe_default)
         self.groups[group].append(arg)
 
-    def add_functions(self):
-        args = {
-            'a': ['at', 'lines', 'inty', 'show that line'],
-            'c': ['copy', 'clipboard', 'boolean', 'copy text to clipboard'],
-            # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
-            'e': ['editor', 'ed', 'string', 'edit with, e.g., vim'],
-            'f': ['first', 'lines', 'inty', 'the first line to show', '1'],
-            'i': ['stdin', 'stdin', 'boolean', '(aka -) wait for text from stdin'],
-            'l': ['last', 'lines', 'inty', 'the last line to show', '0'],
-            'n': ['numbers', 'lines', 'boolean', 'show line numbers'],
-            'p': ['paste', 'clipboard', 'boolean', 'paste text from clipboard'],
-            's': ['expression', 'ed', 'string', 'sed expression to be executed'],
-            'v': ['version', 'version', 'boolean', 'show version'],
-            'w': ['width', 'lines', 'integer', 'max width of lines', '80'],
-        }
-        [self.add_to(letter, *args) for letter, args in args.items()]
-        return self
+    def add_lines(self):
+     args = {
+      'a': ['at', 'lines', 'inty', 'show that line'],
+      'c': ['copy', 'clipboard', 'boolean', 'copy text to clipboard'],
+      # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
+      'e': ['editor', 'ed', 'string', 'edit with, e.g., vim'],
+      'f': ['first', 'lines', 'inty', 'the first line to show', '1'],
+      'i': ['stdin', 'stdin', 'boolean', '(aka -) wait for text from stdin'],
+      'l': ['last', 'lines', 'inty', 'the last line to show', '0'],
+      'n': ['numbers', 'lines', 'boolean', 'show line numbers'],
+      'p': ['paste', 'clipboard', 'boolean', 'paste text from clipboard'],
+      's': ['expression', 'ed', 'string', 'sed expression to be executed'],
+      'v': ['remove', 'lines', 'inty', 'remove that line'],
+      'V': ['version', 'version', 'boolean', 'show version'],
+      'w': ['width', 'lines', 'integer', 'max width of lines', '80'],
+     }
+     [self.add_to(letter, *args) for letter, args in args.items()]
+     return self
 
     def post_parser(self, args):
         if args.version and self.version:
@@ -66,14 +73,8 @@ class LinesParser(ArgumentsParser):
         return args
 
 
-def parser(parser_):
-    """Create a new parser to handle some functions from given parser"""
-    result = LinesParser(parser_.parser)
-    result.add_functions()
+def add_args(old_parser):
+    """Create a new parser to handle some lines from given parser"""
+    result = LinesParser(old_parser.parser)
+    result.add_lines()
     return result
-
-
-def add_args(parser_):
-    p = parser(parser_)
-    p.strings('files', help='files to edit')
-    return p

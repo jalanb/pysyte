@@ -3,8 +3,6 @@
 
 Usage: %(prog)s [options] [files]
 
-Any option mentioning "a line" means either a number or a regexp
-
 """
 from pysyte.cli import main
 from pysyte.cli import streams
@@ -12,10 +10,10 @@ from pysyte.cli import lines
 from pysyte import types
 
 
-def add_args(parser_):
+def add_args(main_parser):
     """Parse out command line arguments"""
-    parser = functions.add_args(parser_)
-    parser.strings('files', help='files to kat')
+    parser = lines.add_args(main_parser)
+    parser.add_files(action='kat')
     return parser
 
 
@@ -25,7 +23,7 @@ def kat(args):
     first = args.first or 1
     last = args.last or -1
     for stream in streams.args(args, 'files'):
-        start, lines_in = functions.first_and_rest(
+        start, lines_in = lines.first_and_rest(
             stream.read(),
             at,
             first,

@@ -11,11 +11,11 @@ from pysyte.cli.main import run
 
 def add_args(parser):
     """Parse out command line arguments"""
-    p = parser
-    p.string('source', help='path to source(s) to be checked')
-    p.boolean('-e', '--edit', help='Show a command for editing')
-    p.boolean('-d', '--duplicate', help='Show duplicate imports')
-    p.boolean('-u', '--unused', help='Show unused imports')
+    parser.string('source', help='path to source(s) to be checked')
+    parser.boolean('-e', '--edit', help='Show a command for editing')
+    parser.boolean('-d', '--duplicate', help='Show duplicate imports')
+    parser.boolean('-u', '--unused', help='Show unused imports')
+    return parser
 
 
 class TextVisitor(object):
@@ -25,7 +25,7 @@ class TextVisitor(object):
 
     def text(self, line):
         string = '% 4d: %s' % (
-            line, 
+            line,
             linecache.getline(self.visitor.path, line)
         )
         return string.rstrip()

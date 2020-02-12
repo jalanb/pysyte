@@ -11,24 +11,17 @@ Searches ("fred" is a regular expression):
 
 """
 
-import doctest
-import os
 import re
-import sys
-from functools import partial
 
-from pysyte import __version__
-from pysyte.cli.lines import LinesParser
+from pysyte.cli import lines
 from pysyte.cli.main import run
 
 
-def add_args(parser_):
-    p = FunctionsParser(parser_)
-    p.positional('searches', help='What to search for')
-    p.positional('files', help='files to search (if none: search stdin)')
-    p.lines()
-    p.version()
-    return p
+def add_args(main_parser):
+    parser = lines.add_args(main_parser)
+    parser.positional('searches', help='What to search for')
+    parser.add_files(action='search')
+    return parser
 
 
 def parse_sought(string, separator):
@@ -55,6 +48,7 @@ def parse_action(search):
         action['sought'] = sought[1:]
     return action
 
+
 def post_parse(args):
     files = []
     actions = []
@@ -66,6 +60,7 @@ def post_parse(args):
     args.actions = actions
     args._result.files = files
     return args
+
 
 def main(args):
     print(f'Files: {args.files}')
