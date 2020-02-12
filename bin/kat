@@ -34,4 +34,4 @@ def kat(args):
     return True
 
 
-main.run(kat, add_args)
+main.run(kat, add_args, config=True)
