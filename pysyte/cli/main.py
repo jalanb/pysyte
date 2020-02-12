@@ -48,11 +48,12 @@ def run(
         call main_method(args)
     """
 
+    parser = None
     module = inspect.getmodule(main_method)
-    if not main_method.__code__.co_argcount:
-        no_args_main = main_method
-    else:
+    no_args_main = main_method
+    if main_method.__code__.co_argcount:
         def no_args_main():
+            assert parser
             args = parser.parse_args(post_parser=post_parse)
             if config:
                 config_name = config if isinstance(config, str) else args.prog
@@ -63,10 +64,17 @@ def run(
                     pass
             return main_method(args)
 
-        parser = arguments.parser(module.__doc__, usage, epilog)
         if add_args:
-            added_parser = add_args(parser)
-            parser = added_parser if added_parser else parser
+            try:
+                parser = add_args(
+                    arguments.parser, module.__doc__, usage, epilog)
+            except TypeError:
+                try:
+                    parser = add_args(
+                        arguments.parser(module.__doc__, usage, epilog))
+                except TypeError:
+                    raise NotImplementedError(
+                        'Unknown signature for add_args()')
         else:
             if main_method.__code__.co_argcount == 1:
                 def no_args_main():
@@ -76,5 +84,6 @@ def run(
 
     if module.__name__ == '__main__':
         sys.exit(try_main(no_args_main))
+
 
 args = {}
