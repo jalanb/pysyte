@@ -6,7 +6,7 @@ import yaml
 
 from pysyte.types import paths
 from pysyte.types.dictionaries import RecursiveDictionaryAttributes
-from pysyte.oss.linux import xdg_config_file
+from pysyte.oss.linux import xdg_home_config
 
 
 class YamlConfiguration(RecursiveDictionaryAttributes):
@@ -26,6 +26,10 @@ class YamlConfiguration(RecursiveDictionaryAttributes):
         if yaml.isfile():
             return yaml
 
+class YamlyConfiguration(YamlConfiguration):
+    pass
+
+
 class ModuleConfiguration(YamlConfiguration):
     def as_path(self, string):
         path = paths.path(string)
@@ -38,10 +42,11 @@ class IniConfiguration(object):
 
 
 def xdg_config(string):
-    stem = xdg_config_file(string)
+    stem = xdg_home_config(string)
     known_types = {
         'yml': YamlConfiguration,
         'yaml': YamlConfiguration,
+        'yamly': YamlyConfiguration,
         'ini': IniConfiguration,
     }
     for ext, type_ in known_types.items():
