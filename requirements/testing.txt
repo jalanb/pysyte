@@ -7,4 +7,3 @@ nose-progressive
 pinocchio
 pytest
 pytest-cov
-requests_mock
