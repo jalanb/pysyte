@@ -1,0 +1,6 @@
+
+---
+fred: 1, 2, 3
+Fred:
+  - freddy: testing, 1, 2, 3
+  - freddi: 'testing, 1, 2, 3'

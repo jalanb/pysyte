@@ -18,12 +18,19 @@ class XDG:
     CONFIG = Config()
 
 
+def xdg_home():
+    """path to $XDG_CONFIG_HOME
+
+    >>> assert xdg_home_config() == os.path.expanduser('~/.config')
+    """
+    return paths.path(XDG.CONFIG.HOME)
+
 def xdg_home_config(filename):
     """path to that file in $XDG_CONFIG_HOME
 
     >>> assert xdg_home_config('fred') == os.path.expanduser('~/.config/fred')
     """
-    return paths.path(os.path.join(XDG.CONFIG.HOME, filename))
+    return xdg_home() / filename
 
 
 bash_paste = 'xclip -selection clipboard'
