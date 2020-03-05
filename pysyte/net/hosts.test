@@ -16,4 +16,8 @@ localhost should've been read on import
     >>> assert localhost.hostname
     >>> assert localhost.addresses
     >>> assert isinstance(localhost.aliases, list)
-    >>> assert os_user in localhost.users
+
+May not have an OS-level user
+    (e.g. on Travis)
+    >>> if os_user:
+    ...     assert os_user in localhost.users
