@@ -39,6 +39,7 @@ def add_args(parser):
     parser.integer('-i', '--index', type=int,
                         help='The index at which the path will be inserted')
     parser.boolean('-v', '--version', help='Show version')
+    return parser
 
 
 def post_parse(args):

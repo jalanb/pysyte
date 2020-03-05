@@ -1,0 +1,23 @@
+The pysyste.nets.hosts module
+=============================
+
+    >>> from pysyte.net import hosts
+    >>> assert 'hosts for pysyte' in hosts.__doc__
+    >>> import os
+    >>> os_user = os.environ.get('USER', os.environ.get('LOGNAME', None))
+
+localhost
+---------
+
+    >>> localhost = hosts.localhost
+
+localhost should've been read on import
+
+    >>> assert localhost.hostname
+    >>> assert localhost.addresses
+    >>> assert isinstance(localhost.aliases, list)
+
+May not have an OS-level user
+    (e.g. on Travis)
+    >>> if os_user:
+    ...     assert os_user in localhost.users

@@ -32,9 +32,8 @@ def extract_strings(names, name):
         return []
 
 class IntyAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        inty_values = inty(values)
-        setattr(namespace, self.dest, inty_values)
+    def __call__(self, parser, namespace, value, option_string=None):
+        setattr(namespace, self.dest, inty(value))
 
 
 class ArgumentsParser(object):

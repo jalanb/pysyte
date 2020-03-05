@@ -2,7 +2,6 @@
 """Script to get a key from the keyboard"""
 
 from __future__ import print_function
-import sys
 
 
 from pysyte.oss import getch
@@ -17,11 +16,12 @@ class ScriptError(NotImplementedError):
 
 
 def add_args(parser):
-    p = parser
-    p.boolean('-c', '--codes', help='Show raw codes')
-    p.boolean('-p', '--prompt', default='',
-       help='Prompt to show before getting keys ' '(default: none)')
-    p.boolean('-s', '--string', help='Show string')
+    parser.boolean('-c', '--codes', help='Show raw codes')
+    parser.boolean(
+        '-p', '--prompt', default='',
+        help='Prompt to show before getting keys ' '(default: none)')
+    parser.boolean('-s', '--string', help='Show string')
+    return parser
 
 
 def script(args):

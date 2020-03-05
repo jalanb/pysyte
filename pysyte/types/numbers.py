@@ -1,22 +1,26 @@
 """This module handles numbers"""
 
-from functools import partial
+class NAN(ValueError):
+    def __init__(self, value):
+        super().__init__(f'NAN: {value}')
 
 
-def _as_number(value, type_, default, strict):
-    """Try to use that value as that type
-
-    >>> assert _as_number(2, int, 0, False) == _as_number('2', int, 0, False)
-    """
-    if not value:
-        return default
+def _eval(value, kind, default=None):
     try:
-        return type_(value)
+        return kind(value)
     except (ValueError, TypeError):
-        return None if strict else value
+        # if default is None:
+            # raise NAN(value)
+        if isinstance(value, (str, type(None))):
+            return default
+        try:
+            return len(value)
+        except TypeError:
+            raise NAN(value)
 
 
-inty = partial(_as_number, type_=int, default=0, strict=False)
-floaty = partial(_as_number, type_=float, default=0.0, strict=False)
-to_int = partial(_as_number, type_=int, default=0, strict=True)
-to_float = partial(_as_number, type_=float, default=0.0, strict=True)
+as_int = lambda x: _eval(x, int)
+as_float = lambda x: _eval(x, float)
+
+inty = lambda x: _eval(x, int, x)
+floaty = lambda x: _eval(x, float, x)

@@ -4,21 +4,21 @@
 Usage: %(prog)s [options] [files]
 
 """
+from pysyte.cli import main
 from pysyte.cli import streams
-from pysyte.cli.main import run
-from pysyte.cli.functions import parser
-from pysyte.types import lines
+from pysyte.cli import lines
+from pysyte import types
 
 
-def add_args(parser_):
+def add_args(main_parser):
     """Parse out command line arguments"""
-    p = parser(parser_)
-    p.strings('files', help='files to edit')
-    return p
+    parser = lines.add_args(main_parser)
+    parser.add_files(action='kat')
+    return parser
 
 
-def main(args):
-    """Run the script"""
+def kat(args):
+    """Run kat"""
     at = args.at
     first = args.first or 1
     last = args.last or -1
@@ -30,8 +30,8 @@ def main(args):
             last
         )
         lines_out = args.sed(lines_in, start)
-        print(lines.as_text(lines_out))
+        print(types.lines.as_text(lines_out))
     return True
 
 
-run(main, add_args)
+main.run(kat, add_args, config=True)

@@ -18,10 +18,10 @@ class XDG:
     CONFIG = Config()
 
 
-def xdg_config_file(filename):
+def xdg_home_config(filename):
     """path to that file in $XDG_CONFIG_HOME
 
-    >>> assert xdg_config_file('fred') == os.path.expanduser('~/.config/fred')
+    >>> assert xdg_home_config('fred') == os.path.expanduser('~/.config/fred')
     """
     return paths.path(os.path.join(XDG.CONFIG.HOME, filename))
 

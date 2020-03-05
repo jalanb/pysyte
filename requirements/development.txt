@@ -5,5 +5,4 @@ ipython
 pprintpp
 pudb
 pylint
-requests
 sh
