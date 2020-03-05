@@ -16,10 +16,10 @@ If they can't convert, then gigo
     >>> assert numbers.floaty('seventy seven') == 'seventy seven'
 
 The to_...() methods will also convert if possible
-    >>> assert numbers.to_int(77) == 77 == numbers.to_int('77')
-    >>> assert numbers.to_float(77.7) == 77.7 == numbers.to_float('77.7')
+    >>> assert numbers.as_int(77) == 77 == numbers.as_int('77')
+    >>> assert numbers.as_float(77.7) == 77.7 == numbers.as_float('77.7')
 
 If not, they give None
-    >>> numbers.to_int('seventy seven')
-    >>> assert numbers.to_int('seventy seven') is None
-    >>> assert numbers.to_float('seventy seven') is None
+    >>> numbers.as_int('seventy seven')
+    >>> assert numbers.as_int('seventy seven') is None
+    >>> assert numbers.as_float('seventy seven') is None

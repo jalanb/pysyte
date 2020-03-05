@@ -130,7 +130,7 @@ class DotPath(PPath):
         >>> DotPath(u'path/to/module.py').dirnames() == [u'path', u'to']
         True
         """
-        return [_ for _ in self.dirname().split(os.path.sep) if _]
+        return self.dirname().split(os.path.sep)
 
     def dirpaths(self):
         """Split the dirname into individual directory names
@@ -371,6 +371,7 @@ def mime_language(ext, exts=None):
         return f'txt/{language}'
     return ''
 
+
 def find_language(script, exts=None):
     """Determine the script's language  extension
 
@@ -395,7 +396,7 @@ def find_language(script, exts=None):
     if script.ext:
         return ext_language(script.ext, exts)
     shebang = script.shebang()
-    return shebang if (shebang and str(shebang.name)) else None
+    return shebang.name if (shebang and str(shebang.name)) else None
 
 
 del PPath

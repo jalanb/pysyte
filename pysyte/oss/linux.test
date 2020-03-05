@@ -22,4 +22,4 @@ XDG
     >>> del os.environ['XDG_CONFIG_HOME']
 
 
-    >>> assert linux.xdg_config_file('fred') == home_config / 'fred'
+    >>> assert linux.xdg_home_config('fred') == home_config / 'fred'
