@@ -16,15 +16,15 @@ class ScriptError(NotImplementedError):
 
 
 def add_args(parser):
-    parser.boolean('-c', '--codes', help='Show raw codes')
+    parser.boolean('', 'codes', help='Show raw codes')
     parser.boolean(
-        '-p', '--prompt', default='',
+        '', 'prompt', default='',
         help='Prompt to show before getting keys ' '(default: none)')
-    parser.boolean('-s', '--string', help='Show string')
+    parser.boolean('', 'string', help='Show string')
     return parser
 
 
-def script(args):
+def main(args):
     if args.codes:
         print(', '.join(getch.get_codes()))
     elif args.string:
@@ -34,4 +34,4 @@ def script(args):
     return True
 
 
-run(script, add_args)
+run(main, add_args=add_args)

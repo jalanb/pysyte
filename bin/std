@@ -8,8 +8,8 @@ from pysyte.cli import lines
 def add_args(main_parser):
     """Parse out command line arguments"""
     parser = lines.add_args(main_parser)
-    parser.boolean('-o', '--no-stdout', help="Don't decorate stdout")
-    parser.boolean('-r', '--no-stderr', help="Don't decorate stderr")
+    parser.boolean('', 'no-stdout', help="Don't decorate stdout")
+    parser.boolean('', 'no-stderr', help="Don't decorate stderr")
     return parser
 
 
@@ -17,4 +17,4 @@ def main(args):
     pass
 
 
-run(main, add_args)
+run(main, add_args=add_args)

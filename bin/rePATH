@@ -34,11 +34,11 @@ def add_args(parser):
     """Add arguments to the command line parser"""
     parser.string('symbol', help='The bash symbol to be changed')
     parser.string('path', help='The path to be added')
-    parser.boolean('-s', '--start',
+    parser.boolean('', 'start',
                         help='Add the path at start of list of paths')
-    parser.integer('-i', '--index', type=int,
+    parser.integer('', 'index', type=int,
                         help='The index at which the path will be inserted')
-    parser.boolean('-v', '--version', help='Show version')
+    parser.boolean('', 'version', help='Show version')
     return parser
 
 
@@ -122,4 +122,4 @@ def main(args):
     return os.EX_OK
 
 
-run(main, add_args, post_parse)
+run(main, add_args=add_args, post_parse=post_parse)

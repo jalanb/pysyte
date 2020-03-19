@@ -1,6 +1,12 @@
 """Handle configs from program name"""
 
-from pysyte.config.xdg import xdg_config
+from pysyte.unix import root
+
+from pysyte.config import xdg
 
 def user(name):
-    return xdg_config(name)
+    return xdg.home_config(name)
+
+
+def machine(name):
+    return xdg.etc_config()
