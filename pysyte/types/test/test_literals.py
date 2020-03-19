@@ -2,40 +2,28 @@
 import unittest
 
 
-from pysyte.types.literals import AnsiColourSequences
-from pysyte.types.literals import Digits
-from pysyte.types.literals import Empty
-from pysyte.types.literals import Numbers
-from pysyte.types.literals import Punctuation
-from pysyte.types.literals import Python
+from pysyte.types.literals import ansi
+from pysyte.types.literals import digits
+from pysyte.types.literals import numbers
+from pysyte.types.literals import punctuation
 
 
 class TestLiterals(unittest.TestCase):
 
     def test_punctuation(self):
-        self.assertEqual(Punctuation.dot, Punctuation.period)
-        self.assertEqual(Punctuation.dot, Punctuation.full_stop)
-        self.assertEqual(Punctuation.apostrophe, Punctuation.single_quote)
+        self.assertEqual(punctuation.dot, punctuation.period)
+        self.assertEqual(punctuation.dot, punctuation.full_stop)
+        self.assertEqual(punctuation.apostrophe, punctuation.single_quote)
 
     def test_digits(self):
-        self.assertEqual(int(Digits.zero), 0)
-        self.assertEqual(int(Digits.six + Digits.seven), 67)
-        self.assertEqual(Digits.one + Digits.two, Numbers.twelve)
-
-    def test_empty(self):
-        self.assertFalse(Empty.string)
-        self.assertFalse(Empty.integer)
-        self.assertFalse(Empty.real)
-
-    def test_python(self):
-        self.assertEqual(Python.name, 'python')
-        self.assertEqual(Python.command, 'python')
-        self.assertEqual(Python.package, 'python')
+        self.assertEqual(int(digits.zero), 0)
+        self.assertEqual(int(digits.six + digits.seven), 67)
+        self.assertEqual(digits.one + digits.two, numbers.twelve)
 
     def test_colours(self):
-        self.assertEqual(AnsiColourSequences.red.replace('[0', '[1'),
-                         AnsiColourSequences.light_red)
-        coloured = AnsiColourSequences.highlighted(
-            AnsiColourSequences.red, 'Fred')
-        self.assertTrue(coloured.startswith(AnsiColourSequences.red))
-        self.assertTrue(coloured.endswith(AnsiColourSequences.off))
+        self.assertEqual(ansi.red.replace('[0', '[1'),
+                         ansi.light_red)
+        coloured = ansi.highlighted(
+            ansi.red, 'Fred')
+        self.assertTrue(coloured.startswith(ansi.red))
+        self.assertTrue(coloured.endswith(ansi.off))
