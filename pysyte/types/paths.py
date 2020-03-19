@@ -46,6 +46,23 @@ class PathAssertions:
 from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-import-position
 
 
+class NonePath(PPath):
+    def __init__(self):
+        super().__init__('')
+
+    def __repr__(self):
+        return 'None'
+
+    def __eq__(self, other):
+        return not other
+
+    def __lt__(self, other):
+        return bool(other)
+
+    def __contains__(self, _):
+        return False
+
+
 class DotPath(PPath):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
@@ -72,7 +89,7 @@ class DotPath(PPath):
             result = os.path.join(self, child)
         else:
             result = str(self)  # pylint: disable=bad-option-value
-        return self.as_existing_file(result)
+        return self._next_class(result)
 
     __truediv__ = __div__
 
@@ -82,23 +99,12 @@ class DotPath(PPath):
     def __lt__(self, other):
         return str(self) < str(other)
 
-    def _next_class(self, string):
-        # pylint: disable=arguments-differ
-        # pylint: disable=invalid-overridden-method
-        return self.as_existing_file(string)
-
     def basename(self):
         return str(super().basename())
 
     @property
     def name(self):
         return str(super().name)
-
-    def as_existing_file(self, filepath):
-        """Return the file class for existing files only"""
-        if os.path.isfile(filepath) and hasattr(self, '__file_class__'):
-            return self.__file_class__(filepath)  # pylint: disable=no-member
-        return self.__class__(filepath)
 
     def isroot(self):
         return str(self) == '/'
@@ -194,6 +200,18 @@ class DotPath(PPath):
         True
         """)
 
+    def split(self, sep_=None, _maxsplit=-1):
+        seperator = sep_ or os.path.sep
+        root, *names = self.splitall()
+        path_ = root
+        result = [root]
+        for name in names:
+            path_ = path_ / name
+            if not path_.isdir():
+                break
+            result.append(path_)
+        return result
+
     def short_relative_path_to(self, destination):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
@@ -280,18 +298,20 @@ class DotPath(PPath):
     def __get_owner_not_implemented(self):
         pass
 
-    def expandall(self):
+    def expand(self):
+        _expand = lambda x : os.path.expanduser(os.path.expandvars(x))
         try:
-            return self.expand().realpath().abspath()
+            p = makepath(_expand(self))
+            return p.realpath().abspath()
         except AttributeError:
-            return self.__class__(
+            assert False, str(self.__class__(
                 os.path.abspath(os.path.realpath(
-                    os.path.expanduser(os.path.expandvars(str(self)))
-                ))
-            )
+                    os.path.expanduser(os.path.expandvars(str(
+                        self
+            )))))))
 
     def same_path(self, other):
-        return self.expandall() == other.expandall()
+        return self.expand() == other.expand()
 
     @property
     def hidden(self):
@@ -622,7 +642,7 @@ class DirectPath(DotPath, PathAssertions):
         return cd(self)
 
     def listdir(self, pattern=None):
-        return [self.as_existing_file(_)
+        return [self._next_class(_)
                 for _ in DotPath.listdir(self, pattern)]
 
     def list_dirs(self, pattern=None):
@@ -726,6 +746,16 @@ class ChmodValues:
     readonly_directory = 0o555
 
 
+def _make_module_path(arg):
+    """Make a path from a thing that has a module
+
+    classes and functions have modules, they'll be needing this
+    """
+    try:
+        return makepath(importlib.import_module(arg.__module__))
+    except (AttributeError, ModuleNotFoundError):
+        return None
+
 @singledispatch
 def makepath(arg):
     attribute = getattr(arg, 'path', False)
@@ -737,7 +767,7 @@ path = makepath
 
 @makepath.register(type(None))
 def _(arg):
-    return None
+    return NonePath()
 
 
 @makepath.register(DotPath)
@@ -753,9 +783,18 @@ def _(arg):
     See also http://stackoverflow.com/questions/26403972
     """
     if not arg:
-        return None
-    result = FilePath(arg) if (os.path.isfile(arg)) else DirectPath(arg)
-    return result.expandall()
+        return NonePath()
+    if os.path.isfile(arg):
+        return FilePath(arg)
+    if os.path.isdir(arg):
+        return DirectPath(arg)
+    v = os.path.expandvars(arg)
+    u = os.path.expanduser(v)
+    if arg == u:
+        return NonePath()
+    if os.path.exists(u):
+        return makepath(u)
+    return NonePath()
 
 
 @makepath.register(type(os))
@@ -764,17 +803,6 @@ def _(arg):
     if arg == 'builtins':
         return None
     return makepath(arg.__file__)
-
-
-def _make_module_path(arg):
-    """Make a path from a thing that has a module
-
-    classes and functions have modules, they'll be needing this
-    """
-    try:
-        return makepath(importlib.import_module(arg.__module__))
-    except (AttributeError, ModuleNotFoundError):
-        return None
 
 
 @makepath.register(type(makepath))
@@ -791,6 +819,15 @@ def _(arg):
 def _(arg):
     """Make a path from a class's module"""
     return _make_module_path(arg)
+
+
+def makestr(string: str):
+    """Make a path from a string"""
+    if not string:
+        return ''
+    if os.path.isfile(string) or os.path.isdir(string):
+        return makepath(string)
+    return string
 
 
 def cd(path_to):  # pylint: disable=invalid-name
@@ -885,8 +922,15 @@ def directories(strings):
     return split_directories(strings)[0]
 
 
-def home(sub_path=None):
-    return makepath('~') / sub_path
+def tmp():
+    return makepath('/tmp')
+
+
+def home():
+    _home = makepath(os.path.expanduser('~'))
+    assert _home
+    _x = _home.expand()
+    return _home
 
 
 def pwd():
