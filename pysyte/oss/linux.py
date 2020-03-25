@@ -11,7 +11,7 @@ class XDG:
             return paths.path(
                 os.environ.get(
                     'XDG_CONFIG_HOME',
-                    str(paths.home('.config'))
+                    str(paths.home() / '.config')
                 )
             )
 

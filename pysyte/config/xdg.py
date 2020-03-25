@@ -43,7 +43,7 @@ class IniConfiguration(object):
 
 
 def home_config(string):
-    return first_config((xdg_home / string))
+    return first_config(string, [xdg_home()])
 
 
 def any_config_type(string):
@@ -69,7 +69,7 @@ def etc_config(string):
     return any_config_type(root.etc / string)
 
 
-def config_types(string):
+def config_types(stem):
     config_exts = (
         ('yml', YamlConfiguration),
         ('yaml', YamlConfiguration),
