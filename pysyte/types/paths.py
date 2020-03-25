@@ -809,10 +809,11 @@ def _(arg):
 def _(arg):
     """Make a path from a function's module"""
     terminal_regexp = re.compile('<(stdin|.*python-input.*)>')
-    filename = arg.__code__.co_filename
+    method = getattr(arg, '__wrapped__', arg)
+    filename = method.__code__.co_filename
     if terminal_regexp.match(filename):
         return None
-    return _make_module_path(arg)
+    return _make_module_path(method)
 
 
 @makepath.register(type(DotPath))
