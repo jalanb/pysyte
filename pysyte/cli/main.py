@@ -13,6 +13,7 @@ from pysyte.cli import arguments
 from pysyte.debuggers import DebugExit
 from pysyte.cli.config import user
 from pysyte.cli.config import machine
+from pysyte.types.paths import makepath
 
 
 def run(
@@ -59,7 +60,10 @@ def run(
 
         @property
         def config_name(self):
-            return config if isinstance(config, str) else self.args.prog
+            if isinstance(config, str):
+                return config
+            name = makepath(self.method).name
+            return name
 
         @property
         def config(self):
