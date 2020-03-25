@@ -34,5 +34,4 @@ open_brace = '{'
 pipe = '|'
 close_brace = '}'
 
-punctuation = '!"#$%&%s()*+,-./:;<=>?@[\]^_`{|}' % apostrophe
-
+punctuation = f'!"#$%&{apostrophe})(*+,-./:;<=>?@[\]^_`{open_brace}|{close_brace}'

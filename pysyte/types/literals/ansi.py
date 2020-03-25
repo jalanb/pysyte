@@ -1,4 +1,4 @@
-"""ANSI colours for pysyte
+"""Handle ANSI colours for pysyte
 
 Colour sequences are derived from the table at
 
@@ -24,7 +24,3 @@ magenta = dark_colour % 35
 cyan = dark_colour % 36
 grey = dark_colour % 37
 off = "\033[0m"
-
-@classmethod
-def highlighted(cls, colour, text):
-    return f'{colour}{text}{cls.off}'

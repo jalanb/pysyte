@@ -1,0 +1,20 @@
+The digits module
+=================
+
+    >>> from pysyte.types.literals import digits
+    >>> assert 'Handle digits' in digits.__doc__
+
+Named digits
+------------
+
+The module names the digits characters
+
+    >>> assert digits.one == '1'
+    >>> assert digits.four == '4'
+    >>> assert digits.seven == '7'
+
+And a string with all of them
+
+    >>> assert digits.one in digits.digits
+    >>> assert digits.five in digits.digits
+    >>> assert digits.eight in digits.digits
