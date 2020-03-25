@@ -341,9 +341,10 @@ class DotPath(PPath):
         """
         copy = self[:]
         _stem, old = os.path.splitext(copy)
-        if old == ext:
+        extension = f'.{ext.lstrip(".")}'
+        if old == extension:
             return makepath(self)
-        return self.add_ext(ext)
+        return self.add_ext(extension)
 
     def is_executable(self):
         """Whether the path is executable"""
