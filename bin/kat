@@ -23,7 +23,7 @@ def kat(args):
     first = args.first or 1
     last = args.last or -1
     for stream in streams.args(args, 'files'):
-        start, lines_in = lines.first_and_rest(
+        start, lines_in = types.lines.first_and_rest(
             stream.read(),
             at,
             first,
@@ -34,4 +34,4 @@ def kat(args):
     return True
 
 
-main.run(kat, add_args, config=True)
+main.run(kat, add_args)
