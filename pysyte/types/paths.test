@@ -115,6 +115,7 @@ Path expansion at creation
 
 The makepath method expands paths "normally"
     So both of these end up with the same (string) value:
+    >>> os_home = os.path.expanduser('~')
     >>> direct_home = paths.DirectPath(os_home)
     >>> path_to_home = paths.makepath('~')
     >>> assert direct_home == path_to_home
@@ -126,7 +127,7 @@ The same works for the value if concatenation was applied to the path
     or is applied to the string
     >>> applied_to_path = path_to_home / 'fred'
     >>> applied_to_string = paths.makepath('~/fred')
-    >>> assert applied_to_path == applied_to_string
+    >>> assert applied_to_path == applied_to_string, f'{applied_to_path} != {applied_to_string}'
 
 We are expecting ~/.bashrc to exist,
     so the types here should also be the same: both are FilePaths
