@@ -70,7 +70,7 @@ class TestPaths(TestCase):
             self.dir / '')
 
     def test_file_class(self):
-        path = SourcePath('').as_existing_file(str(self.source))
+        path = SourcePath(str(self.source))
         self.assertTrue(path.isfile)
         self.assertIs(path.__file_class__, SourcePath)
 

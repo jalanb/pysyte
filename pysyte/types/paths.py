@@ -46,14 +46,23 @@ class PathAssertions:
 from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-import-position
 
 
-class NonePath(PPath):
-    def __init__(self):
-        super().__init__('')
+class NonePath(object):
+    def __init__(self, string=None):
+        self.string = string if string else ''
+        self.proxy = DirectPath(self.string)
+
+    def __str__(self):
+        return self.string
 
     def __repr__(self):
-        return 'None'
+        return f'<{self.__class__.__name__} "{str(self)}">'
+
+    def __bool__(self):
+        return False
 
     def __eq__(self, other):
+        if self.string:
+            return str(self) == str(other)
         return not other
 
     def __lt__(self, other):
@@ -61,6 +70,27 @@ class NonePath(PPath):
 
     def __contains__(self, _):
         return False
+
+    def __div__(self, child):
+        result = os.path.join(self.string, child) if child else self.string
+        return makepath(result)
+
+    __truediv__ = __div__
+
+    @property
+    def parent(self):
+        if '/' not in self.string:
+            return None
+        parent_string = '/'.join(self.string.split('/')[:-1])
+        return makepath(parent_string)
+
+    def exists(self):
+        return False
+
+    isdir = isfile = exists
+
+    def __getattr__(self, name):
+        return getattr(self.proxy, name, None)
 
 
 class DotPath(PPath):
@@ -85,11 +115,9 @@ class DotPath(PPath):
         >>> p.__div__('fred') == p / 'fred' == p.joinpath('fred')
         True
         """
-        if child:
-            result = os.path.join(self, child)
-        else:
-            result = str(self)  # pylint: disable=bad-option-value
-        return self._next_class(result)
+        string = str(self)
+        result = os.path.join(string, child) if child else string
+        return makepath(result)
 
     __truediv__ = __div__
 
@@ -131,46 +159,35 @@ class DotPath(PPath):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> DotPath(u'/path/to/module.py').dirnames() == [u'', u'path', u'to']
+        >>> DotPath('/path/to/module.py').dirnames() == ['/', 'path', 'to']
         True
-        >>> DotPath(u'path/to/module.py').dirnames() == [u'path', u'to']
+        >>> DotPath('path/to/module.py').dirnames() == ['path', 'to']
         True
         """
-        return self.dirname().split(os.path.sep)
+        return [str(_) for _ in self.directory().split(os.path.sep)]
 
     def dirpaths(self):
         """Split the dirname into individual directory names
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> p = DotPath(u'/path/to/x.py')
-        >>> p.paths == p.dirpaths()
-        True
+        >>> p = DotPath('/path/to/x.py')
+        >>> assert p.paths == p.dirpaths()
         """
-        parts = self.parts()
+        parts = self.split()
         result = [DotPath(parts[0] or '/')]
         for name in parts[1:]:
             result.append(result[-1] / name)
         return result
-
-    def parts(self):
-        """Split the path into parts like Pathlib
-
-        >>> expected = ['/', 'path', 'to', 'there']
-        >>> assert DotPath('/path/to/there').parts() == expected
-        """
-        parts = self.split(os.path.sep)
-        parts[0] = parts[0] if parts[0:] and parts[0] else '/'
-        return parts
 
     def directories(self):
         """Split the dirname into individual directory names
 
         No empty parts are included
 
-        >>> DotPath(u'path/to/module.py').directories() == [u'path', u'to']
+        >>> DotPath('path/to/module.py').directories() == ['path', 'to']
         True
-        >>> DotPath(u'/path/to/module.py').directories() == [u'path', u'to']
+        >>> DotPath('/path/to/module.py').directories() == ['/', 'path', 'to']
         True
         """
         return [d for d in self.dirnames() if d]
@@ -179,7 +196,7 @@ class DotPath(PPath):
         dirnames, None, None,
         """ This path's parent directories, as a list of strings.
 
-        >>> DotPath(u'/path/to/module.py').parents == [u'', u'path', u'to']
+        >>> DotPath('/path/to/module.py').parents == ['/', 'path', 'to']
         True
         """)
 
@@ -200,17 +217,23 @@ class DotPath(PPath):
         True
         """)
 
-    def split(self, sep_=None, _maxsplit=-1):
-        seperator = sep_ or os.path.sep
+    def split(self, sep=None, maxsplit=-1):
+        separator = sep or os.path.sep
+        parts = super().split(separator, maxsplit)
+        parts[0] = makepath(parts[0] if parts[0] else '/')
+        return parts
         root, *names = self.splitall()
-        path_ = root
-        result = [root]
+        path_ = makepath(str(root))
+        result = [path_]
         for name in names:
             path_ = path_ / name
             if not path_.isdir():
                 break
             result.append(path_)
         return result
+
+    def abspath(self):
+        return makepath(os.path.abspath(str(self)))
 
     def short_relative_path_to(self, destination):
         """The shorter of either the absolute path of the destination,
@@ -225,7 +248,7 @@ class DotPath(PPath):
         """
         relative = self.relpathto(destination)
         absolute = self.__class__(destination).abspath()
-        if len(relative) < len(absolute):
+        if len(str(relative)) < len(str(absolute)):
             return relative
         return absolute
 
@@ -393,35 +416,7 @@ def mime_language(ext, exts=None):
     return ''
 
 
-def find_language(script, exts=None):
-    """Determine the script's language  extension
-
-    >>> this_script = __file__.rstrip('c')
-    >>> find_language(makepath(this_script)) == 'python'
-    True
-
-    If exts are given they restrict which extensions are allowed
-    >>> find_language(makepath(this_script), ('.sh', '.txt')) is None
-    True
-
-    If there is no extension, but shebang is present, then use that
-    (Expecting to find "#!" in ~/.bashrc for this test,
-        but ~/.bashrc might not exist - then there's no language)
-
-    >>> bashrc = home() / '.bashrc'
-    >>> find_language(bashrc) in ('bash', None)
-    True
-    """
-    if not script.isfile():
-        return None
-    if script.ext:
-        return ext_language(script.ext, exts)
-    shebang = script.shebang()
-    return shebang.name if (shebang and str(shebang.name)) else None
-
-
 del PPath
-
 
 
 class FilePath(DotPath, PathAssertions):
@@ -792,10 +787,10 @@ def _(arg):
     v = os.path.expandvars(arg)
     u = os.path.expanduser(v)
     if arg == u:
-        return NonePath()
+        return NonePath(arg)
     if os.path.exists(u):
         return makepath(u)
-    return NonePath()
+    return NonePath(arg)
 
 
 @makepath.register(type(os))
@@ -856,7 +851,7 @@ def cd(path_to):  # pylint: disable=invalid-name
         os.chdir(path_to)
     elif path_to.isfile():
         os.chdir(path_to.parent)
-    elif not os.path.exists(path_to):
+    elif not path_to.exists():
         return False
     else:
         raise PathError(f'Cannot cd to {path_to}')
