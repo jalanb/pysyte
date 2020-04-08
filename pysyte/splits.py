@@ -3,7 +3,8 @@
 
 import re
 
-from pysyte.types import literals
+from pysyte.types.literals import punctuation
+from pysyte.types.literals import nones
 
 
 def _default_separator():
@@ -11,7 +12,7 @@ def _default_separator():
 
     Monkey-patching this method can change that default
     """
-    return literals.Punctuation.comma
+    return punctuation.comma
 
 
 def join(items, separator=None):
@@ -35,7 +36,7 @@ def seamless_join(items):
     >>> seamless_join(['fred', 'was', 'here'])
     'fredwashere'
     """
-    return join(items, literals.Empty.string)
+    return join(items, nones.string)
 
 
 def split(string, separator_regexp=None, maxsplit=0):

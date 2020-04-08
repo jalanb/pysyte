@@ -13,13 +13,15 @@ More imports for testing
 XDG
 ---
 
-    >>> home_config = paths.home('.config')
-    >>> assert linux.XDG.CONFIG.HOME == home_config
+The normal path to XDG configs for user
+    >>> home_config = paths.home() / '.config'
+    >>> assert linux.xdg_home() == home_config
 
-    >>> expected = '/path/to/configs'
+That can change depending on what is set in environment
+    >>> expected = '/etc'
     >>> os.environ['XDG_CONFIG_HOME'] = expected
-    >>> assert linux.XDG.CONFIG.HOME == expected
+    >>> assert linux.xdg_home() == expected
     >>> del os.environ['XDG_CONFIG_HOME']
 
-
+Particular config files
     >>> assert linux.xdg_home_config('fred') == home_config / 'fred'
