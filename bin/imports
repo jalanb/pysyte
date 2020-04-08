@@ -1,9 +1,8 @@
 #! /usr/bin/env python3
 """Find imports in python files"""
 
-import sys
-import os
-from collections import defaultdict
+import linecache
+import texter
 
 from pysyte import imports
 from pysyte.cli.main import run
@@ -12,9 +11,9 @@ from pysyte.cli.main import run
 def add_args(parser):
     """Parse out command line arguments"""
     parser.string('source', help='path to source(s) to be checked')
-    parser.boolean('-e', '--edit', help='Show a command for editing')
-    parser.boolean('-d', '--duplicate', help='Show duplicate imports')
-    parser.boolean('-u', '--unused', help='Show unused imports')
+    parser.boolean('', 'edit', help='Show a command for editing')
+    parser.boolean('', 'duplicate', help='Show duplicate imports')
+    parser.boolean('', 'unused', help='Show unused imports')
     return parser
 
 
@@ -54,7 +53,7 @@ def show_duplicates(visitor):
     return multiples.keys()
 
 
-def script(args):
+def main(args):
     visitor = imports.extract_imports(args.source)
     modules = []
     if args.duplicate:
@@ -63,8 +62,8 @@ def script(args):
         modules.extend(show_unused(visitor))
     if args.edit and modules:
         sought = r'\>\|\<'.join(modules)
-        print(f'\nvim {visitor.path} +/"\<{sought}\>"')
+        print(f'\nvim {visitor.path} +/"\\<{sought}\\>"')
     return bool(modules)
 
 
-run(script, add_args)
+run(main, add_args=add_args)

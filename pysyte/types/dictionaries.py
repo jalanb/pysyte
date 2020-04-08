@@ -128,3 +128,6 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
                 if isinstance(value, dict)
                 else value)
         super(RecursiveDictionaryAttributes, self).__init__(data)
+
+NameSpace = DictionaryAttributes
+NameSpaces = RecursiveDictionaryAttributes

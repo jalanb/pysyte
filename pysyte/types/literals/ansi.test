@@ -1,0 +1,14 @@
+The ansi module
+===============
+
+    >>> from pysyte.types.literals import ansi
+    >>> assert 'Handle ANSI colours' in ansi.__doc__
+
+Named colours
+-------------
+
+The module names ANSI colours
+
+    >>> assert '31' in ansi.red
+    >>> assert '32' in ansi.green
+    >>> assert '34' in ansi.blue

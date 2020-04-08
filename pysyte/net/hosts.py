@@ -4,6 +4,7 @@ import getpass
 import socket
 from dataclasses import dataclass
 
+
 @dataclass
 class Host:
     hostname: str

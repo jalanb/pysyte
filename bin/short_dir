@@ -3,8 +3,6 @@
 
 import os
 import sys
-import argparse
-from bdb import BdbQuit
 
 
 from pysyte import __version__
@@ -22,11 +20,11 @@ def parse_args(parser):
     parser.positionals(
         'directories', default='.',
         help='paths to be abbreviated (default ".")')
-    parser.boolean('-o', '--only_home', help='only replace $HOME with ~')
+    parser.boolean('', 'only_home', help='only replace $HOME with ~')
     parser.string(
-        '-x', '--exclude', type=str, nargs='*',
+        'x', 'exclude', type=str, nargs='*',
         help='exclude environment symbols')
-    parser.boolean('-v', '--version', help='Show version')
+    parser.boolean('', 'version', help='Show version')
     return parser
 
 

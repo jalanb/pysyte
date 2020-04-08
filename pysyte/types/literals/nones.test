@@ -1,0 +1,15 @@
+The nones module
+================
+
+    >>> from pysyte.types.literals import nones
+    >>> assert 'Empty values' in nones.__doc__
+
+Falsies
+-------
+
+The module provides named values, all of which are false-y
+
+    >>> assert not nones.none
+    >>> assert not nones.string
+    >>> assert not nones.integer
+    >>> assert not nones.real

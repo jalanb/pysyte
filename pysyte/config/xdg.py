@@ -4,9 +4,10 @@ from functools import partial
 
 import yaml
 
+from pysyte.iteration import first
 from pysyte.types import paths
 from pysyte.types.dictionaries import RecursiveDictionaryAttributes
-from pysyte.oss.linux import xdg_home_config
+from pysyte.oss.linux import xdg_home
 
 
 class YamlConfiguration(RecursiveDictionaryAttributes):
@@ -41,15 +42,40 @@ class IniConfiguration(object):
     pass
 
 
-def xdg_config(string):
-    stem = xdg_home_config(string)
-    known_types = {
-        'yml': YamlConfiguration,
-        'yaml': YamlConfiguration,
-        'yamly': YamlyConfiguration,
-        'ini': IniConfiguration,
-    }
-    for ext, type_ in known_types.items():
-        extended = stem.add_missing_ext(ext)
-        if extended.isfile():
-            return type_(stem)
+def home_config(string):
+    return first_config(string, [xdg_home()])
+
+
+def any_config_type(string):
+    for path_, type_ in config_types(string):
+        if path_.isfile():
+            return type_(path_)
+    return None
+
+
+def first_config(string, paths):
+    return first(any_config_type(_ / string) for _ in paths)
+
+
+def any_config(string):
+    return first_config(string, (xdg_home(), root.etc))
+
+
+def all_configs(string):
+    return (any_config_type(_ / string) for _ in (root.etc, xdg_home()) if _)
+
+
+def etc_config(string):
+    return any_config_type(root.etc / string)
+
+
+def config_types(stem):
+    config_exts = (
+        ('yml', YamlConfiguration),
+        ('yaml', YamlConfiguration),
+        ('yamly', YamlyConfiguration),
+        ('ini', IniConfiguration),
+    )
+    return [(stem.add_missing_ext(e), t) for e, t in config_exts]
+
+

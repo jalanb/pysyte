@@ -10,6 +10,8 @@ import sys
 from functools import partial
 from itertools import chain
 
+from deprecated import deprecated
+
 from pysyte.cli.config import user
 from pysyte.iteration import SequenceIterator
 from pysyte.types.numbers import inty
@@ -39,13 +41,13 @@ class IntyAction(argparse.Action):
 class ArgumentsParser(object):
     """Add more attriubtes and methods to an argparse.ArgumentParser"""
 
-    def __init__(self, parser_):
-        self.parser = parser_
+    def __init__(self, argparser):
+        self.parser = argparser
         self._parsed = None
 
         self.parse = self.parse_args
 
-        self.string = self.arg = self.add_argument
+        self.string = self.arg = self.add_option
         self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
         self.integer = self.int = partial(self.arg, type=int)
         self.inty = partial(self.arg, action=IntyAction)
@@ -61,13 +63,26 @@ class ArgumentsParser(object):
         group_ = group if group else name_
         kwargs_['default'] = default if default else group_ if group_ else name_ if name_ else None
         args_ = [name_[0], name_] + args
-        self.add_argument(*args_, **kwargs_)
+        self.add_option(*args_, **kwargs_)
 
-    def add_argument(self, initial, name, *args, **kwargs):
+    def add_option(self, initial, name, *args, **kwargs):
+        n = name.lstrip('-')
+        i = initial.lstrip('-') or n[0]
+        return self.parser.add_argument(
+            f'-{i}',
+            f'--{n}',
+            *args, **kwargs)
+
+        if not initial:
+            initial = name[0]
         return self.parser.add_argument(
             f'-{initial.lstrip("-")}',
             f'--{name.lstrip("-")}',
             *args, **kwargs)
+
+    @deprecated
+    def add_argument(self, initial, name, *args, **kwargs):
+        return add_option(initial, name, *args, **kwargs)
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""
@@ -88,9 +103,9 @@ class ArgumentsParser(object):
     def parse_args(self, arguments=None, post_parser=None):
         post_parse = post_parser if post_parser else getattr(
             self, 'post_parser', False)
-        post_parser_ = post_parse if post_parse else lambda x: x
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
+        post_parser_ = post_parse if post_parse else lambda x: x
         posted_args =  post_parser_(argument_namespace)
         self.args = posted_args
         self.args.prog = self.parser.prog

@@ -36,13 +36,14 @@ def args(parsed_args, name=None, files_only=False):
         streams.append(clipboard_stream())
     return streams
 
+
 def files(parsed_args, name=None):
     return args(parsed_args, name, True)
 
 
 def all():
     yielded = False
-    for path in _arg_paths():
+    for path in _arg_files():
         yield open(path)
         yielded = True
     if not yielded or '-' in sys.argv:
