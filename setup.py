@@ -6,10 +6,9 @@ from setuptools import setup
 
 import pysyte
 
-description = """Python modules often used in dotjab, and elsewhere
+description = """Pysyte extends Python
 
-Available on guthub and pypi for ease of access
-But probably not of great interest to others
+Available on github and pypi for ease of access
 """
 
 
@@ -61,6 +60,7 @@ setup(
         'pyyaml',
         'boltons',
         'python-magic',
+        'deprecated',
     ],
     # entry_points = {
     #     'console_scripts': [
