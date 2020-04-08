@@ -113,9 +113,10 @@ and other things that have paths
 Path expansion at creation
 --------------------------
 
+    >>> os_home = os.path.expanduser('~')
+
 The makepath method expands paths "normally"
     So both of these end up with the same (string) value:
-    >>> os_home = os.path.expanduser('~')
     >>> direct_home = paths.DirectPath(os_home)
     >>> path_to_home = paths.makepath('~')
     >>> assert direct_home == path_to_home
@@ -123,14 +124,21 @@ The makepath method expands paths "normally"
 And that is an expanded path
     >>> assert path_to_home.startswith('/') and '~' not in path_to_home
 
-The same works for the value if concatenation was applied to the path
-    or is applied to the string
-    >>> applied_to_path = path_to_home / 'fred'
-    >>> applied_to_string = paths.makepath('~/fred')
-    >>> assert applied_to_path == applied_to_string, f'{applied_to_path} != {applied_to_string}'
+Need a known directory for next tests
+    >>> path_to_path = paths.path(paths)
+    >>> path_to_types = path_to_path.parent
 
-We are expecting ~/.bashrc to exist,
-    so the types here should also be the same: both are FilePaths
+The expansion works for the value if concatenation was applied to the path
+    or is applied to the initialising string
+
+    >>> applied_to_path = path_to_types / 'paths.py'
+    >>> applied_to_string = paths.makepath(f'{path_to_types}/paths.py')
+    >>> assert applied_to_path == applied_to_string
+
+We are expecting that path to exist as a file, so we know its type
+    >>> assert isinstance(applied_to_path, paths.FilePath)
+    
+And the types should also be the same for both applications
     >>> assert type(applied_to_path) == type(applied_to_string)
 
 cd
@@ -139,15 +147,21 @@ cd
 DirectPath adds the cd() method, which cd's to the path it represents
 It calls the module level cd() method with its own value, so it works as above.
 
-    >>> p = paths.makepath('/bin/cp')
-    >>> assert p.cd()
+Newer Linuxen link /bin to /usr/bin
+    So for next tests, we will check both
+    >>> expected = ('/bin', '/usr/bin')
 
-Newer Linuxen link /bin to /usr/bin, so check both
-    >>> assert paths.pwd() in ('/bin', '/usr/bin')
-
+Can cd to a direcory
+    >>> os.chdir('/')
     >>> f = paths.DirectPath('/bin')
     >>> assert f.cd()
-    >>> assert paths.pwd() == '/bin'
+    >>> assert paths.pwd() in expected
+
+Can also cd to (the directory of) a file
+    >>> os.chdir('/')
+    >>> p = paths.makepath('/bin/cp')
+    >>> assert p.cd()
+    >>> assert paths.pwd() in expected
 
 DirectPath vs path
 ------------------
