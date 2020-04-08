@@ -10,8 +10,8 @@ More imports for testing
 
 User configs
 ------------
-    >>> fred = xdg.xdg_config('fred')
+    >>> fred = xdg.home_config('fred')
     >>> assert not fred
     >>> if paths.path('~/.config/pysyte.yml').isfile():
-    ...     pysyte = xdg.xdg_config('pysyte')
+    ...     pysyte = xdg.home_config('pysyte')
     ...     assert pysyte is not None

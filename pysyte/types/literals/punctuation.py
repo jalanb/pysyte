@@ -1,6 +1,7 @@
 """Handle punctuation for pysyte"""
 
 space = ' '
+
 bang = '!'
 double_quote = '"'
 hash_ = '#'
@@ -14,7 +15,7 @@ asterisk = '*'
 plus = '+'
 comma = ','
 minus = '-'
-dot = full_stop = '.'
+dot = full_stop = period = '.'
 forward_slash = '/'
 zero = '0'
 colon = ':'
@@ -34,4 +35,4 @@ open_brace = '{'
 pipe = '|'
 close_brace = '}'
 
-punctuation = ''  #f'!"#$%&{apostrophe})(*+,-./:;<=>?@[\\]^_`{open_brace}|{close_brace}'
+punctuation = f'!"#$%&{apostrophe})(*+,-./:;<=>?@[\\]^_`{open_brace}|{close_brace}'

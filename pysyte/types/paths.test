@@ -87,8 +87,8 @@ DirectPath is ako string, which shows the string in %s and %r
 
 makepath() handles many types of things
 nothings:
-    >>> assert paths.makepath(None) is None
-    >>> assert paths.makepath('') is None
+    >>> assert not paths.makepath(None)
+    >>> assert not paths.makepath('')
 
 other paths:
     >>> assert paths.makepath(p) is p
@@ -106,7 +106,7 @@ including python things, like modules, classes, functions
 
 and other things that have paths
     >>> class Fred:
-    ...     path = paths.makepath('/hello/world')
+    ...     path = paths.makepath('/usr/local')
     >>> fred = Fred()
     >>> assert paths.makepath(fred) is fred.path
 
@@ -140,6 +140,8 @@ It calls the module level cd() method with its own value, so it works as above.
 
     >>> p = paths.makepath('/bin/cp')
     >>> assert p.cd()
+
+Newer Linuxen link /bin to /usr/bin, so check both
     >>> assert paths.pwd() in ('/bin', '/usr/bin')
 
     >>> f = paths.DirectPath('/bin')
@@ -149,31 +151,22 @@ It calls the module level cd() method with its own value, so it works as above.
 DirectPath vs path
 ------------------
 
-Using the / operator on a DirectPath or path gives an instance of the same class
+Using the / operator on a path gives an instance of the same class
     >>> from path import path
     >>> home = path('~')
     >>> bashrc = home / '.bashrc'
-    >>> type(bashrc)
-    <class 'path.Path'>
+    >>> assert isinstance(bashrc, path)
 
-    >>> home = paths.DirectPath('~')
+Using it on a DirectPath can give a DirectPath, or a FilePath
+    >>> home = paths.home()
     >>> bashrc = home / '.bashrc'
-    >>> type(bashrc)
-    <class 'pysyte.types.paths.DirectPath'>
+    >>> expected = paths.FilePath if bashrc.isfile() else paths.NonePath
+    >>> assert isinstance(bashrc, expected)
 
-Attributes of a DirectPath should also be DirectPaths (should not be path)
-    >>> type(bashrc.parent)
-    <class 'pysyte.types.paths.DirectPath'>
-
-The split_all_ext method
-------------------------
-
-    >>> p = paths.FilePath('/alan/was/here.tar.gz')
-    >>> p.splitext()
-    (<FilePath '/alan/was/here.tar'>, '.gz')
-    >>> p.split_all_ext()
-    (<FilePath '/alan/was/here'>, '.tar.gz')
-
+Attributes of may also be DirectPaths or FilePaths
+    >>> parent = bashrc.parent
+    >>> expected = paths.DirectPath if bashrc.isfile() else paths.NonePath
+    >>> assert isinstance(parent, expected)
 
 Whether paths exist
 -------------------
@@ -190,9 +183,9 @@ This test assumes you have a ~/bin directory
     Also assumes you have a ~/.bashrc file, which is more likely
     >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
-    >>> assert paths.home('.bashrc') in real_paths
-    >>> assert paths.home('bin') in real_paths
-    >>> assert paths.home('not a real path') not in real_paths
+    >>> assert paths.home() / '.bashrc' in real_paths
+    >>> assert paths.home() / 'bin' in real_paths
+    >>> assert paths.home() / 'not a real path' not in real_paths
 
 Iteration of paths
 ------------------
@@ -253,21 +246,24 @@ Should give us the source and test files for the paths module
 Parts and parents
 -----------------
 
-    >>> assert paths.home
+    >>> assert paths.home()
     >>> assert paths.pwd()
 
 Get the parent directory
 
     >>> assert paths.path('/one/two/three').parent == '/one/two'
 
+    >>> local_bin = paths.path('/usr/local/bin')
+    >>> assert local_bin.parent == '/usr/local'
+
 Or all parents
-    >>> parents = paths.path('/one/two/three').parent_directories()
-    >>> assert parents[0] == '/one/two'
-    >>> assert parents[1] == '/one'
+    >>> parents = local_bin.parent_directories()
+    >>> assert parents[0] == '/usr/local'
+    >>> assert parents[1] == '/usr'
     >>> assert parents[-1].isroot()
 
-Splitting off extenstions
---------------------------
+Splitting off extensions
+------------------------
 
     >>> path_to_paths = paths.path(paths.__file__)
     >>> assert path_to_paths.ext in {'.py', '.pyc'}
@@ -278,12 +274,15 @@ Splitting off extenstions
 Splitting out parts
 -------------------
 
-parts() method splits a path into a list of dictionary names
-    (last one is, technically, a filename, if it's a file)
-    >>> parts = path_to_paths.parts()
-    >>> assert parts[-1] == path_to_paths.name
-    >>> assert parts[-2] == path_to_paths.parent.name
-    >>> assert parts[-2] == path_to_paths.parent.parts()[-1]
-    >>> assert parts.count('pysyte') == 2
+    >>> parts = local_bin.split()
+    >>> assert parts[0].isroot()
+    >>> assert parts[1:] == ['usr', 'local', 'bin']
 
+The split_all_ext method
+------------------------
 
+    >>> p = paths.FilePath('/alan/was/here.tar.gz')
+    >>> p.splitext()
+    (<FilePath '/alan/was/here.tar'>, '.gz')
+    >>> p.split_all_ext()
+    (<FilePath '/alan/was/here'>, '.tar.gz')

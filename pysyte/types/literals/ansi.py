@@ -24,3 +24,7 @@ magenta = dark_colour % 35
 cyan = dark_colour % 36
 grey = dark_colour % 37
 off = "\033[0m"
+
+
+def highlighted(colour, text):
+    return f'{colour}{text}{off}'

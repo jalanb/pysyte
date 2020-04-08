@@ -1,6 +1,5 @@
 """Handle config files"""
 
-
 import yaml
 
 from pysyte.types.dictionaries import NameSpaces
