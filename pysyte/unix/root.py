@@ -14,6 +14,7 @@ Instead of addressing separate volumes such as disk partitions,
     The root of the entire tree is denoted.
 """
 
+from pysyte.config.types import ModuleConfiguration
 from pysyte.types.paths import path
 from pysyte.types.paths import DirectPath
 
@@ -26,6 +27,7 @@ class UnixDirectory(DirectPath):
 
 
 root = path('/')
+config = ModuleConfiguration(__file__)
 
 
 def upath(string):
