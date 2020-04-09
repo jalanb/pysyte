@@ -9,4 +9,8 @@ def user(name):
 
 
 def machine(name):
-    return xdg.etc_config()
+    return xdg.etc_config(name)
+
+
+def all(name):
+    return {**machine(name), **user(name)}
