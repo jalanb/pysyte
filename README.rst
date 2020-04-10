@@ -1,9 +1,7 @@
 pysyte
 =======
 
-Python modules often used from dotfiles
-
-Installing libmagic in Mac OS (for Python-magic): https://www.jianshu.com/p/153baf8d07ab
+pysyte extends python with more batteries
 
 Latest PyPi Package
 -------------------
@@ -25,10 +23,3 @@ Test Coverage
 .. image:: https://codecov.io/gh/jalanb/pysyte/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/jalanb/pysyte
    :alt: Test Coverage
-
-Dependency status
------------------
-
-.. image:: https://caniusepython3.com/check/e81a8847-131d-4893-a47e-d4bd04e8817e.svg
-    :target: https://caniusepython3.com/check/e81a8847-131d-4893-a47e-d4bd04e8817e
-    :alt: Python 3 Status
