@@ -19,6 +19,7 @@ import tty
 from curses import ascii
 
 import termios
+from deprecated import deprecated
 
 
 class NoKeys(StopIteration):
@@ -295,8 +296,8 @@ def get_string():
     return ''.join((initial_char, chars))
 
 
+@deprecated(reason="use yield_asciis()", version='0.7.30')
 def yield_asciis_old():
-    """This one is deprecated"""
     k = get_ascii()
     while True:
         yield k

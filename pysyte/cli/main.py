@@ -11,8 +11,7 @@ import stackprinter
 
 from pysyte.cli import arguments
 from pysyte.debuggers import DebugExit
-from pysyte.cli.config import user
-from pysyte.cli.config import machine
+from pysyte.cli import config as configuration
 from pysyte.types.paths import makepath
 
 
@@ -65,20 +64,12 @@ def run(
             name = makepath(self.method).name
             return name
 
-        @property
-        def config(self):
-            name = self.config_name
-            user_config = user(name)
-            machine_config = machine(name)
-            return configuration
-
         def main(self, argument_handler):
             if config:
-                # try:
-                configuration = user(self.config_name)
-                return caller.method(args, configuration)
-                # except FileNotFoundError:
-                # pass
+                if self.needs_args:
+                    argument_handler.add_args()
+                config_ = configuration.all(self.config_name)
+                return caller.method(self.args, config_)
             if self.needs_args:
                 argument_handler.add_args()
                 return self.method(self.args)

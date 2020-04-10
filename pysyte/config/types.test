@@ -1,0 +1,11 @@
+The pysyte.config.types module
+=============================
+
+    >>> from pysyte.config import types
+    >>> assert 'Classes for configuration' in types.__doc__
+
+Types
+-----
+
+    >>> assert hasattr(types, 'YamlConfiguration')
+    >>> assert hasattr(types, 'ModuleConfiguration')

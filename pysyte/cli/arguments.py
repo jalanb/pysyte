@@ -80,7 +80,7 @@ class ArgumentsParser(object):
             f'--{name.lstrip("-")}',
             *args, **kwargs)
 
-    @deprecated
+    @deprecated(reason="use add_option()", version='0.7.33')
     def add_argument(self, initial, name, *args, **kwargs):
         return add_option(initial, name, *args, **kwargs)
 

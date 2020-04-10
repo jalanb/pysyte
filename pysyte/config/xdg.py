@@ -2,44 +2,12 @@
 
 from functools import partial
 
-import yaml
-
+from pysyte.config.types import YamlConfiguration
+from pysyte.config.types import YamlyConfiguration
+from pysyte.config.types import IniConfiguration
 from pysyte.iteration import first
-from pysyte.types import paths
-from pysyte.types.dictionaries import RecursiveDictionaryAttributes
 from pysyte.oss.linux import xdg_home
-
-
-class YamlConfiguration(RecursiveDictionaryAttributes):
-    """Read a yaml config file and parse it to attributes"""
-    def __init__(self, string):
-        path = self.as_path(string)
-        with open(path) as stream:
-            data = yaml.safe_load(stream)
-            super(YamlConfiguration, self).__init__(data)
-
-    def as_path(self, string):
-        stem = paths.path(string)
-        yml = stem.add_missing_ext('yml')
-        if yml.isfile():
-            return yml
-        yaml = stem.add_missing_ext('yaml')
-        if yaml.isfile():
-            return yaml
-
-class YamlyConfiguration(YamlConfiguration):
-    pass
-
-
-class ModuleConfiguration(YamlConfiguration):
-    def as_path(self, string):
-        path = paths.path(string)
-        stem, ext = path.split_ext()
-        return string(stem)
-
-
-class IniConfiguration(object):
-    pass
+from pysyte.types.paths import path
 
 
 def home_config(string):
@@ -50,7 +18,7 @@ def any_config_type(string):
     for path_, type_ in config_types(string):
         if path_.isfile():
             return type_(path_)
-    return None
+    return {}
 
 
 def first_config(string, paths):
@@ -58,15 +26,15 @@ def first_config(string, paths):
 
 
 def any_config(string):
-    return first_config(string, (xdg_home(), root.etc))
+    return first_config(string, (xdg_home(), path('/etc')))
 
 
 def all_configs(string):
-    return (any_config_type(_ / string) for _ in (root.etc, xdg_home()) if _)
+    return (any_config_type(_ / string) for _ in (path('/etc'), xdg_home()) if _)
 
 
 def etc_config(string):
-    return any_config_type(root.etc / string)
+    return any_config_type(path('/etc') / string)
 
 
 def config_types(stem):
@@ -77,5 +45,3 @@ def config_types(stem):
         ('ini', IniConfiguration),
     )
     return [(stem.add_missing_ext(e), t) for e, t in config_exts]
-
-

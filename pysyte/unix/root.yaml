@@ -10,7 +10,7 @@ user: &home_files
   .config: user configuration
   .local: binaries
 
-/: &filesystem
+unix: &filesystem
   <<: *common_dirs
   bin: binaries with certain fundamental utilities, such as ls or cp that are needed to mount /usr
   etc: &etc_dirs
