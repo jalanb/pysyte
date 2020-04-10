@@ -6,38 +6,38 @@ The words module
 This module handles some english words
 
     >>> expected = [
-    ...     ('punch', 'punches'),
-    ...     ('fish', 'fish'),
-    ...     ('lunch', 'lunches'),
+    ...     ('cat', 'cats'),
     ...     ('bass', 'basses'),
-    ...     ('fax', 'faxes'),
-    ...     ('coach', 'coaches'),
-    ...     ('rash', 'rashes'),
     ...     ('cheetah', 'cheetahs'),
-    ...     ('vacancy', 'vacancies'),
+    ...     ('coach', 'coaches'),
     ...     ('day', 'days'),
-    ...     ('man', 'men'),
-    ...     ('woman', 'women'),
-    ...     ('human', 'humans'),
-    ...     ('mouse', 'mice'),
-    ...     ('louse', 'lice'),
-    ...     ('house', 'houses'),
-    ...     ('knife', 'knives'),
-    ...     ('wife', 'wives'),
-    ...     ('sheep', 'sheep'),
     ...     ('deer', 'deer'),
+    ...     ('fax', 'faxes'),
+    ...     ('fish', 'fish'),
     ...     ('hero', 'heroes'),
+    ...     ('house', 'houses'),
+    ...     ('human', 'humans'),
+    ...     ('knife', 'knives'),
+    ...     ('louse', 'lice'),
+    ...     ('lunch', 'lunches'),
+    ...     ('man', 'men'),
+    ...     ('mouse', 'mice'),
     ...     ('piano', 'pianos'),
+    ...     ('punch', 'punches'),
+    ...     ('rash', 'rashes'),
+    ...     ('sheep', 'sheep'),
+    ...     ('vacancy', 'vacancies'),
+    ...     ('wife', 'wives'),
+    ...     ('woman', 'women'),
     ... ]
     >>> for singular, plural in expected:
-    ...     assert words.pluralize(singular) == plural, singular
+    ...     assert words.pluralize(singular) == plural, f'{singular} failed'
+    ...     assert words.singularize(plural) == singular, f'{plural} failed'
 
     >>> words.pluralize('lowlife') == 'lowlifes'
     True
 
 
-    >>> assert words.singularize('cats') == 'cat'
-    >>> assert words.singularize('fish') == 'fish'
     >>> assert words.singularize('freds') == 'fred'
     >>> assert words.singularize('freddies') == 'freddy'
 
