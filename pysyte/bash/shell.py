@@ -1,14 +1,10 @@
-"""Handle bash commands for the tools package"""
+"""Handle bash commands for pysyte"""
 
-import logging
 import os
 from contextlib import contextmanager
+from subprocess import getstatusoutput
 
 from boltons.setutils import IndexedSet
-
-from pysyte.bash.cmnds import getstatusoutput
-
-logger = logging.getLogger(__name__)
 
 
 class BashError(ValueError):
@@ -16,14 +12,12 @@ class BashError(ValueError):
 
 
 _working_dirs = ['']
-_displays = [False]
 _path = []
 
 
 def cd(path):
     if _working_dirs[0] == path:
         return
-    logger.info('$ PWD=%s', path)
     _working_dirs[0] = path
 
 
@@ -42,29 +36,19 @@ def _get_path():
     minimal_paths = IndexedSet(['/usr/local/bin', '/usr/bin', '/bin'])
     all_paths = environ_paths | minimal_paths
     _path.append(':'.join(all_paths))
-    logger.debug('PATH = %s', _path[-1])
     return _path[0]
 
 
 def run(command):
     path_command = f'PATH={_get_path()} {command}'
     if _working_dirs[0]:
-        run_command = f'(cd {_working_dirs[0]}; {path_command}'
-        logger.info('$ (cd %s; %s)', _working_dirs[0], path_command)
+        run_command = f'(cd {_working_dirs[0]}; {path_command})'
     else:
         run_command = path_command
-        logger.info('$ %s', command)
     status, output = getstatusoutput(run_command)
     if status:
-        logger.error('\n%s', output)
         raise BashError(output)
-    elif output:
-        logger.info('\n%s', output)
     return output
-
-
-def set_verbosity(display):
-    _displays[0] = display
 
 
 def full_path(path):

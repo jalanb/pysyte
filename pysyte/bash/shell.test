@@ -1,0 +1,53 @@
+The bash.shell module
+---------------------
+
+    >>> from pysyte.bash import shell
+    >>> assert 'bash commands for pysyte' in shell.__doc__
+
+More imports for support
+------------------------
+
+    >>> import os
+    >>> import sys
+
+Shell commands
+--------------
+
+    >>> version = sys.version.split()[0]
+
+Can run any bash command, e.g. python
+    >>> output = shell.run('python -V')
+    >>> assert output.endswith(version)
+
+Errors are raised as Python exceptions
+    >>> try:
+    ...     output = shell.run('not_python -V')
+    ...     assert False, 'Should not get here'
+    ... except shell.BashError as e:
+    ...     assert 'command not found' in str(e)
+
+The shell.cd() function affects all subsequent commands
+
+    >>> shell.cd('/usr/local')
+    >>> output = shell.run('basename $PWD')
+    >>> assert output == 'local'
+    >>> shell.cd('/usr/local')
+
+Whereas shell.pushd() only affects commands in a with
+
+    >>> with shell.pushd('/usr/local/bin'):
+    ...     assert shell.run('basename $PWD') == 'bin'
+
+Paths
+-----
+
+    >>> _ = shell.run('ln -s $HOME /tmp/fred')
+    >>> os.environ['TEMP'] = '/tmp'
+
+The full_path() method removes "bashisms" from a path
+    >>> assert shell.full_path('$TEMP/fred') == os.path.expanduser('~')
+
+Cleanup
+-------
+
+    >>> _ = shell.run('rm /tmp/fred')
