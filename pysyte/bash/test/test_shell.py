@@ -18,7 +18,3 @@ class TestShell(unittest.TestCase):
         shell.cd('usr/local')
         actual = shell.run('basename $PWD')
         self.assertEquals(actual, expected)
-
-
-if __name__ == '__main__':
-    unittest.main()
