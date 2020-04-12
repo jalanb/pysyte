@@ -31,6 +31,7 @@ The shell.cd() function affects all subsequent commands
     >>> shell.cd('/usr/local')
     >>> output = shell.run('basename $PWD')
     >>> assert output == 'local'
+    >>> shell.cd('/usr/local')
 
 Whereas shell.pushd() only affects commands in a with
 
