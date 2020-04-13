@@ -1,6 +1,11 @@
 """A module to provide decorators which change methods"""
 
-from six import StringIO
+import pdb
+
+try:
+    import pudb as pdb
+except ImportError:
+    pass
 
 
 def _represent_arguments(*arguments, **keyword_arguments):
@@ -74,69 +79,10 @@ def memoize(method):
 def debug(method):
     """Decorator to debug the given method"""
     def new_method(*args, **kwargs):
-        import pdb
         try:
-            import pudb
-        except ImportError:
-            pudb = pdb
-        try:
-            pudb.runcall(method, *args, **kwargs)
+            pdb.runcall(method, *args, **kwargs)
         except pdb.bdb.BdbQuit:
-            sys.exit('Normal quit from debugger')
+            pass
     new_method.__doc__ = method.__doc__
     new_method.__name__ = f'debug({method.__name__})'
     return new_method
-
-
-def argparser(main_method, options, **kwargs):
-
-    def main(argv):
-        args = parser.parse_args(argv)
-        for method, _flag, name, _help in options:
-            if not method:
-                continue
-            value = getattr(args, name)
-            if not value:
-                continue
-            method(value)
-        return main_method(args)
-
-    from argparse import ArgumentParser
-    parser = ArgumentParser(description='Process some integers.')
-    for _method, flag, name, help in options:
-        name_or_flags = [flag, name] if flag else name
-        parser.add_argument(name_or_flags, help=help, **kwargs)
-    return main
-
-
-def streamer(main_method):
-    """Open a stream for the first file in arguments, or stdin"""
-    def main(arguments):
-        streams = [StringIO(get_clipboard_data())] if (arguments and '-c' in arguments) else []
-        streams = streams or ([file(_, 'r') for _ in arguments if os.path.isfile(argument)] if arguments else [])
-        streams = streams or ([sys.stdin] if not (streams or arguments) else [])
-        return main_method(arguments, streams)
-    return main
-
-
-def old_streamer(main_method):
-    """Open a stream for the first file in arguments, or stdin"""
-    if not arguments:
-        return [sys.stdin]
-    elif arguments[0] == '-c':
-        return [StringIO(get_clipboard_data())]
-    for argument in arguments:
-        if os.path.isfile(argument):
-            return file(argument, 'r')
-    return method
-
-
-def globber(main_method, globs):
-    """Recognise globs in args"""
-    import os
-    from glob import glob
-
-    def main(arguments):
-        lists_of_paths = [_ for _ in arguments if glob(pathname, recursive=True)]
-        return main_method(arguments, lists_of_paths)
-    return main

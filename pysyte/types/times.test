@@ -1,0 +1,30 @@
+The pysyte.types.times module
+=============================
+
+    >>> from pysyte.types import times
+    >>> assert 'datetime for pysyte types' in times.__doc__
+
+More imports to support testing
+-------------------------------
+
+    >>> import datetime
+
+Time taken
+----------
+
+The unix time epoch starts in 1970
+    >>> assert times.epoch.year == 1970
+
+Adding an hour
+    >>> later = datetime.datetime(1970, 1, 1, times.epoch.hour + 1, 0)
+
+And can then find out how long was taken between those
+    (An hour in 60 (minutes) by 60 (seconds) by a thousand (micro)
+    >>> assert times.taken(later - times.epoch) == 60 * 60 * 1_000
+
+Number of seconds since unix started counting is rather large
+    At least a billion of them
+    >>> assert times.seconds_since_epoch() > 1_000_000_000
+
+Which is at least a trillion microseconds
+    >>> assert times.microseconds_since_epoch() > 1_000_000_000_000
