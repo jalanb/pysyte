@@ -1,0 +1,10 @@
+The pysyste.unix.root module
+----------------------------
+
+    >>> from pysyte.unix import root
+    >>> assert 'Unix filesystem' in root.__doc__
+
+The root of the filesystem
+--------------------------
+
+    >>> assert root.root.isdir()

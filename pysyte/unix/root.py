@@ -20,16 +20,14 @@ from pysyte.types.paths import DirectPath
 
 
 class UnixDirectory(DirectPath):
-    def __init__(self, path_, sub_dirs=None):
+    def __init__(self, path_):
         super().__init__(path_)
-        for sub in sub_dirs or []:
-            setattr(self, sub, self / sub)
-
-
-root = path('/')
-config = ModuleConfiguration(__file__)
 
 
 def upath(string):
     """For consistency with path()"""
     return UnixDirectory(string)
+
+
+root = upath('/')
+config = ModuleConfiguration(__file__)
