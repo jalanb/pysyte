@@ -28,11 +28,6 @@ def default_args(arg=None):
     return arg
 
 
-@decorators.debug
-def do_nothing():
-    pass
-
-
 def method():
     pass
 
@@ -77,7 +72,6 @@ class MemoizeTest(unittest.TestCase):
         actual = self.stream.getvalue()
         expected = 'Call: One Smith\n'
         self.assertEqual(expected, actual)
-
 
     def test_invalidate(self):
         """Invalidating a cached call loses the memory
@@ -152,3 +146,7 @@ class MemoizeTest(unittest.TestCase):
                          initials(['F', 'red'], ['S', 'mith'], self.stream))
         self.assertEqual("Call: ['F', 'red'] ['S', 'mith']\n",
                          self.stream.getvalue())
+
+    def test_full_coverage(self):
+        """Some tests needed to get full coverage"""
+        self.assertIsNone(method())
