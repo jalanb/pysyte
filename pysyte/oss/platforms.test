@@ -8,9 +8,9 @@ Clipboard
 =========
 
     >>> expected = 'fred was here'
-    >>> platforms.put_clipboard_data(expected)
 
-This one only works on macOS so far
+This one does not work for Travis
     >>> if platforms.name == 'darwin':
+    ...     platforms.put_clipboard_data(expected)
     ...     actual = platforms.get_clipboard_data()
     ...     assert actual == expected
