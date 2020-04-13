@@ -24,7 +24,7 @@ Errors are raised as Python exceptions
     ...     output = shell.run('not_python -V')
     ...     assert False, 'Should not get here'
     ... except shell.BashError as e:
-    ...     assert 'command not found' in str(e)
+    ...     assert 'not found' in str(e)
 
 The shell.cd() function affects all subsequent commands
 
