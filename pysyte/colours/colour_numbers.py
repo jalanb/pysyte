@@ -102,7 +102,7 @@ def hashed_html(string):
 
 def html_to_red_green_blue(string):
     string = _extract_html_hex(string)
-    if string is None:
+    if not string:
         return None, None, None
     return int(string[:2], 16), int(string[2:4], 16), int(string[4:], 16)
 
