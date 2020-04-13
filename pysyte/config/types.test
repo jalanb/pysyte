@@ -9,3 +9,8 @@ Types
 
     >>> assert hasattr(types, 'YamlConfiguration')
     >>> assert hasattr(types, 'ModuleConfiguration')
+
+Edge cases
+----------
+
+    >>> assert not types.YamlConfiguration({})
