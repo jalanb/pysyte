@@ -5,3 +5,4 @@ The x11_colour_names module
     >>> assert 'X11 names for colours' in x11_colour_names.__doc__
 
     >>> assert 'red' in x11_colour_names.names()
+    >>> assert x11_colour_names.names()['green'] == (0, 255, 0)

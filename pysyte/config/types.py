@@ -19,12 +19,11 @@ class YamlConfiguration(NameSpaces):
 
     def as_path(self, string):
         stem = paths.path(string)
-        yml = stem.add_missing_ext('yml')
-        if yml.isfile():
-            return yml
-        yaml = stem.add_missing_ext('yaml')
-        if yaml.isfile():
-            return yaml
+        extensions = ('yml', 'yaml')
+        for extension in extensions:
+            yml = stem.add_missing_ext(extension)
+            if yml.isfile():
+                return yml
 
 
 class YamlyConfiguration(YamlConfiguration):

@@ -80,7 +80,7 @@ def colour_initial(colour_name, string):
 
 
 def colour_initials(colour_name, strings):
-    return colour(''.join([str(colour_initial(s, colour_name)) for s in strings]))
+    return ''.join([str(colour_initial(colour_name, s)) for s in strings])
 
 
 def prompt_text(colour_name, string):

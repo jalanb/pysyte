@@ -8,9 +8,6 @@ class Config(NameSpaces):
     def __init__(self, data):
         super().__init__(data)
 
-    def __repr__(self, data):
-        pass
-
 
 def load(path_to_config):
     with path_to_config.open() as stream:

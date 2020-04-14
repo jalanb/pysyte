@@ -12,6 +12,20 @@ User configs
 ------------
     >>> fred = xdg.home_config('fred')
     >>> assert not fred
-    >>> if paths.path('~/.config/pysyte.yml').isfile():
+    >>> pysyte_config = '~/.config/pysyte.yml'
+    >>> if paths.path(pysyte_config).isfile():
     ...     pysyte = xdg.home_config('pysyte')
     ...     assert pysyte is not None
+
+Many configs
+------------
+
+Method exists to get all config files for a name
+    The config under home (from above) should be in that
+    >>> if paths.path(pysyte_config).isfile():
+    ...     assert xdg.home_config('pysyte') in xdg.all_configs('pysyte')
+    ...     assert xdg.home_config('pysyte') == xdg.any_config('pysyte')
+
+We may also find a config under /etc
+    >>> if paths.path('/etc/pysyte.yml').isfile():
+    ...     assert xdg.etc_config('pysyte') in xdg.all_configs('pysyte')
