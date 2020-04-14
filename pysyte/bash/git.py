@@ -1,7 +1,8 @@
 """This module provides methods to cover many git commands"""
-import logging
+
 import os
 import re
+import sys
 import shutil
 from contextlib import contextmanager
 from functools import partial
@@ -9,9 +10,6 @@ from functools import partial
 from subprocess import getstatusoutput
 
 _working_dirs = ['.']
-
-
-logger = logging.getLogger('tools')
 
 
 class GitException(RuntimeError):
@@ -169,7 +167,7 @@ def cd(path):
     _working_dirs[0] = root_from(path)
 
 
-def run(sub_command, quiet=False, no_edit=False, no_verify=False):
+def run(sub_command, quiet=True, no_edit=False, no_verify=False):
     """Run a git command
 
     Prefix that sub_command with "git "
@@ -189,12 +187,12 @@ def run(sub_command, quiet=False, no_edit=False, no_verify=False):
     verify = 'GIT_SSL_NO_VERIFY=true' if no_verify else ''
     command = f'{verify} {edit} {git_command} {sub_command}'
     if not quiet:
-        logger.info('$ %s', command)
+        print(f'$ {command}')
     status_, output = getstatusoutput(command)
     if status_:
         if quiet:
-            logger.info('$ %s', command)
-        logger.error('\n%s', output)
+            print(f'$ {command}', file=sys.stderr)
+        print(f'\n{output}', file=sys.stderr)
         if 'unknown revision' in output:
             raise UnknownRevision(command, status_, output)
         elif 'remote ref does not exist' in output:
@@ -209,11 +207,11 @@ def run(sub_command, quiet=False, no_edit=False, no_verify=False):
             raise ExistingBranch(command, status, output)
         raise GitError(command, status_, output)
     elif output and not quiet:
-        logger.info('\n%s', output)
+        print(f'\n{output}')
     return output
 
 
-def log(args, number=None, oneline=False, quiet=False):
+def log(args, number=None, oneline=False, quiet=True):
     """Run a "git log ..." command, and return stdout
 
     args is anything which can be added after a normal "git log ..."
@@ -241,7 +239,7 @@ def root():
 
     i.e. this directory (or one above) which contains the ".git" directory
     """
-    return os.path.dirname(rev_parse('--absolute-git-dir'))
+    return os.path.dirname(rev_parse('--absolute-git-dir', quiet=True))
 
 
 def branch(options=False, *args, **kwargs):
@@ -296,7 +294,7 @@ def conflicted(path_to_file):
     return False
 
 
-def add(path=None, force=False, quiet=False):
+def add(path=None, force=False, quiet=True):
     """Add that path to git's staging area (default current dir)
 
     so that it will be included in next commit
@@ -498,7 +496,7 @@ def sha1(branch=None, path=None):
     return latest_commit(branch, path)[0]
 
 
-def checkout(branch, quiet=False, as_path=False):
+def checkout(branch, quiet=True, as_path=False):
     """Check out that branch
 
     Defaults to a quiet checkout, giving no stdout
@@ -559,7 +557,7 @@ def same_diffs(commit1, commit2):
     return not lines[i:]
 
 
-def checkout_log(branch, number=15, quiet=False, as_path=False):
+def checkout_log(branch, number=15, quiet=True, as_path=False):
     if checkout(branch, quiet, as_path):
         return log('', number=number, oneline=True, quiet=quiet).splitlines()
     return []
@@ -636,7 +634,7 @@ def delete(branch, force=False, remote=False):
     return result
 
 
-def commit(message, add=False, quiet=False):
+def commit(message, add=False, quiet=True):
     """Commit with that message and return the SHA1 of the commit
 
     If add is truish then "$ git add ." first
