@@ -6,11 +6,11 @@ This module is a simplifying proxy to stdlib's sys.exit()
 import os
 import sys
 import inspect
+from bdb import BdbQuit as DebugExit
 
 import stackprinter
 
 from pysyte.cli import arguments
-from pysyte.debuggers import DebugExit
 from pysyte.cli import config as configuration
 from pysyte.types.paths import makepath
 
