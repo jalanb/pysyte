@@ -1,20 +1,9 @@
+"""Handle iterators for pysyte"""
+
 try:
     from itertools import ifilter
 except ImportError:
     ifilter = filter
-
-
-class SequenceIterator(object):
-    def __init__(self, items):
-        self.items = items
-        self.i = -1
-
-    def next(self):
-        try:
-            self.i += 1
-            return self.items[self.i]
-        except IndexError:
-            raise StopIteration
 
 
 def first(sequence, message=None):
@@ -37,12 +26,7 @@ def last(sequence, message=None):
 
     >>> assert last([1, 2, 3]) == 3
     """
-    try:
-        return sequence.pop()
-    except AttributeError:
-        return list(sequence).pop()
-    except IndexError:
-        raise ValueError(message or f'Sequence is empty: {sequence}')
+    return first(reversed(sequence), message)
 
 
 def first_or(sequence, value):

@@ -1,0 +1,35 @@
+The pysyte.iteration module
+---------------------------
+
+    >>> from pysyte import iteration
+    >>> assert 'Handle iterators' in iteration.__doc__
+
+Finding things in a sequence
+----------------------------
+
+Get first item from an iteration
+    >>> assert iteration.first([1, 2, 3]) == 1
+
+Ot the last
+    >>> assert iteration.last([1, 2, 3]) == 3
+
+Specify the error message if not found
+    >>> try:
+    ...     iteration.first([], 'empty list')
+    ...     assert False, 'Expected a ValueError'
+    ... except ValueError as e:
+    ...     assert e.args[0] == 'empty list'
+
+Specify a default if not found
+    >>> assert iteration.first_or([], 7) == 7
+
+Apply some predicate as a test
+    >>> even = lambda x: x % 2 == 0
+    >>> assert iteration.first_that(even, [3, 4, 5, 6, 7]) == 4
+
+If not true for any item, expect a KeyError
+    >>> try:
+    ...     iteration.first_that(even, [3, 5, 7], 'all odd')
+    ...     assert False, 'Expected a KeyError'
+    ... except KeyError as e:
+    ...     assert e.args[0] == 'all odd'

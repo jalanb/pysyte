@@ -13,7 +13,6 @@ from itertools import chain
 from deprecated import deprecated
 
 from pysyte.cli.config import user
-from pysyte.iteration import SequenceIterator
 from pysyte.types.numbers import inty
 
 
@@ -131,9 +130,6 @@ class ArgumentsNamespace(object):
 
     def __getattr__(self, name):
         return getattr(self._result, name)
-
-    def __iter__(self):
-        return SequenceIterator(self.get_args())
 
     def get_args(self):
         attributes = [a for a in dir(self._result) if a[0] != '_']

@@ -1,0 +1,26 @@
+The pysyte.tracebacks module
+----------------------------
+
+    >>> from pysyte import tracebacks
+    >>> assert 'Handle tracebacks' in tracebacks.__doc__
+
+Parse traceback lines
+---------------------
+
+A typical traceback line
+    >>> line = 'File "/path/fred.py", line 1329, in run'
+
+Should be able to get a filename and a line number from that
+    >>> path, lineno = tracebacks.parse_line(line)
+    >>> assert path == '/path/fred.py'
+    >>> assert lineno == 1329
+
+Should also work for paths with spaces
+    >>> line = 'File "/path to/fred.py", line 1329, in run'
+    >>> path, _ = tracebacks.parse_line(line)
+    >>> assert path == '/path to/fred.py'
+
+And if quotes are not present
+    >>> line = 'File /path/fred.py, line 1329, in run'
+    >>> path, _ = tracebacks.parse_line(line)
+    >>> assert path == '/path/fred.py'

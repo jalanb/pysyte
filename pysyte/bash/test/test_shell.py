@@ -17,4 +17,4 @@ class TestShell(unittest.TestCase):
         expected = shell.run('basename $PWD')
         shell.cd('usr/local')
         actual = shell.run('basename $PWD')
-        self.assertEquals(actual, expected)
+        self.assertEqual(actual, expected)
