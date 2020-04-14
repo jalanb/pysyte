@@ -1,9 +1,9 @@
-"""Facilities for tracebacks"""
+"""Handle tracebacks for pysyte"""
 
 import re
 
 
-def line_regexp():
+def _line_regexp():
     """Regular expression to match a traceback file line"""
     return re.compile(r'''\s*
         File\s
@@ -24,10 +24,10 @@ def line_regexp():
 
 def parse_line(string):
     """Parse a single string as traceback line"""
-    match = line_regexp().match(string)
+    match = _line_regexp().match(string)
     if match:
         matches = match.groupdict()
-        line_number = matches['line_number']
+        line_number = int(matches['line_number'])
         path_to_python = matches['path_to_python']
         spaceless_path_to_python = matches['spaceless_path_to_python']
         if path_to_python:
