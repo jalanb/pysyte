@@ -48,7 +48,7 @@ from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-impor
 
 
 @total_ordering
-class NonePath(object):
+class NonePath:
     def __init__(self, string=None):
         self.string = string if string else ''
         self.proxy = DirectPath(self.string)
@@ -139,9 +139,6 @@ class DotPath(PPath):
     def name(self):
         return str(super().name)
 
-    def isroot(self):
-        return str(self) == '/'
-
     def parent_directory(self):
         if self.isroot():
             return None
@@ -151,8 +148,6 @@ class DotPath(PPath):
         if self.isroot():
             return []
         parent = self.parent
-        if not parent:
-            return []
         return [parent] + parent.parent_directories()
 
     def directory(self):
@@ -227,15 +222,6 @@ class DotPath(PPath):
         parts = super().split(separator, maxsplit)
         parts[0] = makepath(parts[0] if parts[0] else '/')
         return parts
-        root, *names = self.splitall()
-        path_ = makepath(str(root))
-        result = [path_]
-        for name in names:
-            path_ = path_ / name
-            if not path_.isdir():
-                break
-            result.append(path_)
-        return result
 
     def abspath(self):
         return makepath(os.path.abspath(str(self)))
@@ -264,25 +250,6 @@ class DotPath(PPath):
     def short_relative_path_from_here(self):
         """A short path relative to self to the current working directory"""
         return self.__class__(os.getcwd()).short_relative_path_to(self)
-
-    def walk_some_dirs(self, levels=-1, pattern=None):
-        """ D.walkdirs() -> iterator over subdirs, recursively.
-
-        With the optional 'pattern' argument, this yields only
-        directories whose names match the given pattern.  For
-        example, mydir.walkdirs('*test') yields only directories
-        with names ending in 'test'.
-        """
-        if not levels:
-            yield self
-            return
-        levels -= 1
-        for child in self.dirs():
-            if pattern is None or child.fnmatch(pattern):
-                yield child
-            if levels:
-                for subsubdir in child.walk_some_dirs(levels, pattern):
-                    yield subsubdir
 
     def fnmatch_basename(self, glob):
         if glob.startswith(os.path.sep):
@@ -324,6 +291,7 @@ class DotPath(PPath):
         return None
 
     def __get_owner_not_implemented(self):
+        """Remove pylint warning"""
         pass
 
     def expand(self):
@@ -341,11 +309,21 @@ class DotPath(PPath):
     def same_path(self, other):
         return self.expand() == other.expand()
 
-    @property
-    def hidden(self):
+    def isroot(self):
+        raise NotImplementedError('Only a directory path can be a root')
+
+    def ishidden(self):
         """A 'hidden file' has a name starting with a '.'"""
         s = str(self.basename())
         return s and s[0] == '.'
+
+    def is_executable(self):
+        """Whether the path is executable"""
+        # pylint: disable=no-self-use
+        return False
+
+    def isexec(self):
+        return self.is_executable()
 
     def add_ext(self, *args):
         """Join all args as extensions
@@ -373,14 +351,6 @@ class DotPath(PPath):
         if old == extension:
             return makepath(self)
         return self.add_ext(extension)
-
-    def is_executable(self):
-        """Whether the path is executable"""
-        # pylint: disable=no-self-use
-        return False
-
-    def isexec(self):
-        return self.is_executable()
 
     def has_executable(self):
         """Whether the path has any executable bits set """
@@ -411,14 +381,6 @@ def ext_language(ext, exts=None, simple=True):
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
-
-def mime_language(ext, exts=None):
-    if ext == '.txt':
-        return 'txt'
-    language = ext_language(ext, exts, True)
-    if language:
-        return f'txt/{language}'
-    return ''
 
 
 del PPath
@@ -459,6 +421,10 @@ class FilePath(DotPath, PathAssertions):
         return [l
                 for l in self.stripped_whole_lines()
                 if not l.startswith('#')]
+
+    def isroot(self):
+        """A file cannot be root of a filesystem"""
+        return False
 
     def is_executable(self):
         """Whether the file has any executable bits set"""
@@ -532,17 +498,11 @@ class FilePath(DotPath, PathAssertions):
         If no shebang is present, return an empty string
         """
         try:
-            try:
-                first_line = self.lines(retain=False)[0]
-            except (OSError, UnicodeDecodeError):
-                return ''
-            if first_line.startswith('#!'):
-                rest_of_line = first_line[2:].strip()
-                parts = rest_of_line.split(' ')
-                interpreter = parts[0]
-                return makepath(interpreter)
-        except IndexError:
-            pass
+            first_line = self.lines(retain=False)[0]
+        except (OSError, UnicodeDecodeError):
+            return ''
+        if first_line.startswith('#!'):
+            return first_line[2:].strip()
         return ''
 
     def mv(self, destination):  # pylint: disable=invalid-name
@@ -560,23 +520,12 @@ class FilePath(DotPath, PathAssertions):
         try:
             return self._language
         except AttributeError:
-            self._language = find_language(self, getattr(self, 'exts', None))
+            self._language = ext_language(self.ext)
         return self._language
 
     @language.setter
     def language(self, value):
-        self._langauge = value
-
-    def choose_language(self, exts):
-        self._exts = exts
-        self._language = ext_language(self.ext, exts)
-
-    def mimetype(self):
-        import magic  # pylint: disable=import-outside-toplevel
-        result = magic.from_file(str(self))
-        if result.startswith('txt'):
-            return mime_language(self.ext)
-        return result
+        self._language = value
 
 
 class DirectPath(DotPath, PathAssertions):
@@ -727,6 +676,9 @@ class DirectPath(DotPath, PathAssertions):
                 return True
         return False
 
+    def isroot(self):
+        return str(self) == '/'
+
 
 def ignore_fnmatches(ignores):
 
@@ -788,7 +740,8 @@ def _(arg):
     if os.path.isfile(arg):
         return FilePath(arg)
     if os.path.isdir(arg):
-        return DirectPath(arg)
+        string = arg if arg == '/' else arg.rstrip('/')
+        return DirectPath(string)
     v = os.path.expandvars(arg)
     u = os.path.expanduser(v)
     if arg == u:
@@ -920,6 +873,10 @@ def files(strings):
 
 def directories(strings):
     return split_directories(strings)[0]
+
+
+def root():
+    return makepath('/')
 
 
 def tmp():

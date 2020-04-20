@@ -27,13 +27,30 @@ class MockFilePathWithLines(paths.FilePath):
             'Normal line\n'
         ]
 
+class MockPythonShebang(MockFilePathWithLines):
+    """Mock some lines into a file, with first having '#!'"""
+    def lines(self, encoding=None, errors='strict', retain=True):
+        return [
+            '#! /usr/bin/env python3\n',
+            'i = 5\n',
+            'pass'
+        ]
+
 
 class TestPaths(TestCase):
 
     def setUp(self):
-        self.path = paths.path(__file__).extend_by('py')
-        self.dir = self.path.parent
-        self.source = paths.path(paths.__file__.rstrip('c')).extend_by('py')
+        self.setup_dir = paths.pwd()
+        self.path_to_test = paths.path(__file__).extend_by('py')
+        self.dir = self.path_to_test.parent
+        self.path_to_paths = paths.path(paths).extend_by('py')
+        self.path_to_package = self.path_to_paths.parent
+        # For testing here "path to project" means top-level python package
+        #     i.e. not very top-level with ".git", etc
+        self.path_to_project = self.path_to_package.parent
+
+    def tearDown(self):
+        self.setup_dir.cd()
 
     def test_path_error(self):
         self.assertRaises(
@@ -46,8 +63,8 @@ class TestPaths(TestCase):
 
     def test_assert_isfile(self):
         self.assertEqual(
-            self.path,
-            self.path.assert_isfile())
+            self.path_to_test,
+            self.path_to_test.assert_isfile())
 
     def test_assert_not_isfile(self):
         self.assertRaises(
@@ -62,7 +79,7 @@ class TestPaths(TestCase):
     def test_assert_not_isdir(self):
         self.assertRaises(
             paths.PathError,
-            self.path.assert_isdir)
+            self.path_to_test.assert_isdir)
 
     def test_join_with_nothing(self):
         self.assertEqual(
@@ -70,12 +87,12 @@ class TestPaths(TestCase):
             self.dir / '')
 
     def test_file_class(self):
-        path = SourcePath(str(self.source))
+        path = SourcePath(str(self.path_to_paths))
         self.assertTrue(path.isfile)
         self.assertIs(path.__file_class__, SourcePath)
 
     def test_dirnames(self):
-        self.assertIn(self.dir.name, self.path.dirnames())
+        self.assertIn(self.dir.name, self.path_to_test.dirnames())
 
     def test_stripped_lines(self):
         path = MockFilePathWithLines('/not/a/real/file')
@@ -110,7 +127,7 @@ class TestPaths(TestCase):
         self.assertFalse(path.any_line_has('Abnormal line'))
 
     def test_directory(self):
-        self.assertEqual(self.path.directory(), self.path.parent)
+        self.assertEqual(self.path_to_test.directory(), self.path_to_test.parent)
 
     def test_no_div_for_file(self):
         path = paths.FilePath(__file__)
@@ -118,15 +135,15 @@ class TestPaths(TestCase):
             path / 'fred'
 
     def test_directory_iteration(self):
-        for item in self.path.directory():
-            if item == self.path:
+        for item in self.path_to_test.directory():
+            if item == self.path_to_test:
                 break
         else:
-            self.fail('Could not find %s' % self.path)
+            self.fail('Could not find %s' % self.path_to_test)
 
     def test_vcs_dirs(self):
         self.assertTrue(paths.path('/usr/.git/fred').has_vcs_dir())
-        self.assertTrue(paths.path('/usr/local/.svn').has_vcs_dir())
+        self.assertTrue(paths.path('/usr/local/.svn/fred').has_vcs_dir())
         self.assertTrue(paths.path('/.hg/etc').has_vcs_dir())
         self.assertFalse(paths.path('/usr/local/bin').has_vcs_dir())
 
@@ -194,17 +211,15 @@ class TestPaths(TestCase):
         First is a list of existing files
         Second is the remainder
         """
-        path_to_paths = paths.makepath(paths)
-        tests = [path_to_paths, path_to_paths.parent]
+        tests = [self.path_to_paths, self.path_to_package]
         actual = paths.split_files(tests)
-        expected = ([path_to_paths], [path_to_paths.parent])
+        expected = ([self.path_to_paths], [self.path_to_package])
         self.assertEqual(actual, expected)
 
     def test_files(self):
         """files() filters existing files from a list of paths"""
-        path_to_paths = paths.makepath(paths)
-        tests = [path_to_paths, path_to_paths.parent]
-        expected = [path_to_paths]
+        tests = [self.path_to_paths, self.path_to_package]
+        expected = [self.path_to_paths]
         actual = paths.files(tests)
         self.assertEqual(actual, expected)
 
@@ -214,17 +229,15 @@ class TestPaths(TestCase):
         First is a list of existing directories
         Second is the remainder
         """
-        path_to_paths = paths.makepath(paths)
-        tests = [path_to_paths, path_to_paths.parent]
+        tests = [self.path_to_paths, self.path_to_package]
         actual = paths.split_directories(tests)
-        expected = ([path_to_paths.parent], [path_to_paths])
+        expected = ([self.path_to_package], [self.path_to_paths])
         self.assertEqual(actual, expected)
 
     def test_directories(self):
         """directories() filters existing directories from a list of paths"""
-        path_to_paths = paths.makepath(paths)
-        tests = [path_to_paths, path_to_paths.parent]
-        expected = [path_to_paths.parent]
+        tests = [self.path_to_paths, self.path_to_package]
+        expected = [self.path_to_package]
         actual = paths.directories(tests)
         self.assertEqual(actual, expected)
 
@@ -235,11 +248,10 @@ class TestPaths(TestCase):
         Second is a list of existing directories
         Third is the remainder
         """
-        path_to_paths = paths.makepath(paths)
-        tests = ['/path/to/nowhere', path_to_paths, path_to_paths.parent]
+        tests = ['/path/to/nowhere', self.path_to_paths, self.path_to_package]
         actual = paths.split_directories_files(tests)
-        self.assertEqual(actual[0], [path_to_paths.parent])
-        self.assertEqual(actual[1], [path_to_paths])
+        self.assertEqual(actual[0], [self.path_to_package])
+        self.assertEqual(actual[1], [self.path_to_paths])
         self.assertEqual(actual[2], ['/path/to/nowhere'])
 
     def test_list_items_without_path(self):
@@ -288,11 +300,111 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
 
     def test_py_to_py(self):
-        """Convert a file like '...pyc' to '...py'"""
+        """Don't convert a file like '...py', leave it as '...py'"""
         expected = 'fred.py'
         actual = paths.pyc_to_py('fred.py')
         self.assertEqual(actual, expected)
 
+    def test_equality(self):
+        """Two paths are same as strings to be == as paths
+
+        But, any trailing '/' on a directory does not matter
+        """
+        self.assertTrue(
+            paths.path('/usr/local') == paths.path('/usr/local/'))
+
+    def test_less_than(self):
+        """Paths use strings for testing less than"""
+        self.assertTrue(
+            paths.path('/usr/local') < paths.path('/usr/local/bin'))
+
+    def test_total_ordering(self):
+        """Greater than is based on less than"""
+        self.assertTrue(
+            paths.path('/usr/local/bin') > paths.path('/usr/local'))
+
+    def test_relative_paths(self):
+        p = paths.path(paths)
+        expected = self.path_to_package.basename()
+        actual = self.path_to_project.short_relative_path_to(
+            self.path_to_package)
+        self.assertEqual(actual, expected)
+        expected = '..'
+        actual = self.path_to_package.short_relative_path_to(
+            self.path_to_project)
+        self.assertEqual(actual, expected)
+
+    def test_relative_path_hither(self):
+        p = paths.path(paths)
+        self.path_to_package.cd()
+        expected = self.path_to_package.basename()
+        actual = self.path_to_project.short_relative_path_to_here()
+        self.assertEqual(actual, expected)
+
+    def test_relative_path_hence(self):
+        p = paths.path(paths)
+        self.path_to_package.cd()
+        expected = '..'
+        actual = self.path_to_project.short_relative_path_from_here()
+        self.assertEqual(actual, expected)
+
+    def test_fnmatch_basename(self):
+        """The name of this file should start with 'test_'"""
+        self.assertTrue(self.path_to_test.fnmatch_basename('test_*'))
+        self.assertTrue(self.path_to_test.fnmatch_basename('/test_*'))
+
+    def test_fnmatch_directory(self):
+        """The name of this file's dir should start with 'test'
+
+        Check against "te*" as well, as the name may be 'test'
+        """
+        self.assertTrue(self.path_to_test.fnmatch_directory('test*'))
+        self.assertTrue(self.path_to_test.fnmatch_directory('/test*'))
+        self.assertTrue(self.path_to_test.fnmatch_directory('/test*/'))
+        self.assertTrue(self.path_to_test.fnmatch_directory('te*'))
+
+    def test_fnmatch_directories(self):
+        """One pf the parent dires from this file should be 'pysyte'
+
+        But this (test) file is not in that directory
+        """
+        self.assertTrue(self.path_to_test.fnmatch_directories('py*te'))
+        self.assertTrue(self.path_to_test.fnmatch_directories('/py*te'))
+        self.assertTrue(self.path_to_test.fnmatch_directories('py*te/'))
+        self.assertTrue(self.path_to_test.fnmatch_directories('/py*te/'))
+        self.assertFalse(self.path_to_test.fnmatch_directory('py*te'))
+
+    def test_fnmatch_part(self):
+        """The fnmatch_part() method tries globs against all parts
+
+        So - all of the above test globs should match
+        """
+        self.assertTrue(self.path_to_test.fnmatch_part('test*'))
+        self.assertTrue(self.path_to_test.fnmatch_part('/test_*'))
+        self.assertTrue(self.path_to_test.fnmatch_part('te*'))
+        self.assertTrue(self.path_to_test.fnmatch_part('py*te'))
+
+    def test_no_shebang(self):
+        """This file should not have a shebang line"""
+        expected = ''
+        actual = self.path_to_test.shebang()
+        self.assertEqual(actual, expected)
+
+    def test_python_shebang(self):
+        path = MockPythonShebang('/not/a/real/file')
+        expected = '/usr/bin/env python3'
+        actual = path.shebang()
+        self.assertEqual(actual, expected)
+
+    def test_language(self):
+        expected = 'python'
+        actual = self.path_to_test.language
+        self.assertEqual(actual, expected)
+
+    def test_set_language(self):
+        self.assertEqual(self.path_to_test.language, 'python')
+        self.path_to_test.language = 'python3'
+        self.assertEqual(self.path_to_test.language, 'python3')
 
 class TestNonePath(TestCase):
     """A NonePath is made from an empty or non-existent path

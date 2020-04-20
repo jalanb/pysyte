@@ -1,5 +1,5 @@
-The psyyte.types.paths module
-=============================
+The paths module
+================
 
     >>> from pysyte.types import paths
     >>> assert 'extended path classes' in paths.__doc__
@@ -9,8 +9,14 @@ We'll need the os module for some of the tests below
     >>> import os
     >>> import sys
 
-pwd()
------
+Some known paths
+----------------
+
+Root of the filesystem
+    >>> assert paths.root().isroot()
+
+The tmp directory
+    >>> assert paths.tmp() == '/tmp'
 
 The pwd() method is a synonym for os.getcwd()
 
@@ -129,6 +135,15 @@ The makepath method expands paths "normally"
 And that is an expanded path
     >>> assert path_to_home.startswith('/') and '~' not in path_to_home
 
+Using DirectPath (not makepath()), does not expand paths
+    so this has a different string value
+    >>> compact = paths.DirectPath('~')
+
+The unexpanded version is not equal to the expanded
+    But it is the same path
+    >>> assert compact != path_to_home
+    >>> assert compact.same_path(path_to_home)
+
 Need a known directory for next tests
     >>> path_to_path = paths.path(paths)
     >>> path_to_types = path_to_path.parent
@@ -188,11 +203,16 @@ Attributes of may also be DirectPaths or FilePaths
     >>> expected = paths.DirectPath if bashrc.isfile() else paths.NonePath
     >>> assert isinstance(parent, expected)
 
-Whether paths exist
--------------------
+Various checks on paths
+-----------------------
 
-    >>> assert paths.path(paths.__file__).isfile()
-    >>> assert paths.path(paths.__file__).parent.isdir()
+Whether paths exist, are files, are dirs, are hidden, ...
+
+    >>> path_to_paths = paths.path(paths.__file__)
+    >>> assert path_to_paths.isfile()
+    >>> assert path_to_paths.parent.isdir()
+    >>> assert not path_to_paths.isroot()
+    >>> assert bashrc.ishidden()
     >>> assert paths.path(sys.executable).isexec()
     >>> assert not paths.path(sys.executable).parent.isexec()
 
@@ -276,7 +296,17 @@ Get the parent directory
     >>> local_bin = paths.path('/usr/local/bin')
     >>> assert local_bin.parent == '/usr/local'
 
-Or all parents
+There is also a more fully spelled-out function to get the parent
+    >>> assert local_bin.parent == local_bin.parent_directory()
+
+.parent and .parent_directory() are same for all paths except filesystem root
+    For the root it's "parent" is itself
+    But it does not have a "parent_directpry"
+    >>> root = paths.path('/')
+    >>> assert root.parent == root
+    >>> assert root.parent_directory() is None
+
+Use the plural to get all parents up to the root (in "ascending" order)
     >>> parents = local_bin.parent_directories()
     >>> assert parents[0] == '/usr/local'
     >>> assert parents[1] == '/usr'
