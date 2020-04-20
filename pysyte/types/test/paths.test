@@ -233,7 +233,8 @@ Iteration of paths
 Iterating a directory gives directory entries (sub-directories and files)
 
 Iterating a file gives lines
-    >>> path_to_this_test = paths.makepath(paths.__file__).extend_by('.test')
+    >>> path_to_types = path_to_paths.parent
+    >>> path_to_this_test = path_to_types / 'test/paths.test'
     >>> iteratings = [l for l in path_to_this_test if 'Iterating' in l]
     >>> assert 'Iterating a file gives lines' in iteratings
 
@@ -259,29 +260,21 @@ Search directories
 Tab completion
 --------------
 
-    >>> assert paths.add_star('fred') == 'fred.*'
+    >>> assert paths.add_star('fred') == 'fred*'
     >>> assert paths.add_star('fred.') == 'fred.*'
     >>> assert paths.add_star('fred.p') == 'fred.p*'
 
-    >>> assert paths.add_stars(['fred', 'fred.', 'fred.py']) == ['fred.*', 'fred.*', 'fred.py*']
-    >>> assert paths.add_star('fred') == 'fred.*'
+    >>> assert paths.add_stars(['fred', 'fred.', 'fred.py']) == ['fred*', 'fred.*', 'fred.py*']
 
-Try tab completion on the module we're testing
+Try tab completion on some pysyte modules
+    >>> incomplete_text = str(path_to_types / 'li')
+    >>> completions = paths.tab_complete(incomplete_text)
 
-Filename of the module is ".../pysyte/types/paths.py"
-    Remove the extension
-    to get the stem ".../pysyte/types/paths"
-    >>> stem, _ = os.path.splitext(paths.__file__)
-
-Get the completions for that stem
-    >>> completions = paths.tab_complete([stem])
-
-And extract basenames for those completions
-    >>> stems = [str(p.basename()) for p in completions]
-
-Should give us the source and test files for the paths module
-    >>> assert 'paths.py' in stems
-    >>> assert 'paths.test' in stems
+We expect modules called "lines" and "lists" in same dir as "paths"
+    And a package called "literals"
+    >>> assert path_to_types / 'lines.py' in completions
+    >>> assert path_to_types / 'lists.py' in completions
+    >>> assert path_to_types / 'literals' in completions
 
 Parts and parents
 -----------------
