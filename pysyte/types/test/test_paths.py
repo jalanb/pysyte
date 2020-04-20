@@ -255,7 +255,6 @@ class TestPaths(TestCase):
         a_path = paths.makepath(random.choice(shell_paths))
         environ_paths = paths.environ_paths('PATH')
         self.assertTrue(a_path in environ_paths)
-        self.assertTrue(random.choice(environ_paths).exists())
 
     def test_environ_path(self):
         """environ_path() gets a symbol from environ and converts it to path"""
@@ -303,16 +302,16 @@ class TestNonePath(TestCase):
     """
     def test_none_to_none(self):
         for item in (None, '', 0):
-            p = paths.makepath(item)
+            p = paths.path(item)
             self.assertTrue(isinstance(p, paths.NonePath))
 
     def test_repr(self):
-        actual = repr(paths.makepath(None))
+        actual = repr(paths.path(None))
         expected = '<NonePath "">'
         self.assertEqual(actual, expected)
 
     def test_string_repr(self):
-        actual = repr(paths.makepath('not/real/path'))
+        actual = repr(paths.path('not/real/path'))
         expected = '<NonePath "not/real/path">'
         self.assertEqual(actual, expected)
 
@@ -332,7 +331,7 @@ class TestNonePath(TestCase):
 
     def test_equality(self):
         """A NonePath is equal to anything else none-ish"""
-        p = paths.makepath(None)
+        p = paths.path(None)
         self.assertTrue(p == '')
         self.assertTrue(p == 0)
 
@@ -341,28 +340,28 @@ class TestNonePath(TestCase):
 
         Except: if made from a string, then do a string comparison
         """
-        p = paths.makepath('/path/to/nowhere')
+        p = paths.path('/path/to/nowhere')
         self.assertTrue(p == '/path/to/nowhere')
-        self.assertTrue(paths.makepath(None) == p)
+        self.assertTrue(paths.path(None) == p)
 
     def test_less_than(self):
         """A NonePath is less than anything that's not false-y"""
-        p = paths.makepath('/path/to/nowhere')
+        p = paths.path('/path/to/nowhere')
         self.assertTrue(p < '/path/to/nowhere/else')
-        self.assertTrue(p < paths.makepath('/usr'))
+        self.assertTrue(p < paths.path('/usr'))
 
     def test_not_less_than(self):
         """A NonePath is not less than anything that's false-y"""
-        p = paths.makepath('/path/to/nowhere')
+        p = paths.path('/path/to/nowhere')
         self.assertFalse(p < False)
-        self.assertFalse(p < paths.makepath(None))
+        self.assertFalse(p < paths.path(None))
 
     def test_total_ordering(self):
         """NonePath has __eq__, and __lt__, but can use other comparisons"""
-        p = paths.makepath('/path/to/nowhere')
+        p = paths.path('/path/to/nowhere')
         self.assertTrue(p > '/path/to')
-        self.assertTrue(p <= paths.makepath('/usr'))
-        self.assertTrue(p <= paths.makepath('/path/to/nowhere'))
+        self.assertTrue(p <= paths.path('/usr'))
+        self.assertTrue(p <= paths.path('/path/to/nowhere'))
 
     def test_contains_nothing(self):
         """There's nothing in a NonePath
@@ -370,11 +369,11 @@ class TestNonePath(TestCase):
         Unlike an existing path
             where "in" means "in that directory"
         """
-        self.assertTrue(paths.makepath('/usr/local') in paths.makepath('/usr'))
-        self.assertFalse(paths.makepath('/a/path') in paths.makepath('/a'))
+        self.assertTrue(paths.path('/usr/local') in paths.path('/usr'))
+        self.assertFalse(paths.path('/a/path') in paths.path('/a'))
 
     def test_div(self):
         """Can still use the '/' operator with a NonePath"""
-        parent = paths.makepath('/path/to')
-        child = paths.makepath('/path/to/nowhere')
+        parent = paths.path('/path/to')
+        child = paths.path('/path/to/nowhere')
         self.assertTrue(parent / 'nowhere' == child)
