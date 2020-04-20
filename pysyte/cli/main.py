@@ -88,7 +88,7 @@ def run(
         else:
             def add_args(self):
                 assert caller.needs_one_arg
-                assert len(caller.args) == 1
+                caller.args = sys.argv[1:]
 
         def run(self):
             """Handle expected exceptions"""
