@@ -110,6 +110,11 @@ and other things that have paths
     >>> fred = Fred()
     >>> assert paths.makepath(fred) is fred.path
 
+A specialised version for strings
+    >>> assert not paths.makestr('')
+    >>> assert paths.makestr(paths.__file__).isfile()
+    >>> assert not paths.makestr('/path/to/nowehere').isfile()
+
 Path expansion at creation
 --------------------------
 
@@ -137,7 +142,7 @@ The expansion works for the value if concatenation was applied to the path
 
 We are expecting that path to exist as a file, so we know its type
     >>> assert isinstance(applied_to_path, paths.FilePath)
-    
+
 And the types should also be the same for both applications
     >>> assert type(applied_to_path) == type(applied_to_string)
 

@@ -8,6 +8,7 @@ import stat
 import importlib
 from fnmatch import fnmatch
 from functools import singledispatch
+from functools import total_ordering
 
 from pysyte.types.lists import flatten
 
@@ -46,6 +47,7 @@ class PathAssertions:
 from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-import-position
 
 
+@total_ordering
 class NonePath(object):
     def __init__(self, string=None):
         self.string = string if string else ''
@@ -66,6 +68,8 @@ class NonePath(object):
         return not other
 
     def __lt__(self, other):
+        if self.string and other:
+            return str(self) < str(other)
         return bool(other)
 
     def __contains__(self, _):
@@ -93,6 +97,7 @@ class NonePath(object):
         return getattr(self.proxy, name, None)
 
 
+@total_ordering
 class DotPath(PPath):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
@@ -820,11 +825,9 @@ def _(arg):
 
 def makestr(string: str):
     """Make a path from a string"""
-    if not string:
-        return ''
     if os.path.isfile(string) or os.path.isdir(string):
         return makepath(string)
-    return string
+    return NonePath(string)
 
 
 def cd(path_to):  # pylint: disable=invalid-name
@@ -988,11 +991,12 @@ def list_items(path_to_directory, pattern, wanted=lambda x: True):
 
     By default, every path is wanted
     """
-    if not path_to_directory:
+    path_ = makepath(path_to_directory)
+    if not path_:
         return set()
-    needed = fnmatcher(pattern, path_to_directory, wanted)
-    return [os.path.join(path_to_directory, name)
-            for name in _names_in_directory(path_to_directory)
+    needed = fnmatcher(pattern, path_, wanted)
+    return [os.path.join(path_, name)
+            for name in _names_in_directory(path_)
             if needed(name)]
 
 
@@ -1012,13 +1016,7 @@ def set_files(path_to_directory, pattern):
 
 def contains_glob(path_to_directory, pattern, wanted=lambda x: True):
     """Whether the given path contains an item matching the given glob"""
-    if not path_to_directory:
-        return False
-    needed = fnmatcher(pattern, path_to_directory, wanted)
-    for name in _names_in_directory(path_to_directory):
-        if needed(name):
-            return True
-    return False
+    return any(list_items(path_to_directory, pattern, wanted))
 
 
 def contains_directory(path_to_directory, pattern):
@@ -1058,14 +1056,6 @@ def add_stars(strings):
     """
     paths_ = [strings] if isinstance(strings, str) else strings
     return [add_star(p) for p in paths_]
-
-
-def tab_complete_files(paths_, globber):
-    return tab_complete(paths_, globber, os.path.isfile)
-
-
-def tab_complete_dirs(paths_, globber):
-    return tab_complete(paths_, globber, os.path.isdir)
 
 
 def tab_complete(strings, globber=add_stars, select=os.path.exists):
