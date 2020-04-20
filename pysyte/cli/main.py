@@ -1,4 +1,4 @@
-"""Handle scripts from the command_line
+"""Run scripts from the command_line
 
 This module is a simplifying proxy to stdlib's sys.exit()
 """
