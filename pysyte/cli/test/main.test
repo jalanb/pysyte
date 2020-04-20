@@ -1,0 +1,39 @@
+The main module
+===============
+
+    >>> from pysyte.cli import main
+    >>> assert 'Run scripts' in main.__doc__
+
+The run function
+----------------
+
+The module provides a single function: run()
+    This runs a method from a caller
+
+Need a method to run
+    >>> def fred():
+    ...     print('Hello World')
+    ...     return 7
+
+Running the method through the run() function makes it a program
+    So we'll need to capture exitting
+    >>> try:
+    ...     exit_code = main.run(fred)
+    ...     assert exit_code == 7
+    ... except SystemExit:
+    ...     assert True, 'exitted'
+    Hello World
+
+run() can also take a function which adds cli arguments
+
+    >>> def add_args(parser):
+    ...     parser.add_argument('stuff')
+    ...     return parser
+
+    >>> try:
+    ...     exit_code = main.run(fred, add_args)
+    ...     assert exit_code == 7
+    ... except SystemExit:
+    ...     assert True, 'exitted'
+    Hello World
+
