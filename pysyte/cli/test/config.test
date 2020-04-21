@@ -10,9 +10,10 @@ More imports for testing
 
 User configs
 ------------
+
+A missing  config gives empty data
     >>> fred = config.user('fred')
     >>> assert not fred, f'{fred!r}'
 
-    >>> if paths.path('~/.config/pysyte.yml').isfile():
-    ...     pysyte = config.user('pysyte')
-    ...     assert pysyte
+Cannot guarantee that config files are really present
+    so see the unit tests for more
