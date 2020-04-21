@@ -8,6 +8,7 @@ More imports to support testing
 -------------------------------
 
     >>> import datetime
+    >>> import time
 
 Time taken
 ----------
@@ -26,5 +27,19 @@ Number of seconds since unix started counting is rather large
     At least a billion of them
     >>> assert times.seconds_since_epoch() > 1_000_000_000
 
+And that number should increase monotonically
+    >>> one = times.seconds_since_epoch()
+    >>> time.sleep(1)
+    >>> two = times.seconds_since_epoch()
+    >>> diff = two - one
+    >>> assert diff == 1, f'{diff}'
+
 Which is at least a trillion microseconds
     >>> assert times.microseconds_since_epoch() > 1_000_000_000_000
+
+Again - that should increase on each call
+    >>> one = times.microseconds_since_epoch()
+    >>> time.sleep(0.1)
+    >>> two = times.microseconds_since_epoch()
+    >>> diff = two - one
+    >>> assert diff > 0, f'{diff}'
