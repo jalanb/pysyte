@@ -1,4 +1,4 @@
-"""Test the term module"""
+"""Test the arguments module"""
 
 
 import unittest

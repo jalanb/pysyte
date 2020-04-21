@@ -19,6 +19,7 @@ from pysyte.types.numbers import inty
 def config(arguments):
     return user(arguments.prog)
 
+
 def extract_strings(names, name):
     result = {}
     try:
@@ -164,3 +165,8 @@ def parser(description=None, usage=None, epilog=None):
     elif len(lines) > 1 and not lines[1]:
         usage, description = lines[0], '\n'.join(lines[2:])
     return DescribedParser(description, usage, epilog)
+
+
+def test_parser():
+    """A parser for testing convenience"""
+    return parser('Testing', 'Use this from a test', '')

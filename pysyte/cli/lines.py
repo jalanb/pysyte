@@ -17,12 +17,6 @@ class LinesParser(ArgumentsParser):
         self.version = __version__
         self.groups = defaultdict(list)
 
-    def add_version(self, version_=None):
-        if version_:
-            self.version = version_
-        self.boolean('-v', '--version', help='Show version',)
-        return self
-
     def add_files(self, name=None, action=None):
         name_ = name if name else 'files'
         action_ = action if action else 'show'
