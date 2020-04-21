@@ -13,16 +13,6 @@ More imports to support testing
 Time taken
 ----------
 
-The unix time epoch starts in 1970
-    >>> assert times.epoch.year == 1970
-
-Adding an hour
-    >>> later = datetime.datetime(1970, 1, 1, times.epoch.hour + 1, 0)
-
-And can then find out how long was taken between those
-    (An hour in 60 (minutes) by 60 (seconds) by a thousand (micro)
-    >>> assert times.taken(later - times.epoch) == 60 * 60 * 1_000
-
 Number of seconds since unix started counting is rather large
     At least a billion of them
     >>> assert times.seconds_since_epoch() > 1_000_000_000
@@ -43,3 +33,19 @@ Again - that should increase on each call
     >>> two = times.microseconds_since_epoch()
     >>> diff = two - one
     >>> assert diff > 0, f'{diff}'
+
+Time diffs
+----------
+
+Anyone remeber Christamas 1979?
+    >>> one = datetime.datetime(1979, 12, 25, 1, 2, 3)
+
+Another time, 2 seconds later
+    >>> two = datetime.datetime(1979, 12, 25, 1, 2, 5)
+    >>> diff = two - one
+    >>> assert times.seconds_taken(two - one) == 2
+    >>> assert times.taken(two - one) == 2000
+
+Increase two by one minute (60 seconds)
+    >>> two = datetime.datetime(1979, 12, 25, 1, 3, 5)
+    >>> assert times.seconds_taken(two - one) == 62
