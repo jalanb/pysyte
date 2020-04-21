@@ -44,7 +44,8 @@ class PathAssertions:
         return self
 
 
-from path import Path as PPath  # pylint: disable=wrong-import-order,wrong-import-position
+# pylint: disable=wrong-import-order,wrong-import-position
+from path import Path as PPath  # noqa
 
 
 @total_ordering
@@ -295,7 +296,9 @@ class DotPath(PPath):
         pass
 
     def expand(self):
-        _expand = lambda x : os.path.expanduser(os.path.expandvars(x))
+        def _expand(x):
+            return os.path.expanduser(os.path.expandvars(x))
+
         try:
             p = makepath(_expand(self))
             return p.realpath().abspath()
@@ -304,7 +307,7 @@ class DotPath(PPath):
                 os.path.abspath(os.path.realpath(
                     os.path.expanduser(os.path.expandvars(str(
                         self
-            )))))))
+                              )))))))
 
     def same_path(self, other):
         return self.expand() == other.expand()
@@ -479,7 +482,6 @@ class FilePath(DotPath, PathAssertions):
         filename, _ = os.path.splitext(copy)
         return self.__class__(f'{filename}.{extension.lstrip(".")}')
 
-
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
         self.chmod(ChmodValues.readonly_file)
@@ -591,10 +593,6 @@ class DirectPath(DotPath, PathAssertions):
         """Change program's current directory to self"""
         return cd(self)
 
-    def listdir(self, pattern=None):
-        return [self._next_class(_)
-                for _ in DotPath.listdir(self, pattern)]
-
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
 
@@ -668,7 +666,8 @@ class DirectPath(DotPath, PathAssertions):
 
     def listfiles(self, pattern=None, ignores=None):
         ignored = ignore_fnmatches(ignores)
-        return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
+        return [_ for _ in self.listdir(pattern)
+                if _.isfile() and not ignored(_)]
 
     def has_vcs_dir(self):
         for vcs_dir in ('.git', '.svn', '.hg'):
@@ -708,6 +707,7 @@ def _make_module_path(arg):
         return makepath(importlib.import_module(arg.__module__))
     except (AttributeError, ModuleNotFoundError):
         return None
+
 
 @singledispatch
 def makepath(arg):
@@ -886,7 +886,7 @@ def tmp():
 def home():
     _home = makepath(os.path.expanduser('~'))
     assert _home
-    _x = _home.expand()
+    _ = _home.expand()
     return _home
 
 
@@ -999,17 +999,17 @@ def default_environ_path(key, default):
 
 
 def add_star(string):
-    """Add '.*' to string
+    """Add '*' to string
 
-    >>> assert add_star('fred') == 'fred.*'
+    >>> assert add_star('fred') == 'fred*'
     """
-    suffix = '*' if '.' in string else '.*'
-    return f'{string}{suffix}'
+    return f'{string}*'
+
 
 def add_stars(strings):
     """Add '.*' to each string
 
-    >>> assert add_stars(['fred', 'Fred.']) == ['fred.*', 'Fred.*']
+    >>> assert add_stars(['fred', 'Fred.']) == ['fred*', 'Fred.*']
     """
     paths_ = [strings] if isinstance(strings, str) else strings
     return [add_star(p) for p in paths_]
