@@ -1,7 +1,7 @@
 """Handle datetime for pysyte types"""
 
 import datetime
-epoch = datetime.datetime.fromtimestamp(0)
+import time
 
 
 def taken(diff):
@@ -12,7 +12,7 @@ def taken(diff):
 
 def seconds_taken(diff):
     """Convert a time diff to total number of seconds"""
-    return taken(diff) // 1_000
+    return int(diff.total_seconds())
 
 
 def now():
@@ -22,9 +22,9 @@ def now():
 
 def microseconds_since_epoch():
     """Number of microseconds since the epoch"""
-    return taken(now() - epoch)
+    return int(time.time() * 1_000)
 
 
 def seconds_since_epoch():
     """Number of seconds since the epoch"""
-    return seconds_taken(now() - epoch)
+    return int(time.time())
