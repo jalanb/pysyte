@@ -87,6 +87,8 @@ class ImportVisitor(ast.NodeVisitor):
     def visit_Attribute(self, node):
         try:
             self.check_usage(node.value.id, node.lineno)
+            full_name = f'{node.value.id}.{node.attr}'
+            self.check_usage(full_name, node.lineno)
         except AttributeError:
             pass
         self.generic_visit(node)
