@@ -2,6 +2,7 @@
 
 import os
 import random
+import builtins
 from unittest import TestCase
 
 
@@ -27,6 +28,7 @@ class MockFilePathWithLines(paths.FilePath):
             'Normal line\n'
         ]
 
+
 class MockPythonShebang(MockFilePathWithLines):
     """Mock some lines into a file, with first having '#!'"""
     def lines(self, encoding=None, errors='strict', retain=True):
@@ -36,6 +38,22 @@ class MockPythonShebang(MockFilePathWithLines):
             'pass'
         ]
 
+
+class MockPythonShebangError(MockFilePathWithLines):
+    """Mock some lines into a file, but raise an error"""
+    def lines(self, encoding=None, errors='strict', retain=True):
+        raise IOError('something went wrong')
+
+
+class TestDotPath(TestCase):
+    """Test DotPath: base class to other path classes"""
+
+    def test_root(self):
+        self.assertRaises(NotImplementedError, paths.DotPath('').isroot)
+
+    def test_executability(self):
+        """A DotPath should not be executable"""
+        self.assertFalse(paths.DotPath('nowhere').has_executable())
 
 class TestPaths(TestCase):
 
@@ -391,8 +409,20 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
 
     def test_python_shebang(self):
+        """Read the shebang line from a file"""
         path = MockPythonShebang('/not/a/real/file')
         expected = '/usr/bin/env python3'
+        actual = path.shebang()
+        self.assertEqual(actual, expected)
+
+    def test_python_shebang_unicode(self):
+        """Read the shebang line from an erroring file gives nothing
+
+        It should not propogate the error
+            just give an empty result
+        """
+        path = MockPythonShebangError('/not/a/real/file')
+        expected = ''
         actual = path.shebang()
         self.assertEqual(actual, expected)
 
@@ -405,6 +435,12 @@ class TestPaths(TestCase):
         self.assertEqual(self.path_to_test.language, 'python')
         self.path_to_test.language = 'python3'
         self.assertEqual(self.path_to_test.language, 'python3')
+
+    def test_builtin_module(self):
+        """makepath() works for modules, except builtins which has no file"""
+        self.assertTrue(paths.makepath(os).isfile())
+        self.assertFalse(paths.makepath(builtins).isfile())
+
 
 class TestNonePath(TestCase):
     """A NonePath is made from an empty or non-existent path
@@ -489,3 +525,6 @@ class TestNonePath(TestCase):
         parent = paths.path('/path/to')
         child = paths.path('/path/to/nowhere')
         self.assertTrue(parent / 'nowhere' == child)
+
+    def test_executable(self):
+        """A NonePath should not be executable"""
