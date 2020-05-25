@@ -1,3 +1,6 @@
+"""Handle some random choices"""
+
+
 import random
 
 

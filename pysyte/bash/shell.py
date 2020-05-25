@@ -49,8 +49,3 @@ def run(command):
     if status:
         raise BashError(output)
     return output
-
-
-def full_path(path):
-    """Get the real path, expanding links and bashisms"""
-    return os.path.realpath(os.path.expanduser(os.path.expandvars(path)))

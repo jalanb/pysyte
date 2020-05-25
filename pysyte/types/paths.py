@@ -10,6 +10,7 @@ from fnmatch import fnmatch
 from functools import singledispatch
 from functools import total_ordering
 
+from path import Path as _Path
 from pysyte.types.lists import flatten
 
 
@@ -42,10 +43,6 @@ class PathAssertions:
         if not self.isfile():
             raise PathError(f'{self} is not a file')
         return self
-
-
-# pylint: disable=wrong-import-order,wrong-import-position
-from path import Path as PPath  # noqa
 
 
 @total_ordering
@@ -92,14 +89,14 @@ class NonePath:
     def exists(self):
         return False
 
-    isdir = isfile = exists
+    isdir = isfile = isexec = isroot = exists
 
     def __getattr__(self, name):
         return getattr(self.proxy, name, None)
 
 
 @total_ordering
-class DotPath(PPath):
+class DotPath(_Path):
     """Some additions to the classic path class"""
     # pylint: disable=abstract-method
     # pylint: disable=too-many-public-methods
@@ -291,25 +288,20 @@ class DotPath(PPath):
             return self
         return None
 
-    def __get_owner_not_implemented(self):
-        """Remove pylint warning"""
-        pass
-
     def expand(self):
-        def _expand(x):
-            return os.path.expanduser(os.path.expandvars(x))
+        """Expand the path completely
 
-        try:
-            p = makepath(_expand(self))
-            return p.realpath().abspath()
-        except AttributeError:
-            assert False, str(self.__class__(
-                os.path.abspath(os.path.realpath(
-                    os.path.expanduser(os.path.expandvars(str(
-                        self
-                              )))))))
+        This removes any "~" (for home dir) and any shell variables
+            eliminates any symbolic links
+            and converts from relative to absolute path
+        """
+        u = os.path.expanduser(str(self))
+        v = os.path.expandvars(u)
+        r = os.path.realpath(v)
+        return makepath(r)
 
     def same_path(self, other):
+        """Whether this path points to same place as the other"""
         return self.expand() == other.expand()
 
     def isroot(self):
@@ -386,9 +378,6 @@ def ext_language(ext, exts=None, simple=True):
     return ext_languages.get(ext)
 
 
-del PPath
-
-
 class FilePath(DotPath, PathAssertions):
     """A path to a known file"""
 
@@ -401,10 +390,6 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
-    def try_remove(self):
-        """Try to remove the file"""
-        self.remove()
-
     def stripped_lines(self):
         """A list of all lines without trailing whitespace
 
@@ -412,7 +397,7 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             return [l.rstrip() for l in self.lines(retain=False)]
-        except (IOError, UnicodeDecodeError):
+        except (OSError, IOError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
@@ -500,21 +485,15 @@ class FilePath(DotPath, PathAssertions):
         If no shebang is present, return an empty string
         """
         try:
-            first_line = self.lines(retain=False)[0]
-        except (OSError, UnicodeDecodeError):
-            return ''
-        if first_line.startswith('#!'):
-            return first_line[2:].strip()
+            first_line = self.stripped_lines()[0]
+            if first_line.startswith('#!'):
+                return first_line[2:].strip()
+        except IndexError:
+            pass
         return ''
 
     def mv(self, destination):  # pylint: disable=invalid-name
         return self.move(destination)
-
-    def make_file_exist(self):
-        """Make sure the parent directory exists, then touch the file"""
-        self.parent.make_directory_exist()
-        self.parent.touch_file(self.name)
-        return self
 
     @property
     def language(self):
@@ -561,15 +540,13 @@ class DirectPath(DotPath, PathAssertions):
             return self
         return self.parent
 
-    def try_remove(self):
+    def remove_dir(self):
         """Try to remove the path
 
         If it is a directory, try recursive removal of contents too
         """
         if self.islink():
             self.unlink()
-        elif self.isfile():
-            self.remove()
         elif self.isdir():
             self.empty_directory()
             if self.isdir():
@@ -609,27 +586,6 @@ class DirectPath(DotPath, PathAssertions):
         others = [_ for _ in items if not _.isdir()]
         return dirs, others
 
-    def make_directory_exist(self):
-        if self.isdir():
-            return False
-        if os.path.exists(self):
-            raise PathError(f'{self} exists but is not a directory')
-        self.makedirs()
-        return True
-
-    def make_file_exist(self, filename=None):
-        """Make the directory exist, then touch the file
-
-        If the filename is None, then use self.name as filename
-        """
-        if filename is None:
-            path_to_file = FilePath(self)
-            path_to_file.make_file_exist()
-            return path_to_file
-        self.make_directory_exist()
-        path_to_file = self.touch_file(filename)
-        return FilePath(path_to_file)
-
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
         self.chmod(ChmodValues.readonly_directory)
@@ -644,11 +600,6 @@ class DirectPath(DotPath, PathAssertions):
         """Those in the given list of sub_paths which do exist"""
         paths_to_subs = [self / _ for _ in sub_paths]
         return [_ for _ in paths_to_subs if _.exists()]
-
-    def clear_directory(self):
-        """Make sure the directory exists and is empty"""
-        self.make_directory_exist()
-        self.empty_directory()
 
     # pylint: disable=arguments-differ
     def walkdirs(self, pattern=None, errors='strict', ignores=None):
@@ -754,8 +705,8 @@ def _(arg):
 @makepath.register(type(os))
 def _(arg):
     """Make a path from a module"""
-    if arg == 'builtins':
-        return None
+    if arg.__name__ == 'builtins':
+        return NonePath('builtins')
     return makepath(arg.__file__)
 
 
@@ -766,7 +717,7 @@ def _(arg):
     method = getattr(arg, '__wrapped__', arg)
     filename = method.__code__.co_filename
     if terminal_regexp.match(filename):
-        return None
+        return NonePath(filename)
     return _make_module_path(method)
 
 
@@ -800,9 +751,9 @@ def cd(path_to):  # pylint: disable=invalid-name
     try:
         previous = os.getcwd()
     except OSError as e:
-        if 'No such file or directory' in str(e):
-            return False
-        raise
+        if 'No such file or directory' not in str(e):
+            raise
+        previous = NonePath()
     if path_to.isdir():
         os.chdir(path_to)
     elif path_to.isfile():
@@ -818,7 +769,7 @@ def cd(path_to):  # pylint: disable=invalid-name
 try:
     cd.previous = makepath(os.getcwd())
 except (OSError, AttributeError):
-    cd.previous = None
+    cd.previous = NonePath()
 
 
 def as_path(string_or_path):

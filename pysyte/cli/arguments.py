@@ -82,7 +82,7 @@ class ArgumentsParser(object):
 
     @deprecated(reason="use add_option()", version='0.7.33')
     def add_argument(self, initial, name, *args, **kwargs):
-        return add_option(initial, name, *args, **kwargs)
+        return self.add_option(initial, name, *args, **kwargs)
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""
