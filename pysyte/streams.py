@@ -8,20 +8,6 @@ from six import StringIO
 
 
 @contextmanager
-def swallow_stdout_stderr():
-    """Divert stdout, stderr to strings"""
-    saved_out = sys.stdout
-    saved_err = sys.stderr
-    sys.stdout = StringIO()
-    sys.stderr = StringIO()
-    try:
-        yield sys.stdout.getvalue(), sys.stderr.getvalue()
-    finally:
-        sys.stdout = saved_out
-        sys.stderr = saved_err
-
-
-@contextmanager
 def swallow_stdout(stream=None):
     """Divert stdout into the given stream
 

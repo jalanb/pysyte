@@ -49,7 +49,3 @@ class TestDashboardImports(unittest.TestCase):
         redundant = self.visitor.unused()
         self.assertEqual(redundant['system'][0], 27)
         self.assertEqual(redundant['killer'][0], 28)
-
-
-if __name__ == '__main__':
-    unittest.main()
