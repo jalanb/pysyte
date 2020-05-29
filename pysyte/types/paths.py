@@ -5,10 +5,10 @@ The classes all inherit from the original path.path
 import os
 import re
 import stat
-import importlib
+import sys
 from fnmatch import fnmatch
-from functools import singledispatch
-from functools import total_ordering
+from functools import singledispatch, total_ordering
+from importlib import import_module
 
 from path import Path as _Path
 from pysyte.types.lists import flatten
@@ -21,15 +21,26 @@ class PathError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
 
+class MissingPath(PathError):
+    def __init__(self, path, desc=''):
+        self.path = path
+        description = desc or 'path'
+        super().__init__(f'Missing {description}{path}')
+
+
+class MissingImport(MissingPath):
+    def __init__(self, module):
+       self.module = module
+       name_ = module.__name__
+       super().__init__(path_, desc='module')
 
 class PathAssertions:
     """Assertions that can be made about paths"""
     # pylint: disable=no-member
 
-    def assert_exists(self):
-        """Raise a PathError if this path does not exist on disk"""
+    def assertExists(self):
         if not self.exists():
-            raise PathError(f'{self} does not exist')
+            raise PathError(self, f'{self} does not exist')
         return self
 
     def assert_isdir(self):
@@ -655,7 +666,7 @@ def _make_module_path(arg):
     classes and functions have modules, they'll be needing this
     """
     try:
-        return makepath(importlib.import_module(arg.__module__))
+        return makepath(import_module(arg.__module__))
     except (AttributeError, ModuleNotFoundError):
         return None
 
@@ -702,12 +713,30 @@ def _(arg):
     return NonePath(arg)
 
 
+def imports():
+    return { sys, os, re, stat }
+
+
+def froms():
+    items = { _Path, flatten, importlib, fnmatch, singledispatch, total_ordering, }
+
+
 @makepath.register(type(os))
 def _(arg):
     """Make a path from a module"""
     if arg.__name__ == 'builtins':
         return NonePath('builtins')
-    return makepath(arg.__file__)
+    try:
+        return makepath(arg.__file__)
+    except AttributeError:
+        if arg not in imports() and arg not in sys.path:
+            raise MissingImport(arg)
+        python_ = makepath(sys.executable)
+        assert str(python_.parent.name) == 'bin'
+        bin_ = python_.parent
+        root_ = bin_.parent
+        lib_ = root_ / 'lib'
+        assert lib_.isdir()
 
 
 @makepath.register(type(makepath))
