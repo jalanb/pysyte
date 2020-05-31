@@ -2,5 +2,5 @@ The sources module
 ==================
 
     >>> from pysyte.types import sources
-    >>> source = sources.read(sources.__file__)
+    >>> source = sources.source(sources.__file__)
     >>> assert  'source files' in source.doc
