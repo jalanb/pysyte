@@ -52,21 +52,35 @@ setup(
         'Topic :: Software Development :: Build Tools',
     ],
     install_requires=[
-        'inflect',
-        'pprintpp',
-        'path.py==7.7.1',
-        'six',
-        'stackprinter',
-        'pyyaml',
-        'boltons',
-        'python-magic',
-        'deprecated',
+        "boltons",
+        "deprecated",
+        "inflect<3.0.0",
+        "path.py==7.7.1",
+        "pyyaml",
+        "sh",
+        "stackprinter",
     ],
-    # entry_points = {
-    #     'console_scripts': [
-    #         'kat = pysyte.cli.bin:kat'
-    #     ]
-    # },
+    test_requires=[
+        "codecov",
+        "coverage",
+        "pytest",
+        "pytest-cov",
+    ],
+    lint_requires=[
+        "black",
+        "flake8",
+        "pylint",
+    ],
+    devops_requires=[
+        "bumpversion",
+    ],
+    dev_requires=[
+        "ipython",
+        "pprintpp",
+        "pudb",
+        "pylint",
+        "sh",
+    ],
     scripts=[
         'bin/kat',
         'bin/getkey',
@@ -75,8 +89,4 @@ setup(
         'bin/rePATH',
         'bin/std',
     ],
-    tests_require=['pytest'],
-    extras_require={
-        'testing': ['pytest'],
-    }
 )
