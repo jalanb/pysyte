@@ -2,7 +2,10 @@ import os
 import linecache
 import ast
 from collections import defaultdict
-
+from contextlib import contextmanager
+from dataclasses import dataclass
+from dataclasses import field
+from typing import Dict
 
 from pysyte.types import dictionaries
 
@@ -14,12 +17,8 @@ class ImportVisitor(ast.NodeVisitor):
         self.imports = defaultdict(list)
         self.froms = defaultdict(list)
 
-    def check_usage(self, name, line):
-        if not name:
-            return
-        found = name in self.imports
-        if found:
-            self.used[name].append(line)
+    def imported(self, name, line):
+        raise NotImplementedError(f"imported({name}, {line}")
 
     def collect_names(self, node):
         names = [(_.name, getattr(_, 'asname', None)) for _ in node.names]
@@ -68,27 +67,27 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
+        breakpoint()
         for decorator in node.decorator_list:
             name = self.find_name(decorator, 'func', 'value')
-            self.check_usage(name, decorator.lineno)
+            self.imported(name, decorator.lineno)
         self.generic_visit(node)
 
     def visit_Subscript(self, node):
         name = self.find_value_id(node)
         name2 = self.find_name(node, 'value')
         assert name == name2
-        self.check_usage(name, node.lineno)
-        subscript = self.find_value_id(node.slice)
-        name2 = self.find_name(node.slice, 'value')
-        assert subscript == name2
-        self.check_usage(subscript, node.lineno)
+        self.imported(name, node.lineno)
+        subname = self.find_value_id(node.slice)
+        assert subname == self.find_name(node.slice, 'value')
+        self.imported(subname, node.lineno)
         self.generic_visit(node)
 
     def visit_Attribute(self, node):
         try:
-            self.check_usage(node.value.id, node.lineno)
+            self.imported(node.value.id, node.lineno)
             full_name = f'{node.value.id}.{node.attr}'
-            self.check_usage(full_name, node.lineno)
+            self.imported(full_name, node.lineno)
         except AttributeError:
             pass
         self.generic_visit(node)
@@ -96,7 +95,7 @@ class ImportVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node):
         for base in node.bases:
             name = self.find_name(base, 'value')
-            self.check_usage(name, node.lineno)
+            self.imported(name, node.lineno)
         self.generic_visit(node)
 
     def visit_Call(self, node):
@@ -107,20 +106,26 @@ class ImportVisitor(ast.NodeVisitor):
             name = self.find_value_id(func, 'func')
             name2 = self.find_name(node, 'value', 'func')
             assert name == name2
-        self.check_usage(name, node.lineno)
+        self.imported(name, node.lineno)
         self.generic_visit(node)
 
     def visit_Name(self, node):
         name = self.find_name(node)
-        self.check_usage(name, node.lineno)
+        self.imported(name, node.lineno)
         self.generic_visit(node)
 
 
-class ImportAnalyser(ImportVisitor):
-    def __init__(self):
-        dd = defaultdict
-        super().__init__()
-        self.used = defaultdict(list)
+@dataclass
+class ImportUserData(ImportVisitor):
+    used: Dict = field(default_factory=defaultdict(list))
+
+
+class ImportUser(ImportUserData):
+
+    def imported(self, name, line):
+        if not name: return
+        if name in self.imports:
+            self.used[name].append(line)
 
     def unused(self):
         return {k: v for k, v in self.imports.items() if k not in self.used}
@@ -142,22 +147,41 @@ class ImportAnalyser(ImportVisitor):
         return f'{line_number:4d}: {line}'
 
 
+@contextmanager
 def find_imports(tree):
-    visitor = ImportAnalyser()
-    visitor.visit(tree)
-    return visitor
+    return ImportUser().visit(tree)
 
 
-def parse_python(path):
-    with open(path) as stream:
-        return ast.parse(stream.read(), path)
+@contextmanager
+def parse_python(script):
+    with open(script) as stream:
+        as3 = ast.parse(stream.read(), script)
+        as3.path = script
+        yield as3
 
 
 def extract_imports(script):
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
         raise ValueError(f'Not a file: {script}')
-    parse_tree = parse_python(script)
-    result = find_imports(parse_tree)
-    result.path = script
-    return result
+    with parse_python(script) as as3:
+        result = find_imports(as3)
+        result.path = script
+        return result
+
+
+@contextmanager
+def importer(*args):
+    """Provide a context with those modules
+
+        >>> with importer(os, ('pysyte.imports')) as (os_, methods_)
+        ...     assert os_.path is os.path
+        ...     assert importer == methods.importer
+    """
+    result = []
+    for module in args:
+        if isinstance(module, type(inspect)):
+            result.append(module)
+        elif isinstance(module, str):
+            result.append(importlib.import_module(module))
+    yield result

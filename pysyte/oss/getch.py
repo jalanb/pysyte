@@ -226,7 +226,7 @@ def get_extended_key_name(codes):
 
 
 def known_keys():
-    return {
+    result= {
         (27, 79, 70): 'end',
         (27, 79, 72): 'home',
         (27, 79, 80): 'F1',
@@ -250,9 +250,11 @@ def known_keys():
         (27, 91, 50, 48, 126): 'F9',
         (27, 91, 50, 49, 126): 'F10',
         (27, 91, 50, 51, 126): 'F11',
+        (27, 91, 50, 52, 126): 'Cmd Backspace',
         (27, 91, 50, 52, 126): 'F12',
         (27, 91, 51): 'delete',
         (27, 91, 51, 126): 'Del',
+        (27, 91, 51, 126): 'FF12',
         (27, 91, 53): 'page up',
         (27, 91, 53, 126): 'page up',
         (27, 91, 54): 'page down',
@@ -261,7 +263,31 @@ def known_keys():
         (27, 91, 66): 'down',
         (27, 91, 67): 'right',
         (27, 91, 68): 'left',
+        (27,): 'esc',
+        (1,): 'Ctrl A',
+        (32,): 'space',
+        (48,): '0',
+        (65,): 'A',
+        (97,): 'a',
+        (127,): 'backspace',
     }
+    return add_ascii_keys(result)
+
+
+def add_ascii_keys(data):
+    """Update the data with ascii keys
+
+    >>> data = add_ascii_keys({})
+    >>> assert data[(48,)] == '0'
+    >>> assert data[(66,)] == 'B'
+    >>> assert data[(99,)] == 'c'
+    """
+    # See previous function for previous key, value pairs
+    for i in range(32):
+        data[(i + 1, )] = f"Ctrl {chr( ord('A') + i)}"
+    for i in range(32, 127):
+        data[(i, )] = f'{chr(i)}'
+    return data
 
 
 def _yielder(getter):
