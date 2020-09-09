@@ -1,15 +1,10 @@
-"""Set up the pysyte project"""
-
 import os
+from dataclasses import dataclass
 from setuptools import find_packages
 from setuptools import setup
 
-import pysyte
+import pysyte as project
 
-description = """Pysyte extends Python
-
-Available on github and pypi for ease of access
-"""
 
 
 def package_files(directory):
@@ -24,21 +19,37 @@ def package_files(directory):
     return paths
 
 
-extra_files = package_files('pysyte')
+description = """Pysyte extends Python
 
+Available on github and pypi for ease of access
+"""
+headline = description.splitlines()[0]
+name = project.__name__
+version = project.__version__
+
+@dataclass
+class User:
+    service: str
+    username: str
+    email: str
+    name: str
+
+    def url(self, name):
+        return f'https://{self.service}/{self.username}/{name}'
+
+user = User('github.com', 'jalanb', 'github@al-got-rhythm.net', 'J Alan Brogan')
 
 setup(
-    name=pysyte.__name__,
-    version=pysyte.__version__,
-    description=description.splitlines()[0],
+    name=name,
+    version=version,
+    description=headline,
     long_description=description,
-    url='https://github.com/jalanb/%s' % pysyte.__name__,
+    url=user.url(name),
     packages=find_packages(),
-    package_data={'': package_files('pysyte')},
-    download_url='https://github.com/jalanb/%s/tarball/v%s' % (
-        pysyte.__name__, pysyte.__version__),
+    package_data={'': package_files('{name}')},
+    download_url='{user.url(name)}/tarball/v{version}',
     license='MIT License',
-    author='jalanb',
+    author=user.name,
     author_email='github@al-got-rhythm.net',
     platforms='any',
     classifiers=[
@@ -69,7 +80,7 @@ setup(
     # },
     scripts=[
         'bin/kat',
-        'bin/getkey',
+        'bin/keys',
         'bin/short_dir',
         'bin/imports',
         'bin/rePATH',
