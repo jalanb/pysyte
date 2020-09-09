@@ -7,11 +7,15 @@ import argparse
 import re
 import shlex
 import sys
+from bdb import BdbQuit
+from pprint import pprint
 from functools import partial
 from itertools import chain
 
+import stackprinter
 from deprecated import deprecated
 
+from pysyte.cli.config import pysyte
 from pysyte.cli.config import user
 from pysyte.types.numbers import inty
 
@@ -57,6 +61,7 @@ class ArgumentsParser(object):
         return f'<{self.__class__.__name__}>'
 
     def add_to(self, name=None, group=None, type_=None, default=None, *args, **kwargs):
+        breakpoint()
         args_= args[:]
         kwargs_ = kwargs.copy()
         name_ = name if name else ""
@@ -129,6 +134,15 @@ class ArgumentsNamespace(object):
     def __init__(self, result):
         self._result = result
 
+    def __repr__(self):
+        """Show args necely in cli and debuggers"""
+        klass = self.__class__.__qualname__
+        cmd = ' '.join(sys.argv)
+        cmd_= '$ {cmd}'
+        args = pprint(self.get_args())
+        repr_ = '\n'.join((klass, cmd_, args))
+        return f'<{repr_}>'
+
     def __getattr__(self, name):
         return getattr(self._result, name)
 
@@ -148,6 +162,23 @@ class ArgumentsNamespace(object):
 
     def set_arg(self, name, value):
         setattr(self._result, name, value)
+
+
+class ArgumentHandler:
+    def run(self, caller):
+        """Handle expected exceptions"""
+        try:
+            return caller.main(self)
+        except KeyboardInterrupt:
+            sys.stderr.write('^c ^C ^c    ^C ^c ^C    ^c ^C ^c\n')
+            ctrl_c = 3
+            return ctrl_c
+        except BdbQuit:
+            return os.X_OK
+        except SystemExit as e:
+            return e.code
+        except Exception as e:  # pylint: disable=broad-except
+            stackprinter.show(e, style=pysyte.stackprinter.style)
 
 
 def parser(description=None, usage=None, epilog=None):

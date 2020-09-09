@@ -1,16 +1,14 @@
 """Handle configs from program name"""
 
-from pysyte.unix import root
-
 from pysyte.config import xdg
-
-def user(name):
-    return xdg.home_config(name)
-
-
-def machine(name):
-    return xdg.etc_config(name)
+from pysyte.config.types import ConfigPaths
+from pysyte.types.paths import home
+from pysyte.types.paths import path
 
 
-def all(name):
-    return {**machine(name), **user(name)}
+user = xdg.user.append(home())
+machine = xdg.machine.append(path('/etc'))
+
+configs = ConfigPaths(machine.paths + user.paths)
+
+pysyte = configs.config('pysyte')

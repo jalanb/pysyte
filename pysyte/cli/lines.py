@@ -43,13 +43,13 @@ class LinesParser(ArgumentsParser):
       'a': ['at', 'lines', 'inty', 'show that line'],
       'c': ['copy', 'clipboard', 'boolean', 'copy text to clipboard'],
       # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
-      'e': ['editor', 'ed', 'string', 'edit with, e.g., vim'],
+      'e': ['expression', 'ed', 'string', 'sed expression'],
       'f': ['first', 'lines', 'inty', 'the first line to show', '1'],
       'i': ['stdin', 'stdin', 'boolean', '(aka -) wait for text from stdin'],
       'l': ['last', 'lines', 'inty', 'the last line to show', '0'],
       'n': ['numbers', 'lines', 'boolean', 'show line numbers'],
       'p': ['paste', 'clipboard', 'boolean', 'paste text from clipboard'],
-      's': ['expression', 'ed', 'string', 'sed expression to be executed'],
+      's': ['substitute', 'ed', 'string', 'sed s-expression'],
       'v': ['remove', 'lines', 'inty', 'remove that line'],
       'V': ['version', 'version', 'boolean', 'show version'],
       'w': ['width', 'lines', 'integer', 'max width of lines', '80'],
@@ -61,8 +61,7 @@ class LinesParser(ArgumentsParser):
         if args.version and self.version:
             sys.stdout.write(f'{sys.argv[0]} version: {self.version}')
             raise SystemExit
-        args.sed = partial(
-            pylines.reformat_lines, numbers=args.numbers, width=args.width)
+        args.sed = partial(pylines.sed, args=args)
         args.alt_screen = alt_screen()
         return args
 
