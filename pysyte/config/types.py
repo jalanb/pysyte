@@ -101,7 +101,7 @@ class ConfigPaths(ConfigPathsData):
                 yield file
 
     def config(self, name):
-        result, *config = self.configs(name)
+        result = {}
         for config in self.configs(name):
             result.update(config)
         return result
