@@ -1,8 +1,6 @@
 -r testing.txt
 
-bumpversion
 ipython
-pprintpp
+rich
 pudb
-pylint
 sh
