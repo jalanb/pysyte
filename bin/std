@@ -17,4 +17,4 @@ def main(args):
     pass
 
 
-run(main, add_args=add_args)
+run(main, add_args)

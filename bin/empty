@@ -38,4 +38,4 @@ def main(args):
     return not lines
 
 
-run(main, add_args=add_args)
+run(main, add_args)

@@ -122,4 +122,4 @@ def main(args):
     return os.EX_OK
 
 
-run(main, add_args=add_args, post_parse=post_parse)
+run(main, add_args, post_parse)
