@@ -1,14 +1,14 @@
-"""Test the decorators module"""
+"""Test the methods module"""
 
 
 from io import StringIO
 import unittest
 
 
-from pysyte import decorators
+from pysyte.types import methods
 
 
-@decorators.memoize
+@methods.memoized
 def initials(forename, surname, stream):
     """Print initials of the name
 
@@ -18,12 +18,12 @@ def initials(forename, surname, stream):
     return '%s%s' % (forename[0], surname[0])
 
 
-@decorators.memoize
+@methods.memoized
 def no_args():
     return None
 
 
-@decorators.memoize
+@methods.memoized
 def default_args(arg=None):
     return arg
 
@@ -48,7 +48,7 @@ class MemoizeTest(unittest.TestCase):
 
     def test_method_name(self):
         """A memoized method has been renamed"""
-        self.assertEqual('memoize(initials)', initials.__name__)
+        self.assertEqual('memoized(initials)', initials.__name__)
 
     def test_method_docstring(self):
         docstring = initials.__doc__.splitlines()[0]
@@ -116,7 +116,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertRaises(KeyError, initials.invalidate, 'not called')
 
     def test_use_wtithout_decorator(self):
-        memo_average = decorators.memoize(average)
+        memo_average = methods.memoized(average)
         one = memo_average(1, 6, self.stream)
         two = memo_average(2, 5, self.stream)
         three = memo_average(1, 6, self.stream)

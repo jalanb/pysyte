@@ -6,8 +6,10 @@ import os
 import re
 import stat
 import sys
+from dataclasses import dataclass
 from fnmatch import fnmatch
-from functools import singledispatch, total_ordering
+from functools import singledispatch
+from functools import total_ordering
 from importlib import import_module
 
 from path import Path as _Path
@@ -66,7 +68,10 @@ class NonePath:
         return self.string
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} "{str(self)}">'
+        string = self.string
+        if self.proxy:
+            string = str(self.proxy)
+        return f'<{self.__class__.__name__} "{string}">'
 
     def __bool__(self):
         return False
@@ -104,6 +109,9 @@ class NonePath:
 
     def __getattr__(self, name):
         return getattr(self.proxy, name, None)
+
+    def makedirs(self):
+        os.makedirs(str(self))
 
 
 @total_ordering
@@ -641,6 +649,45 @@ class DirectPath(DotPath, PathAssertions):
         return str(self) == '/'
 
 
+@dataclass
+class FileTypeData:
+    type_: type
+    ext: str
+
+
+class FileType(FileTypeData):
+    def file(self, path_):
+        return path_.add_missing_ext(self.ext)
+
+    def typed(self, path_):
+        typed = self.file(path_)
+        if typed:
+            return self.type_(typed)
+
+
+@dataclass
+class FileTypesData:
+    file_types: list
+
+
+class FileTypes(FileTypesData):
+    def types(self):
+        types_ = self.file_types
+        return [_ if isinstance(_, FileType) else FileType(*_) for _ in types_]
+
+    def files(self, path_):
+        for file_type in self.types():
+            file = file_type.file(path_)
+            if file:
+                yield file
+
+    def typed(self, path_):
+        for file_type in self.types():
+            typed = file_type.typed(path_)
+            if typed:
+                yield typed
+
+
 def ignore_fnmatches(ignores):
 
     def ignored(a_path):
@@ -682,6 +729,7 @@ path = makepath
 
 @makepath.register(type(None))
 def _(arg):
+    """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
@@ -696,9 +744,13 @@ def _(arg):
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
+
+    See also Lynton Kwesi Johnson:
+        The Eagle and The Bear have people living in fear
+        Of impending nuclear warfare
     """
     if not arg:
-        return NonePath()
+        return makepath(None)
     if os.path.isfile(arg):
         return FilePath(arg)
     if os.path.isdir(arg):
@@ -819,12 +871,49 @@ def string_to_paths(string):
     return [makepath(string)]
 
 
-def strings_to_paths(strings):
+def strings_to_paths(*strings):
+    print(f":{strings!r}:")
     return [makepath(s) for s in strings]
 
 
+def choose_paths(*strings, chooser):
+    return [_ for _ in strings_to_paths(*strings) if chooser(_)]
+
+
+@singledispatch
 def paths(strings):
-    return [p for p in strings_to_paths(strings) if p.exists()]
+    return choose_paths(strings, lambda p: p.exists())
+
+
+@paths.register(list)
+@paths.register(set)
+@paths.register(tuple)
+def _(strings: list):
+    return paths(*strings)
+
+
+@singledispatch
+def directories(*strings: tuple):
+    return choose_paths(*strings, chooser=lambda p: p.isdir())
+
+
+@directories.register(list)
+@directories.register(set)
+@directories.register(tuple)
+def _(strings: list):
+    return directories(*strings)
+
+
+@singledispatch
+def files(*strings):
+    return choose_paths(*strings, chooser=lambda p: p.isfile())
+
+
+@files.register(list)
+@files.register(set)
+@files.register(tuple)
+def _(strings: list):
+    return files(*strings)
 
 
 def split_directories(strings):
@@ -845,14 +934,6 @@ def split_directories_files(strings):
     return ([_ for _ in paths_ if _.isdir()],
             [_ for _ in paths_ if _.isfile()],
             [_ for _ in paths_ if not (_.isfile() or _.isdir())])
-
-
-def files(strings):
-    return split_files(strings)[0]
-
-
-def directories(strings):
-    return split_directories(strings)[0]
 
 
 def root():
@@ -966,12 +1047,14 @@ def contains_file(path_to_directory, pattern):
     return contains_glob(path_to_directory, pattern, os.path.isfile)
 
 
-def environ_paths(key):
-    return [makepath(_) for _ in os.environ[key].split(':')]
+def environ_paths(key, default=None):
+    default_ = default or ''
+    return [makepath(_) for _ in os.environ.get(key, default_).split(':')]
 
 
-def environ_path(key):
-    return makepath(os.environ[key])
+def environ_path(key, default=None):
+    default_ = default or ''
+    return makepath(os.environ.get(key, default_))
 
 
 def default_environ_path(key, default):

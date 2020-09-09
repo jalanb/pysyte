@@ -1,24 +1,56 @@
-"""Handle source files for pysyte"""
+"""Handle sources for pysyte"""
 
 from dataclasses import dataclass
 from functools import singledispatch
 
+from pym.ast.parse import parse
 from pysyte.types import paths
+
+class SourceError(NotImplementedError):
+    def __init__(*args, **kwargs):
+        breakpoint()
+
+
+@dataclass
+class SourceTextData:
+    source: str = ""
+
+
+class SourceText(SourceTextData):
+    def __init__(self, source_):
+        super().__init__(source_)
+        self.ast = parse(source_)
+        breakpoint()
+
+    def grep(self, type_, name):
+        breakpoint()
+
+
+@dataclass
+class SourcePathData:
+    path: paths.FilePath
+
+class SourcePath(SourcePathData):
+    def __init__(self, path_):
+        super().__init__(path_)
+        self.text = SourceText(self.path.text)
 
 
 @singledispatch
-def source(str_: str):
+def source(arg: type(None)):
     breakpoint()
-    return source(paths.path(str_))
+    return SourceText()
 
 
-@source.register(type(None))
+@source.register(str)
 def _(arg):
     return source('')
 
+
 @dataclass
-class Source:
-    path: paths.FilePath
+class Language:
+    name: str
+
 
 @source.register(type(paths.FilePath))
 def _(arg):

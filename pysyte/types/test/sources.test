@@ -1,6 +1,11 @@
 The sources module
 ==================
 
+    >>> from rich import print
+    >>> from pysyte.types.paths import path
     >>> from pysyte.types import sources
-    >>> source = sources.source(sources.__file__)
-    >>> assert  'source files' in source.doc
+    >>> assert  'sources for pysyte' in sources.__doc__
+
+    >>> source = sources.source(sources)
+    >>> assert sources.source(path(sources)) == source
+    >>> print(source.grep('def', 'source'))

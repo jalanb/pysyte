@@ -1,7 +1,10 @@
 """Some methods to help with the handling of dictionaries"""
 
-
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any
+
+from yamlreader import data_merge
 
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
@@ -114,6 +117,9 @@ class DictionaryAttributes(dict):
         super(DictionaryAttributes, self).__init__(*args, **kwargs)
         self.__dict__ = self
 
+    def update(self, other):
+        self.__dict__ = data_merge(self.__dict__, other)
+
 
 class RecursiveDictionaryAttributes(DictionaryAttributes):
     """Convert dictionary keys to attributes of self, recursively
@@ -129,5 +135,37 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
                 else value)
         super(RecursiveDictionaryAttributes, self).__init__(data)
 
+
+@dataclass
+class AttributesDictData:
+    proxy: Any
+
+
+class AttributesDict(AttributesDictData):
+    """Access attributes of a thing like a dict"""
+    def __item__(self, name):
+        return self.getitem(name)
+
+    def getitem(self, name):
+        try:
+            return getattr(self.proxy, name)
+        except AttributeError:
+            raise KeyError(name)
+
+
+class AttributesDicts(AttributesDict):
+    def getitem(self, name_):
+        name, *names_ = name_.split('.', 1)
+        value = super().getitem(name)
+        try:
+            names = names_.pop()
+            return AttributesDicts(value).getitem(names)
+        except IndexError:
+            return value
+
+
+
 NameSpace = DictionaryAttributes
 NameSpaces = RecursiveDictionaryAttributes
+SpaceName = AttributesDict
+SpaceNames = AttributesDicts

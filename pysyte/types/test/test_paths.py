@@ -212,15 +212,48 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
 
     def test_paths(self):
-        """paths() return all actual paths in a list of strings
-
-        Then returns a list of existing paths
-        """
+        """paths() return all actual paths in a list of strings"""
         expected = [
-            paths.makepath('/usr/bin'),
-            paths.makepath('/usr/local/bin'),
+            paths.makepath('/usr/bin'), paths.makepath('/usr/local/bin'),
         ]
         actual = paths.paths(['/not/a/path', '/usr/bin', '/usr/local/bin'])
+        self.assertEqual(actual, expected)
+
+    def test_path_argss(self):
+        """paths() return all actual paths in its args"""
+        expected = [
+            paths.makepath('/usr/bin'), paths.makepath('/usr/local/bin'),
+        ]
+        actual = paths.paths('/not/a/path', '/usr/bin', '/usr/local/bin')
+        self.assertEqual(actual, expected)
+
+    def test_directories(self):
+        """directories() should return actual directories in strings"""
+        expected = [
+            paths.makepath('/usr/bin'), paths.makepath('/usr/local/bin'),
+        ]
+        actual = paths.directories(
+            ['/not/a/path', '/usr/bin', '/usr/local/bin'])
+        self.assertEqual(actual, expected)
+
+    def test_directories_args(self):
+        """directories() should return actual directories in its args"""
+        expected = [
+            paths.makepath('/usr/bin'), paths.makepath('/usr/local/bin'),
+        ]
+        actual = paths.directories('/not/a/path', '/usr/bin', '/usr/local/bin')
+        self.assertEqual(actual, expected)
+
+    def test_files(self):
+        """files() should return actual files in a list of strings"""
+        expected = [paths.makepath(__file__)]
+        actual = paths.files(['/not/a/path', __file__, '/usr/local/bin'])
+        self.assertEqual(actual, expected)
+
+    def test_files_args(self):
+        """files() should return actual files in its args"""
+        expected = [paths.makepath(__file__)]
+        actual = paths.files('/not/a/path', __file__, '/usr/local/bin')
         self.assertEqual(actual, expected)
 
     def test_split_files(self):
@@ -242,7 +275,7 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
 
     def test_split_directories(self):
-        """directories() aplits a list of paths into 2 lists
+        """split_directories() splits a list of paths into 2 lists
 
         First is a list of existing directories
         Second is the remainder

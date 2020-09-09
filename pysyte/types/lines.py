@@ -17,30 +17,31 @@ def _chop(lines_in, at, first, last):
                     return i
         return 0
 
-    def _line(i):
-        line = i if i >= 0 else length_read + 1 + i
-        if line >= length_read:
-            return length_read
-        return 0 if line < 1 else line
+    def boundaries():
 
-    def _boundaries():
+        def line(i):
+            line = i if i >= 0 else length_read + 1 + i
+            if line >= length_read:
+                return length_read
+            return 0 if line < 1 else line
+        
         if at:
             start = first if first else 0
             end = last if last else -1
-            first_ = _line(as_int(at, start, end) - 1)
+            first_ = line(as_int(at, start, end) - 1)
             return first_, first_ + 1
-        first_ = _line(as_int(first, 0, -1) - 1)
-        last_ = _line(as_int(last, first_, -1) or -1)
+        first_ = line(as_int(first, 0, -1) - 1)
+        last_ = line(as_int(last, first_, -1) or -1)
         return first_, last_
 
     length_read = len(lines_in)
-    first, last = _boundaries()
+    first, last = boundaries()
     rest = [] if first > length_read else lines_in[first:last]
     return first, rest
 
 
 def chop(text, at, first=1, last=-1):
-    """Make that text fix those boundaries
+    """Make that text fit those boundaries
 
     >>> lines = ['one', 'two', 'three', 'four']
     >>> text = '\n'.join(lines)
@@ -49,8 +50,8 @@ def chop(text, at, first=1, last=-1):
 
     >>> assert chop(text, at=2) == chop(text, '[t][w][o]' )
     """
-    lines_in = text.splitlines()
-    return _chop(lines_in, at, first, last)
+    breakpoint()
+    return _chop(text.splitlines() or [], at, first, last)
 
 
 def set_width(line, width):
@@ -76,7 +77,7 @@ def add_numbers(lines, first, numbers):
         def numbered(line_, line_format_):
             prefix = line_format_ % (first + i + 1)
             breakpoint()
-            return ' '.join((prefix, line_.rstrip()))
+            return f"{prefix} {line_.rstrip()}"
 
     breakpoint()
     for i, line in enumerate(lines):
@@ -84,8 +85,8 @@ def add_numbers(lines, first, numbers):
 
 
 def sed(lines, args):
-    breakpoint()
     return reformat_lines(lines, args=args.numbers, width=args.width)
+
 
 def reformat_lines(lines, first, numbers, width):
     breakpoint()
@@ -113,7 +114,6 @@ grep = lambda lines_: lambda regexp: _selector(lambda line: line and re.search(r
 
 
 def arg_lines(text, args):
-    breakpoint()
     return chop(text, args.at, args.first, args.last)
 
 

@@ -64,3 +64,20 @@ def flatten_(list_of_lists):
         https://stackoverflow.com/a/716482/500942
     """
     return list(itertools.chain.from_iterable(list_of_lists))
+
+
+def as_list(item):
+    """Make item a list from types which can index, have items, or can pop"""
+    # pylint: disable=pointless-statement
+    try:
+        item.index
+        return item
+    except AttributeError:
+        try:
+            return item.items()
+        except AttributeError:
+            try:
+                item.pop
+                return list(item)
+            except AttributeError:
+                raise Tundra
