@@ -9,6 +9,7 @@ def _chop(lines_in, at, first, last):
         try:
             return int(string)
         except (ValueError, TypeError):
+            breakpoint()
             lines = lines_in[at:at] if at else lines_in[start:end]
             matcher = re.compile(string)
             for i, line in enumerate(lines, 1 + start):
@@ -38,15 +39,15 @@ def _chop(lines_in, at, first, last):
     return first, rest
 
 
-def first_and_rest(text, at=None, first=1, last=-1):
-    """First line, and rest of those lines from that text
+def chop(text, at, first=1, last=-1):
+    """Make that text fix those boundaries
 
-    at, first, last :
-        each can choose a line by number or regexp
-        line numbers start at 1, and end at -1
-    at: choose this line only
-    first: first line to choose
-    last: last line to choose
+    >>> lines = ['one', 'two', 'three', 'four']
+    >>> text = '\n'.join(lines)
+
+    >>> assert 'three' not in chop(text, 1, last=2 )
+
+    >>> assert chop(text, at=2) == chop(text, '[t][w][o]' )
     """
     lines_in = text.splitlines()
     return _chop(lines_in, at, first, last)
@@ -74,18 +75,21 @@ def add_numbers(lines, first, numbers):
     else:
         def numbered(line_, line_format_):
             prefix = line_format_ % (first + i + 1)
+            breakpoint()
             return ' '.join((prefix, line_.rstrip()))
 
+    breakpoint()
     for i, line in enumerate(lines):
         yield numbered(line, _number_format(len(lines)))
 
 
+def sed(lines, args):
+    breakpoint()
+    return reformat_lines(lines, args=args.numbers, width=args.width)
+
 def reformat_lines(lines, first, numbers, width):
+    breakpoint()
     return [l[:width] if width else l for l in add_numbers(lines, first, numbers)]
-
-
-def as_text(lines):
-    return '\n'.join(lines)
 
 
 def select(predicate, lines):
@@ -106,3 +110,12 @@ full = lambda lines_: _converter(
     _selector(lambda line: line.rstrip(), lines_)
 )
 grep = lambda lines_: lambda regexp: _selector(lambda line: line and re.search(regexp, line), lines_)
+
+
+def arg_lines(text, args):
+    breakpoint()
+    return chop(text, args.at, args.first, args.last)
+
+
+def as_text(lines):
+    return '\n'.join(lines)

@@ -28,3 +28,6 @@ Search lines with a grepper
     >>> assert 'fred' in grepper('fred')
     >>> assert "here's fred" in grepper('fred')
 
+    >>> assert 'one' not in lines.chop(text, at=None, first=2)
+    >>> assert 'one' not in lines.chop(text, at='[t][w][o]' )
+    >>> assert 'three' not in lines.chop(text, last='[t][w][o]' )
