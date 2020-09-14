@@ -77,49 +77,48 @@ You can construct an instance of DirectPath directly:
 
 Or by using the method makepath
 
-    >>> p = ('.')
+    >>> p = paths.makepath('.')
 
 The difference is that makepath expands the string given
     >>> os_home = os.path.expanduser('~')
     >>> assert paths.DirectPath('~') != os_home
-    >>> assert ('~') == os_home
+    >>> assert paths.makepath('~') == os_home
     >>> if 'HOME' in os.environ:
     ...     assert paths.DirectPath('$HOME') != os_home
-    ...     assert ('$HOME') == os_home, f'{paths.makepath("$HOME")}, {os_home}'
+    ...     assert paths.makepath('$HOME') == os_home, f'{paths.makepath("$HOME")}, {os_home}'
 
 DirectPath is ako string, which shows the string in %s and %r
 
-    >>> bin = paths.DirectPath('/bin')
-    >>> print('%s' % bin)
+    >>> bin_ = paths.DirectPath('/bin')
+    >>> print('%s' % bin_)
     /bin
-    >>> print('%r' % bin)
+    >>> print('%r' % bin_)
     <DirectPath '/bin'>
 
 makepath() handles many types of things
 nothings:
-    >>> not_p = (None)
-    >>> assert not not_p
-    >>> assert not ('')
+    >>> assert not paths.makepath(None)
+    >>> assert not paths.makepath('')
 
 other paths:
-    >>> assert (p) is p
+    >>> assert paths.makepath(p) is p
 
 strings, and things than can change to strings, e.g. an int
-    >>> assert ('/some/words/here').name == 'here'
-    >>> assert ('.').isdir()
-    >>> assert (37).name == '37'
+    >>> assert paths.makepath('/some/words/here').name == 'here'
+    >>> assert paths.makepath('.').isdir()
+    >>> assert paths.makepath(37).name == '37'
 
 including python things, like modules, classes, functions
-    >>> path_to_paths = (paths)
+    >>> path_to_paths = paths.makepath(paths)
     >>> assert path_to_paths.name in ('paths.py', 'paths.pyc')
-    >>> assert path_to_paths == (paths.DotPath)
-    >>> assert path_to_paths == (paths.makepath)
+    >>> assert path_to_paths == paths.makepath(paths.DotPath)
+    >>> assert path_to_paths == paths.makepath(paths.makepath)
 
 and other things that have paths
     >>> class Fred:
-    ...     path = ('/usr/local')
+    ...     path = paths.makepath('/usr/local')
     >>> fred = Fred()
-    >>> assert (fred) is fred.path
+    >>> assert paths.makepath(fred) is fred.path
 
 A specialised version for strings
     >>> assert not paths.makestr('')
@@ -134,7 +133,7 @@ Path expansion at creation
 The makepath method expands paths "normally"
     So both of these end up with the same (string) value:
     >>> direct_home = paths.DirectPath(os_home)
-    >>> path_to_home = ('~')
+    >>> path_to_home = paths.makepath('~')
     >>> assert direct_home == path_to_home
 
 And that is an expanded path
@@ -157,7 +156,7 @@ The expansion works for the value if concatenation was applied to the path
     or is applied to the initialising string
 
     >>> applied_to_path = path_to_types / 'paths.py'
-    >>> applied_to_string = (f'{path_to_types}/paths.py')
+    >>> applied_to_string = paths.makepath(f'{path_to_types}/paths.py')
     >>> assert applied_to_path == applied_to_string
 
 We are expecting that path to exist as a file, so we know its type
@@ -184,7 +183,7 @@ Can cd to a direcory
 
 Can also cd to (the directory of) a file
     >>> os.chdir('/')
-    >>> p = ('/bin/cp')
+    >>> p = paths.makepath('/bin/cp')
     >>> assert p.cd()
     >>> assert paths.pwd() in expected
 
