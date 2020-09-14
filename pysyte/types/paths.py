@@ -660,10 +660,10 @@ class FileType(FileTypeData):
         return path_.add_missing_ext(self.ext)
 
     def typed(self, path_):
-        typed = self.file(path_)
-        if typed:
-            return self.type_(typed)
-        return NoneType
+        file = self.file(path_)
+        if file:
+            return self.type_(file)
+        return None
 
 
 @dataclass

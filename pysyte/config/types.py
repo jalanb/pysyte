@@ -90,16 +90,16 @@ class ConfigPaths(ConfigPathsData):
 
     def configs(self, name):
         for path_ in self.paths:
-            path__ = path_ / name
-            for typed in list(self.file_types.typed(path__)):
+            stem = path_ / name
+            for typed in list(self.file_types.typed(stem)):
                 if not typed:
                     continue
                 yield typed
 
     def files(self, name):
         for path_ in self.paths:
-            path__ = path_ / name
-            for file in list(self.file_types.files(path__)):
+            stem = path_ / name
+            for file in list(self.file_types.files(stem)):
                 if not file:
                     continue
                 yield file
