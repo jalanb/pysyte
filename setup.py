@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass
-from setuptools import find_packages
-from setuptools import setup
+import setuptools
 
 import pysyte as project
 
@@ -39,13 +38,13 @@ class User:
 
 user = User('github.com', 'jalanb', 'github@al-got-rhythm.net', 'J Alan Brogan')
 
-setup(
+setuptools.setup(
     name=name,
     version=version,
     description=headline,
     long_description=description,
     url=user.url(name),
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     package_data={'': package_files('{name}')},
     download_url='{user.url(name)}/tarball/v{version}',
     license='MIT License',
@@ -87,7 +86,3 @@ setup(
         'bin/std',
     ],
 )
-
-
-if __name__ == "__main__":
-    setuptools.setup()
