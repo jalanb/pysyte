@@ -67,7 +67,6 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
-        breakpoint()
         for decorator in node.decorator_list:
             name = self.find_name(decorator, 'func', 'value')
             self.imported(name, decorator.lineno)

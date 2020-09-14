@@ -20,7 +20,6 @@ def add_args(parser):
 
 def kat(args):
     """Run kat"""
-    breakpoint()
     for stream in streams.args(args, 'files'):
         text = stream.read()
         start, lines_in = arg_lines(text, args)

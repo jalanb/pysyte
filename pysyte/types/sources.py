@@ -8,7 +8,7 @@ from pysyte.types import paths
 
 class SourceError(NotImplementedError):
     def __init__(*args, **kwargs):
-        breakpoint()
+        raise NotImplementedError
 
 
 @dataclass
@@ -20,10 +20,9 @@ class SourceText(SourceTextData):
     def __init__(self, source_):
         super().__init__(source_)
         self.ast = parse(source_)
-        breakpoint()
 
     def grep(self, type_, name):
-        breakpoint()
+        raise NotImplementedError
 
 
 @dataclass
@@ -38,7 +37,6 @@ class SourcePath(SourcePathData):
 
 @singledispatch
 def source(arg: type(None)):
-    breakpoint()
     return SourceText()
 
 
