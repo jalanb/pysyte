@@ -663,6 +663,7 @@ class FileType(FileTypeData):
         typed = self.file(path_)
         if typed:
             return self.type_(typed)
+        return NoneType
 
 
 @dataclass

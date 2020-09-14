@@ -22,9 +22,13 @@ class PysyteConfiguration(NameSpaces):
     def as_path(self, stem_):
         stem = paths.path(stem_)
         for extension in self.extensions():
-            file = stem.extend_by(extension)
-            if file.isfile():
-                return file
+            try:
+                file = stem.extend_by(extension)
+                if file.isfile():
+                    return file
+            except TypeError:
+                pass
+            return paths.path(None)
 
 
 class YamlConfiguration(PysyteConfiguration):

@@ -19,7 +19,7 @@ class Method(MethodData):
 
     def __getattr__(self, name):
         try:
-            self.__getattribute__(name)
+            return self.__getattribute__(name)
         except AttributeError:
             return getattr(self.code, f"co_{name}")
 
