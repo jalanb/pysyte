@@ -86,8 +86,8 @@ setup(
         'bin/rePATH',
         'bin/std',
     ],
-    tests_require=['pytest'],
-    extras_require={
-        'testing': ['pytest'],
-    }
 )
+
+
+if __name__ == "__main__":
+    setuptools.setup()
