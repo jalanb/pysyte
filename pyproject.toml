@@ -1,3 +1,24 @@
 [build-system]
 requires = [ "setuptools >= 50.0.0", "wheel >= 0.29.0"]
 build-backend = "setuptools.build_meta"
+
+tests_require = ["pytest"]
+
+[tool.tox]
+legacy_tox_ini = """
+
+[tox]
+envlist = py37
+
+[testenv]
+platform = linux|darwin
+deps = pytest >= 5.0.0, <6
+commands = pytest
+
+[pytest]
+doctest_optionflags= ELLIPSIS NORMALIZE_WHITESPACE
+
+[testenv:py37]
+commands = pytest --cov=pysyte --doctest-modules --doctest-glob="*.test" --doctest-glob="*.tests"
+"""
+
