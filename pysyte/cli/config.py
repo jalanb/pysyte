@@ -9,6 +9,6 @@ from pysyte.types.paths import path
 user = xdg.user.append(home())
 machine = xdg.machine.append(path('/etc'))
 
-configs = ConfigPaths(machine.paths + user.paths)
+config_paths = ConfigPaths(machine.paths + user.paths)
 
-pysyte = configs.config('pysyte')
+pysyte = config_paths.config('pysyte')

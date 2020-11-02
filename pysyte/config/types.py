@@ -87,7 +87,6 @@ class ConfigPaths(ConfigPathsData):
             (IniConfiguration, 'ini'),
         ])
 
-
     def configs(self, name):
         for path_ in self.paths:
             stem = path_ / name

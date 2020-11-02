@@ -12,7 +12,7 @@ User configs
 ------------
 
 A missing  config gives empty data
-    >>> fred = config.user('fred')
+    >>> fred = config.config_paths.config('fred')
     >>> assert not fred, f'{fred!r}'
 
 Cannot guarantee that config files are really present
