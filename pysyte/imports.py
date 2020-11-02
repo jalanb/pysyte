@@ -1,4 +1,5 @@
 import os
+import importlib
 import linecache
 import ast
 from collections import defaultdict
@@ -170,17 +171,14 @@ def extract_imports(script):
 
 
 @contextmanager
-def importer(*args):
-    """Provide a context with those modules
+def importer(module):
+    """Provide a context with that module
 
-        >>> with importer(os, ('pysyte.imports')) as (os_, methods_)
+        >>> with importer(os) as os_, importer('pysyte.imports') as imports:
         ...     assert os_.path is os.path
-        ...     assert importer == methods.importer
+        ...     assert importer.__code__ == imports.importer.__code__
     """
-    result = []
-    for module in args:
-        if isinstance(module, type(inspect)):
-            result.append(module)
-        elif isinstance(module, str):
-            result.append(importlib.import_module(module))
-    yield result
+    if isinstance(module, type(os)):
+        yield module
+    elif isinstance(module, str):
+        yield importlib.import_module(module)
