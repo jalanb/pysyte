@@ -8,7 +8,7 @@ import re
 import shlex
 import sys
 from bdb import BdbQuit
-from pprint import pprint
+from pprint import pformat
 from functools import partial
 from itertools import chain
 
@@ -134,11 +134,11 @@ class ArgumentsNamespace(object):
         self._result = result
 
     def __repr__(self):
-        """Show args necely in cli and debuggers"""
+        """Show args nicely in cli and debuggers"""
         klass = self.__class__.__qualname__
         cmd = ' '.join(sys.argv)
         cmd_= '$ {cmd}'
-        args = pprint(self.get_args())
+        args = pformat(self.get_args())
         repr_ = '\n'.join((klass, cmd_, args))
         return f'<{repr_}>'
 
