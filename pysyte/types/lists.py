@@ -80,4 +80,4 @@ def as_list(item):
                 item.pop
                 return list(item)
             except AttributeError:
-                raise Tundra
+                raise ValueError(f"Cannot make a list from {item!r}")
