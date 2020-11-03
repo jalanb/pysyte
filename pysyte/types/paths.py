@@ -11,6 +11,7 @@ from fnmatch import fnmatch
 from functools import singledispatch
 from functools import total_ordering
 from importlib import import_module
+from typing import List
 
 from path import Path as _Path
 from pysyte.types.lists import flatten
@@ -668,7 +669,7 @@ class FileType(FileTypeData):
 
 @dataclass
 class FileTypesData:
-    file_types: list
+    file_types: List[FileType]
 
 
 class FileTypes(FileTypesData):

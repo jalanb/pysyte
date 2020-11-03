@@ -16,12 +16,12 @@ import stackprinter
 from deprecated import deprecated
 
 from pysyte.cli.config import pysyte
-from pysyte.cli.config import user
+from pysyte.cli.config import load_configs
 from pysyte.types.numbers import inty
 
 
 def config(arguments):
-    return user(arguments.prog)
+    return load_configs(arguments.prog)
 
 
 def extract_strings(names, name):

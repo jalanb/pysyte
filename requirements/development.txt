@@ -3,4 +3,5 @@
 ipython
 rich
 pudb
+pytest-pudb
 sh

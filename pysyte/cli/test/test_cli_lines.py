@@ -48,8 +48,8 @@ class TestPaths(unittest.TestCase):
         """
         parser = lines.add_args(arguments.test_parser())
         parsed = parser.parse([
-            '--editor', 'vim', '--width', '2', '--remove', '1'])
-        self.assertEqual(parsed.editor, 'vim')
+            '--numbers', '--width', '2', '--remove', '1'])
+        self.assertEqual(parsed.numbers, True)
         self.assertEqual(parsed.width, 2)
         self.assertEqual(parsed.remove, 1)
 

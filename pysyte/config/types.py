@@ -103,13 +103,8 @@ class ConfigPaths(ConfigPathsData):
                     continue
                 yield file
 
-    def config(self, name):
+    def load(self, name):
         result = {}
         for config in self.configs(name):
             result.update(config)
-        return result
-
-    def append(self, path_):
-        if path_ in self.paths:
-            return self
-        return ConfigPaths(self.paths + [path_])
+        return NameSpaces(result)

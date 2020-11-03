@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 
 from pysyte.cli import arguments
-from pysyte.cli.config import config_paths
+from pysyte.cli.config import load_configs
 from pysyte.types.paths import makepath
 from pysyte.types.methods import Callable
 from pysyte.types.methods import Method
@@ -82,7 +82,7 @@ def run(
             return p.name if p else name
 
         def config(self):
-            return config_paths.config(self.config_name(config_name))
+            return load_configs(self.config_name(config_name))
 
         def main(self, argument_handler):
             if self.method.needs_args:
