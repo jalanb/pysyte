@@ -22,7 +22,8 @@ class PathError(Exception):
     prefix = 'Path Error'
 
     def __init__(self, message):
-        Exception.__init__(self, message)
+        super().__init__(message)
+
 
 class MissingPath(PathError):
     def __init__(self, path, desc=''):
@@ -37,13 +38,14 @@ class MissingImport(MissingPath):
        name_ = module.__name__
        super().__init__(path_, desc='module')
 
+
 class PathAssertions:
     """Assertions that can be made about paths"""
     # pylint: disable=no-member
 
     def assertExists(self):
         if not self.exists():
-            raise PathError(self, f'{self} does not exist')
+            raise MissingPath(self)
         return self
 
     def assert_isdir(self):
@@ -873,18 +875,17 @@ def string_to_paths(string):
     return [makepath(string)]
 
 
-def strings_to_paths(*strings):
-    print(f":{strings!r}:")
+def strings_to_paths(strings):
     return [makepath(s) for s in strings]
 
 
 def choose_paths(*strings, chooser):
-    return [_ for _ in strings_to_paths(*strings) if chooser(_)]
+    return [_ for _ in strings_to_paths(strings) if chooser(_)]
 
 
 @singledispatch
-def paths(strings):
-    return choose_paths(strings, lambda p: p.exists())
+def paths(*strings):
+    return choose_paths(*strings, chooser=lambda p: p.exists())
 
 
 @paths.register(list)
@@ -916,26 +917,6 @@ def files(*strings):
 @files.register(tuple)
 def _(strings: list):
     return files(*strings)
-
-
-def split_directories(strings):
-    paths_ = strings_to_paths(strings)
-    return [_
-            for _ in paths_
-            if _.isdir()], [_ for _ in paths_ if not _.isdir()]
-
-
-def split_files(strings):
-    paths_ = strings_to_paths(strings)
-    return ([_ for _ in paths_ if _.isfile()],
-            [_ for _ in paths_ if not _.isfile()])
-
-
-def split_directories_files(strings):
-    paths_ = strings_to_paths(strings)
-    return ([_ for _ in paths_ if _.isdir()],
-            [_ for _ in paths_ if _.isfile()],
-            [_ for _ in paths_ if not (_.isfile() or _.isdir())])
 
 
 def root():

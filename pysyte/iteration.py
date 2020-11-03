@@ -48,5 +48,5 @@ def first_that(predicate, sequence:Sequence[T], message=None) -> T:
     """
     try:
         return first(_ for _ in sequence if predicate(_))
-    except StopIteration:
+    except (ValueError, StopIteration):
         raise KeyError(message or 'Not Found')

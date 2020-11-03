@@ -73,11 +73,11 @@ class TestPaths(TestCase):
     def test_path_error(self):
         self.assertRaises(
             paths.PathError,
-            paths.path('/not/a/path').assert_exists)
+            paths.path('/not/a/path').assertExists)
 
     def test_not_path_error(self):
         p = paths.path('/')
-        self.assertEqual(p, p.assert_exists())
+        self.assertEqual(p, p.assertExists())
 
     def test_assert_isfile(self):
         self.assertEqual(
@@ -256,33 +256,11 @@ class TestPaths(TestCase):
         actual = paths.files('/not/a/path', __file__, '/usr/local/bin')
         self.assertEqual(actual, expected)
 
-    def test_split_files(self):
-        """files() aplits a list of paths into 2 lists
-
-        First is a list of existing files
-        Second is the remainder
-        """
-        tests = [self.path_to_paths, self.path_to_package]
-        actual = paths.split_files(tests)
-        expected = ([self.path_to_paths], [self.path_to_package])
-        self.assertEqual(actual, expected)
-
     def test_files(self):
         """files() filters existing files from a list of paths"""
         tests = [self.path_to_paths, self.path_to_package]
         expected = [self.path_to_paths]
         actual = paths.files(tests)
-        self.assertEqual(actual, expected)
-
-    def test_split_directories(self):
-        """split_directories() splits a list of paths into 2 lists
-
-        First is a list of existing directories
-        Second is the remainder
-        """
-        tests = [self.path_to_paths, self.path_to_package]
-        actual = paths.split_directories(tests)
-        expected = ([self.path_to_package], [self.path_to_paths])
         self.assertEqual(actual, expected)
 
     def test_directories(self):
@@ -291,19 +269,6 @@ class TestPaths(TestCase):
         expected = [self.path_to_package]
         actual = paths.directories(tests)
         self.assertEqual(actual, expected)
-
-    def test_split_files_directories(self):
-        """split_files_directories() aplits a list of paths into 3 lists
-
-        First is a list of existing files
-        Second is a list of existing directories
-        Third is the remainder
-        """
-        tests = ['/path/to/nowhere', self.path_to_paths, self.path_to_package]
-        actual = paths.split_directories_files(tests)
-        self.assertEqual(actual[0], [self.path_to_package])
-        self.assertEqual(actual[1], [self.path_to_paths])
-        self.assertEqual(actual[2], ['/path/to/nowhere'])
 
     def test_list_items_without_path(self):
         """Looking for a glob in non-existent path gives an empty set"""

@@ -115,12 +115,11 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-@dataclass
-class ImportUserData(ImportVisitor):
-    used: Dict = field(default_factory=defaultdict(list))
+class ImportUser(ImportVisitor):
 
-
-class ImportUser(ImportUserData):
+    def __init__(self):
+        super().__init__()
+        self.used = defaultdict(list)
 
     def imported(self, name, line):
         if not name: return
@@ -147,9 +146,11 @@ class ImportUser(ImportUserData):
         return f'{line_number:4d}: {line}'
 
 
-@contextmanager
+
 def find_imports(tree):
-    return ImportUser().visit(tree)
+    import_user = ImportUser()
+    import_user.visit(tree)
+    return import_user
 
 
 @contextmanager
@@ -165,9 +166,7 @@ def extract_imports(script):
     if not os.path.isfile(script):
         raise ValueError(f'Not a file: {script}')
     with parse_python(script) as as3:
-        result = find_imports(as3)
-        result.path = script
-        return result
+        return find_imports(as3)
 
 
 @contextmanager

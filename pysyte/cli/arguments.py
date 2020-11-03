@@ -37,6 +37,7 @@ def extract_strings(names, name):
     except TypeError:
         return []
 
+
 class IntyAction(argparse.Action):
     def __call__(self, parser, namespace, value, option_string=None):
         setattr(namespace, self.dest, inty(value))
