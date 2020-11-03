@@ -773,10 +773,6 @@ def imports():
     return { sys, os, re, stat }
 
 
-def froms():
-    items = { _Path, flatten, importlib, fnmatch, singledispatch, total_ordering, }
-
-
 @makepath.register(type(os))
 def _(arg):
     """Make a path from a module"""

@@ -37,11 +37,12 @@ class YamlConfiguration(PysyteConfiguration):
     def load(self, path):
         return yaml_load(path)
 
-    def extensions(_):
+    def extensions(self):
         return ('yml', 'yaml')
 
+
 class ModuleConfiguration(YamlConfiguration):
-    def extensions(_):
+    def extensions(self):
         return ('yaml', )
 
 
@@ -66,10 +67,9 @@ class IniConfiguration(PysyteConfiguration):
             for option in parser.options(section):
                 option_key = option.replace('-', '_')
                 data[section][option_key] = parser[section][option]
-        result = NameSpaces(data)
-        return data
+        return NameSpaces(data)
 
-    def extensions(_):
+    def extensions(self):
         return ('ini', 'cfg')
 
 
@@ -79,8 +79,8 @@ class ConfigPathsData:
 
 
 class ConfigPaths(ConfigPathsData):
-    def __init__(self, paths):
-        super().__init__([_ for _ in paths if _])
+    def __init__(self, paths_):
+        super().__init__([_ for _ in paths_ if _])
         self.file_types = FileTypes([
             (YamlConfiguration, 'yml'),
             (YamlConfiguration, 'yaml'),

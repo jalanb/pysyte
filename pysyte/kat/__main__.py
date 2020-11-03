@@ -1,5 +1,4 @@
 from pysyte.cli.app import App
-from pysyte.types import paths
 
 
 def args(app):
