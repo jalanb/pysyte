@@ -52,4 +52,4 @@ def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
     return config_paths.load(name)
 
 
-pysyte = load_configs('pysyte', path(pysyte.__file__))
+pysyte = load_configs('pysyte', [path(pysyte.__file__)])

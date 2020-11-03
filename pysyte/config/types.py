@@ -28,7 +28,7 @@ class PysyteConfiguration(NameSpaces):
                     return file
             except TypeError:
                 pass
-            return paths.path(None)
+        return paths.path(None)
 
 
 class YamlConfiguration(PysyteConfiguration):
