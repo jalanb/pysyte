@@ -1,6 +1,4 @@
-import importlib
 import inspect
-from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Callable
 
@@ -11,11 +9,15 @@ class MethodData:
 
 
 class Method(MethodData):
+    """A callable method with some convenience attributes"""
     def __init__(self, method):
         super().__init__(method)
         self.code =  self.method.__code__
         self.module = inspect.getmodule(self.method)
         self.doc = inspect.getdoc(self.method)
+
+    def run(self, *args, **kwargs):
+        return self.method(*args, **kwargs)
 
     def __getattr__(self, name):
         try:

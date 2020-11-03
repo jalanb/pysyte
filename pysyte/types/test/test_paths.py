@@ -256,13 +256,6 @@ class TestPaths(TestCase):
         actual = paths.files('/not/a/path', __file__, '/usr/local/bin')
         self.assertEqual(actual, expected)
 
-    def test_files(self):
-        """files() filters existing files from a list of paths"""
-        tests = [self.path_to_paths, self.path_to_package]
-        expected = [self.path_to_paths]
-        actual = paths.files(tests)
-        self.assertEqual(actual, expected)
-
     def test_directories(self):
         """directories() filters existing directories from a list of paths"""
         tests = [self.path_to_paths, self.path_to_package]

@@ -33,4 +33,4 @@ class Freds(FredsData):
         return [_ for _ in self._files() if not _.size]
 
     def remove_empties(self):
-        [_.remove() for _ in self.zero_sized()]
+        return [_.remove() for _ in self.zero_sized()]

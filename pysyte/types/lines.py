@@ -81,7 +81,12 @@ def add_numbers(lines, first, numbers):
 
 
 def sed(lines, args):
-    return reformat_lines(lines, args=args.numbers, width=args.width)
+    return reformat_lines(
+        lines,
+        first=args.first,
+        numbers=args.numbers,
+        width=args.width
+    )
 
 
 def reformat_lines(lines, first, numbers, width):

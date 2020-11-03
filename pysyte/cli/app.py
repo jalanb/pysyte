@@ -2,19 +2,16 @@
 
 from contextlib import ContextDecorator
 
-from pysyte.types.methods import Callable
-from pysyte.types.methods import MethodData
+from pysyte.types.methods import Method
 
 
-
-class App(ContextDecorator, MethodData):
-    def __init__(self, method: Callable):
-        super(MethodData, self).__init__(method, 'run')
+class App(Method, ContextDecorator):
 
     def __enter__(self):
         return self
 
+    def run(self, *args, **kwargs):
+        self.exit_code = self.method(*args, **kwargs)
+
     def __exit__(self, *exc):
-        return False
-
-
+        return self.exit_code

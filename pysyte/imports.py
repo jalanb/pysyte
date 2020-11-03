@@ -122,7 +122,8 @@ class ImportUser(ImportVisitor):
         self.used = defaultdict(list)
 
     def imported(self, name, line):
-        if not name: return
+        if not name:
+            return
         if name in self.imports:
             self.used[name].append(line)
 

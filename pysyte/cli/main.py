@@ -24,8 +24,8 @@ class MainMethod(Method):
         self.needs_args = self.argcount > 0
         self.needs_one_arg = self.argcount == 1
 
-    def __call__(self, *args, **kwargs):
-        return self.method(*args, **kwargs)
+    def __call__(self, *args_, **kwargs):
+        return self.method(*args_, **kwargs)
 
 
 @dataclass

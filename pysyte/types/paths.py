@@ -21,9 +21,6 @@ class PathError(Exception):
     """Something went wrong with a path"""
     prefix = 'Path Error'
 
-    def __init__(self, message):
-        super().__init__(message)
-
 
 class MissingPath(PathError):
     def __init__(self, path, desc=''):
@@ -34,9 +31,12 @@ class MissingPath(PathError):
 
 class MissingImport(MissingPath):
     def __init__(self, module):
-       self.module = module
-       name_ = module.__name__
-       super().__init__(path_, desc='module')
+        self.module = module
+        try:
+            path_ = module.__file__
+        except AttributeError:
+            path = module.__name__
+        super().__init__(path_, desc='module')
 
 
 class PathAssertions:
