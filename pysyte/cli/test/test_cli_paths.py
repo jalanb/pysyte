@@ -27,17 +27,17 @@ class TestPaths(unittest.TestCase):
         parser = paths.add_args(arguments.test_parser())
         path_to_test = path(__file__)
         path_to_tests = path_to_test.parent
-        parsed = parser.parse([path_to_test, path_to_tests, 'another'])
+        parsed = parser.parse([path_to_test, path_to_tests, "another"])
         self.assertIn(path_to_test, parsed.paths)
         self.assertIn(path_to_tests, parsed.paths)
-        self.assertNotIn('another', parsed.paths)
-        self.assertIn('another', parsed.not_paths)
+        self.assertNotIn("another", parsed.paths)
+        self.assertIn("another", parsed.not_paths)
 
     def test_named_parse(self):
         """CHeck that the paths argument can be named differently"""
-        parser = paths.add_args(arguments.test_parser(), 'fred')
+        parser = paths.add_args(arguments.test_parser(), "fred")
         path_to_test = path(__file__)
-        parsed = parser.parse([path_to_test, 'another'])
+        parsed = parser.parse([path_to_test, "another"])
         self.assertIn(path_to_test, parsed.fred)
-        self.assertNotIn('another', parsed.fred)
-        self.assertIn('another', parsed.not_fred)
+        self.assertNotIn("another", parsed.fred)
+        self.assertIn("another", parsed.not_fred)

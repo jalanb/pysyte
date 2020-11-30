@@ -6,6 +6,7 @@ from typing import Any
 
 from yamlreader import data_merge
 
+
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
@@ -45,7 +46,7 @@ def extend_values(dictionary, key, items):
     try:
         values.extend(items)
     except TypeError:
-        raise TypeError('Expected a list, got: %r' % items)
+        raise TypeError("Expected a list, got: %r" % items)
     dictionary[key] = values
 
 
@@ -84,11 +85,13 @@ def group_list_by(items, key_from_item):
 
 class DefaultDict(defaultdict):
     """A default dict with improved repr"""
+
     def __repr__(self):
         from pprint import pformat
+
         name = self.__class__.__name__
         value = pformat(dict(self), indent=4)
-        return f'<{name}\n    {value}\n>'
+        return f"<{name}\n    {value}\n>"
 
 
 class LazyDefaultDict(DefaultDict):
@@ -97,6 +100,7 @@ class LazyDefaultDict(DefaultDict):
     Same as a defaultdict, but the initiasing method takes a key
         and provides a value
     """
+
     def __init__(self, method):
         self.method = method
         super(LazyDefaultDict, self).__init__(None)
@@ -112,6 +116,7 @@ class DictionaryAttributes(dict):
 
     >>> assert DictionaryAttributes({'fred': 1}).fred == 1
     """
+
     def __init__(self, *args, **kwargs):
         """>>> assert DictionaryAttributes({'fred': 1}).fred == 1"""
         super(DictionaryAttributes, self).__init__(*args, **kwargs)
@@ -127,12 +132,15 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
     >>> instance = RecursiveDictionaryAttributes({'fred': {'mary': 1}})
     >>> assert instance.fred.mary == 1
     """
+
     def __init__(self, thing):
         data = {}
         for key, value in (thing or {}).items():
-            data[key] = (RecursiveDictionaryAttributes(value)
+            data[key] = (
+                RecursiveDictionaryAttributes(value)
                 if isinstance(value, dict)
-                else value)
+                else value
+            )
         super(RecursiveDictionaryAttributes, self).__init__(data)
 
 
@@ -143,6 +151,7 @@ class AttributesDictData:
 
 class AttributesDict(AttributesDictData):
     """Access attributes of a thing like a dict"""
+
     def __item__(self, name):
         return self.getitem(name)
 
@@ -155,14 +164,13 @@ class AttributesDict(AttributesDictData):
 
 class AttributesDicts(AttributesDict):
     def getitem(self, name_):
-        name, *names_ = name_.split('.', 1)
+        name, *names_ = name_.split(".", 1)
         value = super().getitem(name)
         try:
             names = names_.pop()
             return AttributesDicts(value).getitem(names)
         except IndexError:
             return value
-
 
 
 NameSpace = DictionaryAttributes

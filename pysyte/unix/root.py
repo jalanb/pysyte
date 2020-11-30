@@ -29,5 +29,5 @@ def upath(string):
     return UnixDirectory(string)
 
 
-root = upath('/')
+root = upath("/")
 config = ModuleConfiguration(__file__)

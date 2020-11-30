@@ -5,6 +5,7 @@ import itertools
 
 class Uniques(list):
     """A list of unique items"""
+
     def __init__(self, items=None):
         super().__init__([])
         self.extend(items or [])
@@ -32,6 +33,7 @@ class Uniques(list):
 
 class UniquelyTrues(Uniques):
     """A unique list of items all being true-ish"""
+
     def predicate(self, item):
         return bool(item)
 

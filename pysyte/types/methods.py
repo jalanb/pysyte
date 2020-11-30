@@ -10,9 +10,10 @@ class MethodData:
 
 class Method(MethodData):
     """A callable method with some convenience attributes"""
+
     def __init__(self, method):
         super().__init__(method)
-        self.code =  self.method.__code__
+        self.code = self.method.__code__
         self.module = inspect.getmodule(self.method)
         self.doc = inspect.getdoc(self.method)
 
@@ -34,9 +35,8 @@ def _represent_args(*args, **kwargs):
     [1, 2], fred='here'
     """
     argument_strings = [repr(a) for a in args]
-    keyword_strings = [
-        '='.join((k, repr(v))) for k, v in kwargs.items()]
-    return ', '.join(argument_strings + keyword_strings)
+    keyword_strings = ["=".join((k, repr(v))) for k, v in kwargs.items()]
+    return ", ".join(argument_strings + keyword_strings)
 
 
 def memoized(method):
@@ -75,7 +75,7 @@ def memoized(method):
         elif key in method.cache:
             del method.cache[key]
         else:
-            raise KeyError(f'Not prevously cached: {method.__name__}({key})')
+            raise KeyError(f"Not prevously cached: {method.__name__}({key})")
 
     def new_method(*args, **kwargs):
         """Cache the args and return values of the call
@@ -88,7 +88,8 @@ def memoized(method):
         if key not in method.cache:
             method.cache[key] = method(*args, **kwargs)
         return method.cache[key]
+
     new_method.invalidate = invalidate
     new_method.__doc__ = method.__doc__
-    new_method.__name__ = f'memoized({method.__name__})'
+    new_method.__name__ = f"memoized({method.__name__})"
     return new_method

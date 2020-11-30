@@ -9,7 +9,7 @@ def xdg_home():
 
     >>> assert xdg_home() == paths.path('~/.config').expand()
     """
-    return paths.environ_path('XDG_CONFIG_HOME', '~/.config')
+    return paths.environ_path("XDG_CONFIG_HOME", "~/.config")
 
 
 def xdg_home_config(filename):
@@ -22,12 +22,12 @@ def xdg_home_config(filename):
 
 def xdg_dirs():
     """paths in $XDG_CONFIG_DIRS"""
-    return paths.environ_paths('XDG_CONFIG_DIRS')
+    return paths.environ_paths("XDG_CONFIG_DIRS")
 
 
 def xdg_homes():
     return [xdg_home()]
 
 
-bash_paste = 'xclip -selection clipboard'
-bash_copy = 'xclip -selection clipboard -o'
+bash_paste = "xclip -selection clipboard"
+bash_copy = "xclip -selection clipboard -o"

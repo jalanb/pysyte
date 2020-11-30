@@ -38,16 +38,17 @@ class YamlConfiguration(PysyteConfiguration):
         return yaml_load(path)
 
     def extensions(self):
-        return ('yml', 'yaml')
+        return ("yml", "yaml")
 
 
 class ModuleConfiguration(YamlConfiguration):
     def extensions(self):
-        return ('yaml', )
+        return ("yaml",)
 
 
 class YamlParser:
     """This exists to mimic IniParser"""
+
     def __init__(self, path_):
         pass
 
@@ -56,21 +57,20 @@ class YamlParser:
 
 
 class IniConfiguration(PysyteConfiguration):
-
     def load(self, string):
         parser = IniParser()
         parser.read(string)
         data = {}
         for section in parser.sections():
-            section_key = section.replace('-', '_')
+            section_key = section.replace("-", "_")
             data[section_key] = {}
             for option in parser.options(section):
-                option_key = option.replace('-', '_')
+                option_key = option.replace("-", "_")
                 data[section][option_key] = parser[section][option]
         return NameSpaces(data)
 
     def extensions(self):
-        return ('ini', 'cfg')
+        return ("ini", "cfg")
 
 
 @dataclass
@@ -81,11 +81,13 @@ class ConfigPathsData:
 class ConfigPaths(ConfigPathsData):
     def __init__(self, paths_):
         super().__init__([_ for _ in paths_ if _])
-        self.file_types = FileTypes([
-            (YamlConfiguration, 'yml'),
-            (YamlConfiguration, 'yaml'),
-            (IniConfiguration, 'ini'),
-        ])
+        self.file_types = FileTypes(
+            [
+                (YamlConfiguration, "yml"),
+                (YamlConfiguration, "yaml"),
+                (IniConfiguration, "ini"),
+            ]
+        )
 
     def configs(self, name):
         for path_ in self.paths:

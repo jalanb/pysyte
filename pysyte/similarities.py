@@ -13,6 +13,7 @@ The similarity is subjective and is highly dependent on the domain and applicati
 from math import sqrt
 from decimal import Decimal
 
+
 def similar(x, y):
     """Two main consideration about similarity:
 
@@ -20,8 +21,8 @@ def similar(x, y):
     Similarity = 0 if X ≠ Y
     """
     try:
-        setattr(x, 'similar', lambda z: similar (x, z))
-        setattr(y, 'similar', lambda z: similar (y, z))
+        setattr(x, "similar", lambda z: similar(x, z))
+        setattr(y, "similar", lambda z: similar(y, z))
     except AttributeError:
         pass
     return x == y
@@ -34,23 +35,23 @@ def euclidean(x, y):
 
     The Euclidean distance between two points is the length of the path connecting them.The Pythagorean theorem gives this distance between two points.
     """
-    return sqrt(sum(pow(a-b,2) for a, b in zip(x, y)))
+    return sqrt(sum(pow(a - b, 2) for a, b in zip(x, y)))
 
 
 def manhattan(x, y):
     """Manhattan distance is a metric in which the distance between two points is the sum of the absolute differences of their Cartesian coordinates
 
-     In a simple way of saying it is the total suzm of the difference between the x-coordinates  and y-coordinates.
+    In a simple way of saying it is the total suzm of the difference between the x-coordinates  and y-coordinates.
 
-     Suppose we have two points A and B if we want to find the Manhattan distance between them, just we have, to sum up, the absolute x-axis and y – axis variation means we have to find how these two points A and B are varying in X-axis and Y- axis. In a more mathematical way of saying Manhattan distance between two points measured along axes at right angles.
+    Suppose we have two points A and B if we want to find the Manhattan distance between them, just we have, to sum up, the absolute x-axis and y – axis variation means we have to find how these two points A and B are varying in X-axis and Y- axis. In a more mathematical way of saying Manhattan distance between two points measured along axes at right angles.
 
-     In a plane with p1 at (x1, y1) and p2 at (x2, y2).
+    In a plane with p1 at (x1, y1) and p2 at (x2, y2).
 
-     Manhattan distance = |x1 – x2| + |y1 – y2|
+    Manhattan distance = |x1 – x2| + |y1 – y2|
 
-     This Manhattan distance metric is also known as Manhattan length, rectilinear distance, L1 distance or L1 norm, city block distance, Minkowski’s L1 distance, taxi-cab metric, or city block distance.
-     """
-    return sum(abs(a-b) for a,b in zip(x,y))
+    This Manhattan distance metric is also known as Manhattan length, rectilinear distance, L1 distance or L1 norm, city block distance, Minkowski’s L1 distance, taxi-cab metric, or city block distance.
+    """
+    return sum(abs(a - b) for a, b in zip(x, y))
 
 
 def minkowski(x, y, p_value):
@@ -66,8 +67,11 @@ def minkowski(x, y, p_value):
     λ = 2 is the Euclidean distance. Synonyms are L2-Norm or Ruler distance. For two vectors of ranked ordinal variables, the Euclidean distance is sometimes called Spear-man distance.
     λ = ∞ is the Chebyshev distance. Synonyms are Lmax-Norm or Chessboard distance.
     """
-    def nth_root(value, n_root):
-        root_value = 1/float(n_root)
-        return float(round (Decimal(value) ** Decimal(root_value),3))
 
-    return nth_root(sum(pow(abs(a-b),p_value) for a,b in zip(x, y)),p_value)
+    def nth_root(value, n_root):
+        root_value = 1 / float(n_root)
+        return float(round(Decimal(value) ** Decimal(root_value), 3))
+
+    return nth_root(
+        sum(pow(abs(a - b), p_value) for a, b in zip(x, y)), p_value
+    )

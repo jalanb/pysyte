@@ -1,6 +1,6 @@
 """Handle XDG config files as yaml"""
 
-from pysyte.oss import linux 
+from pysyte.oss import linux
 
 
 user = [_.expand() for _ in linux.xdg_homes() if _]

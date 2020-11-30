@@ -5,12 +5,12 @@ And numbers for those names"""
 
 def bw():
     """The simplest of all - no colour and full colour"""
-    return 'black white'.split()
+    return "black white".split()
 
 
 def rgb():
     """The basic cone sensitivities of your eyes"""
-    return 'red green blue'.split()
+    return "red green blue".split()
 
 
 primaries = rgb
@@ -18,7 +18,7 @@ primaries = rgb
 
 def cym():
     """The complements of the primaries"""
-    return 'cyan yellow magenta'.split()
+    return "cyan yellow magenta".split()
 
 
 secondaries = complementaries = cym
@@ -31,15 +31,19 @@ def basic():
 
 def _cga_colour_names():
     """The basic CGA colours are in a slightly different order"""
-    return 'red green yellow blue magenta cyan'.split()
+    return "red green yellow blue magenta cyan".split()
 
 
 def dark_cga():
-    return ['black'] + _cga_colour_names() + ['silver']
+    return ["black"] + _cga_colour_names() + ["silver"]
 
 
 def light_cga():
-    return ['gray'] + [f'light {name}' for name in _cga_colour_names()]  + ['white']
+    return (
+        ["gray"]
+        + [f"light {name}" for name in _cga_colour_names()]
+        + ["white"]
+    )
 
 
 def cga():

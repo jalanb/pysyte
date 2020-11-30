@@ -11,7 +11,9 @@ from pysyte.types.paths import DirectPath
 from pysyte.types.paths import path
 
 
-def common_config_dirs(extras: Optional[List[DirectPath]] = None) -> List[DirectPath]:
+def common_config_dirs(
+    extras: Optional[List[DirectPath]] = None,
+) -> List[DirectPath]:
     """Build a list of common config dirs
 
     Try each of the following directories
@@ -36,10 +38,10 @@ def common_config_dirs(extras: Optional[List[DirectPath]] = None) -> List[Direct
             configs.append(expanded.parent)
 
     configs = []
-    add_dir('/etc')
+    add_dir("/etc")
     for path_ in linux.xdg_dirs():
         add_dir(path_)
-    add_dir('~/.config')
+    add_dir("~/.config")
     add_dir(linux.xdg_home())
     for path_ in extras or []:
         add_dir(path_)
@@ -52,4 +54,4 @@ def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
     return config_paths.load(name)
 
 
-pysyte = load_configs('pysyte', [path(pysyte.__file__)])
+pysyte = load_configs("pysyte", [path(pysyte.__file__)])

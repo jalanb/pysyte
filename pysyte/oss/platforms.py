@@ -7,13 +7,13 @@ from pysyte import oss
 from pysyte.bash import shell
 
 name = python_platform.system().lower()
-platform = importlib.import_module(f'pysyte.oss.{name}', oss)
+platform = importlib.import_module(f"pysyte.oss.{name}", oss)
 
 
 def put_clipboard_data(data):
-    run(platform.bash_copy, encoding='utf-8', input=data)
+    run(platform.bash_copy, encoding="utf-8", input=data)
 
 
 def get_clipboard_data():
-    result = run(platform.bash_paste, capture_output=True, encoding='utf-8')
+    result = run(platform.bash_paste, capture_output=True, encoding="utf-8")
     return result.stdout

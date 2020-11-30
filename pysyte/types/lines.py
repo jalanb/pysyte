@@ -4,12 +4,13 @@ from functools import partial
 
 
 def _chop(lines_in, at, first, last):
-
     def as_int(string, start, end):
         try:
             return int(string)
         except (ValueError, TypeError):
-            lines = lines_in[at:at] if isinstance(at, int) else lines_in[start:end]
+            lines = (
+                lines_in[at:at] if isinstance(at, int) else lines_in[start:end]
+            )
             matcher = re.compile(string)
             for i, line in enumerate(lines, 1 + start):
                 if matcher.search(line):
@@ -17,7 +18,6 @@ def _chop(lines_in, at, first, last):
         return 0
 
     def boundaries():
-
         def line(i):
             line = i if i >= 0 else length_read + 1 + i
             if line >= length_read:
@@ -57,6 +57,7 @@ def set_width(line, width):
         return line
     return line[:width]
 
+
 def _number_format(count=999):
     """A string format for line numbers
 
@@ -65,13 +66,14 @@ def _number_format(count=999):
     >>> assert _number_format(77) == '%2d: '
     """
     digits = len(str(count))
-    return '%%%dd: ' % digits
+    return "%%%dd: " % digits
 
 
 def add_numbers(lines, first, numbers):
     if not numbers:
         numbered = lambda x, y: x
     else:
+
         def numbered(line_, line_format_):
             prefix = line_format_ % (first + i + 1)
             return f"{prefix} {line_.rstrip()}"
@@ -82,15 +84,14 @@ def add_numbers(lines, first, numbers):
 
 def sed(lines, args):
     return reformat_lines(
-        lines,
-        first=args.first,
-        numbers=args.numbers,
-        width=args.width
+        lines, first=args.first, numbers=args.numbers, width=args.width
     )
 
 
 def reformat_lines(lines, first, numbers, width):
-    return [l[:width] if width else l for l in add_numbers(lines, first, numbers)]
+    return [
+        l[:width] if width else l for l in add_numbers(lines, first, numbers)
+    ]
 
 
 def select(predicate, lines):
@@ -99,18 +100,21 @@ def select(predicate, lines):
             continue
         yield line
 
+
 def result(converter, lines):
     for line in lines:
         yield converter(line)
+
 
 _selector = lambda lambda_, lines_: (i for i in lines_ if lambda_(i))
 _converter = lambda lambda_, lines_: (lambda_(i) for i in lines_)
 
 full = lambda lines_: _converter(
-    lambda line: line.rstrip(),
-    _selector(lambda line: line.rstrip(), lines_)
+    lambda line: line.rstrip(), _selector(lambda line: line.rstrip(), lines_)
 )
-grep = lambda lines_: lambda regexp: _selector(lambda line: line and re.search(regexp, line), lines_)
+grep = lambda lines_: lambda regexp: _selector(
+    lambda line: line and re.search(regexp, line), lines_
+)
 
 
 def arg_lines(text, args):
@@ -118,4 +122,4 @@ def arg_lines(text, args):
 
 
 def as_text(lines):
-    return '\n'.join(lines)
+    return "\n".join(lines)

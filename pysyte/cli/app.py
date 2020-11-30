@@ -6,7 +6,6 @@ from pysyte.types.methods import Method
 
 
 class App(Method, ContextDecorator):
-
     def __enter__(self):
         return self
 

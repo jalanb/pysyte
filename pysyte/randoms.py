@@ -5,7 +5,7 @@ import random
 
 
 def coin():
-    return random.choice(('heads', 'tails'))
+    return random.choice(("heads", "tails"))
 
 
 def flip():

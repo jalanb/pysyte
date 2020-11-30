@@ -3,8 +3,10 @@
 from typing import Sequence
 from typing import TypeVar
 
-T = TypeVar('T')  # Declare Type variable
-def first(sequence:Sequence[T], message=None) -> T:  # Generic function
+T = TypeVar("T")  # Declare Type variable
+
+
+def first(sequence: Sequence[T], message=None) -> T:  # Generic function
     """The first item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -14,10 +16,10 @@ def first(sequence:Sequence[T], message=None) -> T:  # Generic function
     try:
         return next(iter(sequence))
     except StopIteration:
-        raise ValueError(message or (f'Sequence is empty: {sequence}'))
+        raise ValueError(message or (f"Sequence is empty: {sequence}"))
 
 
-def last(sequence:Sequence[T], message=None) -> T:
+def last(sequence: Sequence[T], message=None) -> T:
     """The last item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -27,7 +29,7 @@ def last(sequence:Sequence[T], message=None) -> T:
     return first(reversed(sequence), message)
 
 
-def first_or(sequence:Sequence[T], value) -> T:
+def first_or(sequence: Sequence[T], value) -> T:
     """First item in that sequence, or that value
 
     >>> assert first_or([1, 2, 3], 4) == 1
@@ -39,7 +41,7 @@ def first_or(sequence:Sequence[T], value) -> T:
         return value
 
 
-def first_that(predicate, sequence:Sequence[T], message=None) -> T:
+def first_that(predicate, sequence: Sequence[T], message=None) -> T:
     """The first item in that sequence that matches that predicate
 
     If none matches raise a KeyError with that message
@@ -49,4 +51,4 @@ def first_that(predicate, sequence:Sequence[T], message=None) -> T:
     try:
         return first(_ for _ in sequence if predicate(_))
     except (ValueError, StopIteration):
-        raise KeyError(message or 'Not Found')
+        raise KeyError(message or "Not Found")

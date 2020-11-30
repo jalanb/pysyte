@@ -24,6 +24,7 @@ from deprecated import deprecated
 
 class NoKeys(StopIteration):
     """Better name for StopIteration caused by running out of keys"""
+
     pass
 
 
@@ -34,6 +35,7 @@ def get_ord():
 
 class TerminalContext(object):
     """Context wrapper to set up termios values"""
+
     # pylint: disable=too-few-public-methods
     def __init__(self):
         self.fd = None
@@ -56,6 +58,7 @@ class TerminalContext(object):
 
 class Timeout(Exception):
     """A timeout has occurred"""
+
     pass
 
 
@@ -66,6 +69,7 @@ def timeout_raiser(_signum, _frame):
 
 class TimerContext(object):
     """Context wrapper for a timeout"""
+
     # pylint: disable=too-few-public-methods
     def __init__(self, seconds):
         self.seconds = seconds
@@ -110,7 +114,7 @@ def _get_keycodes():
     except IndexError:
         pass
     result = []
-    terminators = 'ABCDFHPQRS~'
+    terminators = "ABCDFHPQRS~"
     with TerminalContext():
         code = get_ord()
         result.append(code)
@@ -133,8 +137,9 @@ def _get_keycodes():
 
 class ExtendedKey(Exception):
     """Raised for an unrecognised Extended key code"""
+
     def __init__(self, codes):
-        super(ExtendedKey, self).__init__(f'Too many key codes: {codes!r}')
+        super(ExtendedKey, self).__init__(f"Too many key codes: {codes!r}")
         self.codes = codes
 
 
@@ -169,7 +174,7 @@ def get_key():
 def get_menu(**kwargs):
     key = get_key()
     for name, string in kwargs.items():
-        match = re.match(f'^{string}$', key)
+        match = re.match(f"^{string}$", key)
         if match:
             return name
         if key in name or key in string:
@@ -213,8 +218,8 @@ def get_as_key():
 
 def control_key_name(code):
     """Prefix the name of a control key with '^'"""
-    name = chr(code - 1 + ord('A'))
-    return f'^{name}'
+    name = chr(code - 1 + ord("A"))
+    return f"^{name}"
 
 
 def get_extended_key_name(codes):
@@ -226,50 +231,50 @@ def get_extended_key_name(codes):
 
 
 def known_keys():
-    result= {
-        (27, 79, 70): 'end',
-        (27, 79, 72): 'home',
-        (27, 79, 80): 'F1',
-        (27, 79, 81): 'F2',
-        (27, 79, 82): 'F3',
-        (27, 79, 83): 'F4',
-        (27, 91, 49, 53, 126): 'F5',
-        (27, 91, 49, 53, 59, 50, 126): 'F17',
-        (27, 91, 49, 55, 126): 'F6',
-        (27, 91, 49, 55, 59, 50, 126): 'F18',
-        (27, 91, 49, 56, 126): 'F7',
-        (27, 91, 49, 56, 59, 50, 126): 'F19',
-        (27, 91, 49, 57, 126): 'F8',
-        (27, 91, 49, 59, 50, 65): '&up',
-        (27, 91, 49, 59, 50, 66): '&down',
-        (27, 91, 49, 59, 50, 67): '&right',
-        (27, 91, 49, 59, 50, 68): '&left',
-        (27, 91, 49, 59, 50, 80): 'F13',
-        (27, 91, 49, 59, 50, 83): 'F16',
-        (27, 91, 50): 'insert',
-        (27, 91, 50, 48, 126): 'F9',
-        (27, 91, 50, 49, 126): 'F10',
-        (27, 91, 50, 51, 126): 'F11',
-        (27, 91, 50, 52, 126): 'Cmd Backspace',
-        (27, 91, 50, 52, 126): 'F12',
-        (27, 91, 51): 'delete',
-        (27, 91, 51, 126): 'Del',
-        (27, 91, 51, 126): 'FF12',
-        (27, 91, 53): 'page up',
-        (27, 91, 53, 126): 'page up',
-        (27, 91, 54): 'page down',
-        (27, 91, 54, 126): 'page down',
-        (27, 91, 65): 'up',
-        (27, 91, 66): 'down',
-        (27, 91, 67): 'right',
-        (27, 91, 68): 'left',
-        (27,): 'esc',
-        (1,): 'Ctrl A',
-        (32,): 'space',
-        (48,): '0',
-        (65,): 'A',
-        (97,): 'a',
-        (127,): 'backspace',
+    result = {
+        (27, 79, 70): "end",
+        (27, 79, 72): "home",
+        (27, 79, 80): "F1",
+        (27, 79, 81): "F2",
+        (27, 79, 82): "F3",
+        (27, 79, 83): "F4",
+        (27, 91, 49, 53, 126): "F5",
+        (27, 91, 49, 53, 59, 50, 126): "F17",
+        (27, 91, 49, 55, 126): "F6",
+        (27, 91, 49, 55, 59, 50, 126): "F18",
+        (27, 91, 49, 56, 126): "F7",
+        (27, 91, 49, 56, 59, 50, 126): "F19",
+        (27, 91, 49, 57, 126): "F8",
+        (27, 91, 49, 59, 50, 65): "&up",
+        (27, 91, 49, 59, 50, 66): "&down",
+        (27, 91, 49, 59, 50, 67): "&right",
+        (27, 91, 49, 59, 50, 68): "&left",
+        (27, 91, 49, 59, 50, 80): "F13",
+        (27, 91, 49, 59, 50, 83): "F16",
+        (27, 91, 50): "insert",
+        (27, 91, 50, 48, 126): "F9",
+        (27, 91, 50, 49, 126): "F10",
+        (27, 91, 50, 51, 126): "F11",
+        (27, 91, 50, 52, 126): "Cmd Backspace",
+        (27, 91, 50, 52, 126): "F12",
+        (27, 91, 51): "delete",
+        (27, 91, 51, 126): "Del",
+        (27, 91, 51, 126): "FF12",
+        (27, 91, 53): "page up",
+        (27, 91, 53, 126): "page up",
+        (27, 91, 54): "page down",
+        (27, 91, 54, 126): "page down",
+        (27, 91, 65): "up",
+        (27, 91, 66): "down",
+        (27, 91, 67): "right",
+        (27, 91, 68): "left",
+        (27,): "esc",
+        (1,): "Ctrl A",
+        (32,): "space",
+        (48,): "0",
+        (65,): "A",
+        (97,): "a",
+        (127,): "backspace",
     }
     return add_ascii_keys(result)
 
@@ -284,14 +289,15 @@ def add_ascii_keys(data):
     """
     # See previous function for previous key, value pairs
     for i in range(32):
-        data[(i + 1, )] = f"Ctrl {chr( ord('A') + i)}"
+        data[(i + 1,)] = f"Ctrl {chr( ord('A') + i)}"
     for i in range(32, 127):
-        data[(i, )] = f'{chr(i)}'
+        data[(i,)] = f"{chr(i)}"
     return data
 
 
 def _yielder(getter):
     """Keep yielding from that getter until KeyboardInteruptted"""
+
     def yield_till_stopped():
         """Yield from the getter until KeyboardInteruptted"""
         while True:
@@ -315,14 +321,14 @@ def get_string():
     initial_code, codes = keycodes[0], keycodes[1:]
     initial_char = chr(initial_code)
     if initial_code == 27:
-        initial_char = '\\e'
+        initial_char = "\\e"
     elif not ascii.isgraph(initial_char):
-        initial_char = '\\x%x' % initial_code
-    chars = ''.join([chr(c) for c in codes])
-    return ''.join((initial_char, chars))
+        initial_char = "\\x%x" % initial_code
+    chars = "".join([chr(c) for c in codes])
+    return "".join((initial_char, chars))
 
 
-@deprecated(reason="use yield_asciis()", version='0.7.30')
+@deprecated(reason="use yield_asciis()", version="0.7.30")
 def yield_asciis_old():
     k = get_ascii()
     while True:
@@ -330,8 +336,8 @@ def yield_asciis_old():
 
 
 def ask_user(prompt, default=None):
-    prompt_default = f'[{default}]' if default else ''
-    print(f'{prompt} {prompt_default}? ', end='')
+    prompt_default = f"[{default}]" if default else ""
+    print(f"{prompt} {prompt_default}? ", end="")
     result = getch().lower().strip()
     print()
     return result or default

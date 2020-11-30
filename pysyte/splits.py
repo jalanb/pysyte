@@ -24,7 +24,7 @@ def join(items, separator=None):
     '1,2,3'
     """
     if not items:
-        return ''
+        return ""
     if separator is None:
         separator = _default_separator()
     return separator.join([str(item) for item in items])
@@ -61,13 +61,14 @@ def split_and_strip(string, separator_regexp=None, maxsplit=0):
     ['fred', 'was', 'here']
     """
     if not string:
-        return ['']
+        return [""]
     if separator_regexp is None:
         separator_regexp = _default_separator()
     if not separator_regexp:
         return string.split()
-    return [item.strip()
-            for item in re.split(separator_regexp, string, maxsplit)]
+    return [
+        item.strip() for item in re.split(separator_regexp, string, maxsplit)
+    ]
 
 
 def split_and_strip_without(string, exclude, separator_regexp=None):
@@ -92,7 +93,7 @@ def split_and_strip_whole(string, separator_regexp=None):
     >>> split_and_strip_whole('fred, , was,here,')
     ['fred', 'was', 'here']
     """
-    return split_and_strip_without(string, [''], separator_regexp)
+    return split_and_strip_without(string, [""], separator_regexp)
 
 
 def split_by_count(items, count, filler=None):
@@ -156,7 +157,7 @@ def despaced(string):
     >>> despaced('fred, , was,here today')
     ['fred,', ',', 'was,here', 'today']
     """
-    return split_and_strip_without(string, [''], ' ')
+    return split_and_strip_without(string, [""], " ")
 
 
 def words(string):
@@ -167,7 +168,7 @@ def words(string):
     >>> words('fred, , was,here today')
     ['fred', 'was', 'here', 'today']
     """
-    return split_and_strip_without(string, [''], '[,;. ]')
+    return split_and_strip_without(string, [""], "[,;. ]")
 
 
 def rejoin(string, separator_regexp=None, spaced=False):
@@ -181,5 +182,5 @@ def rejoin(string, separator_regexp=None, spaced=False):
     strings = split_and_strip(string)
     if separator_regexp is None:
         separator_regexp = _default_separator()
-    joiner = spaced and f'{separator_regexp} ' or separator_regexp
+    joiner = spaced and f"{separator_regexp} " or separator_regexp
     return joiner.join(strings)

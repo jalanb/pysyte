@@ -53,65 +53,74 @@ class ArgumentsParser(object):
         self.parse = self.parse_args
 
         self.string = self.arg = self.add_option
-        self.boolean = self.opt = self.true = partial(self.arg, action='store_true')
+        self.boolean = self.opt = self.true = partial(
+            self.arg, action="store_true"
+        )
         self.integer = self.int = partial(self.arg, type=int)
         self.inty = partial(self.arg, action=IntyAction)
         self.strings = partial(self.positional, type=str)
 
     def __repr__(self):
-        return f'<{self.__class__.__name__}>'
+        return f"<{self.__class__.__name__}>"
 
-    def add_to(self, name=None, group=None, type_=None, default=None, *args, **kwargs):
-        args_= args[:]
+    def add_to(
+        self, name=None, group=None, type_=None, default=None, *args, **kwargs
+    ):
+        args_ = args[:]
         kwargs_ = kwargs.copy()
         name_ = name if name else ""
         group_ = group if group else name_
-        kwargs_['default'] = default if default else group_ if group_ else name_ if name_ else None
+        kwargs_["default"] = (
+            default
+            if default
+            else group_
+            if group_
+            else name_
+            if name_
+            else None
+        )
         args_ = [name_[0], name_] + args
         self.add_option(*args_, **kwargs_)
 
     def add_option(self, initial, name, *args, **kwargs):
-        n = name.lstrip('-')
-        i = initial.lstrip('-') or n[0]
-        return self.parser.add_argument(
-            f'-{i}',
-            f'--{n}',
-            *args, **kwargs)
+        n = name.lstrip("-")
+        i = initial.lstrip("-") or n[0]
+        return self.parser.add_argument(f"-{i}", f"--{n}", *args, **kwargs)
 
         if not initial:
             initial = name[0]
         return self.parser.add_argument(
-            f'-{initial.lstrip("-")}',
-            f'--{name.lstrip("-")}',
-            *args, **kwargs)
+            f'-{initial.lstrip("-")}', f'--{name.lstrip("-")}', *args, **kwargs
+        )
 
-    @deprecated(reason="use add_option()", version='0.7.33')
+    @deprecated(reason="use add_option()", version="0.7.33")
     def add_argument(self, initial, name, *args, **kwargs):
         return self.add_option(initial, name, *args, **kwargs)
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""
-        return self.parser.add_argument(*args, **kwargs, nargs='?')
+        return self.parser.add_argument(*args, **kwargs, nargs="?")
 
     def positional(self, *args, **kwargs):
         """Add optional positional args"""
-        return self.parser.add_argument(*args, **kwargs, nargs='*')
+        return self.parser.add_argument(*args, **kwargs, nargs="*")
 
     def positionals(self, *args, **kwargs):
         """Add mandatory positional args"""
-        return self.parser.add_argument(*args, **kwargs, nargs='+')
+        return self.parser.add_argument(*args, **kwargs, nargs="+")
 
     def post_parser(self, args):
         """No-op for specialisation"""
         return args
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = post_parser if post_parser else getattr(
-            self, 'post_parser', False)
+        post_parse = (
+            post_parser if post_parser else getattr(self, "post_parser", False)
+        )
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
         post_parser_ = post_parse if post_parse else lambda x: x
-        posted_args =  post_parser_(argument_namespace)
+        posted_args = post_parser_(argument_namespace)
         self.args = posted_args
         self.args.prog = self.parser.prog
         return self.args
@@ -122,12 +131,16 @@ class ArgumentsParser(object):
 
 class DescribedParser(ArgumentsParser):
     """An argparse.ArgumentParser with a description, usage and epilog"""
+
     def __init__(self, description, usage, epilog):
-        super().__init__(argparse.ArgumentParser(
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description=description,
-            usage=usage,
-            epilog=epilog))
+        super().__init__(
+            argparse.ArgumentParser(
+                formatter_class=argparse.RawDescriptionHelpFormatter,
+                description=description,
+                usage=usage,
+                epilog=epilog,
+            )
+        )
 
 
 class ArgumentsNamespace(object):
@@ -137,17 +150,17 @@ class ArgumentsNamespace(object):
     def __repr__(self):
         """Show args nicely in cli and debuggers"""
         klass = self.__class__.__qualname__
-        cmd = ' '.join(sys.argv)
-        cmd_= '$ {cmd}'
+        cmd = " ".join(sys.argv)
+        cmd_ = "$ {cmd}"
         args = pformat(self.get_args())
-        repr_ = '\n'.join((klass, cmd_, args))
-        return f'<{repr_}>'
+        repr_ = "\n".join((klass, cmd_, args))
+        return f"<{repr_}>"
 
     def __getattr__(self, name):
         return getattr(self._result, name)
 
     def get_args(self):
-        attributes = [a for a in dir(self._result) if a[0] != '_']
+        attributes = [a for a in dir(self._result) if a[0] != "_"]
         return {a: getattr(self._result, a) for a in attributes}
 
     def get_arg(self, name):
@@ -170,7 +183,7 @@ class ArgumentHandler:
         try:
             return caller.main(self)
         except KeyboardInterrupt:
-            sys.stderr.write('^c ^C ^c    ^C ^c ^C    ^c ^C ^c\n')
+            sys.stderr.write("^c ^C ^c    ^C ^c ^C    ^c ^C ^c\n")
             ctrl_c = 3
             return ctrl_c
         except BdbQuit:
@@ -187,17 +200,17 @@ def parser(description=None, usage=None, epilog=None):
     if usage:
         return DescribedParser(description, usage, epilog)
     lines = (description or "").splitlines()
-    regexp = re.compile('^[uU]sage:')
+    regexp = re.compile("^[uU]sage:")
     usages = [l for l in lines if regexp.match(l)]
     if usages:
         usage_line = usages.pop()
-        usage = usage_line.split(':', 1)[1]
-        description = '\n'.join([l for l in lines if l != usage_line])
+        usage = usage_line.split(":", 1)[1]
+        description = "\n".join([l for l in lines if l != usage_line])
     elif len(lines) > 1 and not lines[1]:
-        usage, description = lines[0], '\n'.join(lines[2:])
+        usage, description = lines[0], "\n".join(lines[2:])
     return DescribedParser(description, usage, epilog)
 
 
 def test_parser():
     """A parser for testing convenience"""
-    return parser('Testing', 'Use this from a test', '')
+    return parser("Testing", "Use this from a test", "")

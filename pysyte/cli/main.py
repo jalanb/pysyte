@@ -20,7 +20,7 @@ class MainMethod(Method):
     def __init__(self, method):
         super().__init__(method)
         self.doc = self.doc if self.doc else self.module.__doc__
-        self.in_main_module = self.module.__name__ == '__main__'
+        self.in_main_module = self.module.__name__ == "__main__"
         self.needs_args = self.argcount > 0
         self.needs_one_arg = self.argcount == 1
 
@@ -35,8 +35,13 @@ class CallerData:
 
 
 def run(
-        main_method, add_args=None, post_parse=None,
-        usage=None, epilog=None, config_name=None):
+    main_method,
+    add_args=None,
+    post_parse=None,
+    usage=None,
+    epilog=None,
+    config_name=None,
+):
     """Run a main_method from command line, parsing arguments
 
     if add_args(parser) is given it should add arguments to the parser
@@ -53,19 +58,22 @@ def run(
     else
         call main_method(args)
     """
-    class Caller(CallerData):
 
+    class Caller(CallerData):
         def arg_parser(self):
             try:
                 return self.add_args(
-                    arguments.parser, self.method.doc, usage, epilog)
+                    arguments.parser, self.method.doc, usage, epilog
+                )
             except TypeError:
                 try:
                     return self.add_args(
-                        arguments.parser(self.method.doc, usage, epilog))
+                        arguments.parser(self.method.doc, usage, epilog)
+                    )
                 except TypeError:
                     raise NotImplementedError(
-                        'Unknown signature for add_args()')
+                        "Unknown signature for add_args()"
+                    )
 
         def parse_args(self):
             if self.add_args:
@@ -93,7 +101,6 @@ def run(
             if self.method.needs_args:
                 return self.method(args)
             return self.method()
-
 
     caller = Caller(MainMethod(main_method), add_args)
     if caller.method.in_main_module:

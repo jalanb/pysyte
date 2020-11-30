@@ -27,4 +27,4 @@ off = "\033[0m"
 
 
 def highlighted(colour, text):
-    return f'{colour}{text}{off}'
+    return f"{colour}{text}{off}"

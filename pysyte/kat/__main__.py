@@ -2,9 +2,7 @@ from pysyte.cli.app import App
 
 
 def args(app):
-    return (
-        app.args.files('files'),
-    )
+    return (app.args.files("files"),)
 
 
 def kat():
@@ -14,7 +12,7 @@ def kat():
         start, lines_in = arg_lines(text, args)
         lines_out = args.sed(lines_in, start)
         text_ = as_text(lines_out)
-        print(f'{text_}\n')
+        print(f"{text_}\n")
     return True
 
 
@@ -23,5 +21,5 @@ def run():
         app.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

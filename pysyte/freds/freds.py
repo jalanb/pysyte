@@ -17,8 +17,8 @@ class Freds(FredsData):
     """Handle fred.* as strings, paths, files, ..."""
 
     def extended(self):
-        exts = ('', '.py', '.sh', '.txt', '.now', '.html', '.xlsx', '.csv')
-        return [str('%s/fred%s' % (d, e)) for d in self.dirs for e in exts]
+        exts = ("", ".py", ".sh", ".txt", ".now", ".html", ".xlsx", ".csv")
+        return [str("%s/fred%s" % (d, e)) for d in self.dirs for e in exts]
 
     def _paths(self):
         return [paths.path(_) for _ in self.extended()]

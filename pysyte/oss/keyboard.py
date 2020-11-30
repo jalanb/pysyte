@@ -7,7 +7,6 @@ import sys
 from pysyte.oss import getch
 
 
-
 def _get_chosen_chars(chooser):
     while True:
         key = getch.get_as_key()
@@ -30,7 +29,7 @@ def get_letter():
 def quit_on_q():
     try:
         key = getch.get_as_key()
-        if key in 'qQ':
+        if key in "qQ":
             sys.exit()
         return key
     except KeyboardInterrupt:
