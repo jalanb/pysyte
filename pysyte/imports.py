@@ -4,11 +4,6 @@ import linecache
 import ast
 from collections import defaultdict
 from contextlib import contextmanager
-from dataclasses import dataclass
-from dataclasses import field
-from typing import Dict
-
-from pysyte.types import dictionaries
 
 
 class ImportVisitor(ast.NodeVisitor):

@@ -75,8 +75,8 @@ class TestPaths(TestCase):
         )
 
     def test_not_path_error(self):
-        p = paths.path("/")
-        self.assertEqual(p, p.assertExists())
+        path = paths.path("/")
+        self.assertEqual(path, path.assertExists())
 
     def test_assert_isfile(self):
         self.assertEqual(self.path_to_test, self.path_to_test.assert_isfile())
@@ -111,16 +111,16 @@ class TestPaths(TestCase):
 
     def test_stripped_whole_lines(self):
         path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue([l for l in path.stripped_lines() if not l])
-        self.assertFalse([l for l in path.stripped_whole_lines() if not l])
+        self.assertTrue([_ for _ in path.stripped_lines() if not _])
+        self.assertFalse([_ for _ in path.stripped_whole_lines() if not _])
 
     def test_non_comment_lines(self):
         path = MockFilePathWithLines("/not/a/real/file")
         self.assertTrue(
-            [l for l in path.stripped_whole_lines() if l.startswith("#")]
+            [_ for _ in path.stripped_whole_lines() if _.startswith("#")]
         )
         self.assertFalse(
-            [l for l in path.non_comment_lines() if l.startswith("#")]
+            [_ for _ in path.non_comment_lines() if _.startswith("#")]
         )
 
     def test_has_line(self):
@@ -325,7 +325,6 @@ class TestPaths(TestCase):
         )
 
     def test_relative_paths(self):
-        p = paths.path(paths)
         expected = self.path_to_package.basename()
         actual = self.path_to_project.short_relative_path_to(
             self.path_to_package
@@ -338,14 +337,12 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
 
     def test_relative_path_hither(self):
-        p = paths.path(paths)
         self.path_to_package.cd()
         expected = self.path_to_package.basename()
         actual = self.path_to_project.short_relative_path_to_here()
         self.assertEqual(actual, expected)
 
     def test_relative_path_hence(self):
-        p = paths.path(paths)
         self.path_to_package.cd()
         expected = ".."
         actual = self.path_to_project.short_relative_path_from_here()
@@ -436,8 +433,8 @@ class TestNonePath(TestCase):
 
     def test_none_to_none(self):
         for item in (None, "", 0):
-            p = paths.path(item)
-            self.assertTrue(isinstance(p, paths.NonePath))
+            path = paths.path(item)
+            self.assertTrue(isinstance(path, paths.NonePath))
 
     def test_repr(self):
         actual = repr(paths.path(None))
@@ -451,9 +448,9 @@ class TestNonePath(TestCase):
 
     def test_has_parent(self):
         """A non-existent path can have a parent that does exist"""
-        p = paths.path("/usr/fred")
-        self.assertFalse(p.exists())
-        self.assertTrue(p.parent.exists())
+        path = paths.path("/usr/fred")
+        self.assertFalse(path.exists())
+        self.assertTrue(path.parent.exists())
 
     def test_has_no_parent_without_slash(self):
         """A NonePath with no '/' has no parent
@@ -465,37 +462,37 @@ class TestNonePath(TestCase):
 
     def test_equality(self):
         """A NonePath is equal to anything else none-ish"""
-        p = paths.path(None)
-        self.assertTrue(p == "")
-        self.assertTrue(p == 0)
+        path = paths.path(None)
+        self.assertTrue(path == "")
+        self.assertTrue(path == 0)
 
     def test_equality_from_string(self):
         """A NonePath is equal to anything else none-ish
 
         Except: if made from a string, then do a string comparison
         """
-        p = paths.path("/path/to/nowhere")
-        self.assertTrue(p == "/path/to/nowhere")
-        self.assertTrue(paths.path(None) == p)
+        path = paths.path("/path/to/nowhere")
+        self.assertTrue(path == "/path/to/nowhere")
+        self.assertTrue(paths.path(None) == path)
 
     def test_less_than(self):
         """A NonePath is less than anything that's not false-y"""
-        p = paths.path("/path/to/nowhere")
-        self.assertTrue(p < "/path/to/nowhere/else")
-        self.assertTrue(p < paths.path("/usr"))
+        path = paths.path("/path/to/nowhere")
+        self.assertTrue(path < "/path/to/nowhere/else")
+        self.assertTrue(path < paths.path("/usr"))
 
     def test_not_less_than(self):
         """A NonePath is not less than anything that's false-y"""
-        p = paths.path("/path/to/nowhere")
-        self.assertFalse(p < False)
-        self.assertFalse(p < paths.path(None))
+        path = paths.path("/path/to/nowhere")
+        self.assertFalse(path < False)
+        self.assertFalse(path < paths.path(None))
 
     def test_total_ordering(self):
         """NonePath has __eq__, and __lt__, but can use other comparisons"""
-        p = paths.path("/path/to/nowhere")
-        self.assertTrue(p > "/path/to")
-        self.assertTrue(p <= paths.path("/usr"))
-        self.assertTrue(p <= paths.path("/path/to/nowhere"))
+        path = paths.path("/path/to/nowhere")
+        self.assertTrue(path > "/path/to")
+        self.assertTrue(path <= paths.path("/usr"))
+        self.assertTrue(path <= paths.path("/path/to/nowhere"))
 
     def test_contains_nothing(self):
         """There's nothing in a NonePath

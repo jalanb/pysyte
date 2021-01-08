@@ -9,7 +9,7 @@ def args():
 # Below reformatted to allow flaking
 
 
-def pa(**args):
+def pa(*_, **__):
     pass
 
 
