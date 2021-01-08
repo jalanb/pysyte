@@ -165,6 +165,11 @@ We are expecting that path to exist as a file, so we know its type
 And the types should also be the same for both applications
     >>> assert type(applied_to_path) == type(applied_to_string)
 
+
+Method to give a path with a trailing "slash" on directories
+    >>> assert path_to_types.slashpath().endswith('/')
+    >>> assert not path_to_path.slashpath().endswith('/')
+
 cd
 --
 

@@ -255,6 +255,9 @@ class DotPath(_Path):
     def abspath(self):
         return makepath(os.path.abspath(str(self)))
 
+    def slashpath(self):
+        return self + "/" if self.isdir() else self
+
     def short_relative_path_to(self, destination):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
@@ -427,18 +430,18 @@ class FilePath(DotPath, PathAssertions):
         If lines can not be read (e.g. no such file) then an empty list
         """
         try:
-            return [l.rstrip() for l in self.lines(retain=False)]
+            return [_.rstrip() for _ in self.lines(retain=False)]
         except (OSError, IOError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
         """A list of all lines without trailing whitespace or blank lines"""
-        return [l for l in self.stripped_lines() if l]
+        return [_ for _ in self.stripped_lines() if _]
 
     def non_comment_lines(self):
         """A list of all non-empty, non-comment lines"""
         return [
-            l for l in self.stripped_whole_lines() if not l.startswith("#")
+            _ for _ in self.stripped_whole_lines() if not _.startswith("#")
         ]
 
     def isroot(self):

@@ -3,8 +3,12 @@
 import itertools
 
 
+# https://stackoverflow.com/a/25464724/500942
 class Uniques(list):
-    """A list of unique items"""
+    """A list of unique items
+
+    Uniqueness is checked when appending to the list
+    """
 
     def __init__(self, items=None):
         super().__init__([])
