@@ -1,9 +1,5 @@
 """This module provides methods to handle some features of English words"""
 
-
-import re
-
-
 import inflect
 
 _inlection = inflect.engine()

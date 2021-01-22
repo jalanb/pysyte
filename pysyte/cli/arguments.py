@@ -4,13 +4,13 @@ This module is a simplifying proxy to stdlib's argparse
 """
 
 import argparse
+import os
 import re
 import shlex
 import sys
 from bdb import BdbQuit
 from pprint import pformat
 from functools import partial
-from itertools import chain
 
 import stackprinter
 from deprecated import deprecated
@@ -25,7 +25,6 @@ def config(arguments):
 
 
 def extract_strings(names, name):
-    result = {}
     try:
         value = names[name]
     except KeyError:
@@ -33,7 +32,7 @@ def extract_strings(names, name):
     if isinstance(value, str):
         return [value]
     try:
-        return [v for v in value if isinstance(v, str)]
+        return [_ for _ in value if isinstance(_, str)]
     except TypeError:
         return []
 
@@ -151,7 +150,7 @@ class ArgumentsNamespace(object):
         """Show args nicely in cli and debuggers"""
         klass = self.__class__.__qualname__
         cmd = " ".join(sys.argv)
-        cmd_ = "$ {cmd}"
+        cmd_ = f"$ {cmd}"
         args = pformat(self.get_args())
         repr_ = "\n".join((klass, cmd_, args))
         return f"<{repr_}>"
@@ -201,11 +200,11 @@ def parser(description=None, usage=None, epilog=None):
         return DescribedParser(description, usage, epilog)
     lines = (description or "").splitlines()
     regexp = re.compile("^[uU]sage:")
-    usages = [l for l in lines if regexp.match(l)]
+    usages = [_ for _ in lines if regexp.match(_)]
     if usages:
         usage_line = usages.pop()
         usage = usage_line.split(":", 1)[1]
-        description = "\n".join([l for l in lines if l != usage_line])
+        description = "\n".join([_ for _ in lines if _ != usage_line])
     elif len(lines) > 1 and not lines[1]:
         usage, description = lines[0], "\n".join(lines[2:])
     return DescribedParser(description, usage, epilog)

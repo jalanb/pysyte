@@ -1,6 +1,5 @@
 """Methods for handling lines (of text)"""
 import re
-from functools import partial
 
 
 def _chop(lines_in, at, first, last):
@@ -90,7 +89,7 @@ def sed(lines, args):
 
 def reformat_lines(lines, first, numbers, width):
     return [
-        l[:width] if width else l for l in add_numbers(lines, first, numbers)
+        _[:width] if width else _ for _ in add_numbers(lines, first, numbers)
     ]
 
 

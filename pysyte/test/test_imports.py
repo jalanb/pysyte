@@ -24,7 +24,7 @@ class TestDashboardImports(unittest.TestCase):
             to make sure getting more than top-level imports
             and can handle the edge-cases
         """
-        import os, sys as system
+        import os, sys as system  # noqa
         from os import path, kill as killer
 
         self.assertEqual(len(self.visitor.imports), 7)

@@ -4,7 +4,6 @@ import importlib
 from subprocess import run
 
 from pysyte import oss
-from pysyte.bash import shell
 
 name = python_platform.system().lower()
 platform = importlib.import_module(f"pysyte.oss.{name}", oss)

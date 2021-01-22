@@ -9,7 +9,6 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 
 
 from __future__ import absolute_import
-import os
 from functools import partial
 
 from pysyte.colours import ansi_escapes
@@ -50,7 +49,7 @@ class ColouredTail(object):
     def colour_text(self, *args):
         try:
             colour_name, text = args
-        except ValueError as e:
+        except ValueError:
             colour_name = None
             text = args[0]
         new = colour_text(colour_name, text, head="")

@@ -36,7 +36,7 @@ class MissingImport(MissingPath):
         try:
             path_ = module.__file__
         except AttributeError:
-            path = module.__name__
+            path_ = module.__name__
         super().__init__(path_, desc="module")
 
 

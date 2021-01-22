@@ -11,6 +11,7 @@ def _stop_alt_screen():
 
 
 def _start_alt_screen():
+    global _alt_screen_started
     _alt_screen_started = True
     run("tput smcup")
 

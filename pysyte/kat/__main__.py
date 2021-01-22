@@ -1,17 +1,18 @@
 from pysyte.cli.app import App
+from pysyte.cli.lines import arg_lines
 
 
 def args(app):
     return (app.args.files("files"),)
 
 
-def kat():
+def kat(app):
     """Run kat"""
-    for files in app.args.files():
-        text = stream.read()
+    for file in app.args.files():
+        text = file.read()
         start, lines_in = arg_lines(text, args)
         lines_out = args.sed(lines_in, start)
-        text_ = as_text(lines_out)
+        text_ = '\n'.join(lines_out)
         print(f"{text_}\n")
     return True
 

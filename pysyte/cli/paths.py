@@ -13,7 +13,6 @@ class PathParser(ArgumentsParser):
     def post_parser(self, arguments):
         strings = arguments.get_arg(self.paths_arg)
         paths = [path(_) for _ in strings]
-        existing = [_ for _ in paths if _]
         arguments.set_arg(self.paths_arg, [_ for _ in paths if _])
         arguments.set_arg(f"not_{self.paths_arg}", [_ for _ in paths if not _])
         return arguments

@@ -81,3 +81,7 @@ def add_args(old_parser):
     result = LinesParser(old_parser.parser)
     result.add_lines()
     return result
+
+
+def arg_lines(a, b):
+    raise NotImplementedError

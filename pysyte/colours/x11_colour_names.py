@@ -45,7 +45,8 @@ def _rgb_txt_line(string):
     Gives a name and 3 integers (RGB values)
     """
     regexp = re.compile(
-        r"([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([a-zA-Z0-9 ]+)\s*"
+        r"([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])"
+        r"\s+([a-zA-Z0-9 ]+)\s*"
     )
     match = regexp.match(string)
     if not match:
@@ -62,7 +63,7 @@ def _rgb_txt_names_and_numbers(path_to_file):
     if not path_to_file or not os.path.isfile(path_to_file):
         return []
     if not hasattr(_rgb_txt_names_and_numbers, "result"):
-        rgb_lines = [_rgb_txt_line(l) for l in open(path_to_file)]
+        rgb_lines = [_rgb_txt_line(_) for _ in open(path_to_file)]
         _rgb_txt_names_and_numbers.result = [
             (name, values) for name, values in rgb_lines if name
         ]

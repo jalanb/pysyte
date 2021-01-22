@@ -2,8 +2,6 @@
 
 import os
 import sys
-import contextlib
-from itertools import chain
 
 from six import StringIO
 
