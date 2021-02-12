@@ -440,9 +440,7 @@ class FilePath(DotPath, PathAssertions):
 
     def non_comment_lines(self):
         """A list of all non-empty, non-comment lines"""
-        return [
-            _ for _ in self.stripped_whole_lines() if not _.startswith("#")
-        ]
+        return [_ for _ in self.stripped_whole_lines() if not _.startswith("#")]
 
     def isroot(self):
         """A file cannot be root of a filesystem"""
@@ -652,9 +650,7 @@ class DirectPath(DotPath, PathAssertions):
 
     def listfiles(self, pattern=None, ignores=None):
         ignored = ignore_fnmatches(ignores)
-        return [
-            _ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)
-        ]
+        return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
     def has_vcs_dir(self):
         for vcs_dir in (".git", ".svn", ".hg"):
@@ -1007,9 +1003,7 @@ def list_items(path_to_directory, pattern, wanted=lambda x: True):
         return set()
     needed = fnmatcher(pattern, path_, wanted)
     return [
-        os.path.join(path_, name)
-        for name in _names_in_directory(path_)
-        if needed(name)
+        os.path.join(path_, name) for name in _names_in_directory(path_) if needed(name)
     ]
 
 

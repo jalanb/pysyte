@@ -39,11 +39,7 @@ def dark_cga():
 
 
 def light_cga():
-    return (
-        ["gray"]
-        + [f"light {name}" for name in _cga_colour_names()]
-        + ["white"]
-    )
+    return ["gray"] + [f"light {name}" for name in _cga_colour_names()] + ["white"]
 
 
 def cga():

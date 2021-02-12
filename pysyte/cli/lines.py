@@ -27,9 +27,7 @@ class LinesParser(ArgumentsParser):
     def add_to(self, letter, name, group, type_, help_, default=None):
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
-        safe_default = (
-            default if default else 0 if str(type_).startswith("int") else ""
-        )
+        safe_default = default if default else 0 if str(type_).startswith("int") else ""
         method = getattr(self, type_, f"not a method for {letter},{name}")
         assert callable(method), f"self.{type_}() is {method}"
         if type_ == "boolean":

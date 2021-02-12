@@ -52,9 +52,7 @@ class ArgumentsParser(object):
         self.parse = self.parse_args
 
         self.string = self.arg = self.add_option
-        self.boolean = self.opt = self.true = partial(
-            self.arg, action="store_true"
-        )
+        self.boolean = self.opt = self.true = partial(self.arg, action="store_true")
         self.integer = self.int = partial(self.arg, type=int)
         self.inty = partial(self.arg, action=IntyAction)
         self.strings = partial(self.positional, type=str)
@@ -62,21 +60,13 @@ class ArgumentsParser(object):
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
 
-    def add_to(
-        self, name=None, group=None, type_=None, default=None, *args, **kwargs
-    ):
+    def add_to(self, name=None, group=None, type_=None, default=None, *args, **kwargs):
         args_ = args[:]
         kwargs_ = kwargs.copy()
         name_ = name if name else ""
         group_ = group if group else name_
         kwargs_["default"] = (
-            default
-            if default
-            else group_
-            if group_
-            else name_
-            if name_
-            else None
+            default if default else group_ if group_ else name_ if name_ else None
         )
         args_ = [name_[0], name_] + args
         self.add_option(*args_, **kwargs_)
@@ -113,9 +103,7 @@ class ArgumentsParser(object):
         return args
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = (
-            post_parser if post_parser else getattr(self, "post_parser", False)
-        )
+        post_parse = post_parser if post_parser else getattr(self, "post_parser", False)
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
         post_parser_ = post_parse if post_parse else lambda x: x

@@ -12,7 +12,7 @@ def kat(app):
         text = file.read()
         start, lines_in = arg_lines(text, args)
         lines_out = args.sed(lines_in, start)
-        text_ = '\n'.join(lines_out)
+        text_ = "\n".join(lines_out)
         print(f"{text_}\n")
     return True
 

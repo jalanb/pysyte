@@ -70,9 +70,7 @@ class TestPaths(TestCase):
         self.setup_dir.cd()
 
     def test_path_error(self):
-        self.assertRaises(
-            paths.PathError, paths.path("/not/a/path").assertExists
-        )
+        self.assertRaises(paths.PathError, paths.path("/not/a/path").assertExists)
 
     def test_not_path_error(self):
         path = paths.path("/")
@@ -116,12 +114,8 @@ class TestPaths(TestCase):
 
     def test_non_comment_lines(self):
         path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue(
-            [_ for _ in path.stripped_whole_lines() if _.startswith("#")]
-        )
-        self.assertFalse(
-            [_ for _ in path.non_comment_lines() if _.startswith("#")]
-        )
+        self.assertTrue([_ for _ in path.stripped_whole_lines() if _.startswith("#")])
+        self.assertFalse([_ for _ in path.non_comment_lines() if _.startswith("#")])
 
     def test_has_line(self):
         path = MockFilePathWithLines("/not/a/real/file")
@@ -136,9 +130,7 @@ class TestPaths(TestCase):
         self.assertFalse(path.any_line_has("Abnormal line"))
 
     def test_directory(self):
-        self.assertEqual(
-            self.path_to_test.directory(), self.path_to_test.parent
-        )
+        self.assertEqual(self.path_to_test.directory(), self.path_to_test.parent)
 
     def test_no_div_for_file(self):
         path = paths.FilePath(__file__)
@@ -228,9 +220,7 @@ class TestPaths(TestCase):
             paths.makepath("/usr/bin"),
             paths.makepath("/usr/local/bin"),
         ]
-        actual = paths.directories(
-            ["/not/a/path", "/usr/bin", "/usr/local/bin"]
-        )
+        actual = paths.directories(["/not/a/path", "/usr/bin", "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
     def test_directories_args(self):
@@ -314,26 +304,18 @@ class TestPaths(TestCase):
 
     def test_less_than(self):
         """Paths use strings for testing less than"""
-        self.assertTrue(
-            paths.path("/usr/local") < paths.path("/usr/local/bin")
-        )
+        self.assertTrue(paths.path("/usr/local") < paths.path("/usr/local/bin"))
 
     def test_total_ordering(self):
         """Greater than is based on less than"""
-        self.assertTrue(
-            paths.path("/usr/local/bin") > paths.path("/usr/local")
-        )
+        self.assertTrue(paths.path("/usr/local/bin") > paths.path("/usr/local"))
 
     def test_relative_paths(self):
         expected = self.path_to_package.basename()
-        actual = self.path_to_project.short_relative_path_to(
-            self.path_to_package
-        )
+        actual = self.path_to_project.short_relative_path_to(self.path_to_package)
         self.assertEqual(actual, expected)
         expected = ".."
-        actual = self.path_to_package.short_relative_path_to(
-            self.path_to_project
-        )
+        actual = self.path_to_package.short_relative_path_to(self.path_to_project)
         self.assertEqual(actual, expected)
 
     def test_relative_path_hither(self):

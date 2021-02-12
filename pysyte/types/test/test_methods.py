@@ -87,9 +87,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual("Call: Two Smith\n", self.stream.getvalue())
         initials.invalidate()
         self.assertEqual("TS", initials("Two", "Smith", self.stream))
-        self.assertEqual(
-            "Call: Two Smith\nCall: Two Smith\n", self.stream.getvalue()
-        )
+        self.assertEqual("Call: Two Smith\nCall: Two Smith\n", self.stream.getvalue())
 
     def test_particular_invalidation(self):
         """Calls can be invalidated for particular arguments
@@ -102,9 +100,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual("FS", initials("Four", "Smith", self.stream))
         self.assertEqual("FS", initials("Four", "Smith", self.stream))
         self.assertEqual("JS", initials("John", "Silly", self.stream))
-        self.assertEqual(
-            "Call: Four Smith\nCall: John Silly\n", self.stream.getvalue()
-        )
+        self.assertEqual("Call: Four Smith\nCall: John Silly\n", self.stream.getvalue())
         initials.invalidate("Four", "Smith", self.stream)
         self.assertEqual("JS", initials("John", "Silly", self.stream))
         self.assertEqual("FS", initials("Four", "Smith", self.stream))
@@ -144,15 +140,9 @@ class MemoizeTest(unittest.TestCase):
 
     def test_mutable_arguments(self):
         """Call with lists is handled (despite list not being hashable)"""
-        self.assertEqual(
-            "FS", initials(["F", "red"], ["S", "mith"], self.stream)
-        )
-        self.assertEqual(
-            "FS", initials(["F", "red"], ["S", "mith"], self.stream)
-        )
-        self.assertEqual(
-            "Call: ['F', 'red'] ['S', 'mith']\n", self.stream.getvalue()
-        )
+        self.assertEqual("FS", initials(["F", "red"], ["S", "mith"], self.stream))
+        self.assertEqual("FS", initials(["F", "red"], ["S", "mith"], self.stream))
+        self.assertEqual("Call: ['F', 'red'] ['S', 'mith']\n", self.stream.getvalue())
 
     def test_full_coverage(self):
         """Some tests needed to get full coverage"""

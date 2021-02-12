@@ -14,8 +14,5 @@ class Host:
 
 
 localhost = Host(
-    *(
-        list(socket.gethostbyname_ex(socket.gethostname()))
-        + [getpass.getuser()]
-    )
+    *(list(socket.gethostbyname_ex(socket.gethostname())) + [getpass.getuser()])
 )

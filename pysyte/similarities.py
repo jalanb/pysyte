@@ -95,6 +95,4 @@ def minkowski(x, y, p_value):
         root_value = 1 / float(n_root)
         return float(round(Decimal(value) ** Decimal(root_value), 3))
 
-    return nth_root(
-        sum(pow(abs(a - b), p_value) for a, b in zip(x, y)), p_value
-    )
+    return nth_root(sum(pow(abs(a - b), p_value) for a, b in zip(x, y)), p_value)

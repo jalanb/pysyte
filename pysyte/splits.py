@@ -66,9 +66,7 @@ def split_and_strip(string, separator_regexp=None, maxsplit=0):
         separator_regexp = _default_separator()
     if not separator_regexp:
         return string.split()
-    return [
-        item.strip() for item in re.split(separator_regexp, string, maxsplit)
-    ]
+    return [item.strip() for item in re.split(separator_regexp, string, maxsplit)]
 
 
 def split_and_strip_without(string, exclude, separator_regexp=None):

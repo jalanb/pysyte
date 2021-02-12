@@ -61,18 +61,14 @@ def run(
     class Caller(CallerData):
         def arg_parser(self):
             try:
-                return self.add_args(
-                    arguments.parser, self.method.doc, usage, epilog
-                )
+                return self.add_args(arguments.parser, self.method.doc, usage, epilog)
             except TypeError:
                 try:
                     return self.add_args(
                         arguments.parser(self.method.doc, usage, epilog)
                     )
                 except TypeError:
-                    raise NotImplementedError(
-                        "Unknown signature for add_args()"
-                    )
+                    raise NotImplementedError("Unknown signature for add_args()")
 
         def parse_args(self):
             if self.add_args:

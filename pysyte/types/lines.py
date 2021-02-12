@@ -7,9 +7,7 @@ def _chop(lines_in, at, first, last):
         try:
             return int(string)
         except (ValueError, TypeError):
-            lines = (
-                lines_in[at:at] if isinstance(at, int) else lines_in[start:end]
-            )
+            lines = lines_in[at:at] if isinstance(at, int) else lines_in[start:end]
             matcher = re.compile(string)
             for i, line in enumerate(lines, 1 + start):
                 if matcher.search(line):
@@ -88,9 +86,7 @@ def sed(lines, args):
 
 
 def reformat_lines(lines, first, numbers, width):
-    return [
-        _[:width] if width else _ for _ in add_numbers(lines, first, numbers)
-    ]
+    return [_[:width] if width else _ for _ in add_numbers(lines, first, numbers)]
 
 
 def select(predicate, lines):
