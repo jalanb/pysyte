@@ -1,4 +1,4 @@
-from pysyte.cli.args import args
+from pysyte.cli.main import args
 
 __all__ = [
     "args",
