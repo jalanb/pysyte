@@ -201,3 +201,25 @@ def parser(description=None, usage=None, epilog=None):
 def test_parser():
     """A parser for testing convenience"""
     return parser("Testing", "Use this from a test", "")
+
+
+def in_debugger():
+    """Whether script is being traced
+
+    A debugger will often set a system trace
+    So this functions returns whether one has been set
+
+    Debuggers known to give True
+        * pudb
+        * PyCharm
+
+    Test runners known to give True
+        * nose
+        * py.test
+        * coverage
+
+    Test runners known to give False
+        * doctest
+        * unittest
+    """
+    return bool(sys.gettrace())
