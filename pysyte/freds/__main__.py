@@ -2,7 +2,7 @@ from pysyte import cli
 
 
 @cli.args
-def args():
+def fred():
     pass
 
 
