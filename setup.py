@@ -17,4 +17,14 @@ def package_files(directory):
 setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={"": package_files("pysyte")},
+    install_requires=[
+        "boltons",
+        "deprecated",
+        "inflect>=2.1.0",
+        "path.py==7.7.1",
+        "pym",
+        "pyyaml",
+        "stackprinter",
+        "yamlreader",
+    ],
 )
