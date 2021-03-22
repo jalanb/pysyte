@@ -13,8 +13,8 @@ Latest PyPi Package
 Build status
 ------------
 
-.. image:: https://travis-ci.org/jalanb/pysyte.svg?branch=master
-   :target: https://travis-ci.org/jalanb/pysyte
+.. image:: https://travis-ci.com/jalanb/pysyte.svg?branch=__main__
+   :target: https://travis-ci.com/jalanb/pysyte
    :alt: Build Status
 
 Test Coverage
