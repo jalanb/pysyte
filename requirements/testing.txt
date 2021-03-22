@@ -4,7 +4,7 @@
 bumpversion
 codecov
 coverage
-pysyte==0.7.44
+pysyte==0.7.49
 pytest
 pytest-cov
 rich
