@@ -4,7 +4,6 @@ from pysyte.types import lists
 
 
 class TestAsList(TestCase):
-
     def test_as_list(self):
         """list in, list out"""
         actual = lists.as_list([1, 2, 3])
@@ -26,7 +25,7 @@ class TestAsList(TestCase):
     def test_dict_as_list(self):
         """dict in, list of items out"""
         expected = [(1, 4), (2, 5), (3, 6)]
-        actual = lists.as_list({1:4, 2:5, 3:6})
+        actual = lists.as_list({1: 4, 2: 5, 3: 6})
         self.assertEqual(actual, expected)
 
     def test_string_as_list(self):

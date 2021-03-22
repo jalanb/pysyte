@@ -5,8 +5,8 @@ from unittest.mock import patch
 from pysyte.types import lines
 from pysyte.randoms import flip
 
-class TestLines(TestCase):
 
+class TestLines(TestCase):
     def test_set_width(self):
         line = "01234567890123456789"
         expected = "012345678901234"
@@ -25,8 +25,16 @@ class TestLines(TestCase):
         counts start at 1, not 0
         default prefix is follwed by ": "
         """
-        lines_ = [ "one", "two", "three", ]
-        expected = [ "1: one", "2: two", "3: three", ]
+        lines_ = [
+            "one",
+            "two",
+            "three",
+        ]
+        expected = [
+            "1: one",
+            "2: two",
+            "3: three",
+        ]
         actual = list(lines.add_numbers(lines_))
         self.assertEqual(actual, expected)
 
@@ -36,8 +44,16 @@ class TestLines(TestCase):
         counts start at the given number plus 1
         default prefix is follwed by ": "
         """
-        lines_ = [ "one", "two", "three", ]
-        expected = [ "3: one", "4: two", "5: three", ]
+        lines_ = [
+            "one",
+            "two",
+            "three",
+        ]
+        expected = [
+            "3: one",
+            "4: two",
+            "5: three",
+        ]
         actual = list(lines.add_numbers(lines_, 2))
         self.assertEqual(actual, expected)
 
@@ -62,7 +78,11 @@ class TestLines(TestCase):
         text = "one,two,three,four,five,six,seven,eight,nine,ten,eleven"
         lines_ = text.split(",")
         actual = list(lines.select(lambda x: "o" in x, lines_))
-        expected = ["one", "two", "four", ]
+        expected = [
+            "one",
+            "two",
+            "four",
+        ]
         self.assertEqual(actual, expected)
 
     def test_as_text(self):
@@ -78,7 +98,13 @@ class TestLines(TestCase):
         """reformat_lines() sets width, and can prefix line numbers"""
         text = "one,two,three,four,five"
         lines_ = text.split(",")
-        expected = ["one", "two", "thr", "fou", "fiv", ]
+        expected = [
+            "one",
+            "two",
+            "thr",
+            "fou",
+            "fiv",
+        ]
         actual = lines.reformat_lines(lines_, first=7, numbers=False, width=3)
         self.assertEqual(actual, expected)
 
@@ -86,7 +112,13 @@ class TestLines(TestCase):
         """reformat_lines() can prefix line numbers"""
         text = "one,two,three,four,five"
         lines_ = text.split(",")
-        expected = ["1: one", "2: two", "3: three", "4: four", "5: five", ]
+        expected = [
+            "1: one",
+            "2: two",
+            "3: three",
+            "4: four",
+            "5: five",
+        ]
         actual = lines.reformat_lines(lines_, first=0, numbers=True, width=0)
         self.assertEqual(actual, expected)
 
@@ -96,7 +128,13 @@ class TestLines(TestCase):
         lines_ = text.split(",")
         # start counting lines at index 6 (aka line number 7)
         # so highest line number is 11, so all line numbers have width of 2
-        expected = [" 7: one", " 8: two", " 9: thr", "10: fou", "11: fiv", ]
+        expected = [
+            " 7: one",
+            " 8: two",
+            " 9: thr",
+            "10: fou",
+            "11: fiv",
+        ]
         actual = lines.reformat_lines(lines_, first=6, numbers=True, width=3)
         self.assertEqual(actual, expected)
 
@@ -106,6 +144,7 @@ class TestLines(TestCase):
 
         It just extracts expected args then calls chop
         """
+
         class MockArgs:
             at = randint(0, 9)
             first = randint(0, 9)
@@ -122,6 +161,7 @@ class TestLines(TestCase):
 
         It just extracts expected args then calls reformat_lines()
         """
+
         class MockArgs:
             first = randint(0, 9)
             numbers = flip()
@@ -132,4 +172,5 @@ class TestLines(TestCase):
         lines_ = text.splitlines()
         lines.sed(lines_, args)
         reformat_lines.assert_called_with(
-            lines_, first=args.first, numbers=args.numbers, width=args.width)
+            lines_, first=args.first, numbers=args.numbers, width=args.width
+        )

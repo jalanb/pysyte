@@ -5,8 +5,8 @@ from pysyte.bash import screen
 
 starting_callbacks = screen.atexit._ncallbacks()
 
-class TestScreen(TestCase):
 
+class TestScreen(TestCase):
     def test_alt_screen(self):
         """Calling alt_screen should give a method to start such a screen
 

@@ -66,8 +66,7 @@ def _number_format(count=999):
     return "%%%dd: " % digits
 
 
-def add_numbers(lines, first = 0):
-
+def add_numbers(lines, first=0):
     def numbered(line_, line_format_):
         prefix = line_format_ % (first + i + 1)
         return f"{prefix}{line_.rstrip()}"
