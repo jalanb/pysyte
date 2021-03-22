@@ -77,13 +77,13 @@ def as_list(item):
     # pylint: disable=pointless-statement
     try:
         item.index
-        return item
+        return list(item)
     except AttributeError:
         try:
-            return item.items()
+            return list(item.items())
         except AttributeError:
             try:
                 item.pop
                 return list(item)
             except AttributeError:
-                raise ValueError(f"Cannot make a list from {item!r}")
+                raise TypeError(f"Cannot make a list from {item!r}")

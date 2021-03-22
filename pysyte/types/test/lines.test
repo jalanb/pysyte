@@ -18,12 +18,14 @@ Only lines that are full:
     >>> assert "here's fred" in lines.full(some_lines)
     >>> assert '' not in lines.full(some_lines)
 
-Search lines with a grepper
+Get a method which can grep in some lines
     >>> grepper = lines.grep(some_lines)
 
+Then grep in those lines for "e"
     >>> assert '' not in grepper('e')
     >>> assert 'here' in grepper('e')
 
+Or grep in those lines for "fred"
     >>> assert 'here' not in grepper('fred')
     >>> assert 'fred' in grepper('fred')
     >>> assert "here's fred" in grepper('fred')
