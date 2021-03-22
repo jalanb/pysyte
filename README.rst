@@ -20,6 +20,6 @@ Build status
 Test Coverage
 -------------
 
-.. image:: https://codecov.io/gh/jalanb/pysyte/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/jalanb/pysyte/branch/__main__/graph/badge.svg
    :target: https://codecov.io/gh/jalanb/pysyte
    :alt: Test Coverage
