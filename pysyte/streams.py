@@ -3,12 +3,15 @@
 
 import sys
 from contextlib import contextmanager
+from typing import Optional
+from typing import TextIO
+from typing import Generator
 
 from six import StringIO
 
 
 @contextmanager
-def swallow_stdout(stream=None):
+def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
     """Divert stdout into the given stream
 
     >>> string = StringIO()
@@ -27,7 +30,7 @@ def swallow_stdout(stream=None):
 
 
 @contextmanager
-def swallow_stderr(stream=None):
+def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
     saved = sys.stderr
     if stream is None:
         stream = StringIO()
@@ -36,3 +39,11 @@ def swallow_stderr(stream=None):
         yield
     finally:
         sys.stderr = saved
+
+
+@contextmanager
+def swallow_std(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
+    raise NotImplementedError
+
+def show_lines(lines: list, prefix: str, stream: TextIO) -> None:
+    raise NotImplementedError

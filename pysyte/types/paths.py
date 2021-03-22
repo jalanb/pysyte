@@ -971,7 +971,7 @@ def unique_first_dirs(path_strings):
     return set(first_dirs(path_strings))
 
 
-def _names_in_directory(path_to_directory):
+def paths_in_directory(path_: StringPath) -> List[DotPath]:
     """Get all items in the given directory
 
     Swallow errors to give an empty list
@@ -993,7 +993,7 @@ def fnmatcher(pattern, path_to_directory=None, wanted=lambda x: True):
     )
 
 
-def list_items(path_to_directory, pattern, wanted=lambda x: True):
+def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPath]:
     """All items in the given path which match the given glob and are wanted
 
     By default, every path is wanted

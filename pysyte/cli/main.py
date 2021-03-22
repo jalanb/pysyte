@@ -34,12 +34,12 @@ class CallerData:
 
 
 def run(
-    main_method,
-    add_args=None,
-    post_parse=None,
-    usage=None,
-    epilog=None,
-    config_name=None,
+    main_method: Callable,
+    add_args: Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser],
+    post_parse: Optional[Callable] = None,
+    usage:  Optional[str] = None,
+    epilog: Optional[str] =None,
+    config_name: Optional[str] =None
 ):
     """Run a main_method from command line, parsing arguments
 

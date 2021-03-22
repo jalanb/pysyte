@@ -2,6 +2,13 @@
 
 import itertools
 
+from typing import Any
+from typing import List
+from typing import Sequence
+from typing import TypeVar
+
+Unique = TypeVar('Unique')      # Generic type
+
 
 # https://stackoverflow.com/a/25464724/500942
 class Uniques(list):
@@ -14,12 +21,12 @@ class Uniques(list):
         super().__init__([])
         self.extend(items or [])
 
-    def predicate(self, _):
+    def predicate(self, _: Unique) -> bool:
         """Subclasses can exclude items which return False"""
         # pylint: disable=no-self-use
         return True
 
-    def append(self, item):
+    def append(self, item: Sequence) -> bool:
         if item in self:
             return False
         if not self.predicate(item):
@@ -27,7 +34,7 @@ class Uniques(list):
         super().append(item)
         return True
 
-    def extend(self, items):
+    def extend(self, items: Sequence) -> bool:
         result = False
         for item in items or []:
             if self.append(item):
@@ -37,12 +44,11 @@ class Uniques(list):
 
 class UniquelyTrues(Uniques):
     """A unique list of items all being true-ish"""
-
-    def predicate(self, item):
+    def predicate(self, item: Unique) -> bool:
         return bool(item)
 
 
-def de_duplicate(items):
+def de_duplicate(items: List) -> List:
     """Remove any duplicate item, preserving order
 
     >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2]) == [1, 9, 2, 8, 7]
@@ -50,7 +56,7 @@ def de_duplicate(items):
     return list(Uniques(items))
 
 
-def flatten(list_of_lists):
+def flatten(list_of_lists: List[List]) -> List:
     """Reduce a lists of lists to a list, comprehensively
 
     >>> assert flatten([[1, 2], [3, 4]]) == [1, 2, 3, 4]
@@ -61,7 +67,7 @@ def flatten(list_of_lists):
     return [item for list_ in list_of_lists for item in list_]
 
 
-def flatten_(list_of_lists):
+def flatten_(list_of_lists: List[List]) -> List:
     """Reduce a lists of lists to a list, functionally
 
     >>> assert flatten_([[1, 2], [3, 4]]) == [1, 2, 3, 4]
