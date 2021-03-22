@@ -22,12 +22,13 @@ def _rgb_txt_directories():
         then in runtime directory
         then in same dir as this file
     """
-    return [
+    dirs = [
         "/usr/lib/X11",
         "/usr/X11/share/X11",
         ".",
         os.path.dirname(__file__),
     ]
+    return dirs
 
 
 def first_rgb_file(rgb_txt_paths):
