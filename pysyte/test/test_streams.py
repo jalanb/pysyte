@@ -9,18 +9,17 @@ from pysyte.streams import swallow_stdout, swallow_stderr
 
 
 class TestStreams(TestCase):
-
     def test_swallow_stdout(self):
         stream = StringIO()
         with swallow_stdout(stream):
-            print('hello', end='')
-        self.assertEqual(stream.getvalue(), 'hello')
+            print("hello", end="")
+        self.assertEqual(stream.getvalue(), "hello")
 
     def test_swallow_stderr(self):
         stream = StringIO()
         with swallow_stderr(stream):
-            print('hello', file=sys.stderr)
-        self.assertEqual(stream.getvalue(), 'hello\n')
+            print("hello", file=sys.stderr)
+        self.assertEqual(stream.getvalue(), "hello\n")
 
     def test_discard_stdout(self):
         """This method is not programatically testable,
@@ -30,7 +29,7 @@ class TestStreams(TestCase):
         """
         # pylint: disable=no-self-use
         with swallow_stdout():
-            print('hello')
+            print("hello")
 
     def test_discard_stderr(self):
         """This method is not programatically testable,
@@ -40,4 +39,4 @@ class TestStreams(TestCase):
         """
         # pylint: disable=no-self-use
         with swallow_stderr():
-            print('hello', file=sys.stderr)
+            print("hello", file=sys.stderr)

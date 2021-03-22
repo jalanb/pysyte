@@ -1,10 +1,11 @@
 -r requirements.txt
+-r linting.txt
 
+bumpversion
 codecov
 coverage
-mock
-nose
-nose-progressive
-pinocchio
+pysyte==0.7.44
 pytest
 pytest-cov
+rich
+tox

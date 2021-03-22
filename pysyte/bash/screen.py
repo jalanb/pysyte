@@ -4,14 +4,16 @@ from pysyte.bash.shell import run
 
 _alt_screen_started = False
 
+
 def _stop_alt_screen():
     if _alt_screen_started:
-        run('tput rmcup')
+        run("tput rmcup")
 
 
 def _start_alt_screen():
+    global _alt_screen_started
     _alt_screen_started = True
-    run('tput smcup')
+    run("tput smcup")
 
 
 def get_alt_screens():

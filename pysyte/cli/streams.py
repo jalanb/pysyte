@@ -2,8 +2,6 @@
 
 import os
 import sys
-import contextlib
-from itertools import chain
 
 from six import StringIO
 
@@ -11,12 +9,13 @@ from pysyte import iteration
 from pysyte.cli import arguments
 from pysyte.oss.platforms import get_clipboard_data
 
+
 def parse_args():
     """Parse out command line arguments"""
     parser = arguments.parser(__doc__)
-    parser.args('streams', help='streams to use')
-    parser.opt('-p', '--paste', 'paste text from clipboard')
-    parser.opt('-i', '--stdin', 'wait for text from stdin')
+    parser.args("streams", help="streams to use")
+    parser.opt("-p", "--paste", "paste text from clipboard")
+    parser.opt("-i", "--stdin", "wait for text from stdin")
     return parser.parse_args()
 
 
@@ -30,9 +29,9 @@ def args(parsed_args, name=None, files_only=False):
         return []
     else:
         streams = []
-    if '-' in files or not files or getattr(parsed_args, 'stdin', False):
+    if "-" in files or not files or getattr(parsed_args, "stdin", False):
         streams.append(sys.stdin)
-    if getattr(parsed_args, 'paste', not files):
+    if getattr(parsed_args, "paste", not files):
         streams.append(clipboard_stream())
     return streams
 
@@ -46,7 +45,7 @@ def all():
     for path in _arg_files():
         yield open(path)
         yielded = True
-    if not yielded or '-' in sys.argv:
+    if not yielded or "-" in sys.argv:
         yield sys.stdin
 
 
@@ -58,7 +57,7 @@ def some():
 
 def clipboard_stream(name=None):
     stream = StringIO(get_clipboard_data())
-    stream.name = name or '<clipboard>'
+    stream.name = name or "<clipboard>"
     return stream
 
 

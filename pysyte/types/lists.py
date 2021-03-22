@@ -3,8 +3,13 @@
 import itertools
 
 
+# https://stackoverflow.com/a/25464724/500942
 class Uniques(list):
-    """A list of unique items"""
+    """A list of unique items
+
+    Uniqueness is checked when appending to the list
+    """
+
     def __init__(self, items=None):
         super().__init__([])
         self.extend(items or [])
@@ -32,6 +37,7 @@ class Uniques(list):
 
 class UniquelyTrues(Uniques):
     """A unique list of items all being true-ish"""
+
     def predicate(self, item):
         return bool(item)
 
@@ -64,3 +70,20 @@ def flatten_(list_of_lists):
         https://stackoverflow.com/a/716482/500942
     """
     return list(itertools.chain.from_iterable(list_of_lists))
+
+
+def as_list(item):
+    """Make item a list from types which can index, have items, or can pop"""
+    # pylint: disable=pointless-statement
+    try:
+        item.index
+        return list(item)
+    except AttributeError:
+        try:
+            return list(item.items())
+        except AttributeError:
+            try:
+                item.pop
+                return list(item)
+            except AttributeError:
+                raise TypeError(f"Cannot make a list from {item!r}")

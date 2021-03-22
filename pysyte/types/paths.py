@@ -5,10 +5,13 @@ The classes all inherit from the original path.path
 import os
 import re
 import stat
-import importlib
+import sys
+from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
 from functools import total_ordering
+from importlib import import_module
+from typing import List
 
 from path import Path as _Path
 from pysyte.types.lists import flatten
@@ -16,46 +19,64 @@ from pysyte.types.lists import flatten
 
 class PathError(Exception):
     """Something went wrong with a path"""
-    prefix = 'Path Error'
 
-    def __init__(self, message):
-        Exception.__init__(self, message)
+    prefix = "Path Error"
+
+
+class MissingPath(PathError):
+    def __init__(self, path, desc=""):
+        self.path = path
+        description = desc or "path"
+        super().__init__(f"Missing {description}{path}")
+
+
+class MissingImport(MissingPath):
+    def __init__(self, module):
+        self.module = module
+        try:
+            path_ = module.__file__
+        except AttributeError:
+            path_ = module.__name__
+        super().__init__(path_, desc="module")
 
 
 class PathAssertions:
     """Assertions that can be made about paths"""
+
     # pylint: disable=no-member
 
-    def assert_exists(self):
-        """Raise a PathError if this path does not exist on disk"""
+    def assertExists(self):
         if not self.exists():
-            raise PathError(f'{self} does not exist')
+            raise MissingPath(self)
         return self
 
     def assert_isdir(self):
         """Raise a PathError if this path is not a directory on disk"""
         if not self.isdir():
-            raise PathError(f'{self} is not a directory')
+            raise PathError(f"{self} is not a directory")
         return self
 
     def assert_isfile(self):
         """Raise a PathError if this path is not a file on disk"""
         if not self.isfile():
-            raise PathError(f'{self} is not a file')
+            raise PathError(f"{self} is not a file")
         return self
 
 
 @total_ordering
 class NonePath:
     def __init__(self, string=None):
-        self.string = string if string else ''
+        self.string = string if string else ""
         self.proxy = DirectPath(self.string)
 
     def __str__(self):
         return self.string
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} "{str(self)}">'
+        string = self.string
+        if self.proxy:
+            string = str(self.proxy)
+        return f'<{self.__class__.__name__} "{string}">'
 
     def __bool__(self):
         return False
@@ -81,9 +102,9 @@ class NonePath:
 
     @property
     def parent(self):
-        if '/' not in self.string:
+        if "/" not in self.string:
             return None
-        parent_string = '/'.join(self.string.split('/')[:-1])
+        parent_string = "/".join(self.string.split("/")[:-1])
         return makepath(parent_string)
 
     def exists(self):
@@ -94,10 +115,14 @@ class NonePath:
     def __getattr__(self, name):
         return getattr(self.proxy, name, None)
 
+    def makedirs(self):
+        os.makedirs(str(self))
+
 
 @total_ordering
 class DotPath(_Path):
     """Some additions to the classic path class"""
+
     # pylint: disable=abstract-method
     # pylint: disable=too-many-public-methods
 
@@ -105,8 +130,8 @@ class DotPath(_Path):
         return hash(str(self))
 
     def __repr__(self):
-        string = repr(f'{self}')
-        return f'<{self.__class__.__name__} {string}>'
+        string = repr(f"{self}")
+        return f"<{self.__class__.__name__} {string}>"
 
     # The / operator joins paths.
     def __div__(self, child):
@@ -173,7 +198,7 @@ class DotPath(_Path):
         >>> assert p.paths == p.dirpaths()
         """
         parts = self.split()
-        result = [DotPath(parts[0] or '/')]
+        result = [DotPath(parts[0] or "/")]
         for name in parts[1:]:
             result.append(result[-1] / name)
         return result
@@ -191,15 +216,20 @@ class DotPath(_Path):
         return [d for d in self.dirnames() if d]
 
     parents = property(
-        dirnames, None, None,
+        dirnames,
+        None,
+        None,
         """ This path's parent directories, as a list of strings.
 
         >>> DotPath('/path/to/module.py').parents == ['/', 'path', 'to']
         True
-        """)
+        """,
+    )
 
     paths = property(
-        dirpaths, None, None,
+        dirpaths,
+        None,
+        None,
         """ This path's parent directories, as a sequence of paths.
 
         >>> paths = DotPath('/usr/bin/vim').paths
@@ -213,16 +243,20 @@ class DotPath(_Path):
         True
         >>> paths[-4] == paths[0]
         True
-        """)
+        """,
+    )
 
     def split(self, sep=None, maxsplit=-1):
         separator = sep or os.path.sep
         parts = super().split(separator, maxsplit)
-        parts[0] = makepath(parts[0] if parts[0] else '/')
+        parts[0] = makepath(parts[0] if parts[0] else "/")
         return parts
 
     def abspath(self):
         return makepath(os.path.abspath(str(self)))
+
+    def slashpath(self):
+        return self + "/" if self.isdir() else self
 
     def short_relative_path_to(self, destination):
         """The shorter of either the absolute path of the destination,
@@ -305,12 +339,12 @@ class DotPath(_Path):
         return self.expand() == other.expand()
 
     def isroot(self):
-        raise NotImplementedError('Only a directory path can be a root')
+        raise NotImplementedError("Only a directory path can be a root")
 
     def ishidden(self):
         """A 'hidden file' has a name starting with a '.'"""
         s = str(self.basename())
-        return s and s[0] == '.'
+        return s and s[0] == "."
 
     def is_executable(self):
         """Whether the path is executable"""
@@ -329,8 +363,8 @@ class DotPath(_Path):
         >>> new = source.add_ext('txt', '.new')
         >>> assert new.name.endswith('.py.txt.new')
         """
-        exts = [(a[1:] if a[0] == '.' else a) for a in args]
-        string = '.'.join([self] + list(exts))
+        exts = [(a[1:] if a[0] == "." else a) for a in args]
+        string = ".".join([self] + list(exts))
         return makepath(string)
 
     def add_missing_ext(self, ext):
@@ -366,13 +400,13 @@ def ext_language(ext, exts=None, simple=True):
     True
     """
     languages = {
-        '.py': 'python',
-        '.py2': 'python' if simple else 'python2',
-        '.py3': 'python' if simple else 'python3',
-        '.sh': 'bash',
-        '.bash': 'bash',
-        '.pl': 'perl',
-        '.txt': 'english',
+        ".py": "python",
+        ".py2": "python" if simple else "python2",
+        ".py3": "python" if simple else "python3",
+        ".sh": "bash",
+        ".bash": "bash",
+        ".pl": "perl",
+        ".txt": "english",
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
@@ -382,7 +416,7 @@ class FilePath(DotPath, PathAssertions):
     """A path to a known file"""
 
     def __div__(self, child):
-        raise PathError('%r has no children' % self)
+        raise PathError("%r has no children" % self)
 
     __truediv__ = __div__
 
@@ -396,19 +430,17 @@ class FilePath(DotPath, PathAssertions):
         If lines can not be read (e.g. no such file) then an empty list
         """
         try:
-            return [l.rstrip() for l in self.lines(retain=False)]
+            return [_.rstrip() for _ in self.lines(retain=False)]
         except (OSError, IOError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
         """A list of all lines without trailing whitespace or blank lines"""
-        return [l for l in self.stripped_lines() if l]
+        return [_ for _ in self.stripped_lines() if _]
 
     def non_comment_lines(self):
         """A list of all non-empty, non-comment lines"""
-        return [l
-                for l in self.stripped_whole_lines()
-                if not l.startswith('#')]
+        return [_ for _ in self.stripped_whole_lines() if not _.startswith("#")]
 
     def isroot(self):
         """A file cannot be root of a filesystem"""
@@ -438,9 +470,9 @@ class FilePath(DotPath, PathAssertions):
         """
         copy = self[:]
         filename, ext = os.path.splitext(copy)
-        if ext == '.gz':
+        if ext == ".gz":
             filename, ext = os.path.splitext(filename)
-            ext = f'{ext}.gz'
+            ext = f"{ext}.gz"
         return self.__class__(filename), ext
 
     split_all_ext = split_ext = split_exts
@@ -451,7 +483,7 @@ class FilePath(DotPath, PathAssertions):
         >>> FilePath('/path/to/fred.txt').as_python()
         <FilePath '/path/to/fred.py'>
         """
-        return self.extend_by('.py')
+        return self.extend_by(".py")
 
     def extend_by(self, extension):
         """The path to the file changed to use the given extension
@@ -477,6 +509,7 @@ class FilePath(DotPath, PathAssertions):
 
     def dirname(self):
         return DirectPath(os.path.dirname(self))
+
     parent = property(dirname)
 
     def shebang(self):
@@ -486,11 +519,11 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             first_line = self.stripped_lines()[0]
-            if first_line.startswith('#!'):
+            if first_line.startswith("#!"):
                 return first_line[2:].strip()
         except IndexError:
             pass
-        return ''
+        return ""
 
     def mv(self, destination):  # pylint: disable=invalid-name
         return self.move(destination)
@@ -602,14 +635,14 @@ class DirectPath(DotPath, PathAssertions):
         return [_ for _ in paths_to_subs if _.exists()]
 
     # pylint: disable=arguments-differ
-    def walkdirs(self, pattern=None, errors='strict', ignores=None):
+    def walkdirs(self, pattern=None, errors="strict", ignores=None):
         ignored = ignore_fnmatches(ignores)
         for path_to_dir in super(DirectPath, self).walkdirs(pattern, errors):
             if not ignored(path_to_dir.relpath(self)):
                 yield path_to_dir
 
     # pylint: disable=arguments-differ
-    def walkfiles(self, pattern=None, errors='strict', ignores=None):
+    def walkfiles(self, pattern=None, errors="strict", ignores=None):
         ignored = ignore_fnmatches(ignores)
         for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
             if not ignored(path_to_file.relpath(self)):
@@ -617,21 +650,59 @@ class DirectPath(DotPath, PathAssertions):
 
     def listfiles(self, pattern=None, ignores=None):
         ignored = ignore_fnmatches(ignores)
-        return [_ for _ in self.listdir(pattern)
-                if _.isfile() and not ignored(_)]
+        return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
     def has_vcs_dir(self):
-        for vcs_dir in ('.git', '.svn', '.hg'):
+        for vcs_dir in (".git", ".svn", ".hg"):
             if self.fnmatch_part(vcs_dir):
                 return True
         return False
 
     def isroot(self):
-        return str(self) == '/'
+        return str(self) == "/"
+
+
+@dataclass
+class FileTypeData:
+    type_: type
+    ext: str
+
+
+class FileType(FileTypeData):
+    def file(self, path_):
+        return path_.add_missing_ext(self.ext)
+
+    def typed(self, path_):
+        file = self.file(path_)
+        if file:
+            return self.type_(file)
+        return None
+
+
+@dataclass
+class FileTypesData:
+    file_types: List[FileType]
+
+
+class FileTypes(FileTypesData):
+    def types(self):
+        types_ = self.file_types
+        return [_ if isinstance(_, FileType) else FileType(*_) for _ in types_]
+
+    def files(self, path_):
+        for file_type in self.types():
+            file = file_type.file(path_)
+            if file:
+                yield file
+
+    def typed(self, path_):
+        for file_type in self.types():
+            typed = file_type.typed(path_)
+            if typed:
+                yield typed
 
 
 def ignore_fnmatches(ignores):
-
     def ignored(a_path):
         if not ignores:
             return False
@@ -655,14 +726,14 @@ def _make_module_path(arg):
     classes and functions have modules, they'll be needing this
     """
     try:
-        return makepath(importlib.import_module(arg.__module__))
+        return makepath(import_module(arg.__module__))
     except (AttributeError, ModuleNotFoundError):
         return None
 
 
 @singledispatch
 def makepath(arg):
-    attribute = getattr(arg, 'path', False)
+    attribute = getattr(arg, "path", False)
     return makepath(attribute) if attribute else makepath(str(arg))
 
 
@@ -671,6 +742,7 @@ path = makepath
 
 @makepath.register(type(None))
 def _(arg):
+    """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
@@ -685,13 +757,17 @@ def _(arg):
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
+
+    See also Lynton Kwesi Johnson:
+        The Eagle and The Bear have people living in fear
+        Of impending nuclear warfare
     """
     if not arg:
-        return NonePath()
+        return makepath(None)
     if os.path.isfile(arg):
         return FilePath(arg)
     if os.path.isdir(arg):
-        string = arg if arg == '/' else arg.rstrip('/')
+        string = arg if arg == "/" else arg.rstrip("/")
         return DirectPath(string)
     v = os.path.expandvars(arg)
     u = os.path.expanduser(v)
@@ -702,19 +778,33 @@ def _(arg):
     return NonePath(arg)
 
 
+def imports():
+    return {sys, os, re, stat}
+
+
 @makepath.register(type(os))
 def _(arg):
     """Make a path from a module"""
-    if arg.__name__ == 'builtins':
-        return NonePath('builtins')
-    return makepath(arg.__file__)
+    if arg.__name__ == "builtins":
+        return NonePath("builtins")
+    try:
+        return makepath(arg.__file__)
+    except AttributeError:
+        if arg not in imports() and arg not in sys.path:
+            raise MissingImport(arg)
+        python_ = makepath(sys.executable)
+        assert str(python_.parent.name) == "bin"
+        bin_ = python_.parent
+        root_ = bin_.parent
+        lib_ = root_ / "lib"
+        assert lib_.isdir()
 
 
 @makepath.register(type(makepath))
 def _(arg):
     """Make a path from a function's module"""
-    terminal_regexp = re.compile('<(stdin|.*python-input.*)>')
-    method = getattr(arg, '__wrapped__', arg)
+    terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
+    method = getattr(arg, "__wrapped__", arg)
     filename = method.__code__.co_filename
     if terminal_regexp.match(filename):
         return NonePath(filename)
@@ -742,16 +832,16 @@ def cd(path_to):  # pylint: disable=invalid-name
     Remember current directory before the cd
         so that we can cd back there with cd('-')
     """
-    if path_to == '-':
+    if path_to == "-":
         if not cd.previous:
-            raise PathError('No previous directory to return to')
+            raise PathError("No previous directory to return to")
         return cd(cd.previous)
-    if not hasattr(path_to, 'cd'):
+    if not hasattr(path_to, "cd"):
         path_to = makepath(path_to)
     try:
         previous = os.getcwd()
     except OSError as e:
-        if 'No such file or directory' not in str(e):
+        if "No such file or directory" not in str(e):
             raise
         previous = NonePath()
     if path_to.isdir():
@@ -761,7 +851,7 @@ def cd(path_to):  # pylint: disable=invalid-name
     elif not path_to.exists():
         return False
     else:
-        raise PathError(f'Cannot cd to {path_to}')
+        raise PathError(f"Cannot cd to {path_to}")
     cd.previous = previous
     return True
 
@@ -784,7 +874,7 @@ def as_path(string_or_path):
 
 
 def string_to_paths(string):
-    for c in ':, ;':
+    for c in ":, ;":
         if c in string:
             return strings_to_paths(string.split(c))
     return [makepath(string)]
@@ -794,48 +884,56 @@ def strings_to_paths(strings):
     return [makepath(s) for s in strings]
 
 
-def paths(strings):
-    return [p for p in strings_to_paths(strings) if p.exists()]
+def choose_paths(*strings, chooser):
+    return [_ for _ in strings_to_paths(strings) if chooser(_)]
 
 
-def split_directories(strings):
-    paths_ = strings_to_paths(strings)
-    return [_
-            for _ in paths_
-            if _.isdir()], [_ for _ in paths_ if not _.isdir()]
+@singledispatch
+def paths(*strings):
+    return choose_paths(*strings, chooser=lambda p: p.exists())
 
 
-def split_files(strings):
-    paths_ = strings_to_paths(strings)
-    return ([_ for _ in paths_ if _.isfile()],
-            [_ for _ in paths_ if not _.isfile()])
+@paths.register(list)
+@paths.register(set)
+@paths.register(tuple)
+def _(strings: list):
+    return paths(*strings)
 
 
-def split_directories_files(strings):
-    paths_ = strings_to_paths(strings)
-    return ([_ for _ in paths_ if _.isdir()],
-            [_ for _ in paths_ if _.isfile()],
-            [_ for _ in paths_ if not (_.isfile() or _.isdir())])
+@singledispatch
+def directories(*strings: tuple):
+    return choose_paths(*strings, chooser=lambda p: p.isdir())
 
 
-def files(strings):
-    return split_files(strings)[0]
+@directories.register(list)
+@directories.register(set)
+@directories.register(tuple)
+def _(strings: list):
+    return directories(*strings)
 
 
-def directories(strings):
-    return split_directories(strings)[0]
+@singledispatch
+def files(*strings):
+    return choose_paths(*strings, chooser=lambda p: p.isfile())
+
+
+@files.register(list)
+@files.register(set)
+@files.register(tuple)
+def _(strings: list):
+    return files(*strings)
 
 
 def root():
-    return makepath('/')
+    return makepath("/")
 
 
 def tmp():
-    return makepath('/tmp')
+    return makepath("/tmp")
 
 
 def home():
-    _home = makepath(os.path.expanduser('~'))
+    _home = makepath(os.path.expanduser("~"))
     assert _home
     _ = _home.expand()
     return _home
@@ -891,7 +989,8 @@ def fnmatcher(pattern, path_to_directory=None, wanted=lambda x: True):
     By default, every item is wanted
     """
     return lambda x: fnmatch(x, pattern) and wanted(
-        os.path.join(path_to_directory, x) if path_to_directory else x)
+        os.path.join(path_to_directory, x) if path_to_directory else x
+    )
 
 
 def list_items(path_to_directory, pattern, wanted=lambda x: True):
@@ -903,9 +1002,9 @@ def list_items(path_to_directory, pattern, wanted=lambda x: True):
     if not path_:
         return set()
     needed = fnmatcher(pattern, path_, wanted)
-    return [os.path.join(path_, name)
-            for name in _names_in_directory(path_)
-            if needed(name)]
+    return [
+        os.path.join(path_, name) for name in _names_in_directory(path_) if needed(name)
+    ]
 
 
 def list_sub_directories(path_to_directory, pattern):
@@ -937,12 +1036,14 @@ def contains_file(path_to_directory, pattern):
     return contains_glob(path_to_directory, pattern, os.path.isfile)
 
 
-def environ_paths(key):
-    return [makepath(_) for _ in os.environ[key].split(':')]
+def environ_paths(key, default=None):
+    default_ = default or ""
+    return [makepath(_) for _ in os.environ.get(key, default_).split(":")]
 
 
-def environ_path(key):
-    return makepath(os.environ[key])
+def environ_path(key, default=None):
+    default_ = default or ""
+    return makepath(os.environ.get(key, default_))
 
 
 def default_environ_path(key, default):
@@ -954,7 +1055,7 @@ def add_star(string):
 
     >>> assert add_star('fred') == 'fred*'
     """
-    return f'{string}*'
+    return f"{string}*"
 
 
 def add_stars(strings):
@@ -985,7 +1086,7 @@ def tab_complete(strings, globber=add_stars, select=os.path.exists):
     here_ = pwd()
     matches = []
     for glob_ in globs:
-        if '/' in glob_:
+        if "/" in glob_:
             directory, base = os.path.split(glob_)
             dir_ = here_ / directory
         else:
@@ -1004,6 +1105,6 @@ def pyc_to_py(path_to_file):
     True
     """
     stem, ext = os.path.splitext(path_to_file)
-    if ext == '.pyc':
-        return f'{stem}.py'
+    if ext == ".pyc":
+        return f"{stem}.py"
     return path_to_file

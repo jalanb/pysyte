@@ -22,18 +22,19 @@ def _rgb_txt_directories():
         then in runtime directory
         then in same dir as this file
     """
-    return [
-        '/usr/lib/X11',
-        '/usr/X11/share/X11',
-        '.',
+    dirs = [
+        "/usr/lib/X11",
+        "/usr/X11/share/X11",
+        ".",
         os.path.dirname(__file__),
     ]
+    return dirs
 
 
 def first_rgb_file(rgb_txt_paths):
     """The first rgb.txt file in known directories"""
     for path in rgb_txt_paths():
-        path_to_txt_file = os.path.join(path, 'rgb.txt')
+        path_to_txt_file = os.path.join(path, "rgb.txt")
         if os.path.isfile(path_to_txt_file):
             return path_to_txt_file
     return None
@@ -44,10 +45,13 @@ def _rgb_txt_line(string):
 
     Gives a name and 3 integers (RGB values)
     """
-    regexp = re.compile(r'([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([a-zA-Z0-9 ]+)\s*')
+    regexp = re.compile(
+        r"([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])\s+([ 0-9][ 0-9][ 0-9])"
+        r"\s+([a-zA-Z0-9 ]+)\s*"
+    )
     match = regexp.match(string)
     if not match:
-        return '', (-1, -1, -1)
+        return "", (-1, -1, -1)
     red, green, blue, name = match.groups()
     return name.strip(), (int(red), int(green), int(blue))
 
@@ -59,9 +63,11 @@ def _rgb_txt_names_and_numbers(path_to_file):
     """
     if not path_to_file or not os.path.isfile(path_to_file):
         return []
-    if not hasattr(_rgb_txt_names_and_numbers, 'result'):
-        rgb_lines = [_rgb_txt_line(l) for l in open(path_to_file)]
-        _rgb_txt_names_and_numbers.result = [(name, values) for name, values in rgb_lines if name]
+    if not hasattr(_rgb_txt_names_and_numbers, "result"):
+        rgb_lines = [_rgb_txt_line(_) for _ in open(path_to_file)]
+        _rgb_txt_names_and_numbers.result = [
+            (name, values) for name, values in rgb_lines if name
+        ]
     return _rgb_txt_names_and_numbers.result
 
 
@@ -80,5 +86,3 @@ def names():
     """
     names_and_numbers = _local_rgb_txt_names_and_numbers()
     return dict(names_and_numbers)
-
-

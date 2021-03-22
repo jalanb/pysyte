@@ -1,8 +1,9 @@
 """This module handles numbers"""
 
+
 class NAN(ValueError):
     def __init__(self, value):
-        super().__init__(f'NAN: {value}')
+        super().__init__(f"NAN: {value}")
 
 
 def _eval(value, kind, default=None):
@@ -10,7 +11,7 @@ def _eval(value, kind, default=None):
         return kind(value)
     except (ValueError, TypeError):
         # if default is None:
-            # raise NAN(value)
+        # raise NAN(value)
         if isinstance(value, (str, type(None))):
             return default
         try:

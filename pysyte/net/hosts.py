@@ -13,7 +13,6 @@ class Host:
     users: list
 
 
-localhost = Host(*(
-    list(socket.gethostbyname_ex(socket.gethostname())) +
-    [getpass.getuser()]
-))
+localhost = Host(
+    *(list(socket.gethostbyname_ex(socket.gethostname())) + [getpass.getuser()])
+)

@@ -15,7 +15,6 @@ Instead of addressing separate volumes such as disk partitions,
 """
 
 from pysyte.config.types import ModuleConfiguration
-from pysyte.types.paths import path
 from pysyte.types.paths import DirectPath
 
 
@@ -29,5 +28,5 @@ def upath(string):
     return UnixDirectory(string)
 
 
-root = upath('/')
+root = upath("/")
 config = ModuleConfiguration(__file__)

@@ -33,9 +33,9 @@ def integer_to_ansi(integer):
                 return False
         return 232 + ((red - 8) // 10)
 
-    red = (integer & 0xff0000) >> 16
-    green = (integer & 0x00ff00) >> 8
-    blue = integer & 0x0000ff
+    red = (integer & 0xFF0000) >> 16
+    green = (integer & 0x00FF00) >> 8
+    blue = integer & 0x0000FF
     result = grey_shade(red, green, blue)
     if result:
         return result
@@ -54,6 +54,7 @@ def ansi_to_red_green_blue(ansi):
         if not i:
             return 0
         return int((i * 40) + 55)
+
     return decimal_to_rgb(red), decimal_to_rgb(green), decimal_to_rgb(blue)
 
 
@@ -65,13 +66,13 @@ def red_green_blue_to_int(red, green, blue):
 
 
 def _hex_regexp():
-    return re.compile('(([0-9a-f]{6})|([0-9a-f]{3}))', re.IGNORECASE)
+    return re.compile("(([0-9a-f]{6})|([0-9a-f]{3}))", re.IGNORECASE)
 
 
 def _extract_html_hex(string):
     """Get the first 3 or 6 hex digits in the string"""
     try:
-        hex_string = string and _hex_regexp().search(string).group(0) or ''
+        hex_string = string and _hex_regexp().search(string).group(0) or ""
     except AttributeError:
         return None
     if len(hex_string) == 3:
@@ -90,14 +91,14 @@ def html_to_int(string):
 
 
 def html_to_html(string):
-    digits = string.lstrip('#').upper()
+    digits = string.lstrip("#").upper()
     if len(digits) == 3:
-        return ''.join([d * 2 for d in digits])
+        return "".join([d * 2 for d in digits])
     return digits
 
 
 def hashed_html(string):
-    return f'#{html_to_html(string)}'
+    return f"#{html_to_html(string)}"
 
 
 def html_to_red_green_blue(string):
@@ -108,7 +109,7 @@ def html_to_red_green_blue(string):
 
 
 def integer_to_html(integer):
-    return '#%06X' % integer
+    return "#%06X" % integer
 
 
 def html_to_ansi(string):
@@ -132,22 +133,22 @@ def ansi_to_int(ansi):
 
 def small_values():
     return [
-        (0x00, '#000000'),
-        (0x01, '#800000'),
-        (0x02, '#008000'),
-        (0x03, '#808000'),
-        (0x04, '#000080'),
-        (0x05, '#800080'),
-        (0x06, '#008080'),
-        (0x07, '#C0C0C0'),
-        (0x08, '#808080'),
-        (0x09, '#FF0000'),
-        (0x0A, '#00FF00'),
-        (0x0B, '#FFFF00'),
-        (0x0C, '#0000FF'),
-        (0x0D, '#FF00FF'),
-        (0x0E, '#00FFFF'),
-        (0x0F, '#000000'),
+        (0x00, "#000000"),
+        (0x01, "#800000"),
+        (0x02, "#008000"),
+        (0x03, "#808000"),
+        (0x04, "#000080"),
+        (0x05, "#800080"),
+        (0x06, "#008080"),
+        (0x07, "#C0C0C0"),
+        (0x08, "#808080"),
+        (0x09, "#FF0000"),
+        (0x0A, "#00FF00"),
+        (0x0B, "#FFFF00"),
+        (0x0C, "#0000FF"),
+        (0x0D, "#FF00FF"),
+        (0x0E, "#00FFFF"),
+        (0x0F, "#000000"),
     ]
 
 

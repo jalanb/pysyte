@@ -1,23 +1,46 @@
 """Run scripts from the command_line
 
-This module is a simplifying proxy to stdlib's sys.exit()
+This module was a simplifying proxy to stdlib's sys.exit()
+    but it's grown since then
 """
 
-import os
 import sys
-import inspect
-from bdb import BdbQuit as DebugExit
+from dataclasses import dataclass
 
-import stackprinter
 
 from pysyte.cli import arguments
-from pysyte.cli import config as configuration
+from pysyte.cli.config import load_configs
 from pysyte.types.paths import makepath
+from pysyte.types.methods import Callable
+from pysyte.types.methods import Method
+
+
+class MainMethod(Method):
+    def __init__(self, method):
+        super().__init__(method)
+        self.doc = self.doc if self.doc else self.module.__doc__
+        self.in_main_module = self.module.__name__ == "__main__"
+        self.needs_args = self.argcount > 0
+        self.needs_one_arg = self.argcount == 1
+
+    def __call__(self, *args_, **kwargs):
+        return self.method(*args_, **kwargs)
+
+
+@dataclass
+class CallerData:
+    method: MainMethod
+    add_args: Callable
 
 
 def run(
-        main_method, add_args=None, post_parse=None,
-        usage=None, epilog=None, config=None):
+    main_method,
+    add_args=None,
+    post_parse=None,
+    usage=None,
+    epilog=None,
+    config_name=None,
+):
     """Run a main_method from command line, parsing arguments
 
     if add_args(parser) is given it should add arguments to the parser
@@ -26,88 +49,58 @@ def run(
     if pre_parse() is given then call it instead of sys.argv
     if post_parse(args) is given then it is called with parsed args
         and should return them after any adjustments
-    if config is true then configure that, else configure(args.prog)
-        read config, as yaml, to data
+        if config_name is given:
+            if it is a string then find configs for that
+            otherwise use the main_method's script's name
+        read config_name, as yaml, to data
         call main_method(args, data)
     else
         call main_method(args)
     """
-    class Caller:
-        def __init__(self):
-            self.sys_args = sys.argv
-            self.method = main_method
-            self.add_args = add_args
-            self.module = inspect.getmodule(main_method)
-            self.doc = self.module.__doc__
-            self.in_main_module = self.module.__name__ == '__main__'
-            self.argcount = bool(self.method.__code__.co_argcount)
-            self.needs_one_arg = self.argcount == 1
-            self.needs_args = bool(self.argcount)
-            self.adds_args = bool(self.add_args)
 
+    class Caller(CallerData):
         def arg_parser(self):
             try:
-                return self.add_args(
-                    arguments.parser, self.doc, usage, epilog)
+                return self.add_args(arguments.parser, self.method.doc, usage, epilog)
             except TypeError:
                 try:
                     return self.add_args(
-                        arguments.parser(self.doc, usage, epilog))
+                        arguments.parser(self.method.doc, usage, epilog)
+                    )
                 except TypeError:
-                    raise NotImplementedError(
-                        'Unknown signature for add_args()')
+                    raise NotImplementedError("Unknown signature for add_args()")
 
-        @property
-        def config_name(self):
-            if isinstance(config, str):
-                return config
-            name = makepath(self.method).name
-            return name
+        def parse_args(self):
+            if self.add_args:
+                parser = self.arg_parser()
+                assert parser  # Dont trust callers' coder to return the parser
+                return parser.parse_args(post_parser=post_parse)
+            assert self.method.needs_one_arg
+            return sys.argv[1:]
+
+        def config_name(self, name):
+            if not isinstance(name, str):
+                return makepath(self.method).name
+            p = makepath(name)
+            return p.name if p else name
+
+        def config(self):
+            return load_configs(self.config_name(config_name))
 
         def main(self, argument_handler):
-            if config:
-                if self.needs_args:
-                    argument_handler.add_args()
-                config_ = configuration.all(self.config_name)
-                return caller.method(self.args, config_)
-            if self.needs_args:
-                argument_handler.add_args()
-                return self.method(self.args)
+            if self.method.needs_args:
+                global args  # leave parsed args available from this module
+                args = self.args = self.parse_args()
+            if config_name:
+                return self.method(args, self.config())
+            if self.method.needs_args:
+                return self.method(args)
             return self.method()
 
-    caller = Caller()
-
-    class ArgumentHandler:
-
-        if caller.adds_args:
-            def add_args(self):
-                parser = caller.arg_parser()
-                assert parser  # Dont trust callers' coder to return the parser
-                global args  # leave parsed args available from this module
-                caller.args = args = parser.parse_args(post_parser=post_parse)
-        else:
-            def add_args(self):
-                assert caller.needs_one_arg
-                caller.args = sys.argv[1:]
-
-        def run(self):
-            """Handle expected exceptions"""
-            try:
-                return caller.main(self)
-            except KeyboardInterrupt:
-                sys.stderr.write('^c ^C ^c    ^C ^c ^C    ^c ^C ^c\n')
-                ctrl_c = 3
-                return ctrl_c
-            except DebugExit:
-                return os.X_OK
-            except SystemExit as e:
-                return e.code
-            except Exception as e:  # pylint: disable=broad-except
-                stackprinter.show(e, style='darkbg')
-
-    if caller.in_main_module:
-        handler = ArgumentHandler()
-        sys.exit(handler.run())
+    caller = Caller(MainMethod(main_method), add_args)
+    if caller.method.in_main_module:
+        handler = arguments.ArgumentHandler()
+        sys.exit(handler.run(caller))
 
 
 args = {}

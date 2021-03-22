@@ -6,4 +6,12 @@ The x11_colour_names module
 Edge cases
 ----------
 
-    >>> assert not x11_colour_names._rgb_txt_names_and_numbers('/not/a/file')
+    >>> names = x11_colour_names
+
+    >>> assert not names._rgb_txt_names_and_numbers('/not/a/file')
+
+    >>> assert "/usr/lib/X11" in names._rgb_txt_directories()
+
+    >>> assert names.first_rgb_file(lambda : []) is None
+
+    >>> assert names._rgb_txt_line("blah, blah, blah") == ("", (-1, -1, -1))

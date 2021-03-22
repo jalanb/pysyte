@@ -9,7 +9,6 @@ from pysyte.types.literals import punctuation
 
 
 class TestLiterals(unittest.TestCase):
-
     def test_punctuation(self):
         self.assertEqual(punctuation.dot, punctuation.period)
         self.assertEqual(punctuation.dot, punctuation.full_stop)
@@ -21,9 +20,7 @@ class TestLiterals(unittest.TestCase):
         self.assertEqual(digits.one + digits.two, numbers.twelve)
 
     def test_colours(self):
-        self.assertEqual(ansi.red.replace('[0', '[1'),
-                         ansi.light_red)
-        coloured = ansi.highlighted(
-            ansi.red, 'Fred')
+        self.assertEqual(ansi.red.replace("[0", "[1"), ansi.light_red)
+        coloured = ansi.highlighted(ansi.red, "Fred")
         self.assertTrue(coloured.startswith(ansi.red))
         self.assertTrue(coloured.endswith(ansi.off))

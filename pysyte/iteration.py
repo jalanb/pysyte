@@ -1,12 +1,12 @@
 """Handle iterators for pysyte"""
 
-try:
-    from itertools import ifilter
-except ImportError:
-    ifilter = filter
+from typing import Sequence
+from typing import TypeVar
+
+T = TypeVar("T")  # Declare Type variable
 
 
-def first(sequence, message=None):
+def first(sequence: Sequence[T], message=None) -> T:  # Generic function
     """The first item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -16,10 +16,10 @@ def first(sequence, message=None):
     try:
         return next(iter(sequence))
     except StopIteration:
-        raise ValueError(message or (f'Sequence is empty: {sequence}'))
+        raise ValueError(message or (f"Sequence is empty: {sequence}"))
 
 
-def last(sequence, message=None):
+def last(sequence: Sequence[T], message=None) -> T:
     """The last item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -29,7 +29,7 @@ def last(sequence, message=None):
     return first(reversed(sequence), message)
 
 
-def first_or(sequence, value):
+def first_or(sequence: Sequence[T], value) -> T:
     """First item in that sequence, or that value
 
     >>> assert first_or([1, 2, 3], 4) == 1
@@ -41,7 +41,7 @@ def first_or(sequence, value):
         return value
 
 
-def first_that(predicate, sequence, message=None):
+def first_that(predicate, sequence: Sequence[T], message=None) -> T:
     """The first item in that sequence that matches that predicate
 
     If none matches raise a KeyError with that message
@@ -49,6 +49,6 @@ def first_that(predicate, sequence, message=None):
     >>> assert first_that(lambda x: x > 1, [1, 2, 3]) == 2
     """
     try:
-        return next(ifilter(predicate, sequence))
-    except StopIteration:
-        raise KeyError(message or 'Not Found')
+        return first(_ for _ in sequence if predicate(_))
+    except (ValueError, StopIteration):
+        raise KeyError(message or "Not Found")

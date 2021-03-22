@@ -11,7 +11,7 @@ class BashError(ValueError):
     pass
 
 
-_working_dirs = ['']
+_working_dirs = [""]
 _path = []
 
 
@@ -32,17 +32,17 @@ def _get_path():
     """Guarantee that /usr/local/bin, /usr/bin, /bin are in PATH"""
     if _path:
         return _path[0]
-    environ_paths = IndexedSet(os.environ['PATH'].split(':'))
-    minimal_paths = IndexedSet(['/usr/local/bin', '/usr/bin', '/bin'])
+    environ_paths = IndexedSet(os.environ["PATH"].split(":"))
+    minimal_paths = IndexedSet(["/usr/local/bin", "/usr/bin", "/bin"])
     all_paths = environ_paths | minimal_paths
-    _path.append(':'.join(all_paths))
+    _path.append(":".join(all_paths))
     return _path[0]
 
 
 def run(command):
-    path_command = f'PATH={_get_path()} {command}'
+    path_command = f"PATH={_get_path()} {command}"
     if _working_dirs[0]:
-        run_command = f'(cd {_working_dirs[0]}; {path_command})'
+        run_command = f"(cd {_working_dirs[0]}; {path_command})"
     else:
         run_command = path_command
     status, output = getstatusoutput(run_command)

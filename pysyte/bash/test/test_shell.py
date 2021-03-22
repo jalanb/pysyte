@@ -13,8 +13,8 @@ class TestShell(unittest.TestCase):
 
         The second cd (to same dir) should have no effect
         """
-        shell.cd('usr/local')
-        expected = shell.run('basename $PWD')
-        shell.cd('usr/local')
-        actual = shell.run('basename $PWD')
+        shell.cd("usr/local")
+        expected = shell.run("basename $PWD")
+        shell.cd("usr/local")
+        actual = shell.run("basename $PWD")
         self.assertEqual(actual, expected)

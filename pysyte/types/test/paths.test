@@ -9,6 +9,10 @@ We'll need the os module for some of the tests below
     >>> import os
     >>> import sys
 
+Shortcuts
+---------
+    >>> path = paths.path
+
 Some known paths
 ----------------
 
@@ -85,10 +89,10 @@ The difference is that makepath expands the string given
 
 DirectPath is ako string, which shows the string in %s and %r
 
-    >>> bin = paths.DirectPath('/bin')
-    >>> print('%s' % bin)
+    >>> bin_ = paths.DirectPath('/bin')
+    >>> print('%s' % bin_)
     /bin
-    >>> print('%r' % bin)
+    >>> print('%r' % bin_)
     <DirectPath '/bin'>
 
 makepath() handles many types of things
@@ -160,6 +164,11 @@ We are expecting that path to exist as a file, so we know its type
 
 And the types should also be the same for both applications
     >>> assert type(applied_to_path) == type(applied_to_string)
+
+
+Method to give a path with a trailing "slash" on directories
+    >>> assert path_to_types.slashpath().endswith('/')
+    >>> assert not path_to_path.slashpath().endswith('/')
 
 cd
 --

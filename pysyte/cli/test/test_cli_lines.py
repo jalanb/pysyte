@@ -23,7 +23,7 @@ class TestPaths(unittest.TestCase):
             Using the format "-f 22"
         """
         parser = lines.add_args(arguments.test_parser())
-        parsed = parser.parse(['-a', '3', '-f', '2', '-l', '1'])
+        parsed = parser.parse(["-a", "3", "-f", "2", "-l", "1"])
         self.assertEqual(parsed.at, 3)
         self.assertEqual(parsed.first, 2)
         self.assertEqual(parsed.last, 1)
@@ -35,7 +35,7 @@ class TestPaths(unittest.TestCase):
             Using the format "--first=22"
         """
         parser = lines.add_args(arguments.test_parser())
-        parsed = parser.parse(['--at=3', '--first=2', '--last=1'])
+        parsed = parser.parse(["--at=3", "--first=2", "--last=1"])
         self.assertEqual(parsed.at, 3)
         self.assertEqual(parsed.first, 2)
         self.assertEqual(parsed.last, 1)
@@ -47,9 +47,8 @@ class TestPaths(unittest.TestCase):
             Using the format "--first 22"
         """
         parser = lines.add_args(arguments.test_parser())
-        parsed = parser.parse([
-            '--editor', 'vim', '--width', '2', '--remove', '1'])
-        self.assertEqual(parsed.editor, 'vim')
+        parsed = parser.parse(["--numbers", "--width", "2", "--remove", "1"])
+        self.assertEqual(parsed.numbers, True)
         self.assertEqual(parsed.width, 2)
         self.assertEqual(parsed.remove, 1)
 
@@ -57,9 +56,9 @@ class TestPaths(unittest.TestCase):
         """Parse out files from cli"""
         parser = lines.add_args(arguments.test_parser())
         parser.add_files()
-        parsed = parser.parse([__file__, 'another'])
+        parsed = parser.parse([__file__, "another"])
         self.assertIn(__file__, parsed.files)
-        self.assertIn('another', parsed.files)
+        self.assertIn("another", parsed.files)
 
     def test_version(self):
         """Parse out version from cli
@@ -67,4 +66,4 @@ class TestPaths(unittest.TestCase):
         Showing the version should cause a sys.exit()
         """
         parser = lines.add_args(arguments.test_parser())
-        self.assertRaises(SystemExit, parser.parse, ['--version'])
+        self.assertRaises(SystemExit, parser.parse, ["--version"])

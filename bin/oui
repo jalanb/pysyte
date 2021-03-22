@@ -70,4 +70,4 @@ def main(args):
         print(f'{"Find" if separator == "=" else "Remove"} {sought}')
 
 
-run(main, add_args=add_args, post_parse=post_parse)
+run(main, add_args, post_parse)
