@@ -66,17 +66,14 @@ def _number_format(count=999):
     return "%%%dd: " % digits
 
 
-def add_numbers(lines, first, numbers):
-    if not numbers:
-        numbered = lambda x, y: x
-    else:
+def add_numbers(lines, first = 0):
 
-        def numbered(line_, line_format_):
-            prefix = line_format_ % (first + i + 1)
-            return f"{prefix} {line_.rstrip()}"
+    def numbered(line_, line_format_):
+        prefix = line_format_ % (first + i + 1)
+        return f"{prefix}{line_.rstrip()}"
 
     for i, line in enumerate(lines):
-        yield numbered(line, _number_format(len(lines)))
+        yield numbered(line, _number_format(len(lines) + first))
 
 
 def sed(lines, args):
@@ -86,7 +83,8 @@ def sed(lines, args):
 
 
 def reformat_lines(lines, first, numbers, width):
-    return [_[:width] if width else _ for _ in add_numbers(lines, first, numbers)]
+    adder = add_numbers if numbers else lambda x, y: x
+    return list(adder([_[:width] if width else _ for _ in lines], first))
 
 
 def select(predicate, lines):
@@ -96,13 +94,8 @@ def select(predicate, lines):
         yield line
 
 
-def result(converter, lines):
-    for line in lines:
-        yield converter(line)
-
-
-_selector = lambda lambda_, lines_: (i for i in lines_ if lambda_(i))
-_converter = lambda lambda_, lines_: (lambda_(i) for i in lines_)
+_selector = lambda method, lines_: (_ for _ in lines_ if method(_))
+_converter = lambda method, lines_: (method(_) for _ in lines_)
 
 full = lambda lines_: _converter(
     lambda line: line.rstrip(), _selector(lambda line: line.rstrip(), lines_)
