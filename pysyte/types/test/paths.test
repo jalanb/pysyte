@@ -85,7 +85,7 @@ The difference is that makepath expands the string given
     >>> assert paths.makepath('~') == os_home
     >>> if 'HOME' in os.environ:
     ...     assert paths.DirectPath('$HOME') != os_home
-    ...     assert paths.makepath('$HOME') == os_home, f'{paths.makepath("$HOME")}, {os_home}'
+    ...     assert paths.makepath('$HOME') == os_home
 
 DirectPath is ako string, which shows the string in %s and %r
 
@@ -141,34 +141,18 @@ And that is an expanded path
 
 Using DirectPath (not makepath()), does not expand paths
     so this has a different string value
-    >>> compact = paths.DirectPath('~')
+    >>> squiggle = paths.DirectPath('~')
 
 The unexpanded version is not equal to the expanded
-    But it is the same path
-    >>> assert compact != path_to_home
-    >>> assert compact.same_path(path_to_home)
+    >>> assert squiggle != path_to_home
 
-Need a known directory for next tests
-    >>> path_to_path = paths.path(paths)
-    >>> path_to_types = path_to_path.parent
-
-The expansion works for the value if concatenation was applied to the path
-    or is applied to the initialising string
-
-    >>> applied_to_path = path_to_types / 'paths.py'
-    >>> applied_to_string = paths.makepath(f'{path_to_types}/paths.py')
-    >>> assert applied_to_path == applied_to_string
-
-We are expecting that path to exist as a file, so we know its type
-    >>> assert isinstance(applied_to_path, paths.FilePath)
-
-And the types should also be the same for both applications
-    >>> assert type(applied_to_path) == type(applied_to_string)
+But it is the same path
+    >>> assert squiggle.same_path(path_to_home)
 
 
 Method to give a path with a trailing "slash" on directories
-    >>> assert path_to_types.slashpath().endswith('/')
-    >>> assert not path_to_path.slashpath().endswith('/')
+    >>> assert path_to_home.slashpath().endswith('/')
+    >>> assert not path_to_home.endswith('/')
 
 cd
 --
@@ -211,6 +195,7 @@ Attributes of may also be DirectPaths or FilePaths
     >>> parent = bashrc.parent
     >>> expected = paths.DirectPath if bashrc.isfile() else paths.NonePath
     >>> assert isinstance(parent, expected)
+
 
 Various checks on paths
 -----------------------
@@ -319,7 +304,7 @@ Splitting off extensions
 
     >>> path_to_paths = paths.path(paths.__file__)
     >>> assert path_to_paths.ext in {'.py', '.pyc'}
-    >>> stem, ext = path_to_paths.split_ext()
+    >>> stem, ext = path_to_paths.splitext()
     >>> assert ext[0] == '.'
     >>> assert f'{stem}{ext}' == paths.__file__
 
@@ -330,11 +315,11 @@ Splitting out parts
     >>> assert parts[0].isroot()
     >>> assert parts[1:] == ['usr', 'local', 'bin']
 
-The split_all_ext method
-------------------------
+The splitexts method
+---------------------
 
     >>> p = paths.FilePath('/alan/was/here.tar.gz')
     >>> p.splitext()
     (<FilePath '/alan/was/here.tar'>, '.gz')
-    >>> p.split_all_ext()
+    >>> p.splitexts()
     (<FilePath '/alan/was/here'>, '.tar.gz')

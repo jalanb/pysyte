@@ -6,6 +6,7 @@ This module was a simplifying proxy to stdlib's sys.exit()
 
 import sys
 from dataclasses import dataclass
+from typing import Optional
 
 
 from pysyte.cli import arguments
@@ -34,18 +35,19 @@ class CallerData:
 
 
 def run(
-    main_method,
-    add_args=None,
-    post_parse=None,
-    usage=None,
-    epilog=None,
-    config_name=None,
+    main_method: Callable,
+    add_args: Optional[
+        Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
+    ] = None,
+    post_parse: Optional[Callable] = None,
+    usage: Optional[str] = None,
+    epilog: Optional[str] = None,
+    config_name: Optional[str] = None,
 ):
     """Run a main_method from command line, parsing arguments
 
-    if add_args(parser) is given it should add arguments to the parser
-    if add_args(make_parser, description, epilog, usage) is given
-        it can adjust help texts before making the parser
+    if add_args(parser) is given it should call parser.add_arg()
+        See ArgumentsParser.add_arg(), etc
     if pre_parse() is given then call it instead of sys.argv
     if post_parse(args) is given then it is called with parsed args
         and should return them after any adjustments
@@ -61,14 +63,10 @@ def run(
     class Caller(CallerData):
         def arg_parser(self):
             try:
-                return self.add_args(arguments.parser, self.method.doc, usage, epilog)
+                parser_ = arguments.parser()
+                return self.add_args(parser_)
             except TypeError:
-                try:
-                    return self.add_args(
-                        arguments.parser(self.method.doc, usage, epilog)
-                    )
-                except TypeError:
-                    raise NotImplementedError("Unknown signature for add_args()")
+                raise NotImplementedError("Unknown signature for add_args()")
 
         def parse_args(self):
             if self.add_args:
