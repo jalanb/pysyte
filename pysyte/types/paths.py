@@ -13,7 +13,7 @@ from functools import total_ordering
 from importlib import import_module
 from typing import List
 
-from path import Path as _Path
+from path import Path as path_Path
 from pysyte.types.lists import flatten
 
 
@@ -64,7 +64,151 @@ class PathAssertions:
 
 
 @total_ordering
-class NonePath:
+class StringPath(path_Path):
+    """This class handles the path as if it were just a string
+
+    Sub-classes know about paths qua paths
+    """
+    # pylint: disable=abstract-method
+    # pylint: disable=too-many-public-methods
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __repr__(self) -> str:
+        string = repr(f'{self}')
+        return f'<{self.__class__.__name__} {string}>'
+
+    def __div__(self, substring: str) -> "StringPath":
+        """Handle the '/' operator
+
+        Add substring to self like a path in local os
+
+        >>> p = StringPath('/path/to')
+        >>> assert p / None is p
+        >>> assert p / 'fred' == p.__div__('fred')
+        >>> assert p / 'fred' == '/path/to/fred'
+        """
+        if not substring:
+            return self
+        full_string = os.path.join(str(self), substring)
+        return makepath(full_string)
+
+    __truediv__ = __div__
+
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __lt__(self, other) -> bool:
+        return str(self) < str(other)
+
+    def __contains__(self, thing):
+        return self.contains(thing)
+
+    def contains(self, name):
+        try:
+            _ = name.contains
+            return str(thing).startswith(str(self))
+        except AttributeError:
+            return str(name) in str(self)
+
+    def basename(self) -> str:
+        return str(super().basename())
+
+    @property
+    def basename_(self) -> str:
+        return self.basename()
+
+    @property
+    def name(self) -> str:
+        return str(super().name)
+
+    @property
+    def stem(self) -> str:
+        stem, *_ = self.split_exts()
+        return str(stem)
+
+    @property
+    def stem_name(self) -> str:
+        return self.stem.name
+
+    def split_exts(self) -> Tuple["StringPath", str]:
+        """Split all extensions from the path
+
+        >>> p = FilePath('here/fred.tar.gz')
+        >>> assert p.split_exts() == ('here/fred', '.tar.gz')
+        """
+        doubles = ('.gz', )
+        copy = self[:]
+        filename, ext = os.path.splitext(copy)
+        for double in ('.gz', '.bz',):
+            if ext == double:
+                filename, ext_ = os.path.splitext(filename)
+                ext = f'{ext_}{double}'
+        return self.__class__(filename), ext
+
+    def add_ext(self, *args) -> "StringPath":
+        """Join all args as extensions
+
+        Strip any leading `.` from args
+
+        >>> source = makepath(__file__)
+        >>> new = source.add_ext('txt', '.new')
+        >>> assert new.name.endswith('.py.txt.new')
+        """
+        exts = [(a[1:] if a[0] == '.' else a) for a in args]
+        string = '.'.join([self] + list(exts))
+        return makepath(string)
+
+    def add_missing_ext(self, ext: str) -> "StringPath":
+        """Add that extension, if it is missing
+
+        >>> fred = makepath("fred.py")
+        >>> assert fred.add_missing_ext(".py") == fred
+        >>> assert fred.add_missing_ext(".txt").endswith(".py.txt")
+        """
+        copy = self[:]
+        _stem, old = os.path.splitext(copy)
+        extension = f'.{ext.lstrip(".")}'
+        if old == extension:
+            return makepath(self)
+        return self.add_ext(extension)
+
+    def extend_by(self, ext: str) -> "StringPath":
+        """The path to the file changed to use the given ext
+
+        >>> assert makepath("/path/to/fred").extend_by("fred")       == "/path/to/fred.fred"
+        >>> assert makepath("/path/to/fred.txt").extend_by(".fred")  == "/path/to/fred.fred"
+        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == "/path/to/fred.fred"
+        """
+        copy = self[:]
+        filename, _ = os.path.splitext(copy)
+        return makepath(f'{filename}.{ext.lstrip(".")}')
+
+
+def ext_language(ext, exts=None, simple=True):
+    """Language of the extension in those extensions
+
+    If exts is supplied, then restrict recognition to those exts only
+    If exts is not supplied, then use all known extensions
+
+    >>> ext_language('.py') == 'python'
+    True
+    """
+    languages = {
+        '.py': 'python',
+        '.py2': 'python' if simple else 'python2',
+        '.py3': 'python' if simple else 'python3',
+        '.sh': 'bash',
+        '.bash': 'bash',
+        '.pl': 'perl',
+        '.txt': 'english',
+    }
+    ext_languages = {_: languages[_] for _ in exts} if exts else languages
+    return ext_languages.get(ext)
+
+
+class NonePath(StringPath):
     def __init__(self, string=None):
         self.string = string if string else ""
         self.proxy = DirectPath(self.string)
@@ -119,48 +263,8 @@ class NonePath:
         os.makedirs(str(self))
 
 
-@total_ordering
-class DotPath(_Path):
-    """Some additions to the classic path class"""
-
-    # pylint: disable=abstract-method
-    # pylint: disable=too-many-public-methods
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        string = repr(f"{self}")
-        return f"<{self.__class__.__name__} {string}>"
-
-    # The / operator joins paths.
-    def __div__(self, child):
-        """Join two path components, adding a separator character if needed.
-
-        If the result is a file return self.__file_class__(result)
-
-        >>> p = DotPath('/home/guido')
-        >>> p.__div__('fred') == p / 'fred' == p.joinpath('fred')
-        True
-        """
-        string = str(self)
-        result = os.path.join(string, child) if child else string
-        return makepath(result)
-
-    __truediv__ = __div__
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-    def __lt__(self, other):
-        return str(self) < str(other)
-
-    def basename(self):
-        return str(super().basename())
-
-    @property
-    def name(self):
-        return str(super().name)
+class DotPath(StringPath):
+    """This class add path-handling"""
 
     def parent_directory(self):
         if self.isroot():
@@ -233,24 +337,20 @@ class DotPath(_Path):
         """ This path's parent directories, as a sequence of paths.
 
         >>> paths = DotPath('/usr/bin/vim').paths
-        >>> paths[-1].isfile()  # vim might be a link
-        True
-        >>> paths[-2] == paths[-1].parent
-        True
-        >>> paths[-3] == paths[-2].parent
-        True
-        >>> paths[-4] == paths[-3].parent
-        True
-        >>> paths[-4] == paths[0]
-        True
-        """,
-    )
+        >>> assert paths[-1].exists()  # vim might be a link
+        >>> assert paths[-2] == paths[-1].parent
+        >>> assert paths[-3] == paths[-2].parent
+        >>> assert paths[-4] == paths[-3].parent
+        >>> assert paths[-4] == paths[0]
+        """)
 
-    def split(self, sep=None, maxsplit=-1):
+    def path_split(self, sep=None, maxsplit=-1):
         separator = sep or os.path.sep
         parts = super().split(separator, maxsplit)
         parts[0] = makepath(parts[0] if parts[0] else "/")
         return parts
+
+    split = path_split
 
     def abspath(self):
         return makepath(os.path.abspath(str(self)))
@@ -354,33 +454,6 @@ class DotPath(_Path):
     def isexec(self):
         return self.is_executable()
 
-    def add_ext(self, *args):
-        """Join all args as extensions
-
-        Strip any leading `.` from args
-
-        >>> source = makepath(__file__)
-        >>> new = source.add_ext('txt', '.new')
-        >>> assert new.name.endswith('.py.txt.new')
-        """
-        exts = [(a[1:] if a[0] == "." else a) for a in args]
-        string = ".".join([self] + list(exts))
-        return makepath(string)
-
-    def add_missing_ext(self, ext):
-        """Add that extension, if it is missing
-
-        >>> fred = makepath('fred.py')
-        >>> assert fred.add_missing_ext('.py') == fred
-        >>> assert fred.add_missing_ext('.txt').endswith('.py.txt')
-        """
-        copy = self[:]
-        _stem, old = os.path.splitext(copy)
-        extension = f'.{ext.lstrip(".")}'
-        if old == extension:
-            return makepath(self)
-        return self.add_ext(extension)
-
     def has_executable(self):
         """Whether the path has any executable bits set """
         executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
@@ -388,28 +461,6 @@ class DotPath(_Path):
             return bool(os.stat(self).st_mode & executable_bits)
         except OSError:
             return False
-
-
-def ext_language(ext, exts=None, simple=True):
-    """Language of the extension in those extensions
-
-    If exts is supplied, then restrict recognition to those exts only
-    If exts is not supplied, then use all known extensions
-
-    >>> ext_language('.py') == 'python'
-    True
-    """
-    languages = {
-        ".py": "python",
-        ".py2": "python" if simple else "python2",
-        ".py3": "python" if simple else "python3",
-        ".sh": "bash",
-        ".bash": "bash",
-        ".pl": "perl",
-        ".txt": "english",
-    }
-    ext_languages = {_: languages[_] for _ in exts} if exts else languages
-    return ext_languages.get(ext)
 
 
 class FilePath(DotPath, PathAssertions):
@@ -462,42 +513,12 @@ class FilePath(DotPath, PathAssertions):
                 return True
         return False
 
-    def split_exts(self):
-        """Split all extensions from the path
-
-        >>> p = FilePath('here/fred.tar.gz')
-        >>> assert p.split_exts() == ('here/fred', '.tar.gz')
-        """
-        copy = self[:]
-        filename, ext = os.path.splitext(copy)
-        if ext == ".gz":
-            filename, ext = os.path.splitext(filename)
-            ext = f"{ext}.gz"
-        return self.__class__(filename), ext
-
-    split_all_ext = split_ext = split_exts
-
     def as_python(self):
         """The path to the file with a .py extension
 
-        >>> FilePath('/path/to/fred.txt').as_python()
-        <FilePath '/path/to/fred.py'>
+        >>> assert FilePath("/path/to/fred.txt").as_python() == "/path/to/fred.py"
         """
         return self.extend_by(".py")
-
-    def extend_by(self, extension):
-        """The path to the file changed to use the given extension
-
-        >>> FilePath('/path/to/fred').extend_by('.txt')
-        <FilePath '/path/to/fred.txt'>
-        >>> FilePath('/path/to/fred.txt').extend_by('..tmp')
-        <FilePath '/path/to/fred.tmp'>
-        >>> FilePath('/path/to/fred.txt').extend_by('fred')
-        <FilePath '/path/to/fred.fred'>
-        """
-        copy = self[:]
-        filename, _ = os.path.splitext(copy)
-        return self.__class__(f'{filename}.{extension.lstrip(".")}')
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
@@ -551,18 +572,11 @@ class DirectPath(DotPath, PathAssertions):
     __file_class__ = FilePath
 
     def __iter__(self):
-        for a_path in DotPath.listdir(self):
+        for a_path in self.listdir():
             yield a_path
 
-    def __contains__(self, thing):
-        return self.contains(thing)
-
-    def contains(self, thing):
-        try:
-            _ = thing.contains
-            return str(thing).startswith(str(self))
-        except AttributeError:
-            return thing in str(self)
+    def contains(self, name):
+        return str(name) in [_.name for _ in self.listdir()] + [".", ".."]
 
     def directory(self):
         """Return a path to a directory.
@@ -939,6 +953,10 @@ def home():
     return _home
 
 
+def root():
+    return makepath("/")
+
+
 def pwd():
     return makepath(os.getcwd())
 
@@ -977,7 +995,7 @@ def paths_in_directory(path_: StringPath) -> List[DotPath]:
     Swallow errors to give an empty list
     """
     try:
-        return os.listdir(path_to_directory)
+        return [_ for _ in path_.listdir() if _]
     except OSError:
         return []
 
@@ -1000,40 +1018,38 @@ def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPat
     """
     path_ = makepath(path_to_directory)
     if not path_:
-        return set()
-    needed = fnmatcher(pattern, path_, wanted)
-    return [
-        os.path.join(path_, name) for name in _names_in_directory(path_) if needed(name)
-    ]
+        return []
+    needed = fnmatcher(glob, path_, wanted)
+    return [path_ / _ for _ in path_.listdir() if needed(_)]
 
 
-def list_sub_directories(path_to_directory, pattern):
+def list_sub_directories(path_to_directory, glob):
     """All sub-directories of the given directory matching the given glob"""
-    return list_items(path_to_directory, pattern, os.path.isdir)
+    return list_items(path_to_directory, glob, os.path.isdir)
 
 
-def set_items(path_to_directory, pattern, wanted):
-    return set(list_items(path_to_directory, pattern, wanted))
+def set_items(path_to_directory, glob, wanted):
+    return set(list_items(path_to_directory, glob, wanted))
 
 
-def set_files(path_to_directory, pattern):
+def set_files(path_to_directory, glob):
     """A list of all files in the given directory matching the given glob"""
-    return set_items(path_to_directory, pattern, os.path.isfile)
+    return set_items(path_to_directory, glob, os.path.isfile)
 
 
-def contains_glob(path_to_directory, pattern, wanted=lambda x: True):
+def contains_glob(path_to_directory, glob, wanted=lambda x: True):
     """Whether the given path contains an item matching the given glob"""
-    return any(list_items(path_to_directory, pattern, wanted))
+    return any(list_items(path_to_directory, glob, wanted))
 
 
-def contains_directory(path_to_directory, pattern):
+def contains_directory(path_to_directory, glob):
     """Whether the given path contains a directory matching the given glob"""
-    return contains_glob(path_to_directory, pattern, os.path.isdir)
+    return contains_glob(path_to_directory, glob, os.path.isdir)
 
 
-def contains_file(path_to_directory, pattern):
+def contains_file(path_to_directory, glob):
     """Whether the given directory contains a file matching the given glob"""
-    return contains_glob(path_to_directory, pattern, os.path.isfile)
+    return contains_glob(path_to_directory, glob, os.path.isfile)
 
 
 def environ_paths(key, default=None):
