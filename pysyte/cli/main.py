@@ -43,9 +43,8 @@ def run(
 ):
     """Run a main_method from command line, parsing arguments
 
-    if add_args(parser) is given it should add arguments to the parser
-    if add_args(make_parser, description, epilog, usage) is given
-        it can adjust help texts before making the parser
+    if add_args(parser) is given it should call parser.add_arg()
+        See ArgumentsParser.add_arg(), etc
     if pre_parse() is given then call it instead of sys.argv
     if post_parse(args) is given then it is called with parsed args
         and should return them after any adjustments
