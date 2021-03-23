@@ -12,6 +12,7 @@ from functools import singledispatch
 from functools import total_ordering
 from importlib import import_module
 from typing import List
+from typing import Tuple
 
 from path import Path as path_Path
 from pysyte.types.lists import flatten
@@ -103,15 +104,15 @@ class StringPath(path_Path):
     def __lt__(self, other) -> bool:
         return str(self) < str(other)
 
-    def __contains__(self, thing):
-        return self.contains(thing)
+    def __contains__(self, sub_path):
+        return self.contains(sub_path)
 
-    def contains(self, name):
+    def contains(self, sub_path):
         try:
-            _ = name.contains
-            return str(thing).startswith(str(self))
+            _ = sub_path.contains
+            return str(sub_path).startswith(str(self))
         except AttributeError:
-            return str(name) in str(self)
+            return str(sub_path) in str(self)
 
     def basename(self) -> str:
         return str(super().basename())
@@ -139,7 +140,6 @@ class StringPath(path_Path):
         >>> p = FilePath('here/fred.tar.gz')
         >>> assert p.split_exts() == ('here/fred', '.tar.gz')
         """
-        doubles = (".gz",)
         copy = self[:]
         filename, ext = os.path.splitext(copy)
         zippers = (
@@ -148,10 +148,10 @@ class StringPath(path_Path):
             ".zip",
             ".bzip",
         )
-        for double in zippers:
-            if ext == double:
+        for zipper in zippers:
+            if ext == zipper:
                 filename, ext_ = os.path.splitext(filename)
-                ext = f"{ext_}{double}"
+                ext = f"{ext_}{zipper}"
         return self.__class__(filename), ext
 
     def add_ext(self, *args) -> "StringPath":
@@ -184,9 +184,10 @@ class StringPath(path_Path):
     def extend_by(self, ext: str) -> "StringPath":
         """The path to the file changed to use the given ext
 
-        >>> assert makepath("/path/to/fred").extend_by("fred")       == "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred")  == "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == "/path/to/fred.fred"
+        >>> fred = "/path/to/fred.fred"
+        >>> assert makepath("/path/to/fred").extend_by("fred")       == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by(".fred")  == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
@@ -959,10 +960,6 @@ def home():
     assert _home
     _ = _home.expand()
     return _home
-
-
-def root():
-    return makepath("/")
 
 
 def pwd():

@@ -6,6 +6,7 @@ This module was a simplifying proxy to stdlib's sys.exit()
 
 import sys
 from dataclasses import dataclass
+from typing import Optional
 
 
 from pysyte.cli import arguments
