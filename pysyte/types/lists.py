@@ -26,12 +26,16 @@ class Uniques(list):
         # pylint: disable=no-self-use
         return True
 
+    def convert(self, item: Any) -> Unique:
+        return item
+
     def append(self, item: Sequence) -> bool:
         if item in self:
             return False
+        self.predicate(item):
         if not self.predicate(item):
             return False
-        super().append(item)
+        super().append(self.convert(item))
         return True
 
     def extend(self, items: Sequence) -> bool:
