@@ -57,6 +57,7 @@ def swallow_std(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None
     """
     raise NotImplementedError
 
+
 def show_lines(lines: list, prefix: str, stream: TextIO) -> None:
     """Print those lines, with that prefix, to that stream
 

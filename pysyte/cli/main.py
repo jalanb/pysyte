@@ -35,11 +35,13 @@ class CallerData:
 
 def run(
     main_method: Callable,
-    add_args: Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser],
+    add_args: Optional[
+        Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
+    ] = None,
     post_parse: Optional[Callable] = None,
-    usage:  Optional[str] = None,
-    epilog: Optional[str] =None,
-    config_name: Optional[str] =None
+    usage: Optional[str] = None,
+    epilog: Optional[str] = None,
+    config_name: Optional[str] = None,
 ):
     """Run a main_method from command line, parsing arguments
 
@@ -63,7 +65,7 @@ def run(
                 parser_ = arguments.parser()
                 return self.add_args(parser_)
             except TypeError:
-                raise NotImplementedError('Unknown signature for add_args()')
+                raise NotImplementedError("Unknown signature for add_args()")
 
         def parse_args(self):
             if self.add_args:

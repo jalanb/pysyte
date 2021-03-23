@@ -69,6 +69,7 @@ class StringPath(path_Path):
 
     Sub-classes know about paths qua paths
     """
+
     # pylint: disable=abstract-method
     # pylint: disable=too-many-public-methods
 
@@ -76,8 +77,8 @@ class StringPath(path_Path):
         return hash(str(self))
 
     def __repr__(self) -> str:
-        string = repr(f'{self}')
-        return f'<{self.__class__.__name__} {string}>'
+        string = repr(f"{self}")
+        return f"<{self.__class__.__name__} {string}>"
 
     def __div__(self, substring: str) -> "StringPath":
         """Handle the '/' operator
@@ -138,13 +139,19 @@ class StringPath(path_Path):
         >>> p = FilePath('here/fred.tar.gz')
         >>> assert p.split_exts() == ('here/fred', '.tar.gz')
         """
-        doubles = ('.gz', )
+        doubles = (".gz",)
         copy = self[:]
         filename, ext = os.path.splitext(copy)
-        for double in ('.gz', '.bz',):
+        zippers = (
+            ".gz",
+            ".bz",
+            ".zip",
+            ".bzip",
+        )
+        for double in zippers:
             if ext == double:
                 filename, ext_ = os.path.splitext(filename)
-                ext = f'{ext_}{double}'
+                ext = f"{ext_}{double}"
         return self.__class__(filename), ext
 
     def add_ext(self, *args) -> "StringPath":
@@ -156,8 +163,8 @@ class StringPath(path_Path):
         >>> new = source.add_ext('txt', '.new')
         >>> assert new.name.endswith('.py.txt.new')
         """
-        exts = [(a[1:] if a[0] == '.' else a) for a in args]
-        string = '.'.join([self] + list(exts))
+        exts = [(a[1:] if a[0] == "." else a) for a in args]
+        string = ".".join([self] + list(exts))
         return makepath(string)
 
     def add_missing_ext(self, ext: str) -> "StringPath":
@@ -196,13 +203,13 @@ def ext_language(ext, exts=None, simple=True):
     True
     """
     languages = {
-        '.py': 'python',
-        '.py2': 'python' if simple else 'python2',
-        '.py3': 'python' if simple else 'python3',
-        '.sh': 'bash',
-        '.bash': 'bash',
-        '.pl': 'perl',
-        '.txt': 'english',
+        ".py": "python",
+        ".py2": "python" if simple else "python2",
+        ".py3": "python" if simple else "python3",
+        ".sh": "bash",
+        ".bash": "bash",
+        ".pl": "perl",
+        ".txt": "english",
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
@@ -342,7 +349,8 @@ class DotPath(StringPath):
         >>> assert paths[-3] == paths[-2].parent
         >>> assert paths[-4] == paths[-3].parent
         >>> assert paths[-4] == paths[0]
-        """)
+        """,
+    )
 
     def path_split(self, sep=None, maxsplit=-1):
         separator = sep or os.path.sep

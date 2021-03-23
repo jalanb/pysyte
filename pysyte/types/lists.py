@@ -7,7 +7,7 @@ from typing import List
 from typing import Sequence
 from typing import TypeVar
 
-Unique = TypeVar('Unique')      # Generic type
+Unique = TypeVar("Unique")  # Generic type
 
 
 # https://stackoverflow.com/a/25464724/500942
@@ -32,7 +32,6 @@ class Uniques(list):
     def append(self, item: Sequence) -> bool:
         if item in self:
             return False
-        self.predicate(item):
         if not self.predicate(item):
             return False
         super().append(self.convert(item))
@@ -48,6 +47,7 @@ class Uniques(list):
 
 class UniquelyTrues(Uniques):
     """A unique list of items all being true-ish"""
+
     def predicate(self, item: Unique) -> bool:
         return bool(item)
 
