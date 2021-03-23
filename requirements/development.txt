@@ -4,4 +4,6 @@ ipython
 rich
 pudb
 pytest-pudb
+pytest-sugar
+rich
 sh
