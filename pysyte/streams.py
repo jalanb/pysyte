@@ -23,7 +23,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
         stream = StringIO()
     sys.stdout = stream
     try:
-        yield
+        yield stream
     finally:
         sys.stdout = saved
 
@@ -41,7 +41,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
         stream = StringIO()
     sys.stderr = stream
     try:
-        yield
+        yield stream
     finally:
         sys.stderr = saved
 
@@ -64,4 +64,4 @@ def show_lines(lines: list, prefix: str, stream: TextIO) -> None:
     line 1
     line 2
     """
-    raise NotImplementedError
+    print("\n{prefix}".join(lines))
