@@ -13,6 +13,7 @@ from functools import total_ordering
 from importlib import import_module
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from path import Path as path_Path
 from pysyte.types.lists import flatten
@@ -104,15 +105,23 @@ class StringPath(path_Path):
     def __lt__(self, other) -> bool:
         return str(self) < str(other)
 
-    def __contains__(self, sub_path):
-        return self.contains(sub_path)
+    def __contains__(self, other) -> bool:
+        """The other is in self if self.contains(other)
 
-    def contains(self, sub_path):
-        try:
-            _ = sub_path.contains
-            return str(sub_path).startswith(str(self))
-        except AttributeError:
-            return str(sub_path) in str(self)
+        this method should be specialised in sub-classes
+        """
+        return self.contains(other)
+
+    def contains(self, other: Union["StringPath", str]) -> bool:
+        """If other is also a path then this path should start with other
+
+        E.g. /path/to/file is "in" /path
+
+        Otherwise, just use the sub-string sense of "in"
+        """
+        if isinstance(other, StringPath):
+            return str(other).startswith(str(self))
+        return str(other) in str(self)
 
     def basename(self) -> str:
         return str(super().basename())
@@ -127,18 +136,18 @@ class StringPath(path_Path):
 
     @property
     def stem(self) -> str:
-        stem, *_ = self.split_exts()
+        stem, *_ = self.splitexts()
         return str(stem)
 
     @property
     def stem_name(self) -> str:
         return self.stem.name
 
-    def split_exts(self) -> Tuple["StringPath", str]:
+    def splitexts(self) -> Tuple["StringPath", str]:
         """Split all extensions from the path
 
         >>> p = FilePath('here/fred.tar.gz')
-        >>> assert p.split_exts() == ('here/fred', '.tar.gz')
+        >>> assert p.splitexts() == ('here/fred', '.tar.gz')
         """
         copy = self[:]
         filename, ext = os.path.splitext(copy)
@@ -243,8 +252,9 @@ class NonePath(StringPath):
             return str(self) < str(other)
         return bool(other)
 
-    def __contains__(self, _):
-        return False
+    def contains(self, other: Union[StringPath, str]) -> bool:
+        """As this is not a real path, just use the substring sense"""
+        return str(other) in str(self)
 
     def __div__(self, child):
         result = os.path.join(self.string, child) if child else self.string
@@ -484,6 +494,10 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
+    def contains(self, other: Union[StringPath, str]) -> bool:
+        """Whether other is in this file's text"""
+        return str(other) in self.text()
+
     def stripped_lines(self):
         """A list of all lines without trailing whitespace
 
@@ -584,8 +598,16 @@ class DirectPath(DotPath, PathAssertions):
         for a_path in self.listdir():
             yield a_path
 
-    def contains(self, name):
-        return str(name) in [_.name for _ in self.listdir()] + [".", ".."]
+    def contains(self, other: Union[StringPath, str]) -> bool:
+        """If other is a path then use that sense of "in"
+
+        So /path/to/here is "in" /path
+
+        Otherwise see if other is listed "in" this directory
+        """
+        if isinstance(other, DotPath):
+            return self in other.parent_directories()
+        return str(other) in [_.name for _ in self.listdir()] + [".", ".."]
 
     def directory(self):
         """Return a path to a directory.
@@ -1005,15 +1027,13 @@ def paths_in_directory(path_: StringPath) -> List[DotPath]:
         return []
 
 
-def fnmatcher(pattern, path_to_directory=None, wanted=lambda x: True):
+def list_matcher(pattern, path_to_directory, wanted):
     """Gives a method to check if an item matches the pattern, and is wanted
 
     If path_to_directory is given then items are checked there
     By default, every item is wanted
     """
-    return lambda x: fnmatch(x, pattern) and wanted(
-        os.path.join(path_to_directory, x) if path_to_directory else x
-    )
+    return lambda x: fnmatch(x, pattern) and wanted(os.path.join(path_to_directory, x))
 
 
 def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPath]:
@@ -1021,11 +1041,16 @@ def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPat
 
     By default, every path is wanted
     """
-    path_ = makepath(path_to_directory)
-    if not path_:
+    path_to_directory_ = makepath(path_to_directory)
+    if not path_to_directory_:
         return []
-    needed = fnmatcher(glob, path_, wanted)
-    return [path_ / _ for _ in path_.listdir() if needed(_)]
+    result = []
+    for path_to_item in path_to_directory_.listdir():
+        if not fnmatch(path_to_item.name, glob):
+            continue
+        if wanted(path_to_item):
+            result.append(path_to_item)
+    return result
 
 
 def list_sub_directories(path_to_directory, glob):

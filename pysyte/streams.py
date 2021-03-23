@@ -32,8 +32,8 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
     """Divert stdout into the given stream
 
-    >>> with swallow_stdout() as string:
-    ...     print('hello', end='', stream=sys.stderr)
+    >>> with swallow_stderr() as string:
+    ...     print('hello', end='', file=sys.stderr)
     >>> assert string.getvalue() == 'hello'
     """
     saved = sys.stderr
@@ -47,22 +47,19 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 
 
 @contextmanager
-def swallow_std(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
+def swallow_std() -> Generator[TextIO, None, None]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:
-    ...     print('hello', end=' ', stream=sys.stderr)
-    ...     print('world', end='', stream=sys.stderr)
-    >>> assert streams[0].get_value() + streams[1].get_value() == 'hello world'
+    ...     print('hello', end=' ', file=sys.stderr)
+    ...     print('world', end='', file=sys.stderr)
+    >>> assert streams[0].getvalue() + streams[1].getvalue() == 'hello world'
     """
-    raise NotImplementedError
-
-
-def show_lines(lines: list, prefix: str, stream: TextIO) -> None:
-    """Print those lines, with that prefix, to that stream
-
-    >>> show_lines(('1', '2'), 'line ', sys.stdout)
-    line 1
-    line 2
-    """
-    print("\n{prefix}".join(lines))
+    saved = sys.stdout, sys.stderr
+    out, err = StringIO(), StringIO()
+    sys.stdout = out
+    sys.stderr = err
+    try:
+        yield out, err
+    finally:
+        sys.stdout, sys.stderr = saved

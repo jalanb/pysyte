@@ -151,8 +151,8 @@ But it is the same path
 
 
 Method to give a path with a trailing "slash" on directories
-    >>> assert path_to_types.slashpath().endswith('/')
-    >>> assert not path_to_path.slashpath().endswith('/')
+    >>> assert path_to_home.slashpath().endswith('/')
+    >>> assert not path_to_home.endswith('/')
 
 cd
 --
@@ -304,7 +304,7 @@ Splitting off extensions
 
     >>> path_to_paths = paths.path(paths.__file__)
     >>> assert path_to_paths.ext in {'.py', '.pyc'}
-    >>> stem, ext = path_to_paths.split_ext()
+    >>> stem, ext = path_to_paths.splitext()
     >>> assert ext[0] == '.'
     >>> assert f'{stem}{ext}' == paths.__file__
 
@@ -315,11 +315,11 @@ Splitting out parts
     >>> assert parts[0].isroot()
     >>> assert parts[1:] == ['usr', 'local', 'bin']
 
-The split_all_ext method
-------------------------
+The splitexts method
+---------------------
 
     >>> p = paths.FilePath('/alan/was/here.tar.gz')
     >>> p.splitext()
     (<FilePath '/alan/was/here.tar'>, '.gz')
-    >>> p.split_all_ext()
+    >>> p.splitexts()
     (<FilePath '/alan/was/here'>, '.tar.gz')

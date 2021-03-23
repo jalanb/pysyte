@@ -247,7 +247,7 @@ class TestPaths(TestCase):
     def test_list_items_without_path(self):
         """Looking for a glob in non-existent path gives an empty set"""
         actual = paths.list_items("/path/to/nowhere", "*.*")
-        expected = set()
+        expected = list()
         self.assertEqual(actual, expected)
 
     def test_environ_paths(self):
