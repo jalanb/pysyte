@@ -7,9 +7,9 @@ from pysyte.types.paths import path
 
 
 def add_args(parser):
-    parser.positional('file')
-    parser.boolean('', 'blanks', help='exclude blanks')
-    parser.boolean('', 'comments', help='exclude # lines')
+    parser.positional("file")
+    parser.boolean("", "blanks", help="exclude blanks")
+    parser.boolean("", "comments", help="exclude # lines")
     return parser
 
 
@@ -17,9 +17,9 @@ def filler(args, l):
     line = l.strip()
     if not line:
         if args.blanks:
-            return ''
-    elif line[0] == '#' and args.comments:
-        return ''
+            return ""
+    elif line[0] == "#" and args.comments:
+        return ""
     return l
 
 

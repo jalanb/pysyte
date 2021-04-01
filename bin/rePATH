@@ -32,19 +32,19 @@ class ScriptError(NotImplementedError):
 
 def add_args(parser):
     """Add arguments to the command line parser"""
-    parser.string('symbol', help='The bash symbol to be changed')
-    parser.string('path', help='The path to be added')
-    parser.boolean('', 'start',
-                        help='Add the path at start of list of paths')
-    parser.integer('', 'index', type=int,
-                        help='The index at which the path will be inserted')
-    parser.boolean('', 'version', help='Show version')
+    parser.string("symbol", help="The bash symbol to be changed")
+    parser.string("path", help="The path to be added")
+    parser.boolean("", "start", help="Add the path at start of list of paths")
+    parser.integer(
+        "", "index", type=int, help="The index at which the path will be inserted"
+    )
+    parser.boolean("", "version", help="Show version")
     return parser
 
 
 def post_parse(args):
     if args.version:
-        sys.stdout.write(f'{sys.argv[0]} version: {__version__}')
+        sys.stdout.write(f"{sys.argv[0]} version: {__version__}")
         raise SystemExit
     if not args.index:
         if args.start:
@@ -73,11 +73,11 @@ def _add_symbol_to_paths(paths, symbol, i):
 def get_arg_path(args):
     path = args.path
     if not path:
-        return ''
+        return ""
     user_path = os.path.expanduser(path)
     real_path = os.path.realpath(user_path)
     if not os.path.isdir(real_path):
-        return ''
+        return ""
     return real_path
 
 
@@ -89,7 +89,7 @@ def split_paths(string):
 
 def get_paths(args):
     symbol = args.symbol
-    paths_string = ''
+    paths_string = ""
     if symbol in os.environ:
         paths_string = os.environ[symbol]
     elif os.path.pathsep in symbol:
@@ -109,7 +109,7 @@ def script(args):
         paths = _add_symbol_to_paths(paths, arg_path, args.index)
     else:
         return False
-    print('='.join((args.symbol, os.path.pathsep.join(paths))))
+    print("=".join((args.symbol, os.path.pathsep.join(paths))))
     return True
 
 
