@@ -20,11 +20,11 @@ def parse_args(parser):
     parser.positionals(
         'directories', default='.',
         help='paths to be abbreviated (default ".")')
-    parser.boolean('', 'only_home', help='only replace $HOME with ~')
+    parser.boolean('o', 'only_home', help='only replace $HOME with ~')
     parser.string(
         'x', 'exclude', type=str, nargs='*',
         help='exclude environment symbols')
-    parser.boolean('', 'version', help='Show version')
+    parser.boolean('v', 'version', help='Show version')
     return parser
 
 
