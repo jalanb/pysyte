@@ -8,8 +8,8 @@ from pysyte.types.paths import path
 
 def add_args(parser):
     parser.positional("file")
-    parser.boolean("", "blanks", help="exclude blanks")
-    parser.boolean("", "comments", help="exclude # lines")
+    parser.boolean("b", "blanks", help="exclude blanks")
+    parser.boolean("c", "comments", help="exclude # lines")
     return parser
 
 
