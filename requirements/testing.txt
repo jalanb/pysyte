@@ -2,6 +2,7 @@
 -r linting.txt
 
 bumpversion
+callee
 codecov
 coverage
 pysyte==0.7.50
