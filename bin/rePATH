@@ -32,8 +32,8 @@ class ScriptError(NotImplementedError):
 
 def add_args(parser):
     """Add arguments to the command line parser"""
-    parser.string("symbol", help="The bash symbol to be changed")
-    parser.string("path", help="The path to be added")
+    parser.string("y", "symbol", help="The bash symbol to be changed")
+    parser.string("", "path", help="The path to be added")
     parser.boolean("", "start", help="Add the path at start of list of paths")
     parser.integer(
         "", "index", type=int, help="The index at which the path will be inserted"
