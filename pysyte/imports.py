@@ -33,7 +33,7 @@ class ImportVisitor(ast.NodeVisitor):
                     if name:
                         return name
         if not value:
-            return None
+            return getattr(node, "id", None)
         result = getattr(value, "id", None)
         if result:
             return result
