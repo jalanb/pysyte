@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import patch
 
+from callee import Contains
+
 from pysyte.bash import screen
 
 starting_callbacks = screen.atexit._ncallbacks()
@@ -59,4 +61,4 @@ class TestScreen(TestCase):
             stop_alt_screen()
         finally:
             screen._alt_screen_started = safe
-        run.assert_called_with("tput rmcup")
+        run.assert_called_with(Contains("tput rmcup"))

@@ -18,19 +18,19 @@ class ScriptError(NotImplementedError):
 def parse_args(parser):
     """Parse out command line arguments"""
     parser.positionals(
-        'directories', default='.',
-        help='paths to be abbreviated (default ".")')
-    parser.boolean('', 'only_home', help='only replace $HOME with ~')
+        "directories", default=".", help='paths to be abbreviated (default ".")'
+    )
+    parser.boolean("o", "only_home", help="only replace $HOME with ~")
     parser.string(
-        'x', 'exclude', type=str, nargs='*',
-        help='exclude environment symbols')
-    parser.boolean('', 'version', help='Show version')
+        "x", "exclude", type=str, nargs="*", help="exclude environment symbols"
+    )
+    parser.boolean("v", "version", help="Show version")
     return parser
 
 
 def post_parse(args):
     if args.version:
-        print(f'{sys.argv[0]} version: {__version__}')
+        print(f"{sys.argv[0]} version: {__version__}")
         sys.exit(0)
     return args
 
@@ -38,7 +38,7 @@ def post_parse(args):
 def directory_parts(directory):
     parts = path(directory).splitall()
     try:
-        parts.remove('/')
+        parts.remove("/")
     except ValueError:
         pass
     return parts
@@ -51,8 +51,8 @@ def matches(directory, exclude):
             continue
         if not value:
             continue
-        if '/' in value:
-            if ':' in value:
+        if "/" in value:
+            if ":" in value:
                 continue
             if value in directory:
                 result[key] = value
@@ -61,8 +61,8 @@ def matches(directory, exclude):
 
 def trail_dir(string):
     if os.path.isdir(string):
-        return string.rstrip('/') + '/'
-    return ''
+        return string.rstrip("/") + "/"
+    return ""
 
 
 def replace_links(directory, links):
@@ -77,12 +77,12 @@ def replace_links(directory, links):
             result.append(directory_.replace(source_, destination_))
         elif directory_.startswith(destination_):
             result.append(directory_.replace(destination_, source_))
-    return [_.rstrip('/') for _ in result]
+    return [_.rstrip("/") for _ in result]
 
 
 def split_all(p):
     first, rest = os.path.split(p)
-    if not first or first in '/~':
+    if not first or first in "/~":
         return [first, rest]
     return split_all(first) + [rest]
 
@@ -93,10 +93,10 @@ def shortest(items):
 
 
 def replace_home(directory):
-    homes = [os.environ['HOME'], '$HOME']
+    homes = [os.environ["HOME"], "$HOME"]
     for home_ in homes:
         if directory.startswith(home_):
-            return directory.replace(home_, '~', 1)
+            return directory.replace(home_, "~", 1)
     return directory
 
 
@@ -109,10 +109,11 @@ def abs_path(p):
 
 
 def home_links():
-    links = [(
-        str(x),
-        str(x.realpath())
-    ) for x in home().listdir() if x.islink() and x.isdir()]
+    links = [
+        (str(x), str(x.realpath()))
+        for x in home().listdir()
+        if x.islink() and x.isdir()
+    ]
     return sorted(links)
 
 
@@ -141,5 +142,5 @@ def script(args):
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run(script, parse_args, post_parse)

@@ -474,7 +474,7 @@ class DotPath(StringPath):
         return self.is_executable()
 
     def has_executable(self):
-        """Whether the path has any executable bits set """
+        """Whether the path has any executable bits set"""
         executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
         try:
             return bool(os.stat(self).st_mode & executable_bits)

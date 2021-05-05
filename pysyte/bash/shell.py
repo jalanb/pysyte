@@ -18,11 +18,13 @@ _path = []
 def cd(path):
     if _working_dirs[0] == path:
         return
+    assert os.path.isdir(path)
     _working_dirs[0] = path
 
 
 @contextmanager
 def pushd(path):
+    assert os.path.isdir(path)
     _working_dirs.insert(0, path)
     yield
     del _working_dirs[0]
@@ -47,5 +49,5 @@ def run(command):
         run_command = path_command
     status, output = getstatusoutput(run_command)
     if status:
-        raise BashError(output)
+        raise BashError(f"{run_command}\n{output}")
     return output

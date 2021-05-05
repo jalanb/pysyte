@@ -19,33 +19,36 @@ from pysyte.cli.main import run
 
 def add_args(main_parser):
     parser = lines.add_args(main_parser)
-    parser.positional('searches', help='What to search for')
-    parser.add_files(action='search')
+    parser.positional("searches", help="What to search for")
+    parser.add_files(action="search")
     return parser
 
 
 def parse_sought(string, separator):
-    regexp = re.compile(f'''
+    regexp = re.compile(
+        f"""
         (?P<separator>[{separator}])
         (?P<sought>[^{separator}]+)
-    ''', re.VERBOSE)
+    """,
+        re.VERBOSE,
+    )
     match = regexp.match(string)
     if not match:
         return {}
     result = match.groupdict()
-    result['separator'] = separator
+    result["separator"] = separator
     return result
 
 
 def parse_action(search):
     sought = search[1:]
     action = {
-        'separator': '=',
-        'sought': sought,
+        "separator": "=",
+        "sought": sought,
     }
-    if sought[0] == '-':
-        action['separator'] = '.'
-        action['sought'] = sought[1:]
+    if sought[0] == "-":
+        action["separator"] = "."
+        action["sought"] = sought[1:]
     return action
 
 
@@ -53,7 +56,7 @@ def post_parse(args):
     files = []
     actions = []
     for search in args.searches:
-        if search[0] == '=':
+        if search[0] == "=":
             actions.append(parse_action(search))
         else:
             files.append(search)
@@ -63,10 +66,10 @@ def post_parse(args):
 
 
 def main(args):
-    print(f'Files: {args.files}')
+    print(f"Files: {args.files}")
     for action in args.actions:
-        sought = action.get('sought', '')
-        separator = action.get('separator', '')
+        sought = action.get("sought", "")
+        separator = action.get("separator", "")
         print(f'{"Find" if separator == "=" else "Remove"} {sought}')
 
 

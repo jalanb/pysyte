@@ -8,7 +8,7 @@ from pysyte.oss import getch
 from pysyte.cli.main import run
 
 
-__version__ = '0.1.1'
+__version__ = "0.1.1"
 
 
 class ScriptError(NotImplementedError):
@@ -16,17 +16,20 @@ class ScriptError(NotImplementedError):
 
 
 def add_args(parser):
-    parser.boolean('', 'codes', help='Show raw codes')
+    parser.boolean("", "codes", help="Show raw codes")
     parser.boolean(
-        '', 'prompt', default='',
-        help='Prompt to show before getting keys ' '(default: none)')
-    parser.boolean('', 'string', help='Show string')
+        "",
+        "prompt",
+        default="",
+        help="Prompt to show before getting keys " "(default: none)",
+    )
+    parser.boolean("", "string", help="Show string")
     return parser
 
 
 def main(args):
     if args.codes:
-        print(', '.join(getch.get_codes()))
+        print(", ".join(getch.get_codes()))
     elif args.string:
         print(getch.get_string())
     else:
