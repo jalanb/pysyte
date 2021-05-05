@@ -5,7 +5,7 @@ bumpversion
 callee
 codecov
 coverage
-pysyte==0.7.50
+pysyte==0.7.51
 pytest
 pytest-cov
 tox
