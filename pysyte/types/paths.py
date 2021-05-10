@@ -65,6 +65,8 @@ class PathAssertions:
         return self
 
 
+StrPath = Union["StringPath", str]  # many args can be either string or path
+
 @total_ordering
 class StringPath(path_Path):
     """This class handles the path as if it were just a string
@@ -112,7 +114,7 @@ class StringPath(path_Path):
         """
         return self.contains(other)
 
-    def contains(self, other: Union["StringPath", str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """If other is also a path then this path should start with other
 
         E.g. /path/to/file is "in" /path
@@ -135,9 +137,9 @@ class StringPath(path_Path):
         return str(super().name)
 
     @property
-    def stem(self) -> str:
+    def stem(self) -> "StringPath":
         stem, *_ = self.splitexts()
-        return str(stem)
+        return stem
 
     @property
     def stem_name(self) -> str:
@@ -252,7 +254,7 @@ class NonePath(StringPath):
             return str(self) < str(other)
         return bool(other)
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """As this is not a real path, just use the substring sense"""
         return str(other) in str(self)
 
@@ -494,7 +496,7 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """Whether other is in this file's text"""
         return str(other) in self.text()
 
@@ -598,7 +600,7 @@ class DirectPath(DotPath, PathAssertions):
         for a_path in self.listdir():
             yield a_path
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """If other is a path then use that sense of "in"
 
         So /path/to/here is "in" /path
