@@ -30,7 +30,7 @@ class Uniques(list):
     def convert(self, item: Unique) -> Unique:
         return item
 
-    def append(self, item: Sequence[Unique]) -> None:
+    def append(self, item: Unique) -> None:
         if item in self:
             return
         if not self.predicate(item):
