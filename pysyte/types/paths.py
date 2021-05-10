@@ -785,18 +785,18 @@ def makepath(arg):
 path = makepath
 
 
-@makepath.register(type(None))
+@makepath.register(type(None))  # type: ignore[no-redef]
 def _(arg):
     """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
-@makepath.register(DotPath)
+@makepath.register(DotPath)  # type: ignore[no-redef]
 def _(arg):
     return arg
 
 
-@makepath.register(str)
+@makepath.register(str)  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a string
 
@@ -827,7 +827,7 @@ def imports():
     return {sys, os, re, stat}
 
 
-@makepath.register(type(os))
+@makepath.register(type(os))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a module"""
     if arg.__name__ == "builtins":
@@ -845,7 +845,7 @@ def _(arg):
         assert lib_.isdir()
 
 
-@makepath.register(type(makepath))
+@makepath.register(type(makepath))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
@@ -856,7 +856,7 @@ def _(arg):
     return _make_module_path(method)
 
 
-@makepath.register(type(DotPath))
+@makepath.register(type(DotPath))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a class's module"""
     return _make_module_path(arg)
@@ -938,7 +938,7 @@ def paths(*strings):
     return choose_paths(*strings, chooser=lambda p: p.exists())
 
 
-@paths.register(list)
+@paths.register(list)  # type: ignore[no-redef]
 @paths.register(set)
 @paths.register(tuple)
 def _(strings: list):
@@ -950,7 +950,7 @@ def directories(*strings: tuple):
     return choose_paths(*strings, chooser=lambda p: p.isdir())
 
 
-@directories.register(list)
+@directories.register(list)  # type: ignore[no-redef]
 @directories.register(set)
 @directories.register(tuple)
 def _(strings: list):
@@ -962,7 +962,7 @@ def files(*strings):
     return choose_paths(*strings, chooser=lambda p: p.isfile())
 
 
-@files.register(list)
+@files.register(list)  # type: ignore[no-redef]
 @files.register(set)
 @files.register(tuple)
 def _(strings: list):
