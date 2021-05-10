@@ -4,9 +4,9 @@
 import random
 
 
-def coin():
+def coin() -> str:
     return random.choice(("heads", "tails"))
 
 
-def flip():
+def flip() -> bool:
     return random.choice((True, False))

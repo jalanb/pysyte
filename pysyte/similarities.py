@@ -1,4 +1,4 @@
-"""Five most popular similarity measures
+"""Some popular similarity measures in python
 
 https://dataaspirant.com/2015/04/11/five-most-popular-similarity-measures-implementation-in-python/
 
@@ -23,21 +23,7 @@ from math import sqrt
 from decimal import Decimal
 
 
-def similar(x, y):
-    """Two main consideration about similarity:
-
-    Similarity = 1 if X = Y         (Where X, Y are two objects)
-    Similarity = 0 if X ≠ Y
-    """
-    try:
-        setattr(x, "similar", lambda z: similar(x, z))
-        setattr(y, "similar", lambda z: similar(y, z))
-    except AttributeError:
-        pass
-    return x == y
-
-
-def euclidean(x, y):
+def euclidean(x: list, y: list) -> float:
     """Euclidean distance is the most common use of distance.
 
     Euclidean distance is also known as simply distance.
@@ -49,7 +35,7 @@ def euclidean(x, y):
     return sqrt(sum(pow(a - b, 2) for a, b in zip(x, y)))
 
 
-def manhattan(x, y):
+def manhattan(x: list, y: list) -> float:
     """Manhattan is the the sum of the absolute diff of their Cartesian co-ords
 
     In a plane with p1 at (x1, y1) and p2 at (x2, y2).
@@ -66,8 +52,8 @@ def manhattan(x, y):
     return sum(abs(a - b) for a, b in zip(x, y))
 
 
-def minkowski(x, y, p_value):
-    """Minkowski distance is generaliform of Euclidean and Manhattan distances
+def minkowski(x: list, y: list, p_value: float) -> float:
+    """Minkowski distance is general form of Euclidean and Manhattan distances
 
     In the equation,
         d^MKD is the Minkowski distance between the data record i and j,
@@ -91,7 +77,7 @@ def minkowski(x, y, p_value):
         Synonyms are Lmax-Norm or Chessboard distance.
     """
 
-    def nth_root(value, n_root):
+    def nth_root(value: float, n_root: float) -> float:
         root_value = 1 / float(n_root)
         return float(round(Decimal(value) ** Decimal(root_value), 3))
 
