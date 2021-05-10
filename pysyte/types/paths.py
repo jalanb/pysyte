@@ -45,8 +45,6 @@ class MissingImport(MissingPath):
 class PathAssertions:
     """Assertions that can be made about paths"""
 
-    # pylint: disable=no-member
-
     def assertExists(self):
         if not self.exists():
             raise MissingPath(self)
@@ -66,6 +64,7 @@ class PathAssertions:
 
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
+
 
 @total_ordering
 class StringPath(path_Path):

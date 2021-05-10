@@ -24,7 +24,6 @@ class Uniques(list):
 
     def predicate(self, _: Unique) -> bool:
         """Subclasses can exclude items which return False"""
-        # pylint: disable=no-self-use
         return True
 
     def convert(self, item: Unique) -> Unique:
@@ -81,7 +80,6 @@ def flatten_(list_of_lists: List[List]) -> List:
 
 def as_list(item):
     """Make item a list from types which can index, have items, or can pop"""
-    # pylint: disable=pointless-statement
     try:
         item.index
         return list(item)

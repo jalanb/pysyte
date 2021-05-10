@@ -10,7 +10,6 @@ from pysyte.types import paths
 
 
 class SourcePath(paths.FilePath):
-    # pylint: disable=abstract-method
     pass
 
 
@@ -18,7 +17,6 @@ SourcePath.__file_class__ = SourcePath
 
 
 class MockFilePathWithLines(paths.FilePath):
-    # pylint: disable=abstract-method
     """Mock some known lines into a file"""
 
     def lines(self, encoding=None, errors="strict", retain=True):

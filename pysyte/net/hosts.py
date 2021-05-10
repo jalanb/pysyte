@@ -20,4 +20,5 @@ def _read_localhost() -> Host:
     user = getpass.getuser()
     return Host(host, aliases, addresses, [user])
 
+
 localhost = _read_localhost()

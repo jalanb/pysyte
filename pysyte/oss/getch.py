@@ -39,7 +39,6 @@ def get_ord():
 class TerminalContext(object):
     """Context wrapper to set up termios values"""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self):
         self.fd = None
         self.old_settings = None
@@ -73,7 +72,6 @@ def timeout_raiser(_signum, _frame):
 class TimerContext(object):
     """Context wrapper for a timeout"""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, seconds):
         self.seconds = seconds
         self.old_handler = None

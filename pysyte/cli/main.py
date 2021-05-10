@@ -32,6 +32,7 @@ class MainMethod(Method):
 
 ParseCaller = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
 
+
 @dataclass
 class CallerData:
     method: MainMethod

@@ -177,7 +177,7 @@ class ArgumentHandler:
             return os.X_OK
         except SystemExit as e:
             return e.code
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             stackprinter.show(e, style=pysyte.stackprinter.style)
 
 
