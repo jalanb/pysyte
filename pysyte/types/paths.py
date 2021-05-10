@@ -871,7 +871,7 @@ def makestr(string: str):
     return NonePath(string)
 
 
-def cd(path_to):  # pylint: disable=invalid-name
+def cd(path_to: StringPath) -> bool:
     """cd to the given path
 
     If the path is a file, then cd to its parent directory
@@ -880,9 +880,10 @@ def cd(path_to):  # pylint: disable=invalid-name
         so that we can cd back there with cd('-')
     """
     if path_to == "-":
-        if not cd.previous:
+        previous = getattr(cd, "previous", "")
+        if not previous:
             raise PathError("No previous directory to return to")
-        return cd(cd.previous)
+        return cd(previous)
     if not hasattr(path_to, "cd"):
         path_to = makepath(path_to)
     try:
@@ -890,7 +891,7 @@ def cd(path_to):  # pylint: disable=invalid-name
     except OSError as e:
         if "No such file or directory" not in str(e):
             raise
-        previous = NonePath()
+        previous = ""
     if path_to.isdir():
         os.chdir(path_to)
     elif path_to.isfile():
@@ -899,14 +900,14 @@ def cd(path_to):  # pylint: disable=invalid-name
         return False
     else:
         raise PathError(f"Cannot cd to {path_to}")
-    cd.previous = previous
+    setattr(cd, "previous", previous)
     return True
 
 
 try:
-    cd.previous = makepath(os.getcwd())
+    setattr(cd, "previous", os.getcwd())
 except (OSError, AttributeError):
-    cd.previous = NonePath()
+    setattr(cd, "previous", "")
 
 
 def as_path(string_or_path):
