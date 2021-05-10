@@ -2,10 +2,8 @@
 
 import itertools
 
-from typing import Any
 from typing import Iterable
 from typing import List
-from typing import Sequence
 from typing import TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
