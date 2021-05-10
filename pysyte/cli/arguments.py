@@ -11,6 +11,8 @@ import sys
 from bdb import BdbQuit
 from pprint import pformat
 from functools import partial
+from typing import Any
+from typing import List
 
 import stackprinter
 from deprecated import deprecated
@@ -24,7 +26,7 @@ def config(arguments):
     return load_configs(arguments.prog)
 
 
-def extract_strings(names, name):
+def extract_strings(names: dict, name: str) -> List[str]:
     try:
         value = names[name]
     except KeyError:
@@ -143,24 +145,22 @@ class ArgumentsNamespace(object):
         repr_ = "\n".join((klass, cmd_, args))
         return f"<{repr_}>"
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Any:
         return getattr(self._result, name)
 
-    def get_args(self):
+    def get_args(self) -> dict:
         attributes = [a for a in dir(self._result) if a[0] != "_"]
         return {a: getattr(self._result, a) for a in attributes}
 
-    def get_arg(self, name):
-        if not self._result:
-            return None
-        return getattr(self._result, name)
+    def get_arg(self, name: str) -> Any:
+        return getattr(self._result, name, None)
 
-    def get_strings(self, name):
+    def get_strings(self, name: str) -> List[str]:
         if not self._result:
-            return None
+            return []
         return extract_strings(self._result.__dict__, name)
 
-    def set_arg(self, name, value):
+    def set_arg(self, name: str, value: Any) -> None:
         setattr(self._result, name, value)
 
 

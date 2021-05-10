@@ -26,7 +26,7 @@ def last(sequence: Sequence[T], message=None) -> T:
 
     >>> assert last([1, 2, 3]) == 3
     """
-    return first(reversed(sequence), message)
+    return first(list(reversed(sequence)), message)
 
 
 def first_or(sequence: Sequence[T], value) -> T:
@@ -49,6 +49,6 @@ def first_that(predicate, sequence: Sequence[T], message=None) -> T:
     >>> assert first_that(lambda x: x > 1, [1, 2, 3]) == 2
     """
     try:
-        return first(_ for _ in sequence if predicate(_))
+        return first([_ for _ in sequence if predicate(_)])
     except (ValueError, StopIteration):
         raise KeyError(message or "Not Found")

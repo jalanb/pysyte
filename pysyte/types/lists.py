@@ -3,6 +3,7 @@
 import itertools
 
 from typing import Any
+from typing import Iterable
 from typing import List
 from typing import Sequence
 from typing import TypeVar
@@ -26,23 +27,19 @@ class Uniques(list):
         # pylint: disable=no-self-use
         return True
 
-    def convert(self, item: Any) -> Unique:
+    def convert(self, item: Unique) -> Unique:
         return item
 
-    def append(self, item: Sequence) -> bool:
+    def append(self, item: Sequence[Unique]) -> None:
         if item in self:
-            return False
+            return
         if not self.predicate(item):
-            return False
+            return
         super().append(self.convert(item))
-        return True
 
-    def extend(self, items: Sequence) -> bool:
-        result = False
+    def extend(self, items: Iterable[Unique]) -> None:
         for item in items or []:
-            if self.append(item):
-                result = True
-        return result
+            self.append(item)
 
 
 class UniquelyTrues(Uniques):

@@ -6,7 +6,7 @@ from subprocess import run
 from pysyte import oss
 
 name = python_platform.system().lower()
-platform = importlib.import_module(f"pysyte.oss.{name}", oss)
+platform = importlib.import_module(f"pysyte.oss.{name}", "pysyte.oss")
 
 
 def put_clipboard_data(data):

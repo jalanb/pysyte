@@ -6,6 +6,8 @@ This module was a simplifying proxy to stdlib's sys.exit()
 
 import sys
 from dataclasses import dataclass
+from typing import Any
+from typing import Dict
 from typing import Optional
 
 
@@ -28,17 +30,17 @@ class MainMethod(Method):
         return self.method(*args_, **kwargs)
 
 
+ParseCaller = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
+
 @dataclass
 class CallerData:
     method: MainMethod
-    add_args: Callable
+    add_args: Optional[ParseCaller]
 
 
 def run(
     main_method: Callable,
-    add_args: Optional[
-        Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
-    ] = None,
+    add_args: Optional[ParseCaller] = None,
     post_parse: Optional[Callable] = None,
     usage: Optional[str] = None,
     epilog: Optional[str] = None,
@@ -101,4 +103,4 @@ def run(
         sys.exit(handler.run(caller))
 
 
-args = {}
+args: Dict[str, Any] = {}
