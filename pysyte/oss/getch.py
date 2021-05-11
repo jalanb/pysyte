@@ -17,6 +17,9 @@ import signal
 import sys
 import tty
 from curses import ascii
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import termios
 from deprecated import deprecated
@@ -36,7 +39,6 @@ def get_ord():
 class TerminalContext(object):
     """Context wrapper to set up termios values"""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self):
         self.fd = None
         self.old_settings = None
@@ -70,7 +72,6 @@ def timeout_raiser(_signum, _frame):
 class TimerContext(object):
     """Context wrapper for a timeout"""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, seconds):
         self.seconds = seconds
         self.old_handler = None
@@ -90,7 +91,7 @@ class TimerContext(object):
             return True
 
 
-_key_cache = []
+_key_cache: List[Tuple[int, ...]] = []
 
 
 def cache_keys(keys):
@@ -230,7 +231,7 @@ def get_extended_key_name(codes):
     return known_keys()[codes]
 
 
-def known_keys():
+def known_keys() -> Dict[Tuple[int, ...], str]:
     result = {
         (27, 79, 70): "end",
         (27, 79, 72): "home",
@@ -279,7 +280,7 @@ def known_keys():
     return add_ascii_keys(result)
 
 
-def add_ascii_keys(data):
+def add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
     """Update the data with ascii keys
 
     >>> data = add_ascii_keys({})

@@ -7,7 +7,6 @@ import unittest
 from pysyte.types import dictionaries
 
 
-# pylint: disable=missing-docstring
 class DictionariesTest(unittest.TestCase):
     def test_get_caselessly(self):
         things = {"Fred": 9, "A": 1, "b": 2}

@@ -45,8 +45,6 @@ class MissingImport(MissingPath):
 class PathAssertions:
     """Assertions that can be made about paths"""
 
-    # pylint: disable=no-member
-
     def assertExists(self):
         if not self.exists():
             raise MissingPath(self)
@@ -63,6 +61,9 @@ class PathAssertions:
         if not self.isfile():
             raise PathError(f"{self} is not a file")
         return self
+
+
+StrPath = Union["StringPath", str]  # many args can be either string or path
 
 
 @total_ordering
@@ -112,7 +113,7 @@ class StringPath(path_Path):
         """
         return self.contains(other)
 
-    def contains(self, other: Union["StringPath", str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """If other is also a path then this path should start with other
 
         E.g. /path/to/file is "in" /path
@@ -135,9 +136,9 @@ class StringPath(path_Path):
         return str(super().name)
 
     @property
-    def stem(self) -> str:
+    def stem(self) -> "StringPath":
         stem, *_ = self.splitexts()
-        return str(stem)
+        return stem
 
     @property
     def stem_name(self) -> str:
@@ -252,7 +253,7 @@ class NonePath(StringPath):
             return str(self) < str(other)
         return bool(other)
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """As this is not a real path, just use the substring sense"""
         return str(other) in str(self)
 
@@ -494,7 +495,7 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """Whether other is in this file's text"""
         return str(other) in self.text()
 
@@ -598,7 +599,7 @@ class DirectPath(DotPath, PathAssertions):
         for a_path in self.listdir():
             yield a_path
 
-    def contains(self, other: Union[StringPath, str]) -> bool:
+    def contains(self, other: StrPath) -> bool:
         """If other is a path then use that sense of "in"
 
         So /path/to/here is "in" /path
@@ -785,18 +786,18 @@ def makepath(arg):
 path = makepath
 
 
-@makepath.register(type(None))
+@makepath.register(type(None))  # type: ignore[no-redef]
 def _(arg):
     """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
-@makepath.register(DotPath)
+@makepath.register(DotPath)  # type: ignore[no-redef]
 def _(arg):
     return arg
 
 
-@makepath.register(str)
+@makepath.register(str)  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a string
 
@@ -827,7 +828,7 @@ def imports():
     return {sys, os, re, stat}
 
 
-@makepath.register(type(os))
+@makepath.register(type(os))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a module"""
     if arg.__name__ == "builtins":
@@ -845,7 +846,7 @@ def _(arg):
         assert lib_.isdir()
 
 
-@makepath.register(type(makepath))
+@makepath.register(type(makepath))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
@@ -856,7 +857,7 @@ def _(arg):
     return _make_module_path(method)
 
 
-@makepath.register(type(DotPath))
+@makepath.register(type(DotPath))  # type: ignore[no-redef]
 def _(arg):
     """Make a path from a class's module"""
     return _make_module_path(arg)
@@ -869,7 +870,7 @@ def makestr(string: str):
     return NonePath(string)
 
 
-def cd(path_to):  # pylint: disable=invalid-name
+def cd(path_to: StringPath) -> bool:
     """cd to the given path
 
     If the path is a file, then cd to its parent directory
@@ -878,9 +879,10 @@ def cd(path_to):  # pylint: disable=invalid-name
         so that we can cd back there with cd('-')
     """
     if path_to == "-":
-        if not cd.previous:
+        previous = getattr(cd, "previous", "")
+        if not previous:
             raise PathError("No previous directory to return to")
-        return cd(cd.previous)
+        return cd(previous)
     if not hasattr(path_to, "cd"):
         path_to = makepath(path_to)
     try:
@@ -888,7 +890,7 @@ def cd(path_to):  # pylint: disable=invalid-name
     except OSError as e:
         if "No such file or directory" not in str(e):
             raise
-        previous = NonePath()
+        previous = ""
     if path_to.isdir():
         os.chdir(path_to)
     elif path_to.isfile():
@@ -897,14 +899,14 @@ def cd(path_to):  # pylint: disable=invalid-name
         return False
     else:
         raise PathError(f"Cannot cd to {path_to}")
-    cd.previous = previous
+    setattr(cd, "previous", previous)
     return True
 
 
 try:
-    cd.previous = makepath(os.getcwd())
+    setattr(cd, "previous", os.getcwd())
 except (OSError, AttributeError):
-    cd.previous = NonePath()
+    setattr(cd, "previous", "")
 
 
 def as_path(string_or_path):
@@ -938,7 +940,7 @@ def paths(*strings):
     return choose_paths(*strings, chooser=lambda p: p.exists())
 
 
-@paths.register(list)
+@paths.register(list)  # type: ignore[no-redef]
 @paths.register(set)
 @paths.register(tuple)
 def _(strings: list):
@@ -950,7 +952,7 @@ def directories(*strings: tuple):
     return choose_paths(*strings, chooser=lambda p: p.isdir())
 
 
-@directories.register(list)
+@directories.register(list)  # type: ignore[no-redef]
 @directories.register(set)
 @directories.register(tuple)
 def _(strings: list):
@@ -962,7 +964,7 @@ def files(*strings):
     return choose_paths(*strings, chooser=lambda p: p.isfile())
 
 
-@files.register(list)
+@files.register(list)  # type: ignore[no-redef]
 @files.register(set)
 @files.register(tuple)
 def _(strings: list):

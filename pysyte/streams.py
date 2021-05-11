@@ -5,6 +5,7 @@ import sys
 from contextlib import contextmanager
 from typing import Optional
 from typing import TextIO
+from typing import Tuple
 from typing import Generator
 
 from six import StringIO
@@ -47,7 +48,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 
 
 @contextmanager
-def swallow_std() -> Generator[TextIO, None, None]:
+def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:

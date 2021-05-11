@@ -3,6 +3,7 @@
 import os
 from contextlib import contextmanager
 from subprocess import getstatusoutput
+from typing import List
 
 from boltons.setutils import IndexedSet
 
@@ -11,8 +12,8 @@ class BashError(ValueError):
     pass
 
 
-_working_dirs = [""]
-_path = []
+_working_dirs: List[str] = [""]
+_path: List[str] = []
 
 
 def cd(path):

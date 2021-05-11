@@ -3,7 +3,7 @@
 from typing import Optional
 from typing import List
 
-import pysyte
+from pysyte import __file__ as path_to_pysyte
 from pysyte.oss import linux
 from pysyte.config.types import ConfigPaths
 from pysyte.types.dictionaries import NameSpaces
@@ -37,7 +37,7 @@ def common_config_dirs(
         elif expanded.isfile():
             configs.append(expanded.parent)
 
-    configs = []
+    configs: List[DirectPath] = []
     add_dir("/etc")
     for path_ in linux.xdg_dirs():
         add_dir(path_)
@@ -54,4 +54,4 @@ def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
     return config_paths.load(name)
 
 
-pysyte = load_configs("pysyte", [path(pysyte.__file__)])
+pysyte = load_configs("pysyte", [path(path_to_pysyte)])

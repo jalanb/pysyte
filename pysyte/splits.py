@@ -1,13 +1,16 @@
 """Generic methods for splitting strings"""
 
-
 import re
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 from pysyte.types.literals import punctuation
 from pysyte.types.literals import nones
 
 
-def _default_separator():
+def _default_separator() -> str:
     """The default separator used by all methods is a comma
 
     Monkey-patching this method can change that default
@@ -15,7 +18,7 @@ def _default_separator():
     return punctuation.comma
 
 
-def join(items, separator=None):
+def join(items: list, separator: Optional[str] = None) -> str:
     """Join the items into a string using the separator
 
     Converts items to strings if needed
@@ -30,7 +33,7 @@ def join(items, separator=None):
     return separator.join([str(item) for item in items])
 
 
-def seamless_join(items):
+def seamless_join(items: list) -> str:
     """A seamless join does not show where the joins are
 
     >>> seamless_join(['fred', 'was', 'here'])
@@ -39,7 +42,7 @@ def seamless_join(items):
     return join(items, nones.string)
 
 
-def split(string, separator_regexp=None, maxsplit=0):
+def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> List[str]:
     """Split a string to a list
 
     >>> split('fred, was, here')
@@ -54,7 +57,9 @@ def split(string, separator_regexp=None, maxsplit=0):
     return re.split(separator_regexp, string, maxsplit)
 
 
-def split_and_strip(string, separator_regexp=None, maxsplit=0):
+def split_and_strip(
+    string: str, separator_regexp: Optional[str] = None, maxsplit=0
+) -> List[str]:
     """Split a string into items and trim any excess spaces from the items
 
     >>> split_and_strip('fred, was, here  ')
@@ -69,7 +74,9 @@ def split_and_strip(string, separator_regexp=None, maxsplit=0):
     return [item.strip() for item in re.split(separator_regexp, string, maxsplit)]
 
 
-def split_and_strip_without(string, exclude, separator_regexp=None):
+def split_and_strip_without(
+    string: str, exclude, separator_regexp: Optional[str] = None
+) -> List[str]:
     """Split a string into items, and trim any excess spaces
 
     Any items in exclude are not in the returned list
@@ -83,7 +90,9 @@ def split_and_strip_without(string, exclude, separator_regexp=None):
     return [x for x in result if x not in exclude]
 
 
-def split_and_strip_whole(string, separator_regexp=None):
+def split_and_strip_whole(
+    string: str, separator_regexp: Optional[str] = None
+) -> List[str]:
     """Split a string into items and trim any excess spaces from the items
 
     Exclude any empty items
@@ -94,7 +103,7 @@ def split_and_strip_whole(string, separator_regexp=None):
     return split_and_strip_without(string, [""], separator_regexp)
 
 
-def split_by_count(items, count, filler=None):
+def split_by_count(items: list, count, filler: Optional[Any] = None) -> List[Tuple]:
     """Split the items into tuples of count items each
 
     >>> split_by_count([0,1,2,3], 2)
@@ -121,7 +130,7 @@ def split_by_count(items, count, filler=None):
     return list(zip(*iterators))
 
 
-def pairs(items, filler=None):
+def pairs(items: list, filler: Optional[Any] = None) -> List[Tuple]:
     """Split the items into pairs
 
     >>> pairs([0,1,2,7,8,9,10])
@@ -134,7 +143,7 @@ def pairs(items, filler=None):
     return split_by_count(items, 2, filler)
 
 
-def threes(items, filler=None):
+def threes(items: list, filler: Optional[Any] = None) -> List[Tuple]:
     """Split the items into groups of 3
 
     >>> threes([0,1,2,6,7,8,9])
@@ -147,7 +156,7 @@ def threes(items, filler=None):
     return split_by_count(items, 3, filler)
 
 
-def despaced(string):
+def despaced(string: str) -> List[str]:
     """Split a string into spaceless items
 
     Split on spaces, trim excess space, exclude any empty strings
@@ -158,7 +167,7 @@ def despaced(string):
     return split_and_strip_without(string, [""], " ")
 
 
-def words(string):
+def words(string: str) -> List[str]:
     """Split a string into words
 
     Split on (English) punctuaution, trim space, exclude any empty strings
@@ -169,7 +178,7 @@ def words(string):
     return split_and_strip_without(string, [""], "[,;. ]")
 
 
-def rejoin(string, separator_regexp=None, spaced=False):
+def rejoin(string: str, separator_regexp: Optional[str] = None, spaced=False) -> str:
     """Split a string and then rejoin it
 
     Spaces are interspersed between items only if spaced is True

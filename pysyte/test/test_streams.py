@@ -27,7 +27,6 @@ class TestStreams(TestCase):
         But will produce no expected output
         If it fails it becomes noticable at command line
         """
-        # pylint: disable=no-self-use
         with swallow_stdout():
             print("hello")
 
@@ -37,6 +36,5 @@ class TestStreams(TestCase):
         But will produce no expected output
         If it fails it becomes noticable at command line
         """
-        # pylint: disable=no-self-use
         with swallow_stderr():
             print("hello", file=sys.stderr)
