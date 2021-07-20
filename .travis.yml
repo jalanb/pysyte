@@ -1,7 +1,8 @@
 language: python
 python:
 - '3.9'
-script: env
+install: python3 -m pip install tox
+script: tox
 notifications:
   email: false
   slack:
