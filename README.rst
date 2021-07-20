@@ -17,6 +17,13 @@ Build status
    :target: https://travis-ci.com/jalanb/pysyte
    :alt: Build Status
 
+Code Style
+----------
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Black Style
+
 Test Coverage
 -------------
 
