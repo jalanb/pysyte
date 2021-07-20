@@ -104,4 +104,4 @@ def run(
         sys.exit(handler.run(caller))
 
 
-args: Dict[str, Any] = {}
+args = {}
