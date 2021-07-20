@@ -9,7 +9,6 @@ import sys
 from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
-from functools import total_ordering
 from importlib import import_module
 from typing import List
 from typing import Tuple
@@ -66,7 +65,6 @@ class PathAssertions:
 StrPath = Union["StringPath", str]  # many args can be either string or path
 
 
-@total_ordering
 class StringPath(path_Path):
     """This class handles the path as if it were just a string
 
@@ -105,6 +103,17 @@ class StringPath(path_Path):
 
     def __lt__(self, other) -> bool:
         return str(self) < str(other)
+
+    # functools.total_ordering does not work properly cos we inherit from str
+    # Hence: we do need to define next 3
+    def __le__(self, other):
+        return self.__eq__(other) or self.__lt__(other)
+
+    def __gt__(self, other):
+        return not self.__le__(other)
+
+    def __ge__(self, other):
+        return not self.__lt__(other)
 
     def __contains__(self, other) -> bool:
         """The other is in self if self.contains(other)

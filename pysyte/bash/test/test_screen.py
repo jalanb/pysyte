@@ -20,7 +20,7 @@ class TestScreen(TestCase):
         expected = screen._start_alt_screen
         self.assertEqual(actual, expected)
         current_callbacks = screen.atexit._ncallbacks()
-        self.assertTrue(current_callbacks > starting_callbacks)
+        self.assertGreater(current_callbacks, starting_callbacks)
 
     def test_get_alt_screens(self):
         """get_alt_screens() should return 2 methods"""

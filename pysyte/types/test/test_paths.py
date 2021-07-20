@@ -164,12 +164,12 @@ class TestPaths(TestCase):
 
     def test_as_path_with_path(self):
         path = paths.makepath("/usr/local")
-        self.assertTrue(paths.as_path(path) is path)
+        self.assertIs(paths.as_path(path), path)
 
     def test_as_path_with_string(self):
         string = "/usr/local"
-        self.assertFalse(paths.as_path(string) is string)
-        self.assertTrue(paths.as_path(string) == string)
+        self.assertIsNot(paths.as_path(string), string)
+        self.assertEqual(paths.as_path(string), string)
 
     def test_string_to_paths(self):
         """String_to_paths should split a string with standard path separators
@@ -254,7 +254,7 @@ class TestPaths(TestCase):
         shell_paths = shell_path.split(":")
         a_path = paths.makepath(random.choice(shell_paths))
         environ_paths = paths.environ_paths("PATH")
-        self.assertTrue(a_path in environ_paths)
+        self.assertIn(a_path, environ_paths)
 
     def test_environ_path(self):
         """environ_path() gets a symbol from environ and converts it to path"""
@@ -298,15 +298,15 @@ class TestPaths(TestCase):
 
         But, any trailing '/' on a directory does not matter
         """
-        self.assertTrue(paths.path("/usr/local") == paths.path("/usr/local/"))
+        self.assertEqual(paths.path("/usr/local"), paths.path("/usr/local/"))
 
     def test_less_than(self):
         """Paths use strings for testing less than"""
-        self.assertTrue(paths.path("/usr/local") < paths.path("/usr/local/bin"))
+        self.assertLess(paths.path("/usr/local"), paths.path("/usr/local/bin"))
 
     def test_total_ordering(self):
         """Greater than is based on less than"""
-        self.assertTrue(paths.path("/usr/local/bin") > paths.path("/usr/local"))
+        self.assertGreater(paths.path("/usr/local/bin"), paths.path("/usr/local"))
 
     def test_relative_paths(self):
         expected = self.path_to_package.basename()
@@ -443,8 +443,8 @@ class TestNonePath(TestCase):
     def test_equality(self):
         """A NonePath is equal to anything else none-ish"""
         path = paths.path(None)
-        self.assertTrue(path == "")
-        self.assertTrue(path == 0)
+        self.assertEqual(path, "")
+        self.assertEqual(path, 0)
 
     def test_equality_from_string(self):
         """A NonePath is equal to anything else none-ish
@@ -452,27 +452,27 @@ class TestNonePath(TestCase):
         Except: if made from a string, then do a string comparison
         """
         path = paths.path("/path/to/nowhere")
-        self.assertTrue(path == "/path/to/nowhere")
-        self.assertTrue(paths.path(None) == path)
+        self.assertEqual(path, "/path/to/nowhere")
+        self.assertEqual(paths.path(None), path)
 
     def test_less_than(self):
         """A NonePath is less than anything that's not false-y"""
         path = paths.path("/path/to/nowhere")
-        self.assertTrue(path < "/path/to/nowhere/else")
-        self.assertTrue(path < paths.path("/usr"))
+        self.assertLess(path, "/path/to/nowhere/else")
+        self.assertLess(path, paths.path("/usr"))
 
     def test_not_less_than(self):
         """A NonePath is not less than anything that's false-y"""
         path = paths.path("/path/to/nowhere")
-        self.assertFalse(path < False)
-        self.assertFalse(path < paths.path(None))
+        self.assertGreaterEqual(path, False)
+        self.assertGreaterEqual(path, paths.path(None))
 
     def test_total_ordering(self):
         """NonePath has __eq__, and __lt__, but can use other comparisons"""
         path = paths.path("/path/to/nowhere")
-        self.assertTrue(path > "/path/to")
-        self.assertTrue(path <= paths.path("/usr"))
-        self.assertTrue(path <= paths.path("/path/to/nowhere"))
+        self.assertGreater(path, "/path/to")
+        self.assertLessEqual(path, paths.path("/usr"))
+        self.assertLessEqual(path, paths.path("/path/to/nowhere"))
 
     def test_contains_nothing(self):
         """There's nothing in a NonePath
@@ -480,14 +480,15 @@ class TestNonePath(TestCase):
         Unlike an existing path
             where "in" means "in that directory"
         """
-        self.assertTrue(paths.path("/usr/local") in paths.path("/usr"))
-        self.assertFalse(paths.path("/a/path") in paths.path("/a"))
+        self.assertIn(paths.path("/usr/local"), paths.path("/usr"))
+        self.assertNotIn(paths.path("/a/path"), paths.path("/a"))
 
     def test_div(self):
         """Can still use the '/' operator with a NonePath"""
         parent = paths.path("/path/to")
         child = paths.path("/path/to/nowhere")
-        self.assertTrue(parent / "nowhere" == child)
+        self.assertEqual(parent / "nowhere", child)
 
     def test_executable(self):
         """A NonePath should not be executable"""
+        self.assertFalse(paths.path(None).has_executable())
