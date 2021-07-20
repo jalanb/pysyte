@@ -43,7 +43,8 @@ def files(parsed_args, name=None):
 def all():
     yielded = False
     for path in _arg_files():
-        yield open(path)
+        with open(path) as stream:
+            yield stream
         yielded = True
     if not yielded or "-" in sys.argv:
         yield sys.stdin
@@ -68,7 +69,8 @@ def _arg_files():
 def _arg_streams():
     """yield streams to all arg.isfile()"""
     for path in _arg_files():
-        yield open(path)
+        with open(path) as stream:
+            yield stream
 
 
 def _any():
