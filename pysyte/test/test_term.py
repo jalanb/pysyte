@@ -13,13 +13,13 @@ class TestTerm(unittest.TestCase):
             height = term.screen_height()
         except term.NoTerminalAvailable:
             return
-        self.assertTrue(isinstance(height, int))
-        self.assertTrue(height > 10)
+        self.assertIsInstance(height, int)
+        self.assertGreater(height, 10)
 
     def test_width(self):
         try:
             width = term.screen_width()
         except term.NoTerminalAvailable:
             return
-        self.assertTrue(isinstance(width, int))
-        self.assertTrue(width > 10)
+        self.assertIsInstance(width, int)
+        self.assertGreater(width, 10)

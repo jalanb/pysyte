@@ -15,7 +15,7 @@ class TestPaths(unittest.TestCase):
     def test_add_args(self):
         """Adding args should give a PathParser"""
         actual = paths.add_args(arguments.test_parser())
-        self.assertTrue(isinstance(actual, paths.PathParser))
+        self.assertIsInstance(actual, paths.PathParser)
 
     def test_parse(self):
         """Parse out paths from cli
