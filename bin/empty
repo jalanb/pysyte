@@ -10,6 +10,7 @@ def add_args(parser):
     parser.positional("file")
     parser.boolean("b", "blanks", help="exclude blanks")
     parser.boolean("c", "comments", help="exclude # lines")
+    parser.integer("x", "max", default=0, help="maximum allowed size")
     return parser
 
 
@@ -31,7 +32,7 @@ def main(args):
         return True
     if not size:
         return True
-    if size > 10:
+    if size > args.max:
         return False
     full = partial(filler, args)
     lines = [l for l in file.lines() if full(l)]

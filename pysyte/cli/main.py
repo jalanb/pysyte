@@ -3,8 +3,9 @@
 This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
-import bdb
 
+import os
+import bdb
 import sys
 from dataclasses import dataclass
 from typing import Optional
@@ -101,4 +102,4 @@ def run(
             handler = arguments.ArgumentHandler()
             sys.exit(handler.run(caller))
     except bdb.BdbQuit:
-        return sys.exit(0)
+        return sys.exit(os.EX_OK)
