@@ -5,13 +5,14 @@ import linecache
 
 from pysyte import imports
 from pysyte.cli.main import run
+from pysyte.types import paths
 
 
 def add_args(parser):
     """Parse out command line arguments"""
     parser.positional("source", help="path to source(s) to be checked")
     parser.boolean("", "edit", help="Show a command for editing")
-    parser.boolean("", "duplicate", help="Show duplicate imports")
+    parser.boolean("", "multiple", help="Show multiple imports")
     parser.boolean("", "unused", help="Show unused imports")
     return parser
 
@@ -30,17 +31,17 @@ def show_unused(visitor):
         return []
     text = texter(visitor)
     print("Unused:")
-    for line in unused_lines:
-        names_string = ",".join(unused_lines[line])
-        output = f"{names_string}\n{text(line)}"
-        print(output)
+    for line in sorted(unused_lines):
+        names = unused_lines[line]
+        print(",".join(names))
+        print(text(line))
     return visitor.unused().keys()
 
 
-def show_duplicates(visitor):
+def show_multiples(visitor):
     multiples = visitor.multiples()
     if multiples:
-        print("Duplicates:")
+        print("Multiples:")
     for name, lines in multiples.items():
         instances = [visitor.line(_, True) for _ in lines]
         lines = [name] + instances
@@ -48,25 +49,41 @@ def show_duplicates(visitor):
     return multiples.keys()
 
 
-def script(source):
-    visitor = imports.extract_imports(source)
-    visitor.path = source
+def find_sources(args):
+    ignores = ["__pycache__", ".tox", ".git", ".venv"]
+    result = []
+    for arg in args:
+        path_to_arg = paths.path(arg)
+        if path_to_arg.isfile():
+            result.append(path_to_arg)
+        elif path_to_arg.isdir():
+            for path_to_file in path_to_arg.walkfiles(pattern="*.py", ignores=ignores):
+                result.append(path_to_file)
+        else:
+            raise TypeError(f"Unknown path type {path_to_arg}")
+    return result
+
+
+def show_imports(args, source):
+    visitor = imports.parse(source)
     modules = []
-    if args.duplicate:
-        modules.extend(show_duplicates(visitor))
+    if args.multiple:
+        modules.extend(show_multiples(visitor))
     if args.unused:
         modules.extend(show_unused(visitor))
     if args.edit and modules:
-        sought = r"\>\|\<".join(modules)
-        print(f'\nvim {visitor.path} +/"\\<{sought}\\>"')
-    return modules
+        sought = r"\|".join((rf"\<{_}\>" for _ in modules))
+        print(f'\n{vim} {visitor.path} +/"{sought}"')
+    return bool(modules)
 
 
-def main(args):
-    result = []
-    for source in args.source:
-        result.extend(script(source))
-    return bool(result)
+def main(args) -> bool:
+    result = False
+    sources = find_sources(args.source)
+    for source in sources:
+        if show_imports(args, source):
+            result = True
+    return result
 
 
 run(main, add_args)
