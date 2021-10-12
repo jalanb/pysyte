@@ -14,7 +14,7 @@ from pysyte import imports
 class TestDashboardImports(unittest.TestCase):
     def setUp(self):
         source = __file__.replace(".pyc", ".py")  # just in case
-        self.visitor = imports.extract_imports(source)
+        self.visitor = imports.parse(source)
 
     def test_import_count(self):
         """Check that we can find imports in a file

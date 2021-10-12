@@ -1,9 +1,11 @@
+"""Import imports for pysyte"""
 import os
 import importlib
 import linecache
 import ast
 from collections import defaultdict
 from contextlib import contextmanager
+from dataclasses import dataclass
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -140,26 +142,33 @@ class ImportUser(ImportVisitor):
         return f"{line_number:4d}: {line}"
 
 
-def find_imports(tree):
+@dataclass
+class AS3:
+    path: str
+    tree: ast.Module
+
+
+def find_imports(as3: AS3) -> ImportUser:
     import_user = ImportUser()
-    import_user.visit(tree)
+    import_user.visit(as3.tree)
     return import_user
 
-
 @contextmanager
-def parse_python(script):
+def parse_python(script) -> AS3:
     with open(script) as stream:
         as3 = ast.parse(stream.read(), script)
         as3.path = script
-        yield as3
+        yield AS3(script, as3)
 
 
-def extract_imports(script):
+def parse(script) -> ImportUser:
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
-        raise ValueError(f"Not a file: {script}")
+        raise FileNotFoundError(f"Not a file: {script}")
     with parse_python(script) as as3:
-        return find_imports(as3)
+        importer = find_imports(as3)
+        importer.path = script
+        return importer
 
 
 @contextmanager
