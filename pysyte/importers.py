@@ -153,6 +153,7 @@ def find_imports(as3: AS3) -> ImportUser:
     import_user.visit(as3.tree)
     return import_user
 
+
 @contextmanager
 def parse_python(script) -> AS3:
     with open(script) as stream:
