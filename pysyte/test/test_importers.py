@@ -8,13 +8,13 @@ import os
 import unittest
 from collections import defaultdict
 
-from pysyte import imports
+from pysyte import importers
 
 
 class TestDashboardImports(unittest.TestCase):
     def setUp(self):
         source = __file__.replace(".pyc", ".py")  # just in case
-        self.visitor = imports.parse(source)
+        self.visitor = importers.parse(source)
 
     def test_import_count(self):
         """Check that we can find imports in a file

@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 """Find imports in python files"""
 
+import sys
 import linecache
 
-from pysyte import imports
+from pysyte import importers
 from pysyte.cli.main import run
 from pysyte.types import paths
 
@@ -17,9 +18,9 @@ def add_args(parser):
     return parser
 
 
-def texter(visitor):
+def texter(path):
     def text(line):
-        string = "% 4d: %s" % (line, linecache.getline(visitor.path, line))
+        string = "% 4d: %s" % (line, linecache.getline(path, line))
         return string.rstrip()
 
     return text
@@ -29,7 +30,7 @@ def show_unused(visitor):
     unused_lines = visitor.unused_lines()
     if not unused_lines:
         return []
-    text = texter(visitor)
+    text = texter(visitor.path)
     print("Unused:")
     for line in sorted(unused_lines):
         names = unused_lines[line]
@@ -65,7 +66,7 @@ def find_sources(args):
 
 
 def show_imports(args, source):
-    visitor = imports.parse(source)
+    visitor = importers.parse(source)
     modules = []
     if args.multiple:
         modules.extend(show_multiples(visitor))
@@ -73,7 +74,7 @@ def show_imports(args, source):
         modules.extend(show_unused(visitor))
     if args.edit and modules:
         sought = r"\|".join((rf"\<{_}\>" for _ in modules))
-        print(f'\n{vim} {visitor.path} +/"{sought}"')
+        print(f'\nvim {visitor.path} +/"{sought}"')
     return bool(modules)
 
 
