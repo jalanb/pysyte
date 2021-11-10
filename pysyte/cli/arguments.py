@@ -15,11 +15,12 @@ from typing import Any
 from typing import List
 
 import stackprinter
-from deprecated import deprecated
+
+from pysyte.cli.config import load_configs
+from pysyte.cli.config import user
+from pysyte.types.numbers import inty
 
 from pysyte.cli.config import pysyte
-from pysyte.cli.config import load_configs
-from pysyte.types.numbers import inty
 
 
 def config(arguments):
@@ -83,10 +84,6 @@ class ArgumentsParser(object):
         return self.parser.add_argument(
             f'-{initial.lstrip("-")}', f'--{name.lstrip("-")}', *args, **kwargs
         )
-
-    @deprecated(reason="use add_option()", version="0.7.33")
-    def add_argument(self, initial, name, *args, **kwargs):
-        return self.add_option(initial, name, *args, **kwargs)
 
     def optional(self, *args, **kwargs):
         """Add an optional positional arg"""

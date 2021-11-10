@@ -22,12 +22,9 @@ from typing import List
 from typing import Tuple
 
 import termios
-from deprecated import deprecated
-
 
 class NoKeys(StopIteration):
-    """Better name for StopIteration caused by running out of keys"""
-
+    """A StopIteration caused by running out of keys"""
     pass
 
 
@@ -328,12 +325,6 @@ def get_string():
     chars = "".join([chr(c) for c in codes])
     return "".join((initial_char, chars))
 
-
-@deprecated(reason="use yield_asciis()", version="0.7.30")
-def yield_asciis_old():
-    k = get_ascii()
-    while True:
-        yield k
 
 
 def ask_user(prompt, default=None):
