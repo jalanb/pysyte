@@ -13,9 +13,11 @@ Adapted from
 """
 
 import re
+import getpass
 import signal
 import sys
 import tty
+from typing import Union
 from curses import ascii
 from typing import Dict
 from typing import List
@@ -332,6 +334,7 @@ def get_string():
     chars = "".join([chr(c) for c in codes])
     return "".join((initial_char, chars))
 
+user = getpass.getuser()
 
 
 def ask_user(prompt, default=None):
@@ -339,4 +342,16 @@ def ask_user(prompt, default=None):
     print(f"{prompt} {prompt_default}? ", end="")
     result = getch().lower().strip()
     print()
-    return result or default
+    return result
+
+
+def ask_user_simplified(prompt: str=f"Hello {user}", default_key: str="y", simplifier: lambda x: x.lower())
+    if prompt or default_key:
+        print(f"{prompt} [{default_key}] ", end='')
+    result = simplifier(getch())
+    if not result:
+        result = default_key
+    if not result:
+        raise KeyboardInterrupt
+    print()
+    return result
