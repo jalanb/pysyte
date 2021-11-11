@@ -141,11 +141,18 @@ class ExtendedKey(Exception):
         self.codes = codes
 
 
+def _return_code(codes):
+    code, *codes_ = codes
+    code_ = chr(code)
+    return ([code_] + codes_) if codes_ else code_
+
+
 def getch():
     """Get a char or and ExtendedKey from a keyboard"""
     codes = _get_keycodes()
-    if len(codes) == 1:
-        return chr(codes[0])
+    result = _return_code(codes)
+    code, *codes = _get_keycodes()
+    codes.insert(0, code)
     raise ExtendedKey(codes)
 
 
