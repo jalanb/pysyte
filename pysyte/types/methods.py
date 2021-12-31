@@ -1,4 +1,5 @@
 import inspect
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Callable
 
@@ -27,6 +28,11 @@ class Method(MethodData):
             return self.__getattribute__(name)
         except AttributeError:
             return getattr(self.code, f"co_{name}")
+
+
+@contextmanager
+def caller():
+    yield inspect.currentframe().f_back.f_back
 
 
 def _represent_args(*args, **kwargs):
