@@ -17,7 +17,6 @@ from typing import List
 import stackprinter
 
 from pysyte.cli.config import load_configs
-from pysyte.cli.config import user
 from pysyte.types.numbers import inty
 
 from pysyte.cli.config import pysyte

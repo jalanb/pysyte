@@ -292,7 +292,7 @@ class NonePath(StringPath):
 
 
 class DotPath(StringPath):
-    """This class add path-handling"""
+    """This class add path-handling to a string"""
 
     def parent_directory(self):
         if self.isroot():
