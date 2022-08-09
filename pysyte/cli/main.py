@@ -30,18 +30,18 @@ class MainMethod(Method):
         return self.method(*args_, **kwargs)
 
 
-ParseCaller = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
+ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
 
 
 @dataclass
 class CallerData:
     method: MainMethod
-    add_args: Optional[ParseCaller]
+    add_args: ArgumentsParsers
 
 
 def run(
     main_method: Callable,
-    add_args: Optional[ParseCaller] = None,
+    add_args: Optional[ArgumentsParsers] = None,
     post_parse: Optional[Callable] = None,
     usage: Optional[str] = None,
     epilog: Optional[str] = None,
@@ -104,4 +104,4 @@ def run(
         sys.exit(handler.run(caller))
 
 
-args: Dict[str, Any] = {}
+args = {}
