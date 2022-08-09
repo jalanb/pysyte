@@ -11,11 +11,12 @@ class MethodData:
 class Method(MethodData):
     """A callable method with some convenience attributes"""
 
-    def __init__(self, method):
+    def __init__(self, method: Callable):
         super().__init__(method)
         self.code = self.method.__code__
         self.module = inspect.getmodule(self.method)
         self.doc = inspect.getdoc(self.method)
+        self.caller = inspect.currentframe().f_back
 
     def run(self, *args, **kwargs):
         return self.method(*args, **kwargs)

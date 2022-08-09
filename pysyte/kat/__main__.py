@@ -1,3 +1,9 @@
+"""Show some lines from files
+
+Usage: python3 -m pysyte.kat [options] [files]
+
+"""
+
 from pysyte.cli.app import App
 from pysyte.cli.lines import arg_lines
 
