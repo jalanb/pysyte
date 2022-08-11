@@ -1,6 +1,5 @@
 """Classes for configuration"""
 
-from configparser import ConfigParser as IniParser
 from dataclasses import dataclass
 
 from yamlreader import yaml_load
@@ -42,35 +41,7 @@ class YamlConfiguration(PysyteConfiguration):
 
 
 class ModuleConfiguration(YamlConfiguration):
-    def extensions(self):
-        return ("yaml",)
-
-
-class YamlParser:
-    """This exists to mimic IniParser"""
-
-    def __init__(self, path_):
-        pass
-
-    def read(self, string):
-        pass
-
-
-class IniConfiguration(PysyteConfiguration):
-    def load(self, string):
-        parser = IniParser()
-        parser.read(string)
-        data = {}
-        for section in parser.sections():
-            section_key = section.replace("-", "_")
-            data[section_key] = {}
-            for option in parser.options(section):
-                option_key = option.replace("-", "_")
-                data[section][option_key] = parser[section][option]
-        return NameSpaces(data)
-
-    def extensions(self):
-        return ("ini", "cfg")
+    pass
 
 
 @dataclass
@@ -85,7 +56,6 @@ class ConfigPaths(ConfigPathsData):
             [
                 (YamlConfiguration, "yml"),
                 (YamlConfiguration, "yaml"),
-                (IniConfiguration, "ini"),
             ]
         )
 

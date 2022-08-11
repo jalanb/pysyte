@@ -12,14 +12,14 @@ from pysyte.types.paths import path
 
 
 def common_config_dirs(
-    extras: Optional[List[DirectPath]] = None,
+    extras: List[DirectPath] = None,
 ) -> List[DirectPath]:
     """Build a list of common config dirs
 
     Try each of the following directories
         include them if they exist on this machine
         exclude any duplicates
-    And in th following order
+    And in the following order
 
     /etc/, $XDG_CONFIG_DIRS, ~/.config, $XDG_CONFIG_HOME
         then any extras specified as args
@@ -50,7 +50,7 @@ def common_config_dirs(
 
 def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
     """Load all config files with that name from common config dirs"""
-    config_paths = ConfigPaths(common_config_dirs(extras))
+    config_paths = ConfigPaths(common_config_dirs(extras or []))
     return config_paths.load(name)
 
 

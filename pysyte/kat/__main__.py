@@ -1,3 +1,9 @@
+"""Show some lines from files
+
+Usage: python3 -m pysyte.kat [options] [files]
+
+"""
+
 from pysyte.cli.app import App
 from pysyte.cli.lines import arg_lines
 
@@ -17,10 +23,10 @@ def kat(app):
     return True
 
 
-def run():
+def main():
     with App(kat) as app:
         app.run()
 
 
 if __name__ == "__main__":
-    run()
+    main()

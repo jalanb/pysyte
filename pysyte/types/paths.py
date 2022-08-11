@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
 from importlib import import_module
+from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -292,7 +293,7 @@ class NonePath(StringPath):
 
 
 class DotPath(StringPath):
-    """This class add path-handling"""
+    """This class add path-handling to a string"""
 
     def parent_directory(self):
         if self.isroot():
@@ -891,7 +892,7 @@ def cd(path_to: StringPath) -> bool:
         previous = getattr(cd, "previous", "")
         if not previous:
             raise PathError("No previous directory to return to")
-        return cd(previous)
+        return cd(makepath(previous))
     if not hasattr(path_to, "cd"):
         path_to = makepath(path_to)
     try:
@@ -929,55 +930,31 @@ def as_path(string_or_path):
     return makepath(string_or_path)
 
 
-def string_to_paths(string):
+def string_to_paths(string) -> List[StringPath]:
     for c in ":, ;":
         if c in string:
             return strings_to_paths(string.split(c))
     return [makepath(string)]
 
 
-def strings_to_paths(strings):
+def strings_to_paths(strings) -> List[StringPath]:
     return [makepath(s) for s in strings]
 
 
-def choose_paths(*strings, chooser):
+def choose_paths(*strings, chooser) -> List[StringPath]:
     return [_ for _ in strings_to_paths(strings) if chooser(_)]
 
 
-@singledispatch
-def paths(*strings):
+def paths(*strings: Iterable) -> List[StringPath]:
     return choose_paths(*strings, chooser=lambda p: p.exists())
 
 
-@paths.register(list)  # type: ignore[no-redef]
-@paths.register(set)
-@paths.register(tuple)
-def _(strings: list):
-    return paths(*strings)
-
-
-@singledispatch
-def directories(*strings: tuple):
+def directories(*strings: Iterable) -> List[StringPath]:
     return choose_paths(*strings, chooser=lambda p: p.isdir())
 
 
-@directories.register(list)  # type: ignore[no-redef]
-@directories.register(set)
-@directories.register(tuple)
-def _(strings: list):
-    return directories(*strings)
-
-
-@singledispatch
-def files(*strings):
+def files(*strings: Iterable) -> List[StringPath]:
     return choose_paths(*strings, chooser=lambda p: p.isfile())
-
-
-@files.register(list)  # type: ignore[no-redef]
-@files.register(set)
-@files.register(tuple)
-def _(strings: list):
-    return files(*strings)
 
 
 def root():

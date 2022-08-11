@@ -24,6 +24,7 @@ setuptools.setup(
         "path.py==7.7.1",
         "pym",
         "pyyaml",
+        "rich",
         "stackprinter",
         "yamlreader",
     ],

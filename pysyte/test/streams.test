@@ -12,3 +12,8 @@ Swallowing stdout
     >>> with streams.swallow_stdout(stream):
     ...     print('Hello World')
     >>> assert stream.getvalue() == 'Hello World\n'
+
+Simpler - use default stream
+    >>> with streams.swallow_stdout() as stream:
+    ...     print('Hello World')
+    >>> assert stream.getvalue() == 'Hello World\n'

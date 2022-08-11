@@ -13,20 +13,21 @@ Adapted from
 """
 
 import re
+import getpass
 import signal
 import sys
 import tty
 from curses import ascii
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
 
 import termios
-from deprecated import deprecated
 
 
 class NoKeys(StopIteration):
-    """Better name for StopIteration caused by running out of keys"""
+    """A StopIteration caused by running out of keys"""
 
     pass
 
@@ -144,12 +145,13 @@ class ExtendedKey(Exception):
         self.codes = codes
 
 
-def getch():
-    """Get a char or and ExtendedKey from a keyboard"""
-    codes = _get_keycodes()
-    if len(codes) == 1:
-        return chr(codes[0])
-    raise ExtendedKey(codes)
+def getch() -> int:
+    """Get a char or raise ExtendedKey from a keyboard"""
+    keycodes = _get_keycodes()
+    code, *codes = keycodes
+    if not codes:
+        return code
+    raise ExtendedKey(keycodes)
 
 
 def get_codes():
@@ -329,16 +331,20 @@ def get_string():
     return "".join((initial_char, chars))
 
 
-@deprecated(reason="use yield_asciis()", version="0.7.30")
-def yield_asciis_old():
-    k = get_ascii()
-    while True:
-        yield k
+user = getpass.getuser()
 
 
-def ask_user(prompt, default=None):
-    prompt_default = f"[{default}]" if default else ""
-    print(f"{prompt} {prompt_default}? ", end="")
-    result = getch().lower().strip()
+def ask_user_simplified(
+    prompt: str = f"Hello {user}",
+    default_key: str = "y",
+    simplifier: Callable = lambda x: x.lower(),
+):
+    if prompt or default_key:
+        print(f"{prompt} [{default_key}] ", end="")
+    result = simplifier(getch())
+    if not result:
+        result = default_key
+    if not result:
+        raise KeyboardInterrupt
     print()
-    return result or default
+    return result
