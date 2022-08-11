@@ -27,5 +27,6 @@ def main():
     with App(kat) as app:
         app.run()
 
+
 if __name__ == "__main__":
     main()

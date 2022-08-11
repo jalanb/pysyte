@@ -19,8 +19,6 @@ def exit(method, locals_=None):
     sys.exit(exit_code)
 
 
-
-
 class App(Method, ContextDecorator):
     def __enter__(self):
         self.exit_code = None

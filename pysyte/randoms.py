@@ -3,6 +3,7 @@ import random
 
 from pysyte.cli import app
 
+
 def flip() -> bool:
     return random.choice((True, False))
 

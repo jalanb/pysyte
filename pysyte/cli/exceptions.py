@@ -10,6 +10,7 @@ install(show_locals=True)
 
 _console = Console()
 
+
 @contextmanager
 def rich_exceptions(locals_: dict):
     if locals_:

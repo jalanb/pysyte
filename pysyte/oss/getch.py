@@ -17,16 +17,19 @@ import getpass
 import signal
 import sys
 import tty
-from typing import Union
 from curses import ascii
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 import termios
 
+
 class NoKeys(StopIteration):
     """A StopIteration caused by running out of keys"""
+
     pass
 
 
@@ -334,6 +337,7 @@ def get_string():
     chars = "".join([chr(c) for c in codes])
     return "".join((initial_char, chars))
 
+
 user = getpass.getuser()
 
 
@@ -345,9 +349,17 @@ def ask_user(prompt, default=None):
     return result
 
 
-def ask_user_simplified(prompt: str=f"Hello {user}", default_key: str="y", simplifier: lambda x: x.lower())
+def _simplify(s: str) -> str:
+    return s.lower()
+
+
+def ask_user_simplified(
+    prompt: str = f"Hello {user}",
+    default_key: str = "y",
+    simplifier: Callable = l_simplify,
+):
     if prompt or default_key:
-        print(f"{prompt} [{default_key}] ", end='')
+        print(f"{prompt} [{default_key}] ", end="")
     result = simplifier(getch())
     if not result:
         result = default_key
