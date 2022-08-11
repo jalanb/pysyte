@@ -145,12 +145,6 @@ class ExtendedKey(Exception):
         self.codes = codes
 
 
-def _return_code(codes):
-    code, *codes_ = codes
-    code_ = chr(code)
-    return ([code_] + codes_) if codes_ else code_
-
-
 def getch() -> int:
     """Get a char or raise ExtendedKey from a keyboard"""
     keycodes = _get_keycodes()
