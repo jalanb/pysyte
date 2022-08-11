@@ -22,7 +22,6 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
-from typing import Union
 
 import termios
 
@@ -152,13 +151,13 @@ def _return_code(codes):
     return ([code_] + codes_) if codes_ else code_
 
 
-def getch():
-    """Get a char or and ExtendedKey from a keyboard"""
-    codes = _get_keycodes()
-    result = _return_code(codes)
-    code, *codes = _get_keycodes()
-    codes.insert(0, code)
-    raise ExtendedKey(codes)
+def getch() -> int:
+    """Get a char or raise ExtendedKey from a keyboard"""
+    keycodes = _get_keycodes()
+    code, *codes = keycodes
+    if not codes:
+        return code
+    raise ExtendedKey(keycodes)
 
 
 def get_codes():
@@ -341,22 +340,10 @@ def get_string():
 user = getpass.getuser()
 
 
-def ask_user(prompt, default=None):
-    prompt_default = f"[{default}]" if default else ""
-    print(f"{prompt} {prompt_default}? ", end="")
-    result = getch().lower().strip()
-    print()
-    return result
-
-
-def _simplify(s: str) -> str:
-    return s.lower()
-
-
 def ask_user_simplified(
     prompt: str = f"Hello {user}",
     default_key: str = "y",
-    simplifier: Callable = l_simplify,
+    simplifier: Callable = lambda x: x.lower(),
 ):
     if prompt or default_key:
         print(f"{prompt} [{default_key}] ", end="")

@@ -43,7 +43,7 @@ def common_config_dirs(
         add_dir(path_)
     add_dir("~/.config")
     add_dir(linux.xdg_home())
-    for path_ in extras:
+    for path_ in extras or []:
         add_dir(path_)
     return configs
 

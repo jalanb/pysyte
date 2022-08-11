@@ -16,7 +16,8 @@ class Method(MethodData):
         self.code = self.method.__code__
         self.module = inspect.getmodule(self.method)
         self.doc = inspect.getdoc(self.method)
-        self.caller = inspect.currentframe().f_back
+        frame = inspect.currentframe()
+        self.caller = frame.f_back if frame else None
 
     def run(self, *args, **kwargs):
         return self.method(*args, **kwargs)

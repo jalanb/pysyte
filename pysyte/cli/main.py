@@ -6,8 +6,6 @@ This module was a simplifying proxy to stdlib's sys.exit()
 
 import sys
 from dataclasses import dataclass
-from typing import Any
-from typing import Dict
 from typing import Optional
 
 
@@ -36,7 +34,7 @@ ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsPars
 @dataclass
 class CallerData:
     method: MainMethod
-    add_args: ArgumentsParsers
+    add_args: Optional[ArgumentsParsers]
 
 
 def run(
@@ -90,18 +88,14 @@ def run(
 
         def main(self, argument_handler):
             if self.method.needs_args:
-                global args  # leave parsed args available from this module
-                args = self.args = self.parse_args()
+                self.args = self.parse_args()
             if config_name:
-                return self.method(args, self.config())
+                return self.method(self.args, self.config())
             if self.method.needs_args:
-                return self.method(args)
+                return self.method(self.args)
             return self.method()
 
     caller = Caller(MainMethod(main_method), add_args)
     if caller.method.in_main_module:
         handler = arguments.ArgumentHandler()
         sys.exit(handler.run(caller))
-
-
-args = {}

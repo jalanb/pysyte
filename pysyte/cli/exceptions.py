@@ -1,5 +1,3 @@
-import sys
-
 from contextlib import contextmanager
 
 from rich.console import Console
@@ -17,5 +15,5 @@ def rich_exceptions(locals_: dict):
         locals().update(locals_)
     try:
         yield
-    except:
+    except:  # noqa
         _console.print_exception(show_locals=True)

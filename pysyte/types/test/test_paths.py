@@ -200,7 +200,7 @@ class TestPaths(TestCase):
             paths.makepath("/usr/bin"),
             paths.makepath("/usr/local/bin"),
         ]
-        actual = paths.paths(["/not/a/path", "/usr/bin", "/usr/local/bin"])
+        actual = paths.paths(*["/not/a/path", "/usr/bin", "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
     def test_path_argss(self):
@@ -218,7 +218,7 @@ class TestPaths(TestCase):
             paths.makepath("/usr/bin"),
             paths.makepath("/usr/local/bin"),
         ]
-        actual = paths.directories(["/not/a/path", "/usr/bin", "/usr/local/bin"])
+        actual = paths.directories(*["/not/a/path", "/usr/bin", "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
     def test_directories_args(self):
@@ -233,7 +233,7 @@ class TestPaths(TestCase):
     def test_files(self):
         """files() should return actual files in a list of strings"""
         expected = [paths.makepath(__file__)]
-        actual = paths.files(["/not/a/path", __file__, "/usr/local/bin"])
+        actual = paths.files(*["/not/a/path", __file__, "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
     def test_files_args(self):
