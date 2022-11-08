@@ -11,9 +11,7 @@ from pysyte.types.paths import DirectPath
 from pysyte.types.paths import path
 
 
-def common_config_dirs(
-    extras: List[DirectPath] = None,
-) -> List[DirectPath]:
+def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
     """Build a list of common config dirs
 
     Try each of the following directories
@@ -50,7 +48,7 @@ def common_config_dirs(
 
 def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
     """Load all config files with that name from common config dirs"""
-    config_paths = ConfigPaths(common_config_dirs(extras or []))
+    config_paths = ConfigPaths(_common_config_dirs(extras or []))
     return config_paths.load(name)
 
 
