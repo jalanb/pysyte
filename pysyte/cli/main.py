@@ -3,11 +3,11 @@
 This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
+import bdb
 
 import sys
 from dataclasses import dataclass
 from typing import Optional
-
 
 from pysyte.cli import arguments
 from pysyte.cli.config import load_configs
@@ -95,7 +95,10 @@ def run(
                 return self.method(self.args)
             return self.method()
 
-    caller = Caller(MainMethod(main_method), add_args)
-    if caller.method.in_main_module:
-        handler = arguments.ArgumentHandler()
-        sys.exit(handler.run(caller))
+    try:
+        caller = Caller(MainMethod(main_method), add_args)
+        if caller.method.in_main_module:
+            handler = arguments.ArgumentHandler()
+            sys.exit(handler.run(caller))
+    except bdb.BdbQuit:
+        return sys.exit(0)
