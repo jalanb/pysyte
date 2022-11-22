@@ -2,6 +2,7 @@
 
 import itertools
 
+from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import List
@@ -94,7 +95,7 @@ def as_list(item):
                 raise TypeError(f"Cannot make a list from {item!r}")
 
 
-def splits(predicate: Callable, items: List) -> Tuple[List]:
+def splits(predicate: Callable, items: List) -> Tuple[List[Any], List[Any]]:
     """Split a list into 2 lists based one the predicate
 
     >>> is_odd = lambda x: bool(x % 2)
@@ -102,8 +103,8 @@ def splits(predicate: Callable, items: List) -> Tuple[List]:
     >>> assert odds == [1, 3, 5]
     >>> assert evens == [0, 2, 4, 6]
     """
-    one = []
-    two = []
+    one: List[Any] = []
+    two: List[Any] = []
     for item in items:
         destination = one if predicate(item) else two
         destination.append(item)
