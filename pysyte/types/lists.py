@@ -2,8 +2,10 @@
 
 import itertools
 
+from typing import Callable
 from typing import Iterable
 from typing import List
+from typing import Tuple
 from typing import TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
@@ -90,3 +92,19 @@ def as_list(item):
                 return list(item)
             except AttributeError:
                 raise TypeError(f"Cannot make a list from {item!r}")
+
+
+def splits(predicate: Callable, items: List) -> Tuple[List]:
+    """Split a list into 2 lists based one the predicate
+
+    >>> is_odd = lambda x: bool(x % 2)
+    >>> odds, evens = splits(is_odd, [0, 1, 2, 3, 4, 5, 6])
+    >>> assert odds == [1, 3, 5]
+    >>> assert evens == [0, 2, 4, 6]
+    """
+    one = []
+    two = []
+    for item in items:
+        destination = one if predicate(item) else two
+        destination.append(item)
+    return one, two
