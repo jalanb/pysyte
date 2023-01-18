@@ -22,7 +22,6 @@ setuptools.setup(
         "deprecated",
         "inflect>=2.1.0",
         "path.py==7.7.1",
-        "pym",
         "pyyaml",
         "rich",
         "stackprinter",
