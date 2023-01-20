@@ -13,3 +13,8 @@ The module provides named values, all of which are false-y
     >>> assert not nones.string
     >>> assert not nones.integer
     >>> assert not nones.real
+
+    >>> assert nones.none is None
+    >>> assert nones.string is ""
+    >>> assert nones.integer is 0
+    >>> assert nones.real is 0.0
