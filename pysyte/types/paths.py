@@ -12,6 +12,7 @@ from functools import singledispatch
 from importlib import import_module
 from typing import Iterable
 from typing import List
+from typing import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -97,7 +98,8 @@ class StringPath(path_Path):
         full_string = os.path.join(str(self), substring)
         return makepath(full_string)
 
-    __truediv__ = __div__
+    def __floordiv__(self, substrings: Sequence[str]) -> "StringPath":
+        """Handle the // operator"""
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
@@ -657,7 +659,7 @@ class DirectPath(DotPath, PathAssertions):
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
-        return cd(self)
+        return cd(StringPath(self))
 
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
@@ -788,7 +790,7 @@ def _make_module_path(arg):
 
 
 @singledispatch
-def makepath(arg):
+def makepath(arg) -> StringPath:
     attribute = getattr(arg, "path", False)
     return makepath(attribute) if attribute else makepath(str(arg))
 
@@ -797,18 +799,18 @@ path = makepath
 
 
 @makepath.register(type(None))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
 @makepath.register(DotPath)  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     return arg
 
 
 @makepath.register(str)  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
@@ -839,7 +841,7 @@ def imports():
 
 
 @makepath.register(type(os))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a module"""
     if arg.__name__ == "builtins":
         return NonePath("builtins")
@@ -857,7 +859,7 @@ def _(arg):
 
 
 @makepath.register(type(makepath))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
     method = getattr(arg, "__wrapped__", arg)
@@ -868,7 +870,7 @@ def _(arg):
 
 
 @makepath.register(type(DotPath))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
 
