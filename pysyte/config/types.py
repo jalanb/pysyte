@@ -41,7 +41,8 @@ class YamlConfiguration(PysyteConfiguration):
 
 
 class ModuleConfiguration(YamlConfiguration):
-    pass
+    def __init__(self, module):
+        super().__init__(paths.path(module))
 
 
 @dataclass
