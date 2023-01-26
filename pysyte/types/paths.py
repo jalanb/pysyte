@@ -85,13 +85,18 @@ class StringPath(path_Path):
         string = repr(f"{self}")
         return f"<{self.__class__.__name__} {string}>"
 
-    def __div__(self, substring: str) -> "StringPath":
+    @deprecated(version="0.7.5", reason="Please use Python 3")
+    def __div__(self, other) -> "StringPath":
+        """Need to cover parent's use of older idiom"""
+        return self.__truediv__(other)
+
+    def __truediv__(self, substring: str) -> "StringPath":
         """Handle the / operator
 
-        Add substring to self like a path in local os
+        Add substring to self
 
         >>> p = StringPath("/path/to")
-        >>> assert  p.__div__("fred") == p / "fred"
+        >>> assert  p.__truediv__("fred") == p / "fred"
         >>> assert p / "fred" == "/path/to/fred"
         >>> assert p / None is p
         """
@@ -103,7 +108,7 @@ class StringPath(path_Path):
     def __floordiv__(self, substrings: Sequence[str]) -> "StringPath":
         """Handle the // operator
 
-        Add substring to self like a path in local os
+        Add substrings to self like a path in local os
 
         >>> p = StringPath("/path/to")
         >>> assert p.__floordiv__("fred") == p // "fred"
@@ -284,11 +289,9 @@ class NonePath(StringPath):
         """As this is not a real path, just use the substring sense"""
         return str(other) in str(self)
 
-    def __div__(self, child):
+    def __truediv__(self, child):
         result = os.path.join(self.string, child) if child else self.string
         return makepath(result)
-
-    __truediv__ = __div__
 
     @property
     def parent(self):
@@ -513,10 +516,8 @@ class DotPath(StringPath):
 class FilePath(DotPath, PathAssertions):
     """A path to a known file"""
 
-    def __div__(self, child):
+    def __truediv__(self, child):
         raise PathError("%r has no children" % self)
-
-    __truediv__ = __div__
 
     def __iter__(self):
         for line in self.stripped_lines():
