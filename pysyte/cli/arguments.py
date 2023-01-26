@@ -55,6 +55,7 @@ class ArgumentsParser(object):
 
         self.string = self.arg = self.add_option
         self.boolean = self.opt = self.true = partial(self.arg, action="store_true")
+        self.option = self.boolean
         self.integer = self.int = partial(self.arg, type=int)
         self.inty = partial(self.arg, action=IntyAction)
         self.strings = partial(self.positional, type=str)
@@ -84,10 +85,6 @@ class ArgumentsParser(object):
             f'-{initial.lstrip("-")}', f'--{name.lstrip("-")}', *args, **kwargs
         )
 
-    def optional(self, *args, **kwargs):
-        """Add an optional positional arg"""
-        return self.parser.add_argument(*args, **kwargs, nargs="?")
-
     def positional(self, *args, **kwargs):
         """Add optional positional args"""
         return self.parser.add_argument(*args, **kwargs, nargs="*")
@@ -101,7 +98,7 @@ class ArgumentsParser(object):
         return args
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = post_parser if post_parser else getattr(self, "post_parser", False)
+        post_parse = post_parser if post_parser else getattr(self, "post_parser")
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
         post_parser_ = post_parse if post_parse else lambda x: x
