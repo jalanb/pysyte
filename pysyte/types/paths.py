@@ -261,7 +261,7 @@ def ext_language(ext, exts=None, simple=True):
 class NonePath(StringPath):
     def __init__(self, string=None):
         self.string = string if string else ""
-        self.proxy = DirectPath(self.string)
+        self.proxy = FilePath(self.string) or DirectPath(self.string)
 
     def __str__(self):
         return self.string
