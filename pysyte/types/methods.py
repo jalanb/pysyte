@@ -27,6 +27,8 @@ class Method(MethodData):
         try:
             return self.__getattribute__(name)
         except AttributeError:
+            if name == "__file__":
+                name = "filename"
             if hasattr(self.code, f"co_{name}"):
                 return getattr(self.code, f"co_{name}")
             raise
