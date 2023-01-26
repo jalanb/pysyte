@@ -1,5 +1,6 @@
 -r testing.txt
 
+httpie
 ipython
 pudb
 pytest-pudb
