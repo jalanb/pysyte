@@ -13,7 +13,7 @@ from pysyte.bash.screen import alt_screen
 class LinesParser(ArgumentsParser):
     """Add option sets to the parser"""
 
-    def __init__(self, parser_):
+    def __init__(self, parser_: ArgumentsParser):
         super().__init__(parser_)
         self.version = __version__
         self.groups = defaultdict(list)
@@ -74,7 +74,7 @@ class LinesParser(ArgumentsParser):
         return args
 
 
-def add_args(old_parser):
+def add_args(old_parser: ArgumentsParser) -> LinesParser:
     """Create a new parser to handle some lines from given parser"""
     result = LinesParser(old_parser.parser)
     result.add_lines()

@@ -27,8 +27,9 @@ class Method(MethodData):
         try:
             return self.__getattribute__(name)
         except AttributeError:
-            return getattr(self.code, f"co_{name}")
-
+            if hasattr(self.code, f"co_{name}"):
+                return getattr(self.code, f"co_{name}")
+            raise
 
 @contextmanager
 def caller():

@@ -1,0 +1,19 @@
+The importers module
+==================
+
+    >>> from pysyte import importers
+    >>> assert "Import imports" in importers.__doc__
+
+Parse imports
+-------------
+
+Given a python file
+    >>> python_file = importers.__file__
+
+We can parse its imports
+
+    >>> python_imports = importers.parse(python_file)
+    >>> assert python_imports
+
+And expect that `imports` will import importlib
+    >>> assert "importlib" in python_imports.imports
