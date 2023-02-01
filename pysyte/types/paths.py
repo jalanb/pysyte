@@ -902,6 +902,24 @@ def pathstr(string: str) -> StringPath:
     return NonePath(string)
 
 
+def previously():
+    """Try ways to get back to older working dir"""
+    try:
+        return cd.previous.isdir()
+    except AttributeError:
+        try:
+            previous = makepath(os.environ["OLDPWD"])
+        except KeyError:
+            try:
+                previous = makepath(os.getcwd())
+            except OSError:
+                return False
+    if not previous.isdir():
+        return False
+    cd.previous = previous
+    return True
+
+
 def cd(path_to: StringPath) -> bool:
     """cd to the given path
 
@@ -911,27 +929,19 @@ def cd(path_to: StringPath) -> bool:
         so that we can cd back there with cd('-')
     """
     if path_to == "-":
-        previous = getattr(cd, "previous", "")
-        if not previous:
-            raise PathError("No previous directory to return to")
-        return cd(makepath(previous))
-    if not hasattr(path_to, "cd"):
-        path_to = makepath(path_to)
-    try:
-        previous = os.getcwd()
-    except OSError as e:
-        if "No such file or directory" not in str(e):
-            raise
-        previous = ""
+        if previously():
+            return cd(cd.previous)  # type: ignore
+        return False
     if path_to.isdir():
-        os.chdir(path_to)
+        cd_path = path_to
     elif path_to.isfile():
-        os.chdir(path_to.parent)
+        cd_path = path_to.parent
     elif not path_to.exists():
         return False
     else:
         raise PathError(f"Cannot cd to {path_to}")
-    setattr(cd, "previous", previous)
+    cd.previous = cd_path  # type: ignore
+    os.chdir(cd_path)
     return True
 
 
