@@ -32,7 +32,7 @@ class Method(MethodData):
 
 @contextmanager
 def caller():
-    yield inspect.currentframe().f_back.f_back
+    yield inspect.currentframe().f_back.f_back.f_back
 
 
 def _represent_args(*args, **kwargs):
