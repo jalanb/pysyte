@@ -86,14 +86,14 @@ class StringPath(path_Path):
         return f"<{self.__class__.__name__} {string}>"
 
     def __div__(self, substring: str) -> "StringPath":
-        """Handle the '/' operator
+        """Handle the / operator
 
         Add substring to self like a path in local os
 
-        >>> p = StringPath('/path/to')
+        >>> p = StringPath("/path/to")
+        >>> assert  p.__div__("fred") == p / "fred"
+        >>> assert p / "fred" == "/path/to/fred"
         >>> assert p / None is p
-        >>> assert p / 'fred' == p.__div__('fred')
-        >>> assert p / 'fred' == '/path/to/fred'
         """
         if not substring:
             return self
@@ -101,7 +101,20 @@ class StringPath(path_Path):
         return makepath(full_string)
 
     def __floordiv__(self, substrings: Sequence[str]) -> "StringPath":
-        """Handle the // operator"""
+        """Handle the // operator
+
+        Add substring to self like a path in local os
+
+        >>> p = StringPath("/path/to")
+        >>> assert p.__floordiv__("fred") == p // "fred"
+        >>> assert p // {"module", "fred.py"} == "/path/to/module/fred.py"
+        >>> assert p // None is p
+        """
+        if not substrings:
+            return self
+        string = str(self)
+        strings = [string] + list(substrings)
+        return makepath(os.path.join(*strings))
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
