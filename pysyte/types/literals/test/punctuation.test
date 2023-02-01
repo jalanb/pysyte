@@ -2,15 +2,15 @@ The punctuation module
 ======================
 
     >>> from pysyte.types.literals import punctuation
-    >>> assert 'Handle punctuation' in punctuation.__doc__
+    >>> assert "Handle punctuation" in punctuation.__doc__
 
 Named punctuation
 -----------------
 
 The module names the punctuation characters
 
-    >>> assert punctuation.space == ' '
-    >>> assert punctuation.question == '?'
+    >>> assert punctuation.space == " "
+    >>> assert punctuation.question == "?"
     >>> assert punctuation.apostrophe == "'"
 
 And a string with all of them

@@ -12,8 +12,11 @@ from functools import singledispatch
 from importlib import import_module
 from typing import Iterable
 from typing import List
+from typing import Sequence
 from typing import Tuple
 from typing import Union
+
+from deprecated import deprecated
 
 from path import Path as path_Path
 from pysyte.types.lists import flatten
@@ -83,21 +86,35 @@ class StringPath(path_Path):
         return f"<{self.__class__.__name__} {string}>"
 
     def __div__(self, substring: str) -> "StringPath":
-        """Handle the '/' operator
+        """Handle the / operator
 
         Add substring to self like a path in local os
 
-        >>> p = StringPath('/path/to')
+        >>> p = StringPath("/path/to")
+        >>> assert  p.__div__("fred") == p / "fred"
+        >>> assert p / "fred" == "/path/to/fred"
         >>> assert p / None is p
-        >>> assert p / 'fred' == p.__div__('fred')
-        >>> assert p / 'fred' == '/path/to/fred'
         """
         if not substring:
             return self
         full_string = os.path.join(str(self), substring)
         return makepath(full_string)
 
-    __truediv__ = __div__
+    def __floordiv__(self, substrings: Sequence[str]) -> "StringPath":
+        """Handle the // operator
+
+        Add substring to self like a path in local os
+
+        >>> p = StringPath("/path/to")
+        >>> assert p.__floordiv__("fred") == p // "fred"
+        >>> assert p // {"module", "fred.py"} == "/path/to/module/fred.py"
+        >>> assert p // None is p
+        """
+        if not substrings:
+            return self
+        string = str(self)
+        strings = [string] + list(substrings)
+        return makepath(os.path.join(*strings))
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
@@ -657,7 +674,7 @@ class DirectPath(DotPath, PathAssertions):
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
-        return cd(self)
+        return cd(StringPath(self))
 
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
@@ -788,7 +805,7 @@ def _make_module_path(arg):
 
 
 @singledispatch
-def makepath(arg):
+def makepath(arg) -> StringPath:
     attribute = getattr(arg, "path", False)
     return makepath(attribute) if attribute else makepath(str(arg))
 
@@ -797,18 +814,18 @@ path = makepath
 
 
 @makepath.register(type(None))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
 @makepath.register(DotPath)  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     return arg
 
 
 @makepath.register(str)  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
@@ -839,7 +856,7 @@ def imports():
 
 
 @makepath.register(type(os))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a module"""
     if arg.__name__ == "builtins":
         return NonePath("builtins")
@@ -852,12 +869,19 @@ def _(arg):
         assert str(python_.parent.name) == "bin"
         bin_ = python_.parent
         root_ = bin_.parent
-        lib_ = root_ / "lib"
-        assert lib_.isdir()
+        lib = root_ / "lib"
+        assert lib.isdir()
+        module = lib / f"{arg}.py"
+        if module.isfile():
+            return module
+        package = lib / arg
+        if package.isdir():
+            return package
+        raise ModuleNotFoundError(arg)
 
 
 @makepath.register(type(makepath))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
     method = getattr(arg, "__wrapped__", arg)
@@ -868,16 +892,39 @@ def _(arg):
 
 
 @makepath.register(type(DotPath))  # type: ignore[no-redef]
-def _(arg):
+def _(arg) -> StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
 
 
-def makestr(string: str):
+@deprecated(reason="use pathstr()", version="0.7.57")
+def makestr(string: str) -> StringPath:
+    return pathstr(string)
+
+
+def pathstr(string: str) -> StringPath:
     """Make a path from a string"""
     if os.path.isfile(string) or os.path.isdir(string):
         return makepath(string)
     return NonePath(string)
+
+
+def previously():
+    """Try ways to get back to older working dir"""
+    try:
+        return cd.previous.isdir()
+    except AttributeError:
+        try:
+            previous = makepath(os.environ["OLDPWD"])
+        except KeyError:
+            try:
+                previous = makepath(os.getcwd())
+            except OSError:
+                return False
+    if not previous.isdir():
+        return False
+    cd.previous = previous
+    return True
 
 
 def cd(path_to: StringPath) -> bool:
@@ -889,27 +936,19 @@ def cd(path_to: StringPath) -> bool:
         so that we can cd back there with cd('-')
     """
     if path_to == "-":
-        previous = getattr(cd, "previous", "")
-        if not previous:
-            raise PathError("No previous directory to return to")
-        return cd(makepath(previous))
-    if not hasattr(path_to, "cd"):
-        path_to = makepath(path_to)
-    try:
-        previous = os.getcwd()
-    except OSError as e:
-        if "No such file or directory" not in str(e):
-            raise
-        previous = ""
+        if previously():
+            return cd(cd.previous)  # type: ignore
+        return False
     if path_to.isdir():
-        os.chdir(path_to)
+        cd_path = path_to
     elif path_to.isfile():
-        os.chdir(path_to.parent)
+        cd_path = path_to.parent
     elif not path_to.exists():
         return False
     else:
         raise PathError(f"Cannot cd to {path_to}")
-    setattr(cd, "previous", previous)
+    cd.previous = cd_path  # type: ignore
+    os.chdir(cd_path)
     return True
 
 

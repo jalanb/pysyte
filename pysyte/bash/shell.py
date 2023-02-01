@@ -13,10 +13,10 @@ class BashError(ValueError):
 
 
 _working_dirs: List[str] = [""]
-_path: List[str] = []
+_paths: List[str] = []
 
 
-def cd(path):
+def cd(path: str):
     if _working_dirs[0] == path:
         return
     assert os.path.isdir(path)
@@ -31,18 +31,18 @@ def pushd(path):
     del _working_dirs[0]
 
 
-def _get_path():
+def _get_path() -> str:
     """Guarantee that /usr/local/bin, /usr/bin, /bin are in PATH"""
-    if _path:
-        return _path[0]
+    if _paths:
+        return _paths[0]
     environ_paths = IndexedSet(os.environ["PATH"].split(":"))
     minimal_paths = IndexedSet(["/usr/local/bin", "/usr/bin", "/bin"])
     all_paths = environ_paths | minimal_paths
-    _path.append(":".join(all_paths))
-    return _path[0]
+    _paths.append(":".join(all_paths))
+    return _paths[0]
 
 
-def run(command):
+def run(command: str) -> str:
     path_command = f"PATH={_get_path()} {command}"
     if _working_dirs[0]:
         run_command = f"(cd {_working_dirs[0]}; {path_command})"

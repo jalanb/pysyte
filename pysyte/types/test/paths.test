@@ -70,76 +70,85 @@ If the path to a file is given, cd() will change to that file's parent directory
 DirectPath
 ----------
 
-A class called DirectPath is also supplied, which extends the path class, slightly.
+A class called DirectPath is provided, which represents a path to a directory
 You can construct an instance of DirectPath directly:
 
     >>> p = paths.DirectPath('.')
 
-Or by using the method makepath
+Or by using the path() method 
 
-    >>> p = paths.makepath('.')
+    >>> p = paths.path('.')
 
-The difference is that makepath expands the string given
-    >>> os_home = os.path.expanduser('~')
-    >>> assert paths.DirectPath('~') != os_home
-    >>> assert paths.makepath('~') == os_home
+The difference is that path expands the string given
+    >>> user_home = os.path.expanduser('~')
+    >>> assert paths.DirectPath('~') != user_home
+    >>> assert paths.path('~') == user_home
     >>> if 'HOME' in os.environ:
-    ...     assert paths.DirectPath('$HOME') != os_home
-    ...     assert paths.makepath('$HOME') == os_home
+    ...     assert paths.DirectPath('$HOME') != user_home
+    ...     assert paths.path('$HOME') == user_home
 
-DirectPath is ako string, which shows the string in %s and %r
+DirectPath is ako string
 
     >>> bin_ = paths.DirectPath('/bin')
-    >>> print('%s' % bin_)
+    >>> print(f"{bin_}")
     /bin
-    >>> print('%r' % bin_)
+    >>> print(f"{bin_!r}")
     <DirectPath '/bin'>
 
-makepath() handles many types of things
-nothings:
-    >>> assert not paths.makepath(None)
-    >>> assert not paths.makepath('')
+path() handles many types of things
 
-other paths:
-    >>> assert paths.makepath(p) is p
+... nothings:
+    >>> assert not paths.path(None)
+    >>> assert not paths.path(None).is_dir() is False
+    >>> assert not paths.path('')
 
-strings, and things than can change to strings, e.g. an int
-    >>> assert paths.makepath('/some/words/here').name == 'here'
-    >>> assert paths.makepath('.').isdir()
-    >>> assert paths.makepath(37).name == '37'
+... other paths:
+    >>> p = paths.path('.')
+    >>> assert paths.path(p) is p
 
-including python things, like modules, classes, functions
-    >>> path_to_paths = paths.makepath(paths)
+... strings
+    >>> assert paths.path('/some/words/here').name == 'here'
+    >>> assert paths.path('.').isdir()
+
+... things than can change to strings, e.g. an int
+    >>> assert paths.path(37).name == '37'
+
+... python things, like modules
+    >>> path_to_paths = paths.path(paths)
     >>> assert path_to_paths.name in ('paths.py', 'paths.pyc')
-    >>> assert path_to_paths == paths.makepath(paths.DotPath)
-    >>> assert path_to_paths == paths.makepath(paths.makepath)
+
+... classes
+    >>> assert path_to_paths == paths.path(paths.DirectPath)
+
+... functions
+    >>> assert path_to_paths == paths.path(paths.path)
 
 and other things that have paths
     >>> class Fred:
-    ...     path = paths.makepath('/usr/local')
+    ...     path = paths.path('/usr/local')
     >>> fred = Fred()
-    >>> assert paths.makepath(fred) is fred.path
+    >>> assert paths.path(fred) is fred.path
 
-A specialised version for strings
-    >>> assert not paths.makestr('')
-    >>> assert paths.makestr(paths.__file__).isfile()
-    >>> assert not paths.makestr('/path/to/nowehere').isfile()
+There is specialised version for strings
+    >>> assert not paths.pathstr('')
+    >>> assert paths.pathstr(paths.__file__).isfile()
+    >>> assert not paths.pathstr('/path/to/nowehere').isfile()
 
 Path expansion at creation
 --------------------------
 
-    >>> os_home = os.path.expanduser('~')
+    >>> user_home = os.path.expanduser('~')
 
-The makepath method expands paths "normally"
+The path method expands paths "normally"
     So both of these end up with the same (string) value:
-    >>> direct_home = paths.DirectPath(os_home)
-    >>> path_to_home = paths.makepath('~')
+    >>> direct_home = paths.DirectPath(user_home)
+    >>> path_to_home = paths.path('~')
     >>> assert direct_home == path_to_home
 
 And that is an expanded path
     >>> assert path_to_home.startswith('/') and '~' not in path_to_home
 
-Using DirectPath (not makepath()), does not expand paths
+Using DirectPath (not path()), does not expand paths
     so this has a different string value
     >>> squiggle = paths.DirectPath('~')
 
@@ -172,9 +181,26 @@ Can cd to a direcory
 
 Can also cd to (the directory of) a file
     >>> os.chdir('/')
-    >>> p = paths.makepath('/bin/cp')
+    >>> p = paths.path('/bin/cp')
     >>> assert p.cd()
     >>> assert paths.pwd() in expected
+
+Operators
+----------------------
+
+    >>> usr_local = paths.path("/usr/local")
+
++ adds a string
+    It is often the wrong thing to do
+    >>> assert usr_local + "bin" == "/usr/localbin"
+
+/ adds a string as a sub path
+
+    >>> assert usr_local / "bin" == "/usr/local/bin"
+
+// adds strings as sub sub paths
+
+    >>> assert usr_local // ("lib", "python3.7") == "/usr/local/lib/python3.7"
 
 DirectPath vs path
 ------------------
@@ -188,8 +214,8 @@ Using the / operator on a path gives an instance of the same class
 Using it on a DirectPath can give a DirectPath, or a FilePath
     >>> home = paths.home()
     >>> bashrc = home / '.bashrc'
-    >>> expected = paths.FilePath if bashrc.isfile() else paths.NonePath
-    >>> assert isinstance(bashrc, expected)
+    >>> expected = (paths.FilePath, paths.DirectPath)
+    >>> assert isinstance(bashrc, expected), f"not isinstance({type(bashrc)}, {expected})"
 
 Attributes of may also be DirectPaths or FilePaths
     >>> parent = bashrc.parent
