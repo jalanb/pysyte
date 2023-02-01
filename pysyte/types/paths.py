@@ -869,8 +869,15 @@ def _(arg) -> StringPath:
         assert str(python_.parent.name) == "bin"
         bin_ = python_.parent
         root_ = bin_.parent
-        lib_ = root_ / "lib"
-        assert lib_.isdir()
+        lib = root_ / "lib"
+        assert lib.isdir()
+        module = lib / f"{arg}.py"
+        if module.isfile():
+            return module
+        package = lib / arg
+        if package.isdir():
+            return package
+        raise ModuleNotFoundError(arg)
 
 
 @makepath.register(type(makepath))  # type: ignore[no-redef]
