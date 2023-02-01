@@ -16,6 +16,8 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+from deprecated import deprecated
+
 from path import Path as path_Path
 from pysyte.types.lists import flatten
 
@@ -875,7 +877,12 @@ def _(arg) -> StringPath:
     return _make_module_path(arg)
 
 
-def makestr(string: str):
+@deprecated(reason="use pathstr()", version="0.7.57")
+def makestr(string: str) -> StringPath:
+    return pathstr(string)
+
+
+def pathstr(string: str) -> StringPath:
     """Make a path from a string"""
     if os.path.isfile(string) or os.path.isdir(string):
         return makepath(string)
