@@ -25,7 +25,7 @@ class App(Method, ContextDecorator):
         return self
 
     def run(self, *args, **kwargs):
-        kwargs['app'] = self
+        kwargs["app"] = self
         self.exit_code = super().run(*args, **kwargs)
 
     def __exit__(self, *exc):

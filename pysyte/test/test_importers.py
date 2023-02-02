@@ -4,9 +4,12 @@ Find *.py under the package
     find all import lines in each file, and execute them
 """
 
-import os
+# "noqa": This imports a lot of unused modules just for testing with
+
+
+import os  # noqa: F401
 import unittest
-from collections import defaultdict
+from collections import defaultdict  # noqa: F401
 
 from pysyte import importers
 
@@ -24,8 +27,8 @@ class TestDashboardImports(unittest.TestCase):
             to make sure getting more than top-level imports
             and can handle the edge-cases
         """
-        import os, sys as system  # noqa
-        from os import path, kill as killer
+        import os, sys as system  # noqa: F811, F401, E401
+        from os import path, kill as killer  # noqa: F401
 
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)

@@ -6,6 +6,7 @@ import ast
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
+from typing import Iterator
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -155,10 +156,9 @@ def find_imports(as3: AS3) -> ImportUser:
 
 
 @contextmanager
-def parse_python(script) -> AS3:
+def parse_python(script) -> Iterator[AS3]:
     with open(script) as stream:
         as3 = ast.parse(stream.read(), script)
-        as3.path = script
         yield AS3(script, as3)
 
 
@@ -168,7 +168,7 @@ def parse(script) -> ImportUser:
         raise FileNotFoundError(f"Not a file: {script}")
     with parse_python(script) as as3:
         importer = find_imports(as3)
-        importer.path = script
+        importer.path = script  # type: ignore [attr-defined]
         return importer
 
 

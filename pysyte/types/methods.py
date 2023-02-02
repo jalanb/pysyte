@@ -45,6 +45,7 @@ class Method(MethodData):
                 return getattr(self.code, f"co_{name}")
             raise
 
+
 @contextmanager
 def caller():
     yield inspect.currentframe().f_back.f_back.f_back

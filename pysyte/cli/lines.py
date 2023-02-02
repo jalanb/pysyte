@@ -3,6 +3,8 @@
 import sys
 from collections import defaultdict
 from functools import partial
+from typing import DefaultDict
+from typing import List
 
 from pysyte import __version__
 from pysyte.cli.arguments import ArgumentsParser
@@ -16,7 +18,7 @@ class LinesParser(ArgumentsParser):
     def __init__(self, parser_: ArgumentsParser):
         super().__init__(parser_)
         self.version = __version__
-        self.groups = defaultdict(list)
+        self.groups: DefaultDict[str, List] = defaultdict(list)
 
     def add_files(self, name=None, action=None):
         name_ = name if name else "files"
