@@ -2,6 +2,9 @@ import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Callable
+from typing import Optional
+from types import FrameType
+from types import ModuleType
 
 
 @dataclass
@@ -15,21 +18,33 @@ class Method(MethodData):
     def __init__(self, method: Callable):
         super().__init__(method)
         self.code = self.method.__code__
-        self.module = inspect.getmodule(self.method)
-        self.doc = inspect.getdoc(self.method)
-        frame = inspect.currentframe()
-        self.caller = frame.f_back if frame else None
+        self.init_frame = inspect.currentframe()
 
     def run(self, *args, **kwargs):
         return self.method(*args, **kwargs)
+
+    @property
+    def module(self) -> Optional[ModuleType]:
+        return inspect.getmodule(self.method)
+
+    @property
+    def doc(self) -> str:
+        return inspect.getdoc(self.method) or ""
+
+    @property
+    def caller(self) -> Optional[FrameType]:
+        return self.init_frame.f_back if self.init_frame else None
 
     def __getattr__(self, name):
         try:
             return self.__getattribute__(name)
         except AttributeError:
+            if name == "__file__":
+                name = "filename"
             if hasattr(self.code, f"co_{name}"):
                 return getattr(self.code, f"co_{name}")
             raise
+
 
 @contextmanager
 def caller():

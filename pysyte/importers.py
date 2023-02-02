@@ -6,6 +6,7 @@ import ast
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
+from typing import Iterator
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -66,17 +67,17 @@ class ImportVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         for decorator in node.decorator_list:
             name = self.find_name(decorator, "func", "value")
-            self.imported(name, decorator.lineno)
+            self.imported(name, decorator)
         self.generic_visit(node)
 
     def visit_Subscript(self, node):
         name = self.find_value_id(node)
         name2 = self.find_name(node, "value")
         assert name == name2
-        self.imported(name, node.lineno)
+        self.imported(name, node)
         subname = self.find_value_id(node.slice)
         assert subname == self.find_name(node.slice, "value")
-        self.imported(subname, node.lineno)
+        self.imported(subname, node)
         self.generic_visit(node)
 
     def visit_Attribute(self, node):
@@ -91,7 +92,7 @@ class ImportVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node):
         for base in node.bases:
             name = self.find_name(base, "value")
-            self.imported(name, node.lineno)
+            self.imported(name, node)
         self.generic_visit(node)
 
     def visit_Call(self, node):
@@ -102,12 +103,12 @@ class ImportVisitor(ast.NodeVisitor):
             name = self.find_value_id(func, "func")
             name2 = self.find_name(node, "value", "func")
             assert name == name2
-        self.imported(name, node.lineno)
+        self.imported(name, node)
         self.generic_visit(node)
 
     def visit_Name(self, node):
         name = self.find_name(node)
-        self.imported(name, node.lineno)
+        self.imported(name, node)
         self.generic_visit(node)
 
 
@@ -116,11 +117,11 @@ class ImportUser(ImportVisitor):
         super().__init__()
         self.used = defaultdict(list)
 
-    def imported(self, name, line):
+    def imported(self, name, node):
         if not name:
             return
         if name in self.imports:
-            self.used[name].append(line)
+            self.used[name].append(node.lineno)
 
     def unused(self):
         return {k: v for k, v in self.imports.items() if k not in self.used}
@@ -155,10 +156,9 @@ def find_imports(as3: AS3) -> ImportUser:
 
 
 @contextmanager
-def parse_python(script) -> AS3:
+def parse_python(script) -> Iterator[AS3]:
     with open(script) as stream:
         as3 = ast.parse(stream.read(), script)
-        as3.path = script
         yield AS3(script, as3)
 
 
@@ -168,7 +168,7 @@ def parse(script) -> ImportUser:
         raise FileNotFoundError(f"Not a file: {script}")
     with parse_python(script) as as3:
         importer = find_imports(as3)
-        importer.path = script
+        importer.path = script  # type: ignore [attr-defined]
         return importer
 
 

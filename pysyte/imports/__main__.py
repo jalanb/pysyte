@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 """Find imports in python files"""
 
-import sys
 import linecache
 
 from pysyte import importers

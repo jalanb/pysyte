@@ -1,0 +1,6 @@
+-r development.txt
+
+ansible
+pipx
+pyinfra
+

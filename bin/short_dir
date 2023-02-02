@@ -6,9 +6,8 @@ import sys
 
 
 from pysyte import __version__
-from pysyte.cli.main import run
-from pysyte.types.paths import path
-from pysyte.types.paths import home
+from pysyte.cli import main
+from pysyte.types import paths
 
 
 class ScriptError(NotImplementedError):
@@ -36,7 +35,8 @@ def post_parse(args):
 
 
 def directory_parts(directory):
-    parts = path(directory).splitall()
+    path = paths.path(directory)
+    parts = path.splitall()
     try:
         parts.remove("/")
     except ValueError:
@@ -60,7 +60,7 @@ def matches(directory, exclude):
 
 
 def trail_dir(string):
-    if os.path.isdir(string):
+    if paths.path(string).isdir():
         return string.rstrip("/") + "/"
     return ""
 
@@ -94,9 +94,9 @@ def shortest(items):
 
 def replace_home(directory):
     homes = [os.environ["HOME"], "$HOME"]
-    for home_ in homes:
-        if directory.startswith(home_):
-            return directory.replace(home_, "~", 1)
+    for home in homes:
+        if directory.startswith(home):
+            return directory.replace(home, "~", 1)
     return directory
 
 
@@ -109,9 +109,10 @@ def abs_path(p):
 
 
 def home_links():
+    home = paths.home()
     links = [
         (str(x), str(x.realpath()))
-        for x in home().listdir()
+        for x in home.listdir()
         if x.islink() and x.isdir()
     ]
     return sorted(links)
@@ -143,4 +144,4 @@ def script(args):
 
 
 if __name__ == "__main__":
-    run(script, parse_args, post_parse)
+    main.run(script, parse_args, post_parse)

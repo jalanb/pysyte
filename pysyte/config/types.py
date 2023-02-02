@@ -18,11 +18,11 @@ class PysyteConfiguration(NameSpaces):
     def extensions(self):
         raise NotImplementedError
 
-    def as_path(self, stem_):
-        stem = paths.path(stem_)
+    def as_path(self, stem):
+        path = paths.path(stem)
         for extension in self.extensions():
             try:
-                file = stem.extend_by(extension)
+                file = path.extend_by(extension)
                 if file.isfile():
                     return file
             except TypeError:
@@ -41,7 +41,8 @@ class YamlConfiguration(PysyteConfiguration):
 
 
 class ModuleConfiguration(YamlConfiguration):
-    pass
+    def __init__(self, module):
+        super().__init__(paths.path(module))
 
 
 @dataclass
