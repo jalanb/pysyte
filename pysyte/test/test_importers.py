@@ -43,13 +43,13 @@ class TestDashboardImports(unittest.TestCase):
     def test_multiples(self):
         """Check that multiple imports of 'os' are found
 
-        They are on lines 7 and 27
+        They are on lines 10 and 30
         """
         multiples = self.visitor.multiples()
         self.assertEqual(list(multiples.keys()), ["os"])
-        self.assertEqual(multiples["os"], [7, 27])
+        self.assertEqual(multiples["os"], [10, 30])
 
     def test_redundant_lines(self):
         redundant = self.visitor.unused()
-        self.assertEqual(redundant["system"][0], 27)
-        self.assertEqual(redundant["killer"][0], 28)
+        self.assertEqual(redundant["system"][0], 30)
+        self.assertEqual(redundant["killer"][0], 31)

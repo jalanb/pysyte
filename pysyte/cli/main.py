@@ -20,13 +20,18 @@ from pysyte.types.methods import Method
 class MainMethod(Method):
     def __init__(self, method):
         super().__init__(method)
-        self.doc = self.doc if self.doc else self.module.__doc__
         self.in_main_module = self.module.__name__ == "__main__"
         self.needs_args = self.argcount > 0
         self.needs_one_arg = self.argcount == 1
 
     def __call__(self, *args_, **kwargs):
         return self.method(*args_, **kwargs)
+
+    @property
+    def doc(self) -> str:
+        doc = super().doc()
+        return doc if doc else self.module.__doc__
+
 
 
 ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
