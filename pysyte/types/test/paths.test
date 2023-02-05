@@ -75,7 +75,7 @@ You can construct an instance of DirectPath directly:
 
     >>> p = paths.DirectPath('.')
 
-Or by using the path() method 
+Or by using the path() method
 
     >>> p = paths.path('.')
 
@@ -99,7 +99,7 @@ path() handles many types of things
 
 ... nothings:
     >>> assert not paths.path(None)
-    >>> assert not paths.path(None).is_dir() is False
+    >>> assert not paths.path(None).isdir()
     >>> assert not paths.path('')
 
 ... other paths:

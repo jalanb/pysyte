@@ -112,7 +112,7 @@ class StringPath(path_Path):
 
         >>> p = StringPath("/path/to")
         >>> assert p.__floordiv__("fred") == p // "fred"
-        >>> assert p // {"module", "fred.py"} == "/path/to/module/fred.py"
+        >>> assert p // ["module", "fred.py"] == "/path/to/module/fred.py"
         >>> assert p // None is p
         """
         if not substrings:
@@ -234,6 +234,12 @@ class StringPath(path_Path):
         copy = self[:]
         filename, _ = os.path.splitext(copy)
         return makepath(f'{filename}.{ext.lstrip(".")}')
+
+    def has_vcs_dir(self):
+        for vcs_dir in (".git", ".svn", ".hg"):
+            if self.fnmatch_part(vcs_dir):
+                return True
+        return False
 
 
 def ext_language(ext, exts=None, simple=True):
@@ -726,12 +732,6 @@ class DirectPath(DotPath, PathAssertions):
         ignored = ignore_fnmatches(ignores)
         return [_ for _ in self.listdir(pattern) if _.isfile() and not ignored(_)]
 
-    def has_vcs_dir(self):
-        for vcs_dir in (".git", ".svn", ".hg"):
-            if self.fnmatch_part(vcs_dir):
-                return True
-        return False
-
     def isroot(self):
         return str(self) == "/"
 
@@ -910,24 +910,6 @@ def pathstr(string: str) -> StringPath:
     return NonePath(string)
 
 
-def previously():
-    """Try ways to get back to older working dir"""
-    try:
-        return cd.previous.isdir()
-    except AttributeError:
-        try:
-            previous = makepath(os.environ["OLDPWD"])
-        except KeyError:
-            try:
-                previous = makepath(os.getcwd())
-            except OSError:
-                return False
-    if not previous.isdir():
-        return False
-    cd.previous = previous
-    return True
-
-
 def cd(path_to: StringPath) -> bool:
     """cd to the given path
 
@@ -937,9 +919,18 @@ def cd(path_to: StringPath) -> bool:
         so that we can cd back there with cd('-')
     """
     if path_to == "-":
-        if previously():
-            return cd(cd.previous)  # type: ignore
-        return False
+        previous = getattr(cd, "previous", "")
+        if not previous:
+            raise PathError("No previous directory to return to")
+        return cd(makepath(previous))
+    if not hasattr(path_to, "cd"):
+        path_to = makepath(path_to)
+    try:
+        previous = os.getcwd()
+    except OSError as e:
+        if "No such file or directory" not in str(e):
+            raise
+        previous = ""
     if path_to.isdir():
         cd_path = path_to
     elif path_to.isfile():
@@ -948,7 +939,7 @@ def cd(path_to: StringPath) -> bool:
         return False
     else:
         raise PathError(f"Cannot cd to {path_to}")
-    cd.previous = cd_path  # type: ignore
+    cd.previous = previous  # type: ignore
     os.chdir(cd_path)
     return True
 
