@@ -1,7 +1,11 @@
 pysyte
 =======
 
-pysyte extends python with more batteries
+pysyte adds batteries to
+
+* python
+* bash
+* other languages near them
 
 Badges
 ------
