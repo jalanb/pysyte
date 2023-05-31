@@ -10,12 +10,12 @@ from pysyte.cli import arguments
 from pysyte.oss.platforms import get_clipboard_data
 
 
-def parse_args():
+def parse_args(description=""):
     """Parse out command line arguments"""
-    parser = arguments.parser(__doc__)
-    parser.args("streams", help="streams to use")
-    parser.opt("-p", "--paste", "paste text from clipboard")
-    parser.opt("-i", "--stdin", "wait for text from stdin")
+    parser = arguments.parser(description or __doc__)
+    parser.positional("streams", help="streams to use")
+    parser.boolean("p", "paste", help="paste text from clipboard")
+    parser.boolean("i", "stdin", help="wait for text from stdin")
     return parser.parse_args()
 
 
