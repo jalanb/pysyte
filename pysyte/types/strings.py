@@ -5,6 +5,7 @@ from functools import total_ordering
 
 class Repper:
     """Make a nice repr(x) for any x that can do str(x)"""
+
     def __repr__(self) -> str:
         string = str(self)
         return f'<{self.__class__.__name__} "{string}">'
