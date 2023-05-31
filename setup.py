@@ -5,7 +5,7 @@ import setuptools
 def package_files(directory):
     paths = []
     extensions = (".test", ".tests", ".yaml")
-    for (path, directories, filenames) in os.walk(directory):
+    for path, directories, filenames in os.walk(directory):
         for filename in filenames:
             extension = os.path.splitext(filename)[-1]
             if extension not in extensions:
