@@ -10,28 +10,27 @@ from pysyte.cli import arguments
 from pysyte.oss.platforms import get_clipboard_data
 
 
-def parse_args():
+def parse_args(description=""):
     """Parse out command line arguments"""
-    parser = arguments.parser(__doc__)
-    parser.args("streams", help="streams to use")
-    parser.opt("-p", "--paste", "paste text from clipboard")
-    parser.opt("-i", "--stdin", "wait for text from stdin")
+    parser = arguments.parser(description or __doc__)
+    parser.positional("streams", help="streams to use")
+    parser.boolean("p", "paste", help="paste text from clipboard")
+    parser.boolean("i", "stdin", help="wait for text from stdin")
     return parser.parse_args()
 
 
-def args(parsed_args, name=None, files_only=False):
+def args(parsed_args, name="streams", files_only=False):
     """Interpret parsed args to streams"""
+    streams = []
     strings = parsed_args.get_strings(name)
     files = [s for s in strings if os.path.isfile(s)]
     if files:
         streams = [open(f) for f in files]
-    elif files_only:
-        return []
-    else:
-        streams = []
-    if "-" in files or not files or getattr(parsed_args, "stdin", False):
-        streams.append(sys.stdin)
-    if getattr(parsed_args, "paste", not files):
+    if strings or files_only:
+        return streams
+    if "-" in files or getattr(parsed_args, "stdin", False):
+        streams = [sys.stdin]
+    if getattr(parsed_args, "paste", False):
         streams.append(clipboard_stream())
     return streams
 
@@ -73,7 +72,7 @@ def _arg_streams():
             yield stream
 
 
-def _any():
+def any():
     try:
         stream = iteration.first(_arg_streams())
         if stream:
