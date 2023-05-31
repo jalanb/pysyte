@@ -29,9 +29,10 @@ class MainMethod(Method):
 
     @property
     def doc(self) -> str:
-        doc = super().doc()
-        return doc if doc else self.module.__doc__
-
+        for doc in (super().doc, self.module.__doc__):
+            if doc:
+                return doc
+        return ""
 
 
 ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
