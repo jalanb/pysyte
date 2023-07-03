@@ -29,4 +29,7 @@ Can also take a list
     >>> assert foo == texts.colour_initials('red', ['Hello'])
 
 For prompting users
-    >>> assert texts.prompt_text('red', 'fred') == '\x01\x1b[31m\x02fred\x01\x1b[2m\x1b[0m\x02'
+    >>> assert (
+    ...     texts.prompt_text('red', 'fred')
+    ...     == '\x01\x1b[31m\x02fred\x01\x1b[2m\x1b[0m\x02'
+    ... )

@@ -55,7 +55,7 @@ def _represent_args(*args, **kwargs):
     """Represent the aruments in a form suitable as a key (hashable)
 
     And which will be recognisable to user in error messages
-    >>> print(_represent_args([1, 2], **{'fred':'here'}))
+    >>> print(_represent_args([1, 2], **{'fred': 'here'}))
     [1, 2], fred='here'
     """
     argument_strings = [repr(a) for a in args]
@@ -71,6 +71,7 @@ def memoized(method):
         ... def test(arg):
         ...     print('called')
         ...     return arg + 1
+        ...
         >>> test(1)
         called
         2

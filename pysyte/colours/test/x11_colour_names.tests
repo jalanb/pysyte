@@ -12,6 +12,6 @@ Edge cases
 
     >>> assert "/usr/lib/X11" in names._rgb_txt_directories()
 
-    >>> assert names.first_rgb_file(lambda : []) is None
+    >>> assert names.first_rgb_file(lambda: []) is None
 
     >>> assert names._rgb_txt_line("blah, blah, blah") == ("", (-1, -1, -1))

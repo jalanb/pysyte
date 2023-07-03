@@ -25,6 +25,7 @@ Errors are raised as Python exceptions
     ...     assert False, 'Should not get here'
     ... except shell.BashError as e:
     ...     assert 'not found' in str(e)
+    ...
 
 The shell.cd() function affects all subsequent commands
 
@@ -37,3 +38,4 @@ Whereas shell.pushd() only affects commands in a with
 
     >>> with shell.pushd('/usr/local/bin'):
     ...     assert shell.run('basename $PWD') == 'bin'
+    ...

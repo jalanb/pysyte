@@ -14,3 +14,4 @@ This one does not work for Travis
     ...     platforms.put_clipboard_data(expected)
     ...     actual = platforms.get_clipboard_data()
     ...     assert actual == expected
+    ...

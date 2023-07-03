@@ -10,7 +10,7 @@ from yamlreader import data_merge
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
-    >>> things = {'Fred' : 9}
+    >>> things = {'Fred': 9}
     >>> print(get_caselessly(things, 'fred'))
     9
     """
@@ -55,8 +55,8 @@ def group_list(items):
 
     Items should be a list of (key, value) pairs
 
-    >>> grouped = group_list([(1,0), (2,0), (1,1)])
-    >>> grouped[1] == [0,1]
+    >>> grouped = group_list([(1, 0), (2, 0), (1, 1)])
+    >>> grouped[1] == [0, 1]
     True
     """
     groups = defaultdict(list)
@@ -70,7 +70,7 @@ def group_list_by(items, key_from_item):
 
     key_from_item is a method to get the key from the item
 
-    >>> items = [(1,9), (2,8), (1,7)]
+    >>> items = [(1, 9), (2, 8), (1, 7)]
     >>> key_from_item = lambda x: 'a' if x[0] == 1 else 'b'
     >>> grouped = group_list_by(items, key_from_item)
     >>> grouped['a'] == [(1, 9), (1, 7)]

@@ -53,9 +53,10 @@ Calling using '-' repeatedly will toggle between two directories:
 
     >>> assert paths.cd('/usr')
     >>> assert paths.cd('/opt')
-    >>> for i in range(0,4):
-    ...    _ = paths.cd('-')
-    ...    print(paths.pwd())
+    >>> for i in range(0, 4):
+    ...     _ = paths.cd('-')
+    ...     print(paths.pwd())
+    ...
     /usr
     /opt
     /usr
@@ -86,6 +87,7 @@ The difference is that path expands the string given
     >>> if 'HOME' in os.environ:
     ...     assert paths.DirectPath('$HOME') != user_home
     ...     assert paths.path('$HOME') == user_home
+    ...
 
 DirectPath is ako string
 
@@ -126,6 +128,7 @@ path() handles many types of things
 and other things that have paths
     >>> class Fred:
     ...     path = paths.path('/usr/local')
+    ...
     >>> fred = Fred()
     >>> assert paths.path(fred) is fred.path
 
@@ -215,7 +218,9 @@ Using it on a DirectPath can give a DirectPath, or a FilePath
     >>> home = paths.home()
     >>> bashrc = home / '.bashrc'
     >>> expected = (paths.FilePath, paths.DirectPath)
-    >>> assert isinstance(bashrc, expected), f"not isinstance({type(bashrc)}, {expected})"
+    >>> assert isinstance(
+    ...     bashrc, expected
+    ... ), f"not isinstance({type(bashrc)}, {expected})"
 
 Attributes of may also be DirectPaths or FilePaths
     >>> parent = bashrc.parent
@@ -241,7 +246,7 @@ Whether sub_paths exist
 
 This test assumes you have a ~/bin directory
     Also assumes you have a ~/.bashrc file, which is more likely
-    >>> sub_paths = [ '.bashrc', 'bin', 'not a real path' ]
+    >>> sub_paths = ['.bashrc', 'bin', 'not a real path']
     >>> real_paths = paths.home().existing_sub_paths(sub_paths)
     >>> assert paths.home() / '.bashrc' in real_paths
     >>> assert paths.home() / 'bin' in real_paths
@@ -261,21 +266,21 @@ Iterating a file gives lines
 Sets of paths
 -------------
 
-    >>> assert '/usr/lib' in paths.list_sub_directories('/usr','l*')
-    >>> assert '/usr/lib' not in paths.list_sub_directories('/usr','a*')
-    >>> assert '/bin/ls' in paths.set_files('/bin','l*')
-    >>> assert '/bin/ls' not in paths.set_files('/bin','a*')
+    >>> assert '/usr/lib' in paths.list_sub_directories('/usr', 'l*')
+    >>> assert '/usr/lib' not in paths.list_sub_directories('/usr', 'a*')
+    >>> assert '/bin/ls' in paths.set_files('/bin', 'l*')
+    >>> assert '/bin/ls' not in paths.set_files('/bin', 'a*')
 
 Search directories
 ----------------
 
-    >>> assert paths.contains_glob('/usr','*oca*')
-    >>> assert paths.contains_directory('/usr','*oca*')
-    >>> assert not paths.contains_file('/usr','*oca*')
+    >>> assert paths.contains_glob('/usr', '*oca*')
+    >>> assert paths.contains_directory('/usr', '*oca*')
+    >>> assert not paths.contains_file('/usr', '*oca*')
 
-    >>> assert not paths.contains_glob('/usr','*oca')
-    >>> assert not paths.contains_file('/usr','*oca')
-    >>> assert not paths.contains_directory('/usr','*oca')
+    >>> assert not paths.contains_glob('/usr', '*oca')
+    >>> assert not paths.contains_file('/usr', '*oca')
+    >>> assert not paths.contains_directory('/usr', '*oca')
 
 Tab completion
 --------------
@@ -284,7 +289,11 @@ Tab completion
     >>> assert paths.add_star('fred.') == 'fred.*'
     >>> assert paths.add_star('fred.p') == 'fred.p*'
 
-    >>> assert paths.add_stars(['fred', 'fred.', 'fred.py']) == ['fred*', 'fred.*', 'fred.py*']
+    >>> assert paths.add_stars(['fred', 'fred.', 'fred.py']) == [
+    ...     'fred*',
+    ...     'fred.*',
+    ...     'fred.py*',
+    ... ]
 
 Try tab completion on some pysyte modules
     >>> incomplete_text = str(path_to_types / 'li')

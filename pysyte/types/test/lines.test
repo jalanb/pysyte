@@ -33,5 +33,5 @@ Or grep in those lines for "fred"
 chop some lines
     >>> text = 'one\ntwo\nthree'
     >>> assert 'one' not in lines.chop(text, at=None, first=2)
-    >>> assert 'one' not in lines.chop(text, at='[t][w][o]' )
-    >>> assert 'three' not in lines.chop(text, at=0, last='[t][w][o]' )
+    >>> assert 'one' not in lines.chop(text, at='[t][w][o]')
+    >>> assert 'three' not in lines.chop(text, at=0, last='[t][w][o]')

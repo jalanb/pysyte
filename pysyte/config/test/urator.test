@@ -11,7 +11,12 @@ Handles configs
 
 psysyte reads yamly files
     >>> path_to_config = tmp() / 'test.yamly'
-    >>> path_to_config.write_lines(['---', 'fred: 1',])
+    >>> path_to_config.write_lines(
+    ...     [
+    ...         '---',
+    ...         'fred: 1',
+    ...     ]
+    ... )
 
 Re-initialize, as it is now a real file
     >>> path_to_config = tmp() / 'test.yamly'

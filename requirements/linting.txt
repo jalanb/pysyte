@@ -1,3 +1,4 @@
 black
+blackdoc
 flake8
 mypy
