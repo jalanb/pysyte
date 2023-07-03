@@ -12,15 +12,11 @@ class Repper:
 
 
 @total_ordering
-class Stringer:
+class Stringer(Repper):
     """A Mixin to provide more ops to a class that can str()"""
 
     def __str__(self):
         raise NotImplementedError
-
-    def __repr__(self) -> str:
-        string = str(self)
-        return f'<{self.__class__.__name__} "{string}">'
 
     def __hash__(self):
         """Derive a hash value from the string"""
