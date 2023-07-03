@@ -179,6 +179,7 @@ def importer(module):
     >>> with importer(os) as os_, importer('pysyte.importers') as importers:
     ...     assert os_.path is os.path
     ...     assert importer.__code__ == importers.importer.__code__
+    ...
     """
     if isinstance(module, type(os)):
         yield module

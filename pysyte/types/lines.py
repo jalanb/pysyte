@@ -42,9 +42,9 @@ def chop(text, at, first=1, last=-1):
     >>> lines = ['one', 'two', 'three', 'four']
     >>> text = '\n'.join(lines)
 
-    >>> assert 'three' not in chop(text, 1, last=2 )
+    >>> assert 'three' not in chop(text, 1, last=2)
 
-    >>> assert chop(text, at=2) == chop(text, '[t][w][o]' )
+    >>> assert chop(text, at=2) == chop(text, '[t][w][o]')
     """
     return _chop(text.splitlines() or [], at, first, last)
 

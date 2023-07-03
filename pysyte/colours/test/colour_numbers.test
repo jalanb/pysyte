@@ -2,7 +2,7 @@ The colour_numbers module
 =========================
 
     >>> from pysyte.colours import colour_numbers as cn
-    >>> assert 'numbers known to represent colours' in  cn.__doc__
+    >>> assert 'numbers known to represent colours' in cn.__doc__
 
 Convert html strings to integers
 --------------------------------
@@ -16,7 +16,7 @@ Converting that to an integer and back gives itself
 
 Same result if we start with slight variations on the string
     >>> assert html == cn.integer_to_html(cn.html_to_int(html.lower()))
-    >>> assert html == cn.integer_to_html(cn.html_to_int(html.replace('#','0x')))
+    >>> assert html == cn.integer_to_html(cn.html_to_int(html.replace('#', '0x')))
 
 We can also use 3 single chars
     >>> assert html == cn.integer_to_html(cn.html_to_int('0x0F0'))

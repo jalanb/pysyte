@@ -19,6 +19,7 @@ Specify the error message if not found
     ...     assert False, 'Expected a ValueError'
     ... except ValueError as e:
     ...     assert e.args[0] == 'empty list'
+    ...
 
 Specify a default if not found
     >>> assert iteration.first_or([], 7) == 7
@@ -33,3 +34,4 @@ If not true for any item, expect a KeyError
     ...     assert False, 'Expected a KeyError'
     ... except KeyError as e:
     ...     assert e.args[0] == 'all odd'
+    ...

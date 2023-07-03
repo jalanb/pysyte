@@ -96,7 +96,7 @@ class StringPath(path_Path):
         Add substring to self
 
         >>> p = StringPath("/path/to")
-        >>> assert  p.__truediv__("fred") == p / "fred"
+        >>> assert p.__truediv__("fred") == p / "fred"
         >>> assert p / "fred" == "/path/to/fred"
         >>> assert p / None is p
         """
@@ -227,8 +227,8 @@ class StringPath(path_Path):
         """The path to the file changed to use the given ext
 
         >>> fred = "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred").extend_by("fred")       == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred")  == fred
+        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
         >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
         """
         copy = self[:]
@@ -418,11 +418,17 @@ class DotPath(StringPath):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
-        ...     '/home/guido/build/python.tar'))
+        >>> print(
+        ...     DotPath('/home/guido/bin').short_relative_path_to(
+        ...         '/home/guido/build/python.tar'
+        ...     )
+        ... )
         ../build/python.tar
-        >>> print(DotPath('/home/guido/bin').short_relative_path_to(
-        ...     '/mnt/guido/build/python.tar'))
+        >>> print(
+        ...     DotPath('/home/guido/bin').short_relative_path_to(
+        ...         '/mnt/guido/build/python.tar'
+        ...     )
+        ... )
         /mnt/guido/build/python.tar
         """
         relative = self.relpathto(destination)

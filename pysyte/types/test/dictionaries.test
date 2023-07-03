@@ -22,6 +22,7 @@ A LazyDefaultDict initialises with a method (not a type), which takes a key
 
     >>> def method(key):
     ...     return key < 10 and 'small' or 'big'
+    ...
 
     >>> stuff = dictionaries.LazyDefaultDict(method)
 
@@ -53,6 +54,7 @@ Any names which can't be converted aren't
     ...     assert False
     ... except AttributeError:
     ...     assert shallow['non sense'] == 2
+    ...
 
 It adds only only level of attributes
     >>> dictionary = {'stuff': 1, 'names': {'alan': 1, 'fred': 2}}
@@ -63,6 +65,7 @@ It adds only only level of attributes
     ...     assert False
     ... except AttributeError:
     ...     pass
+    ...
 
 A second class goes deeper
     >>> deep = dictionaries.RecursiveDictionaryAttributes(dictionary)

@@ -21,37 +21,41 @@ integer to ansi
     >>> small_int = random.randint(0, 15)
     >>> assert colour_numbers.integer_to_ansi(small_int) == small_int
 
-    >>> assert colour_numbers.integer_to_ansi(0x00005f) == 17
+    >>> assert colour_numbers.integer_to_ansi(0x00005F) == 17
     >>> assert colour_numbers.integer_to_ansi(0x000087) == 18
-    >>> assert colour_numbers.integer_to_ansi(0x0000af) == 19
-    >>> assert colour_numbers.integer_to_ansi(0x0000d7) == 20
-    >>> assert colour_numbers.integer_to_ansi(0x0000ff) == 21
+    >>> assert colour_numbers.integer_to_ansi(0x0000AF) == 19
+    >>> assert colour_numbers.integer_to_ansi(0x0000D7) == 20
+    >>> assert colour_numbers.integer_to_ansi(0x0000FF) == 21
 
-    >>> assert colour_numbers.integer_to_ansi(0x005f00) == 22
+    >>> assert colour_numbers.integer_to_ansi(0x005F00) == 22
     >>> assert colour_numbers.integer_to_ansi(0x008700) == 28
-    >>> assert colour_numbers.integer_to_ansi(0x00af00) == 34
-    >>> assert colour_numbers.integer_to_ansi(0x00d700) == 40
-    >>> assert colour_numbers.integer_to_ansi(0x00ff00) == 46
+    >>> assert colour_numbers.integer_to_ansi(0x00AF00) == 34
+    >>> assert colour_numbers.integer_to_ansi(0x00D700) == 40
+    >>> assert colour_numbers.integer_to_ansi(0x00FF00) == 46
 
-    >>> assert colour_numbers.integer_to_ansi(0x5f0000) == 52
+    >>> assert colour_numbers.integer_to_ansi(0x5F0000) == 52
     >>> assert colour_numbers.integer_to_ansi(0x870000) == 88
-    >>> assert colour_numbers.integer_to_ansi(0xaf0000) == 124
-    >>> assert colour_numbers.integer_to_ansi(0xd70000) == 160
-    >>> assert colour_numbers.integer_to_ansi(0xff0000) == 196
+    >>> assert colour_numbers.integer_to_ansi(0xAF0000) == 124
+    >>> assert colour_numbers.integer_to_ansi(0xD70000) == 160
+    >>> assert colour_numbers.integer_to_ansi(0xFF0000) == 196
 
-    >>> assert colour_numbers.integer_to_html(colour_numbers.ansi_to_int(196)) == '#FF0000'
+    >>> assert (
+    ...     colour_numbers.integer_to_html(colour_numbers.ansi_to_int(196)) == '#FF0000'
+    ... )
 
-    >>> assert colour_numbers.integer_to_ansi(0xfffffe) == 231
-    >>> assert colour_numbers.integer_to_ansi(0xffffff) == 231
+    >>> assert colour_numbers.integer_to_ansi(0xFFFFFE) == 231
+    >>> assert colour_numbers.integer_to_ansi(0xFFFFFF) == 231
 
     >>> assert colour_numbers.integer_to_ansi(0xAFD7FF) == 153
     >>> assert colour_numbers.integer_to_ansi(0x5FAF87) == 72
 
 
-    >>> assert colour_numbers.integer_to_ansi(0x1c1c1c) == 234
+    >>> assert colour_numbers.integer_to_ansi(0x1C1C1C) == 234
     >>> assert colour_numbers.integer_to_ansi(0xB2B2B2) == 249
 
-    >>> assert colour_numbers.integer_to_html(colour_numbers.ansi_to_int(249)) == '#B2B2B2'
+    >>> assert (
+    ...     colour_numbers.integer_to_html(colour_numbers.ansi_to_int(249)) == '#B2B2B2'
+    ... )
 
 Convert to ansi to integer and back
 ------------------------------------
@@ -65,7 +69,12 @@ The next iteration might take a while, so we'll skip a few points
     >>> step = random.randint(0xCC, 0xFF)
 
 Can convert from integer to hex string (html) and back again for any number
-    >>> assert all([colour_numbers.html_to_int(colour_numbers.integer_to_html(i)) == i for i in range(0x000000,0xFFFFFF,step)])
+    >>> assert all(
+    ...     [
+    ...         colour_numbers.html_to_int(colour_numbers.integer_to_html(i)) == i
+    ...         for i in range(0x000000, 0xFFFFFF, step)
+    ...     ]
+    ... )
 
     >>> assert colour_numbers.html_to_int('not a colour code') is None
 
@@ -89,22 +98,24 @@ In converting ANSI codes into html codes and back again some do not pass through
 
 Test method to recognise pure colours
     >>> def pure_colour(string):
-    ...    return string == '#808080' or all([bool(c in '0F') for c in string[1:]])
+    ...     return string == '#808080' or all([bool(c in '0F') for c in string[1:]])
+    ...
 
 By "pure colour" I mean anything with only 0 and F, and Silver ('#808080')
-    >>> silver = '#808080'
-    >>> pure_red = '#FF0000'
-    >>> pure_yellow = '#FFFF00'
-    >>> other = '#005f87'
-    >>> assert pure_colour(pure_red) and pure_colour(pure_yellow) and pure_colour(silver) and not pure_colour(other)
+    >>> assert pure_colour('#808080')
+    >>> assert pure_colour('#FF0000')
+    >>> assert pure_colour('#FFFF00')
+    >>> assert not pure_colour('#005f87')
 
 So now we can test that (with the exception of such pure colours)
     all colours pass through ANSI -> HTML -> ANSI
-    >>> for i in range(1,255):
+    >>> for i in range(1, 255):
     ...     html = colour_numbers.ansi_to_html(i)
-    ...     if pure_colour(html): continue
+    ...     if pure_colour(html):
+    ...         continue
     ...     if colour_numbers.html_to_ansi(html) != i:
     ...         break
+    ...
 
     >>> assert colour_numbers.small_ansi_to_html(0x0A) == '#00FF00'
     >>> assert colour_numbers.small_ansi_to_html(0x10) is None

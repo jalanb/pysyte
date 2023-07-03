@@ -2,6 +2,6 @@
     >>> from pysyte import similarities
     >>> assert 'popular similarity measures' in similarities.__doc__
 
-    >>> assert round(similarities.euclidean([0,3,4,5],[7,6,3,-1]), 1) == 9.7
-    >>> assert round(similarities.manhattan([10,20,10],[10,20,20]), 1) == 10
-    >>> assert round(similarities.minkowski([0,3,4,5],[7,6,3,-1], 3), 1) == 8.4
+    >>> assert round(similarities.euclidean([0, 3, 4, 5], [7, 6, 3, -1]), 1) == 9.7
+    >>> assert round(similarities.manhattan([10, 20, 10], [10, 20, 20]), 1) == 10
+    >>> assert round(similarities.minkowski([0, 3, 4, 5], [7, 6, 3, -1], 3), 1) == 8.4

@@ -2,7 +2,7 @@ The colour_names module
 =======================
 
     >>> from pysyte.colours import colour_names
-    >>> assert 'provide names for colours' in  colour_names.__doc__
+    >>> assert 'provide names for colours' in colour_names.__doc__
 
 
 Basic colour names
@@ -14,7 +14,9 @@ Start with the easy ones
     >>> assert colour_names.complementaries() == ['cyan', 'yellow', 'magenta']
 
 All of those are considered basic
-    >>> assert colour_names.basic() == colour_names.bw() + colour_names.primaries() + colour_names.complementaries()
+    >>> c_n = colour_names
+    >>> all_of_those = c_n.bw() + c_n.primaries() + c_n.complementaries()
+    >>> assert colour_names.basic() == all_of_those
 
 CGA colour names
 ----------------

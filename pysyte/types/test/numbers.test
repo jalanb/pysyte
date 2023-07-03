@@ -31,3 +31,4 @@ If they really can't convert an error is raised
     ...     print('fail')
     ... except numbers.NAN:
     ...     pass
+    ...
