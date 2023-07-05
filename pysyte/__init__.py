@@ -1,4 +1,4 @@
 """Pysyte extends Python"""
 
 
-__version__ = "0.7.66"
+__version__ = "0.8.0"
