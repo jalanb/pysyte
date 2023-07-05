@@ -49,7 +49,29 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(list(multiples.keys()), ["os"])
         self.assertEqual(multiples["os"], [10, 30])
 
-    def test_redundant_lines(self):
+    def test_redundant_has_line_numbers(self):
+        """Check that each module entry in unused imports has a line numbers
+
+        We will only test here for the first line number
+            See above to verify
+        """
         redundant = self.visitor.unused()
         self.assertEqual(redundant["system"][0], 30)
         self.assertEqual(redundant["killer"][0], 31)
+
+    def test_redundant_lines(self):
+        """The unused_lines() gives a dict keyed by line number
+
+        With values for all redundant modules imported on that line
+            See above to verify
+        """
+        lines = self.visitor.unused_lines()
+        assert 'os' in lines[10]
+        assert 'system' in lines[30]
+        assert 'killer' in lines[31]
+
+
+class TestErrorImports(unittest.TestCase):
+    def test_handles_missing_file(self):
+        with self.assertRaises(FileNotFoundError):
+            importers.parse("/not/a/file")
