@@ -2,6 +2,8 @@
 
 The classes all inherit from the original path.path
 """
+from __future__ import annotations
+
 import os
 import re
 import stat
@@ -86,11 +88,11 @@ class StringPath(path_Path):
         return f"<{self.__class__.__name__} {string}>"
 
     @deprecated(version="0.7.5", reason="Please use Python 3")
-    def __div__(self, other) -> "StringPath":
+    def __div__(self, other) -> StringPath:
         """Need to cover parent's use of older idiom"""
         return self.__truediv__(other)
 
-    def __truediv__(self, substring: str) -> "StringPath":
+    def __truediv__(self, substring: str) -> StringPath:
         """Handle the / operator
 
         Add substring to self
@@ -105,7 +107,7 @@ class StringPath(path_Path):
         full_string = os.path.join(str(self), substring)
         return makepath(full_string)
 
-    def __floordiv__(self, substrings: Sequence[str]) -> "StringPath":
+    def __floordiv__(self, substrings: Sequence[str]) -> StringPath:
         """Handle the // operator
 
         Add substrings to self like a path in local os
@@ -168,7 +170,7 @@ class StringPath(path_Path):
         return str(super().name)
 
     @property
-    def stem(self) -> "StringPath":
+    def stem(self) -> StringPath:
         stem, *_ = self.splitexts()
         return stem
 
@@ -176,7 +178,7 @@ class StringPath(path_Path):
     def stem_name(self) -> str:
         return self.stem.name
 
-    def splitexts(self) -> Tuple["StringPath", str]:
+    def splitexts(self) -> Tuple[StringPath, str]:
         """Split all extensions from the path
 
         >>> p = FilePath('here/fred.tar.gz')
@@ -196,7 +198,7 @@ class StringPath(path_Path):
                 ext = f"{ext_}{zipper}"
         return self.__class__(filename), ext
 
-    def add_ext(self, *args) -> "StringPath":
+    def add_ext(self, *args) -> StringPath:
         """Join all args as extensions
 
         Strip any leading `.` from args
@@ -812,27 +814,32 @@ def _make_module_path(arg):
 
 
 @singledispatch
+def makepaths(arg) -> Paths:
+    attribute = getattr(arg, "paths", [])
+    return makepaths(attribute) if attribute else makepaths(list(arg))
+
+@singledispatch
 def makepath(arg) -> StringPath:
-    attribute = getattr(arg, "path", False)
+    attribute = getattr(arg, "path", "")
     return makepath(attribute) if attribute else makepath(str(arg))
 
 
 path = makepath
 
 
-@makepath.register(type(None))  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+@makepath.register(type(None))
+def _mp(arg) -> StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
     return NonePath()
 
 
-@makepath.register(DotPath)  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+@makepath.register(DotPath)
+def __mp(arg) -> StringPath:
     return arg
 
 
-@makepath.register(str)  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+@makepath.register(str)
+def ____mp(arg) -> StringPath:
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
@@ -862,8 +869,8 @@ def imports():
     return {sys, os, re, stat}
 
 
-@makepath.register(type(os))  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+@makepath.register(type(os))
+def _____mp(arg) -> StringPath:
     """Make a path from a module"""
     if arg.__name__ == "builtins":
         return NonePath("builtins")
@@ -887,8 +894,8 @@ def _(arg) -> StringPath:
         raise ModuleNotFoundError(arg)
 
 
-@makepath.register(type(makepath))  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+@makepath.register(type(makepath))
+def ______mp(arg) -> StringPath:
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
     method = getattr(arg, "__wrapped__", arg)
@@ -899,7 +906,7 @@ def _(arg) -> StringPath:
 
 
 @makepath.register(type(DotPath))  # type: ignore[no-redef]
-def _(arg) -> StringPath:
+def _______mp(arg) -> StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
 
