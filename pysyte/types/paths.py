@@ -211,21 +211,21 @@ class StringPath(path_Path):
         string = ".".join([self] + list(exts))
         return makepath(string)
 
-    def add_missing_ext(self, ext: str) -> "StringPath":
+    def add_missing_ext(self, ext: str) -> StringPath:
         """Add that extension, if it is missing
 
-        >>> fred = makepath("fred.py")
-        >>> assert fred.add_missing_ext(".py") == fred
-        >>> assert fred.add_missing_ext(".txt").endswith(".py.txt")
+        >>> fred = makepath("fred")
+        >>> assert fred.add_missing_ext("") == fred
+        >>> fred_py = makepath("fred.py")
+        >>> assert fred.add_missing_ext(".py") == fred_py
+        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
         """
+        dot_ext = f'.{ext.lstrip(".")}'
         copy = self[:]
-        _stem, old = os.path.splitext(copy)
-        extension = f'.{ext.lstrip(".")}'
-        if old == extension:
-            return makepath(self)
-        return self.add_ext(extension)
+        _, self_ext = os.path.splitext(copy)
+        return makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
 
-    def extend_by(self, ext: str) -> "StringPath":
+    def extend_by(self, ext: str) -> StringPath:
         """The path to the file changed to use the given ext
 
         >>> fred = "/path/to/fred.fred"
@@ -235,7 +235,8 @@ class StringPath(path_Path):
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
-        return makepath(f'{filename}.{ext.lstrip(".")}')
+        ext_ = ext.lstrip(".")
+        return makepath(f'{filename}.{ext_}')
 
     def has_vcs_dir(self):
         for vcs_dir in (".git", ".svn", ".hg"):
