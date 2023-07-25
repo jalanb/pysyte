@@ -4,7 +4,7 @@ The punctuation module
     >>> from pysyte.types.literals import punctuation
     >>> assert "Handle punctuation" in punctuation.__doc__
 
-Named punctuation
+Known punctuation
 -----------------
 
 The module names the punctuation characters

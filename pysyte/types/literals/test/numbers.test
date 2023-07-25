@@ -4,7 +4,7 @@ The numbers module
     >>> from pysyte.types.literals import numbers
     >>> assert 'Handle numbers' in numbers.__doc__
 
-Named numbers
+Known numbers
 -------------
 
 The module names some numbers

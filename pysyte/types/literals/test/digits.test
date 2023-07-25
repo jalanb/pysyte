@@ -4,7 +4,7 @@ The digits module
     >>> from pysyte.types.literals import digits
     >>> assert 'Handle digits' in digits.__doc__
 
-Named digits
+Known digits
 ------------
 
 The module names the digits characters
