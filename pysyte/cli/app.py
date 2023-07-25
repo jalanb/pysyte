@@ -1,21 +1,22 @@
 """Provide a runnable app to pysyte"""
 
-import os
+from bdb import BdbQuit
 import sys
 
 from contextlib import ContextDecorator
 
 from pysyte.types.methods import Method
 from pysyte.cli.exceptions import rich_exceptions
-
-PASS = os.EX_OK
-FAIL = not PASS
+from pysyte import os
 
 
 def exit(method, locals_=None):
-    exit_code = FAIL
+    exit_code = os.EX_FAIL
     with rich_exceptions(locals_ if locals_ else {}):
-        exit_code = PASS if method() else FAIL
+        try:
+            exit_code = os.EX_OK if method() else os.EX_FAIL
+        except BdbQuit:
+            exit_code = os.EX_OK
     sys.exit(exit_code)
 
 

@@ -4,13 +4,13 @@ This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
 
-import os
 import bdb
 import sys
 from dataclasses import dataclass
 from typing import Optional
 
 from pysyte.cli import arguments
+from pysyte.cli import app
 from pysyte.cli.config import load_configs
 from pysyte.types.paths import makepath
 from pysyte.types.methods import Callable
@@ -42,6 +42,11 @@ ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsPars
 class CallerData:
     method: MainMethod
     add_args: Optional[ArgumentsParsers]
+
+
+def exit(main: Callable):
+    """Exit to shell with error"""
+    app.exit(main)
 
 
 def run(
@@ -102,10 +107,7 @@ def run(
                 return self.method(self.args)
             return self.method()
 
-    try:
-        caller = Caller(MainMethod(main_method), add_args)
-        if caller.method.in_main_module:
-            handler = arguments.ArgumentHandler()
-            sys.exit(handler.run(caller))
-    except bdb.BdbQuit:
-        return sys.exit(os.EX_OK)
+    caller = Caller(MainMethod(main_method), add_args)
+    if caller.method.in_main_module:
+        handler = arguments.ArgumentHandler()
+        app.exit(lambda: handler.run(caller))

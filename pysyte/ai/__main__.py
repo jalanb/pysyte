@@ -1,9 +1,10 @@
 """Example usage of OpenAPI calls"""
 
-import os
 import sys
 
 from rich import print
+
+from pysyte import os
 import pysyte.ai.open import OpenaiApp
 import pysyte.ai.open import wwts
 from pysyte.oss.getch import ask_user_simplified
