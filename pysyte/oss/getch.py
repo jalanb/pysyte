@@ -340,9 +340,11 @@ def ask_user_simplified(
     simplifier: Callable = lambda x: x.lower(),
 ):
     if prompt or default_key:
-        print(f"{prompt} [{default_key}] ", end="")
-    result = simplifier(getch())
-    if not result:
+        default_prompt = f"[{default_key}] " if default_key else ""
+        sys.stdout.write(f"{prompt} {default_prompt}")
+        sys.stdout.flush()
+    result = simplifier(get_key())
+    if not result or result in ('^i', '^j', '^m'):
         result = default_key
     if not result:
         raise KeyboardInterrupt
