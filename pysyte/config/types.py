@@ -9,7 +9,11 @@ from pysyte.types.dictionaries import NameSpaces
 from pysyte.types.paths import FileTypes
 
 
-class PysyteConfiguration(NameSpaces):
+class Configuration(NameSpaces):
+    """We'll use a new name now"""
+
+
+class PysyteConfiguration(Configuration):
     def __init__(self, stem):
         self.path = self.as_path(stem)
         self.data = self.load(self.path) if self.path else {}
@@ -80,4 +84,4 @@ class ConfigPaths(ConfigPathsData):
         result = {}
         for config in self.configs(name):
             result.update(config)
-        return NameSpaces(result)
+        return Configuration(result)
