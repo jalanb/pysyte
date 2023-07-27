@@ -756,11 +756,13 @@ class FileType:
     type_: type
     ext: str
 
-    def file(self, path_):
-        return path_.add_missing_ext(self.ext)
+    def extend(self, file_stem: StrPath) -> FilePath:
+        """Returns file stem with missing extension added."""
+        return file_stem.add_missing_ext(self.ext)
 
-    def typed(self, path_):
-        file = self.file(path_)
+    def typed(self, file_stem: StrPath) -> Any: # actually returns instance of self.type_, but mypy is hard
+        """Adds extension to stem and attempts to cast it to the associated type."""
+        file = self.extend(file_stem)
         if file:
             return self.type_(file)
         return None
@@ -768,21 +770,32 @@ class FileType:
 
 @dataclass
 class FileTypes:
+    """A collection of FileTypes
+
+    Assuming "fred.yml", or "fred.yaml" exists, then
+    >>> class YamlConfig:
+    >>>     pass
+    >>> configs = FileTypes((YamlConfig, "yaml"), (YamlConfig, "yml"))
+    >>> fred = configs.typed("fred")
+    >>> assert isinstance(fred, YamlConfig)
+    """
     file_types: List[FileType]
 
-    def types(self):
-        types_ = self.file_types
-        return [_ if isinstance(_, FileType) else FileType(*_) for _ in types_]
+    def __init__(self, file_types: List[FileType]):
+        """Convert all elements in file_types to FileType instances."""
+        self.file_types = [_ if isinstance(_, FileType) else FileType(*_) for _ in file_types]
 
-    def files(self, path_):
-        for file_type in self.types():
-            file = file_type.file(path_)
+    def extend(self, file_stem: FilePath) -> list[FilePath]
+        """The first real file matching the stem with one of our extensions"""
+        for file_type in self.file_types:
+            file = file_type.extend(file_stem)
             if file:
                 yield file
 
-    def typed(self, path_):
-        for file_type in self.types():
-            typed = file_type.typed(path_)
+    def typed(self, file_stem: FilePath) -> Any: # actually yields instances of self.file_types, but mypy is still hard 
+        """An iterator of all possible extensions of that stem which are real files"""
+        for file_type in self.file_types:
+            typed = file_type.typed(file_stem)
             if typed:
                 yield typed
 
