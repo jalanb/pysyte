@@ -236,7 +236,7 @@ class StringPath(path_Path):
         copy = self[:]
         filename, _ = os.path.splitext(copy)
         ext_ = ext.lstrip(".")
-        return makepath(f'{filename}.{ext_}')
+        return makepath(f"{filename}.{ext_}")
 
     def has_vcs_dir(self):
         for vcs_dir in (".git", ".svn", ".hg"):
@@ -778,6 +778,7 @@ def _make_module_path(arg):
 def makepaths(arg) -> Paths:
     attribute = getattr(arg, "paths", [])
     return makepaths(attribute) if attribute else makepaths(list(arg))
+
 
 @singledispatch
 def makepath(arg) -> StringPath:

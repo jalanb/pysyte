@@ -31,6 +31,7 @@ class PysyteConfiguration(Configuration):
 
 class YamlConfiguration(PysyteConfiguration):
     """Read a yaml config file and parse it to attributes"""
+
     def __init__(self, module):
         self.exts = ["yml", "yaml"]
         super().__init__(paths.path(module))
