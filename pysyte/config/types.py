@@ -73,7 +73,7 @@ class ConfigPaths(ConfigPathsData):
     def files(self, name):
         for path_ in self.paths:
             stem = path_ / name
-            for file in list(self.file_types.files(stem)):
+            for file in list(self.file_types.extend(stem)):
                 if file:
                     yield file
 
