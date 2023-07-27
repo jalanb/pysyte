@@ -776,12 +776,6 @@ def _make_module_path(arg):
 
 
 @singledispatch
-def makepaths(arg) -> Paths:
-    attribute = getattr(arg, "paths", [])
-    return makepaths(attribute) if attribute else makepaths(list(arg))
-
-
-@singledispatch
 def makepath(arg) -> StringPath:
     attribute = getattr(arg, "path", "")
     return makepath(attribute) if attribute else makepath(str(arg))
@@ -867,10 +861,50 @@ def ______mp(arg) -> StringPath:
     return _make_module_path(method)
 
 
-@makepath.register(type(DotPath))  # type: ignore[no-redef]
+@makepath.register(type(DotPath))
 def _______mp(arg) -> StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
+
+
+@dataclass
+class Paths:
+    """A collection of paths"""
+
+    paths: list[StrPath]
+
+    def __iter__(self):
+        yield self.paths
+
+
+@singledispatch
+def makepaths(arg: Paths) -> Paths:
+    return arg
+
+
+@makepaths.register(type(None))
+def _mps(arg) -> Paths:
+    return Paths([])
+
+
+@makepaths.register(list)
+def __mps(arg) -> Paths:
+    return Paths([makepath(_) for _ in arg])
+
+
+@makepaths.register(str)
+def ___mps(arg) -> Paths:
+    return Paths([makepath(arg)])
+
+
+@makepaths.register(StrPath)
+def ____mps(arg) -> Paths:
+    return Paths([arg])
+
+
+@makepaths.register(str)
+def _____mps(arg) -> Paths:
+    return Paths([makepath(arg)])
 
 
 @deprecated(reason="use pathstr()", version="0.7.57")

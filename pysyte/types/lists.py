@@ -24,7 +24,7 @@ class Nones(list):
     def check(self, i) -> bool:
         if self.limit < 0:
             return True
-        if len(args) <= self.limit:
+        if len(self.args) <= self.limit:
             return True
         raise TypeError(f"{self.__class__.__name__} has nothing at {i=}")
 
@@ -35,13 +35,13 @@ class Nones(list):
 
 class One(Nones):
     def __init__(self, *args):
-        self.one, *_ = _args
+        self.one, *_ = args
         super().__init__(1, [self.one])
 
 
 class Two(Nones):
     def __init__(self, *args):
-        self.one, self.two, *_ = _args
+        self.one, self.two, *_ = args
         super().__init__(2, args)
 
 

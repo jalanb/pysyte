@@ -4,7 +4,6 @@ This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
 
-import bdb
 import sys
 from dataclasses import dataclass
 from typing import Optional

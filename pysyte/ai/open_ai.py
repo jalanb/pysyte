@@ -1,8 +1,8 @@
 """Handle openai for pysyte"""
+from dataclasses import dataclass
 
 import openai
 
-from pysyte.config import apis
 from pysyte.ai import apis
 
 
@@ -23,6 +23,7 @@ class OpenaiApp:
         return response.choices
 
 
-openai = JalanbConfiguration(__file__)
-wwts = WwtsConfiguration()
-app = OpenaiApp(wwts)
+jalanb = OpenaiApp("jalanb")
+wwts = OpenaiApp("wwts")
+
+app = wwts
