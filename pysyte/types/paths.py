@@ -747,12 +747,15 @@ class DirectPath(DotPath, PathAssertions):
 
 
 @dataclass
-class FileTypeData:
+class FileType:
+    """A file extension and associated type
+
+    >>> from pym.ast import AST
+    >>> FileType(AST, "py")
+    """
     type_: type
     ext: str
 
-
-class FileType(FileTypeData):
     def file(self, path_):
         return path_.add_missing_ext(self.ext)
 
@@ -764,11 +767,9 @@ class FileType(FileTypeData):
 
 
 @dataclass
-class FileTypesData:
+class FileTypes:
     file_types: List[FileType]
 
-
-class FileTypes(FileTypesData):
     def types(self):
         types_ = self.file_types
         return [_ if isinstance(_, FileType) else FileType(*_) for _ in types_]
