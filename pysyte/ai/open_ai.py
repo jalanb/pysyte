@@ -1,4 +1,5 @@
 """Handle openai for pysyte"""
+from dataclasses import dataclass
 
 from dataclasses import dataclass
 
@@ -29,5 +30,6 @@ class OpenaiApp:
 
 
 jalanb = OpenaiApp("jalanb")
-app = jalanb
-app.ask(["Have we started now?"])
+wwts = OpenaiApp("wwts")
+
+app = wwts

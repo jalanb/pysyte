@@ -4,8 +4,8 @@ import sys
 
 from rich import print
 
+from pysyte import os
 from pysyte.ai.open_ai import OpenaiApp
-from pysyte.cli import exits
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
 
@@ -19,10 +19,10 @@ models = NameSpaces(
 )
 
 
-def main() -> exits.ExitCode:
-
+def main():
     app = OpenaiApp("wwts")
 
+    breakpoint()
     question = " ".join(sys.argv[1:]) or app.config.prompt.final
     messages = [
         {"role": "system", "content": app.config.prompt.prefix},
@@ -31,7 +31,7 @@ def main() -> exits.ExitCode:
         {"role": "system", "content": app.config.prompt.rules},
         {"role": "user", "content": question},
     ]
-    choices = app.ask(messages)
+    choices = app.ask([], app.config)
 
     allowed = []
     for i, choice in enumerate(choices, 1):
@@ -55,4 +55,5 @@ def main() -> exits.ExitCode:
 
 
 if __name__ == "__main__":
-    sys.exit(int(main()))
+    x = os.EX_OK if main() else 1
+    sys.exit(x)

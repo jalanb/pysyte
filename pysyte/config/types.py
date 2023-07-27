@@ -8,9 +8,11 @@ from typing import List
 from rich import inspect
 from yamlreader import yaml_load
 
+from yamlreader import yaml_load
+
+from pysyte.types import paths
 from pysyte.types.dictionaries import NameSpaces
 from pysyte.types.file_types import FileTypes
-from pysyte.types.trees import paths
 
 
 class Configuration(NameSpaces):
