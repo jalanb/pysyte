@@ -9,6 +9,7 @@
 from typing import List
 from dataclasses import dataclass
 
+from pysyte.types.paths import StrPath
 from pysyte.types.paths import FilePath
 
 
@@ -16,9 +17,14 @@ from pysyte.types.paths import FilePath
 class FileType:
     """A file extension and associated type
 
-    >>> from pym.ast import AST
-    >>> FileType(AST, "py")
+    >>> class Python:
+    >>>     path: FilePath
+
+    >>> ft = FileType(Python, "py")
+    >>> typed = ft.typed(__file__)
+    >>> assert isinstance(typed, Python)
     """
+
     type_: type
     ext: str
 
