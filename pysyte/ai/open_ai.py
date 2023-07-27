@@ -1,4 +1,5 @@
 """Handle openai for pysyte"""
+from dataclasses import dataclass
 
 import openai
 
@@ -23,6 +24,7 @@ class OpenaiApp:
         return response.choices
 
 
-openai = JalanbConfiguration(__file__)
-wwts = WwtsConfiguration()
-app = OpenaiApp(wwts)
+jalanb = OpenaiApp("jalanb")
+wwts = OpenaiApp("wwts")
+
+app = wwts
