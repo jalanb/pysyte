@@ -344,7 +344,7 @@ def ask_user_simplified(
         sys.stdout.write(f"{prompt} {default_prompt}")
         sys.stdout.flush()
     result = simplifier(get_key())
-    if not result or result in ('^i', '^j', '^m'):
+    if not result or result in ("^i", "^j", "^m"):
         result = default_key
     if not result:
         raise KeyboardInterrupt
