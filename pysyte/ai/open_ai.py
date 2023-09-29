@@ -28,3 +28,4 @@ jalanb = OpenaiApp("jalanb")
 wwts = OpenaiApp("wwts")
 
 app = wwts
+app.ask("Have we started now?")
