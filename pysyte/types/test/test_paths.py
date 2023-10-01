@@ -7,16 +7,17 @@ from unittest import TestCase
 
 
 from pysyte.types import paths
+from pysyte.types.trees import files
 
 
-class SourcePath(paths.FilePath):
+class SourcePath(files.FilePath):
     pass
 
 
 SourcePath.__file_class__ = SourcePath
 
 
-class MockFilePathWithLines(paths.FilePath):
+class MockFilePathWithLines(files.FilePath):
     """Mock some known lines into a file"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
@@ -131,7 +132,7 @@ class TestPaths(TestCase):
         self.assertEqual(self.path_to_test.directory(), self.path_to_test.parent)
 
     def test_no_div_for_file(self):
-        path = paths.FilePath(__file__)
+        path = files.FilePath(__file__)
         with self.assertRaises(paths.PathError):
             path / "fred"
 

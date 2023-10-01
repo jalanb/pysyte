@@ -10,8 +10,7 @@ from typing import Any
 from typing import List
 from dataclasses import dataclass
 
-from pysyte.types.paths import StrPath
-from pysyte.types.paths import FilePath
+from pysyte.types.trees import files
 
 
 @dataclass
@@ -19,7 +18,7 @@ class FileType:
     """A file extension and associated type
 
     >>> class Python:
-    >>>     path: FilePath
+    >>>     path: files.FilePath
 
     >>> ft = FileType(Python, "py")
     >>> typed = ft.typed(__file__)
@@ -29,12 +28,12 @@ class FileType:
     type_: type
     ext: str
 
-    def extend(self, file_stem: StrPath) -> FilePath:
+    def extend(self, file_stem: files.FilePath) -> files.FilePath:
         """Returns file stem with missing extension added."""
         return file_stem.add_missing_ext(self.ext)
 
     def typed(
-        self, file_stem: StrPath
+        self, file_stem: files.FilePath
     ) -> Any:  # actually returns instance of self.type_, but mypy is hard
         """Adds extension to stem and attempts to cast it to the associated type."""
         file = self.extend(file_stem)
