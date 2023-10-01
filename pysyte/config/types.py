@@ -4,7 +4,8 @@ from dataclasses import dataclass
 
 from yamlreader import yaml_load
 
-from pysyte.types import paths
+from pysyte.types.trees import paths
+from pysyte.types.trees.files import FilePath
 from pysyte.types.dictionaries import NameSpaces
 from pysyte.types.file_types import FileTypes
 
