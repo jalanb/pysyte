@@ -1,6 +1,8 @@
 """Handle bash commands for pysyte"""
 
 import os
+import psutil
+
 from contextlib import contextmanager
 from subprocess import getstatusoutput
 from typing import List
@@ -52,3 +54,13 @@ def run(command: str) -> str:
     if status:
         raise BashError(f"{run_command}\n{output}")
     return output
+
+
+def parent_command() -> str:
+    """Find the parent of this process
+
+    Returns: the command line of the parent process
+    """
+    parent_pid = os.getppid()
+    parent = psutil.Process(parent_pid)
+    return parent.cmdline()
