@@ -11,6 +11,19 @@ from typing import Generator
 from six import StringIO
 
 
+def print_out(*args, **kwargs):
+    """Direct print() to sys.stdout
+
+    This function only exists to rhyme with print_err() below
+    """
+    print(*args, **kwargs)
+
+
+def print_err(*args, **kwargs):
+    """Direct print() to sys.stderr"""
+    kwargs['file'] = sys.stderr
+    print(*args, **kwargs)
+
 @contextmanager
 def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
     """Divert stdout into the given stream
@@ -32,7 +45,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 
 @contextmanager
 def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
-    """Divert stdout into the given stream
+    """Divert stderr into the given stream
 
     >>> with swallow_stderr() as string:
     ...     print('hello', end='', file=sys.stderr)

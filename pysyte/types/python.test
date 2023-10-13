@@ -1,0 +1,34 @@
+pysyte.types.python
+===================
+
+Make a method to suppress sys.stdout and/or sys.stderr
+
+    >>> from pysyte.streams import print_out, print_err
+
+
+Doctest normally shows all streams
+
+    >>> print_out("Hello"); print_err("World")
+    Hello
+    World
+
+Suppress stderr
+    >>> with quietly:
+    ...     print_out("Hello"); print_err("World")
+    Hello
+
+Suppress stdout
+    >>> with Quietly:
+    ...     print_out("Hello"); print_err("World")
+    World
+
+Suppress both
+    >>> with QUIETLY as suppressor:
+    ...     print_out("Hello")
+    ...     print_err("World")
+
+Suppressed streams were stored in attributes
+
+    >>> assert "Hello" in suppressor.stdout
+    >>> assert "World" in suppressor.stderr
+
