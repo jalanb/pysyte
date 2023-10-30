@@ -1,4 +1,4 @@
-"""This module handles lists"""
+"""Handle lists for pysyte"""
 
 import itertools
 from typing import Any, Callable, Iterable, List, Tuple, TypeVar

@@ -1,7 +1,7 @@
 """Handle digits for pysyte"""
 
-false = zero = "0"
-true = one = "1"
+zero = "0"
+one = "1"
 two = "2"
 three = "3"
 four = "4"
