@@ -1,7 +1,6 @@
 pysyte.types.python
 ===================
 
-Make a method to suppress sys.stdout and/or sys.stderr
 
     >>> from pysyte.streams import print_out, print_err
 
