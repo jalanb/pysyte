@@ -1,12 +1,11 @@
 """Handle bash commands for pysyte"""
 
 import os
-import psutil
-
 from contextlib import contextmanager
 from subprocess import getstatusoutput
 from typing import List
 
+import psutil
 from boltons.setutils import IndexedSet
 
 

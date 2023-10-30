@@ -20,13 +20,14 @@ Hello
 
 """
 
-from _io import TextIOWrapper as Wrapper
+import contextlib
+import io
 from sys import stderr as err
 from sys import stdout as out
 from typing import Callable
 from typing import List
-import contextlib
-import io
+
+from _io import TextIOWrapper as Wrapper
 
 
 def quieten(name: str, streams: List[Wrapper]) -> Callable:
@@ -37,13 +38,13 @@ def quieten(name: str, streams: List[Wrapper]) -> Callable:
         if out in streams:
             if err in streams:
                 with contextlib.redirect_stdout(stdout):
-                    with contextlib.redirect_stderr(sdtderr):
+                    with contextlib.redirect_stderr(stderr):
                         yield
             else:
                 with contextlib.redirect_stdout(stdout):
                     yield
         elif err in streams:
-            with contextlib.redirect_stderr(sdtderr):
+            with contextlib.redirect_stderr(stderr):
                 yield
 
         method.stdout, method.stderr = stdout.getvalue(), stderr.getvalue()

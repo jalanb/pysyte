@@ -1,9 +1,8 @@
 """Test the methods module"""
 
 
-from io import StringIO
 import unittest
-
+from io import StringIO
 
 from pysyte.types import methods
 

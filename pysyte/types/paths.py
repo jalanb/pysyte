@@ -8,7 +8,6 @@ import os
 import re
 import stat
 import sys
-from dataclasses import dataclass
 from fnmatch import fnmatch
 from typing import Iterable
 from typing import List
@@ -16,45 +15,11 @@ from typing import List
 from deprecated import deprecated
 
 from pysyte.types.lists import flatten
+from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.makes import path
 from pysyte.types.trees.paths import PathPath
-from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.strings import NoPath
-from pysyte.types.trees.errors import PathError
-
-
-def ext_language(ext, exts=None, simple=True):
-    """Language of the extension in those extensions
-
-    If exts is supplied, then restrict recognition to those exts only
-    If exts is not supplied, then use all known extensions
-
-    >>> ext_language(".py") == "python"
-    True
-    """
-    languages = {
-        ".py": "python",
-        ".py2": "python" if simple else "python2",
-        ".py3": "python" if simple else "python3",
-        ".sh": "bash",
-        ".bash": "bash",
-        ".pl": "perl",
-        ".txt": "english",
-    }
-    ext_languages = {_: languages[_] for _ in exts} if exts else languages
-    return ext_languages.get(ext)
-
-
-def ignore_fnmatches(ignores):
-    def ignored(a_path):
-        if not ignores:
-            return False
-        for ignore in ignores:
-            if a_path.fnmatch_part(ignore):
-                return True
-        return False
-
-    return ignored
+from pysyte.types.trees.strings import StringPath
 
 
 def imports():
@@ -71,46 +36,6 @@ def pathstr(string: str) -> StringPath:
     if os.path.isfile(string) or os.path.isdir(string):
         return path(string)
     return NoPath(string)
-
-
-def cd(path_to: StringPath) -> bool:
-    """cd to the given path
-
-    If the path is a file, then cd to its parent directory
-
-    Remember current directory before the cd
-        so that we can cd back there with cd('-')
-    """
-    if path_to == "-":
-        previous = getattr(cd, "previous", "")
-        if not previous:
-            raise PathError("No previous directory to return to")
-        return cd(path(previous))
-    if not hasattr(path_to, "cd"):
-        path_to = path(path_to)
-    try:
-        previous = os.getcwd()
-    except OSError as e:
-        if "No such file or directory" not in str(e):
-            raise
-        previous = ""
-    if path_to.isdir():
-        cd_path = path_to
-    elif path_to.isfile():
-        cd_path = path_to.parent
-    elif not path_to.exists():
-        return False
-    else:
-        raise PathError(f"Cannot cd to {path_to}")
-    cd.previous = previous  # type: ignore
-    os.chdir(cd_path)
-    return True
-
-
-try:
-    setattr(cd, "previous", os.getcwd())
-except (OSError, AttributeError):
-    setattr(cd, "previous", "")
 
 
 def as_path(string_or_path):

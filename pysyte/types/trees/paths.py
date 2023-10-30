@@ -1,4 +1,7 @@
+import os
+import stat
 from dataclasses import dataclass
+from fnmatch import fnmatch
 from functools import singledispatch
 
 from pysyte.types.trees import makes
@@ -48,7 +51,7 @@ class Path(RealPath):
         return str(super().basename())
 
     @property
-    def stem(self) -> StringPath:
+    def stem(self) -> strings.StringPath:
         stem, *_ = self.splitexts()
         return stem
 
@@ -276,12 +279,12 @@ def _mps(arg) -> Paths:
 
 @makepaths.register(list)
 def __mps(arg) -> Paths:
-    return Paths([makepath(_) for _ in arg])
+    return Paths([makes.path(_) for _ in arg])
 
 
 @makepaths.register(str)
 def ___mps(arg) -> Paths:
-    return Paths([makepath(arg)])
+    return Paths([makes.path(arg)])
 
 
 @makepaths.register(strings.StringPath)
@@ -289,6 +292,6 @@ def make_string_paths(arg) -> Paths:
     return Paths([arg])
 
 
-@makes.makepath.register(Path)
+@makes.path.register(Path)
 def make_path_path(arg) -> strings.StringPath:
     return arg

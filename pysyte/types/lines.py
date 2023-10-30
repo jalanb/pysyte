@@ -67,12 +67,12 @@ def _number_format(count=999):
 
 
 def add_numbers(lines, first=0):
-    def numbered(line_, line_format_):
+    def numbered(i, line_, line_format_):
         prefix = line_format_ % (first + i + 1)
         return f"{prefix}{line_.rstrip()}"
 
     for i, line in enumerate(lines):
-        yield numbered(line, _number_format(len(lines) + first))
+        yield numbered(i, line, _number_format(len(lines) + first))
 
 
 def sed(lines, args):

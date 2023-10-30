@@ -1,7 +1,9 @@
 import os
 
-from pysyte.types.trees import strings
+from pysyte.types.trees import dirs
+from pysyte.types.trees import errors
 from pysyte.types.trees import paths
+from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 
 
@@ -9,13 +11,13 @@ class FilePath(paths.Path, PathAssertions):
     """A path to a known file"""
 
     def __truediv__(self, child):
-        raise PathError("%r has no children" % self)
+        raise errors.PathError("%r has no children" % self)
 
     def __iter__(self):
         for line in self.stripped_lines():
             yield line
 
-    def __add__(self, other: StrPath) -> StringPath:
+    def __add__(self, other: strings.StrPath) -> strings.StringPath:
         return self.addext(other)
 
     def contains(self, other: strings.StrPath) -> bool:
@@ -29,7 +31,7 @@ class FilePath(paths.Path, PathAssertions):
         """
         try:
             return [_.rstrip() for _ in self.lines(retain=False)]
-        except (OSError, IOError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
@@ -73,10 +75,10 @@ class FilePath(paths.Path, PathAssertions):
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
-        return cd(self.parent)
+        return dirs.cd(self.parent)
 
     def dirname(self):
-        return DirectPath(os.path.dirname(self))
+        return dirs.DirectPath(os.path.dirname(self))
 
     parent = property(dirname)
 
@@ -108,3 +110,25 @@ class FilePath(paths.Path, PathAssertions):
     @language.setter
     def language(self, value):
         self._language = value
+
+
+def ext_language(ext, exts=None, simple=True):
+    """Language of the extension in those extensions
+
+    If exts is supplied, then restrict recognition to those exts only
+    If exts is not supplied, then use all known extensions
+
+    >>> ext_language(".py") == "python"
+    True
+    """
+    languages = {
+        ".py": "python",
+        ".py2": "python" if simple else "python2",
+        ".py3": "python" if simple else "python3",
+        ".sh": "bash",
+        ".bash": "bash",
+        ".pl": "perl",
+        ".txt": "english",
+    }
+    ext_languages = {_: languages[_] for _ in exts} if exts else languages
+    return ext_languages.get(ext)

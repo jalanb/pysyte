@@ -1,8 +1,8 @@
 """Import imports for pysyte"""
-import os
+import ast
 import importlib
 import linecache
-import ast
+import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass

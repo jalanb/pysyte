@@ -9,14 +9,13 @@ from pysyte.ai.open_ai import OpenaiApp
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
 
-
 models = NameSpaces(
-    dict(
-        davinci="text-davinci-003",
-        curie="text-curie-001",
-        babbage="text-babbage-001",
-        ada="text-ada-001",
-    )
+    {
+        "davinci": "text-davinci-003",
+        "curie": "text-curie-001",
+        "babbage": "text-babbage-001",
+        "ada": "text-ada-001",
+    }
 )
 
 

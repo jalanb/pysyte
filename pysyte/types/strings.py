@@ -5,15 +5,6 @@
 from functools import total_ordering
 
 
-def pp(name, value):
-    """
-    >>> assert pp("x", 0) == "x: int == 0"
-    """
-    named = name
-    valued = f"{value.__class__.__name__} == {value!r}"
-    return f"{named}: {valued}"
-
-
 class Repper:
     """Add a repr() to anything that can do str(self)"""
 

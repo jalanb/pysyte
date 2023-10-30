@@ -13,7 +13,6 @@ Methods handle two known representations:
 
 import re
 
-
 from pysyte.colours import colour_names
 
 

@@ -3,7 +3,6 @@
 
 import unittest
 
-
 from pysyte.cli import config
 
 

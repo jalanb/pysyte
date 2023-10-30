@@ -7,9 +7,9 @@ from typing import DefaultDict
 from typing import List
 
 from pysyte import __version__
+from pysyte.bash.screen import alt_screen
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.types import lines as pylines
-from pysyte.bash.screen import alt_screen
 
 
 class LinesParser(ArgumentsParser):
@@ -42,7 +42,6 @@ class LinesParser(ArgumentsParser):
         args = {
             "a": ["at", "lines", "inty", "show that line"],
             "c": ["copy", "clipboard", "boolean", "copy text to clipboard"],
-            # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
             "e": ["expression", "ed", "string", "sed expression"],
             "f": ["first", "lines", "inty", "the first line to show", "1"],
             "i": [
