@@ -167,14 +167,14 @@ class ArgumentHandler:
             ctrl_c = 3
             return ctrl_c
         except BdbQuit:
-            return os.X_OK
+            return os.EX_OK
         except SystemExit as e:
             return e.code
         except Exception as e:
             stackprinter.show(e, style=pysyte.stackprinter.style)
 
 
-def parser(description=None, usage=None, epilog=None):
+def parser(description=None, usage=None, epilog=None) -> ArgumentsParser:
     """Make a command line argument parser"""
 
     if usage:
@@ -191,7 +191,7 @@ def parser(description=None, usage=None, epilog=None):
     return DescribedParser(description, usage, epilog)
 
 
-def test_parser():
+def test_parser() -> ArgumentsParser:
     """A parser for testing convenience"""
     return parser("Testing", "Use this from a test", "")
 

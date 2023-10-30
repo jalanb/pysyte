@@ -76,9 +76,9 @@ class LinesParser(ArgumentsParser):
         return args
 
 
-def add_args(old_parser: ArgumentsParser) -> LinesParser:
+def add_args(parser: ArgumentsParser) -> LinesParser:
     """Create a new parser to handle some lines from given parser"""
-    result = LinesParser(old_parser.parser)
+    result = LinesParser(parser.parser)
     result.add_lines()
     return result
 

@@ -30,7 +30,7 @@ class ScriptError(NotImplementedError):
     pass
 
 
-def add_args(parser):
+def add_args(parser: ArgumentsParser):
     """Add arguments to the command line parser"""
     parser.string("y", "symbol", help="The bash symbol to be changed")
     parser.string("", "path", help="The path to be added")

@@ -8,7 +8,7 @@ from pysyte.cli.main import run
 from pysyte.types import paths
 
 
-def add_args(parser):
+def add_args(parser: ArgumentsParser):
     """Parse out command line arguments"""
     parser.positional("source", help="path to source(s) to be checked")
     parser.boolean("", "edit", help="Show a command for editing")
