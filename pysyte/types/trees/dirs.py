@@ -1,18 +1,18 @@
 import os
 
 from pysyte.types.trees import strings
-from pysyte.types.trees.files import FilePath
-from pysyte.types.trees.paths import PathPath
+from pysyte.types.trees import files
+from pysyte.types.trees import paths
 from pysyte.types.trees.asserts import PathAssertions
 
 
-class DirectPath(PathPath, PathAssertions):
+class DirectPath(paths.PathPath, PathAssertions):
     """A path which knows it might be a directory
 
     And that files are in directories
     """
 
-    __file_class__ = FilePath
+    __file_class__ = files.FilePath
 
     def __iter__(self):
         for a_path in self.listdir():
@@ -25,7 +25,7 @@ class DirectPath(PathPath, PathAssertions):
 
         Otherwise see if other is listed "in" this directory
         """
-        if isinstance(other, PathPath):
+        if isinstance(other, paths.PathPath):
             return self in other.parent_directories()
         return str(other) in [_.name for _ in self.listdir()] + [".", ".."]
 
@@ -86,7 +86,7 @@ class DirectPath(PathPath, PathAssertions):
 
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
-        self.chmod(ChmodValues.readonly_directory)
+        self.chmod(paths.ChmodValues.readonly_directory)
 
     def touch_file(self, filename):
         """Touch a file in the directory"""
