@@ -6,3 +6,4 @@ pudb
 pytest-pudb
 pytest-sugar
 sh
+textual
