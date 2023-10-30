@@ -62,7 +62,7 @@ class FileTypes:
             _ if isinstance(_, FileType) else FileType(*_) for _ in file_types
         ]
 
-    def extend(self, file_stem: FilePath) -> List[FilePath]:
+    def extend(self, file_stem: files.FilePath) -> List[files.FilePath]:
         """The first real file matching the stem with one of our extensions"""
         for file_type in self.file_types:
             file = file_type.extend(file_stem)
@@ -70,7 +70,7 @@ class FileTypes:
                 yield file
 
     def typed(
-        self, file_stem: FilePath
+        self, file_stem: files.FilePath
     ) -> Any:  # actually yields instances of self.file_types, but mypy is hard
         """An iterator of all possible extensions of that stem which are real files"""
         for file_type in self.file_types:
