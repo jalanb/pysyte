@@ -94,6 +94,7 @@ class DefaultDict(defaultdict):
         return f"<{name}\n    {value}\n>"
 
 
+@dataclass
 class LazyDefaultDict(DefaultDict):
     """A defaultdict which waits for key access to provide default
 
@@ -131,8 +132,8 @@ class NameSpace(dict):
 class NameSpaces(NameSpace):
     """Convert dictionary keys to attributes of self, recursively
 
-    >>> instance = NameSpaces({'fred': {'mary': 1}})
-    >>> assert instance.fred.mary == 1
+    >>> spaces = NameSpaces({'fred': {'mary': 1}})
+    >>> assert spaces.fred.mary == 1
     """
 
     def __init__(self, thing):
@@ -143,17 +144,22 @@ class NameSpaces(NameSpace):
 
 
 @dataclass
-class SpaceNameData:
+class SpaceName:
+    """Access attributes of a thing like a dict
+
+    >>> class Fred:
+    ...     foo = "Hello"
+    ...     bar = "World"
+    >>> dic = SpaceName(Fred())
+    >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
+    """
+
     proxy: Any
-
-
-class SpaceName(SpaceNameData):
-    """Access attributes of a thing like a dict"""
 
     def __getitem__(self, name):
         return self.getitem(name)
 
-    def getitem(self, name):
+    def getitem(self, name: str):
         try:
             return getattr(self.proxy, name)
         except AttributeError:
@@ -161,10 +167,22 @@ class SpaceName(SpaceNameData):
 
 
 class SpaceNames(SpaceName):
-    def getitem(self, name_):
-        name, *names_ = name_.split(".", 1)
+    """Access attributes of a thing like a dict, recursively
+
+    >>> class Fred:
+    ...     foo = "Hello"
+    ...     bar = "World"
+    >>> fred = Fred()
+    >>> fred.fred = Fred()
+    >>> dic = SpaceNames(fred)
+    >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
+    >>> assert dic['fred']['foo'] == "Hello" == dic['foo']
+    """
+
+    def getitem(self, string: str):
+        name, *names = string.split(".")
         value = super().getitem(name)
         try:
-            return SpaceNames(value).getitem(".".join(names))
+            return SpaceNames(value).getitem(names)
         except IndexError:
             return value
