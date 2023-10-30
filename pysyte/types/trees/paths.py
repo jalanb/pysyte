@@ -5,7 +5,16 @@ from pysyte.types.trees import makes
 from pysyte.types.trees import strings
 
 
-class PathPath(strings.StringPath):
+class RealPath(strings.StringPath):
+    """This is a path to a real place, e.g. on a filesystem
+
+    It might be a file, link, dir, ...
+
+    We assume it has a familiar root
+    """
+
+
+class Path(RealPath):
     """This class adds path-handling to a string"""
 
     def parent_directory(self):
@@ -28,9 +37,9 @@ class PathPath(strings.StringPath):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> PathPath('/path/to/module.py').dirnames() == ['/', 'path', 'to']
+        >>> Path('/path/to/module.py').dirnames() == ['/', 'path', 'to']
         True
-        >>> PathPath('path/to/module.py').dirnames() == ['path', 'to']
+        >>> Path('path/to/module.py').dirnames() == ['path', 'to']
         True
         """
         return [str(_) for _ in self.directory().split(os.path.sep)]
@@ -40,11 +49,11 @@ class PathPath(strings.StringPath):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> p = PathPath('/path/to/x.py')
+        >>> p = Path('/path/to/x.py')
         >>> assert p.paths == p.dirpaths()
         """
         parts = self.split()
-        result = [PathPath(parts[0] or "/")]
+        result = [Path(parts[0] or "/")]
         for name in parts[1:]:
             result.append(result[-1] / name)
         return result
@@ -54,9 +63,9 @@ class PathPath(strings.StringPath):
 
         No empty parts are included
 
-        >>> PathPath('path/to/module.py').directories() == ['path', 'to']
+        >>> Path('path/to/module.py').directories() == ['path', 'to']
         True
-        >>> PathPath('/path/to/module.py').directories() == ['/', 'path', 'to']
+        >>> Path('/path/to/module.py').directories() == ['/', 'path', 'to']
         True
         """
         return [d for d in self.dirnames() if d]
@@ -67,7 +76,7 @@ class PathPath(strings.StringPath):
         None,
         """ This path's parent directories, as a list of strings.
 
-        >>> PathPath('/path/to/module.py').parents == ['/', 'path', 'to']
+        >>> Path('/path/to/module.py').parents == ['/', 'path', 'to']
         True
         """,
     )
@@ -78,7 +87,7 @@ class PathPath(strings.StringPath):
         None,
         """ This path's parent directories, as a sequence of paths.
 
-        >>> paths = PathPath('/usr/bin/vim').paths
+        >>> paths = Path('/usr/bin/vim').paths
         >>> assert paths[-1].exists()  # vim might be a link
         >>> assert paths[-2] == paths[-1].parent
         >>> assert paths[-3] == paths[-2].parent
@@ -105,10 +114,10 @@ class PathPath(strings.StringPath):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print(PathPath('/home/guido/bin').short_relative_path_to(
+        >>> print(Path('/home/guido/bin').short_relative_path_to(
         ...     '/home/guido/build/python.tar'))
         ../build/python.tar
-        >>> print(PathPath('/home/guido/bin').short_relative_path_to(
+        >>> print(Path('/home/guido/bin').short_relative_path_to(
         ...     '/mnt/guido/build/python.tar'))
         /mnt/guido/build/python.tar
         """
@@ -244,6 +253,6 @@ def make_string_paths(arg) -> Paths:
     return Paths([arg])
 
 
-@makes.makepath.register(PathPath)
+@makes.makepath.register(Path)
 def make_path_path(arg) -> strings.StringPath:
     return arg
