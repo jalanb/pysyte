@@ -28,28 +28,24 @@ def unwrap(method: Callable) -> tuple[Callable, Callable | None]:
 
 
 @dataclass
-class MethodData:
-    """A callable object, usually a function or method"""
-
-    method: Callable
-    wrapper: Callable | None = None
-
-    def __post_init__(self):
-        method, wrapped = unwrap(self.method)
-        if wrapped:
-            self.method = wrapped
-            self.wrapper = method
-
-
-class Method(MethodData):
+class Method:
     """A callable method with some convenience attributes"""
 
+    callable: Callable
+
     def __post_init__(self):
-        self.code = self.method.__code__
-        unwrapped = unwrap(self.method)
-        self.wrapped = unwrapped if unwrapped != self.method else None
+        self.code = self.callable.__code__
         self.init_frame = inspect.currentframe()
-        self.callers = [self.init_frame.f_back]
+        assert self.init_frame
+
+    def __str__(self):
+        return self.code
+
+    def __repr__(self):
+        return f"""<{self.__class__.__name__} {self.module}{self.name}
+
+{self.doc}
+>"""
 
     def __str__(self):
         return self.code
@@ -61,7 +57,11 @@ class Method(MethodData):
 >"""
 
     def run(self, *args, **kwargs):
-        return self.method(*args, **kwargs)
+        return self.callable(*args, **kwargs)
+
+    @property
+    def name(self) -> Optional[ModuleType]:
+        return self.callable.name
 
     @property
     def name(self) -> Optional[ModuleType]:
@@ -73,22 +73,8 @@ class Method(MethodData):
         return self.method(*args, **kwargs)
 
     @property
-    def ast(self) -> ast.AST:
-        from pym.ast.parse import parse
-
-        return parse(self.code)
-
-    @property
-    def caller(self) -> FrameType | None:
-        return self.callers[-1]
-
-    @property
-    def filename(self) -> str:
-        return self.code.co_filename
-
-    @property
-    def module(self) -> ModuleType | None:
-        return inspect.getmodule(self.method)
+    def module(self) -> Optional[ModuleType]:
+        return inspect.getmodule(self.callable)
 
     @property
     def module_name(self) -> Optional[ModuleType]:
@@ -96,7 +82,7 @@ class Method(MethodData):
 
     @property
     def doc(self) -> str:
-        return inspect.getdoc(self.method) or ""
+        return inspect.getdoc(self.callable) or ""
 
     def __getattr__(self, name):
         try:
