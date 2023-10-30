@@ -98,8 +98,10 @@ class Duration:
             "uu": "subs",
         }
         attrs = list(aliases.values())
-        a_counts = dict.fromkeys(attrs, 0)
+        a_counts = {_: 0 for _ in attrs}
         a_counts["subs"] = 0.0
+        data = dict(zip(attrs, a_counts))
+        names = self.__dict__
         for k, v in kwargs.items():
             if k in aliases:
                 k = aliases[k]

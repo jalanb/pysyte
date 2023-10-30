@@ -115,6 +115,7 @@ def name(n: int) -> str:
 
     if n < 0:
         return f"minus {name(-n)}"
+    result_ = f"{n:_}"
     data = {k: v for k, v in globals().items() if isinstance(v, int)}
     numbers = dict(bidict(data).inverse)
     if n in numbers:

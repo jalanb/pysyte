@@ -17,17 +17,6 @@ class RealPath(strings.StringPath):
     We assume it has a familiar root
     """
 
-    def __post_init__(self):
-        string = str(self)
-        init = string[0]
-        if init == "/":
-            self.root = "/"
-        else:
-            path = self.parent
-            while not path.isroot():
-                path = path.parent
-            self.root = path
-
     @property
     def root(self) -> strings.StringPath:
         """
@@ -230,3 +219,34 @@ class Paths:
 
     def __iter__(self):
         yield self.paths
+
+
+@singledispatch
+def makepaths(arg) -> Paths:
+    """In the face of ambiguity, refuse the temptation to guess."""
+    raise NotImplementedError(f"Do not know the type of arg: {arg!r}")
+
+
+@makepaths.register(type(None))
+def _mps(arg) -> Paths:
+    return Paths([])
+
+
+@makepaths.register(list)
+def __mps(arg) -> Paths:
+    return Paths([makepath(_) for _ in arg])
+
+
+@makepaths.register(str)
+def ___mps(arg) -> Paths:
+    return Paths([makepath(arg)])
+
+
+@makepaths.register(strings.StringPath)
+def make_string_paths(arg) -> Paths:
+    return Paths([arg])
+
+
+@makes.makepath.register(Path)
+def make_path_path(arg) -> strings.StringPath:
+    return arg

@@ -25,7 +25,7 @@ def ext_language(ext, exts=None, simple=True):
     If exts is supplied, then restrict recognition to those exts only
     If exts is not supplied, then use all known extensions
 
-    >>> ext_language('.py') == 'python'
+    >>> ext_language(".py") == "python"
     True
     """
     languages = {
@@ -645,7 +645,7 @@ def pwd():
 def first_dir(path_string: str):
     """Get the first directory in that path
 
-    >>> first_dir('usr/local/bin') == 'usr'
+    >>> first_dir("usr/local/bin") == "usr"
     True
     """
     parts = path_string.split(os.path.sep)
@@ -655,7 +655,7 @@ def first_dir(path_string: str):
 def first_dirs(path_strings):
     """Get the roots of those paths
 
-    >>> first_dirs(['usr/bin', 'bin']) == ['usr', 'bin']
+    >>> first_dirs(["usr/bin", "bin"]) == ["usr", "bin"]
     True
     """
     return [first_dir(_) for _ in path_strings]
@@ -664,7 +664,7 @@ def first_dirs(path_strings):
 def unique_first_dirs(path_strings):
     """Get the unique roots of those paths
 
-    >>> unique_first_dirs(['usr/local/bin', 'bin']) == set(['usr', 'bin'])
+    >>> unique_first_dirs(["usr/local/bin", "bin"]) == set(["usr", "bin"])
     True
     """
     return set(first_dirs(path_strings))
@@ -789,7 +789,8 @@ def tab_complete(strings, globber=add_stars):
 def pyc_to_py(path_to_file):
     """Change some file extensions to those which are more likely to be text
 
-    >>> assert pyc_to_py("vim.pyc") == "vim.py"
+    >>> pyc_to_py("vim.pyc") == "vim.py"
+    True
     """
     stem, ext = os.path.splitext(path_to_file)
     if ext == ".pyc":

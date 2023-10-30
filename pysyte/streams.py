@@ -62,7 +62,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     >>> with swallow_stdout() as stream:
     ...     print("hello", end="")
     ...
-    >>> assert stream.read() == "hello"
+    >>> assert stream.getvalue() == "hello"
     """
     saved = sys.stdout
     if stream is None:
@@ -82,7 +82,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     >>> with swallow_stderr() as string:
     ...     print("hello", end="", file=sys.stderr)
     ...
-    >>> assert "hello" in string.read()
+    >>> assert string.getvalue() == "hello"
     """
     saved = sys.stderr
     if stream is None:
@@ -100,11 +100,10 @@ def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:
-    ...     print("hello", end=" ", file=sys.stdout)
+    ...     print("hello", end=" ", file=sys.stderr)
     ...     print("world", end="", file=sys.stderr)
     ...
-    >>> out, err = streams
-    >>> assert out.read() + err.read() == "hello world"
+    >>> assert streams[0].getvalue() + streams[1].getvalue() == "hello world"
     """
     out_stream = StringIO()
     err_stream = StringIO()

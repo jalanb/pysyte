@@ -1,10 +1,15 @@
 """handle numbers for pysyte
 
->>> zero = otml(0)
->>> one = otml(1)
->>> two = otml(2)
->>> many = otml(random.randint(3, 9))
->>> lots = otml(random.randint(10, 9_999_999_999))
+>>> one = lots([""])
+>>> assert one.limit == 1
+>>> two = lots(["", ""])
+>>> assert two.limit == 2
+>>> three = lots([1, "7", 9])
+>>> assert three.limit == 3
+>>> four = lots([9, 5, 3, 0])
+>>> assert four.limit == 4
+
+>>> assert two + one == three
 
 >>> assert not zero
 >>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))
@@ -12,6 +17,7 @@
 
 from dataclasses import dataclass
 from functools import total_ordering
+
 
 
 @dataclass
@@ -30,22 +36,74 @@ class OTML(OTMLData):
     def __postinit__(self):
         """Set some 'is_...' booleans
 
-        >>> i = OTML(7)
-        >>> assert i.is_many
-        >>> assert not (i.is_one or i.is_two or i.is_lots)
-        """
-        rules = {
-            "one": self.i == 1,
-            "two": self.i == 2,
-            "many": 2 < self.i <= 9,
-            "lots": self.i > 9,
-        }
-        [setattr(f'is_{k}', v) for k, v in rules.items()]
+    def __str__(self):
+        return str(int(self))
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {int(self)} {self.args}>"
+
+    def __add__(self, other):
+        return lots(self.args + other.args)
+
+    def __sub__(self, other):
+        return lots(self.args[-len(other.args) :])  # + other.args)
+
+    def __eq__(self, other):
+        return self.__class__.__name__ == other.__class__.__name__
+
+    def __lt__(self, other):
+        return int(self) < int(other)
+
+    def __getitem__(self, i) -> Any:
+        self.check(i)
+        return super().__getitem__(i)
+
+    @property
+    def max(self):
+        return 5
+
+    def check(self, i) -> bool:
+        if self.limit >= self.max:
+            return True
+        if len(self.args) > self.limit:
+            raise IndexError(f"{self.__class__.__name__} has nothing at {i=}")
+        return True
+        raise TypeError(f"{self.__class__.__name__} has nothing at {i=}")
 
 
-def otml(i: int) -> OTML:
-    try:
-        j = int(i)
-        return OTML(j)
-    except (ValueError, TypeError):
-        raise TypeError(f'Cannot use {i!r} in "1, 2, many, lots"')
+class One(Nones):
+    def __post_init__(self):
+        self.limit = 1
+        self.check_args()
+
+
+class Two(Nones):
+    def __post_init__(self):
+        self.limit = 2
+        self.check_args()
+
+
+class Many(Two):
+    def __post_init__(self):
+        self.limit = 4
+        self.check_args()
+
+
+class Lots(Many):
+    def __post_init__(self):
+        self.limit = self.max + 1
+        self.check_args()
+
+
+def lots(args: list, many=3):
+    a = len(args)
+    match a:
+        case 0:
+            return None
+        case 1:
+            return One(args)
+        case 2:
+            return Two(args)
+    if a <= many:
+        return Many(args)
+    return Lots(args)

@@ -4,15 +4,15 @@
 
 Doctest normally shows all streams
 
->>> std.out("Hello")
->>> std.err("World")
+>>> print_out("Hello")
+>>> print_err("World")
 Hello
 World
 
 Suppress stderr
 >>> with quietly as suppressor:
-...     std.out("Hello")
-...     std.err("World")
+...     print_out("Hello")
+...     print_err("World")
 ...
 Hello
 
@@ -30,13 +30,7 @@ from typing import Callable
 from _io import TextIOWrapper as Wrapper
 
 
-@dataclass
-class StdStreams:
-    stdout: str = ""
-    stderr: str = ""
-
-
-def quieten(name: str, streams: list[Wrapper]) -> Callable:
+def quieten(name: str, streams: List[Wrapper]) -> Callable:
     @contextlib.contextmanager
     def method():
         stdout = io.StringIO()
