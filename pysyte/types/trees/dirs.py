@@ -18,6 +18,9 @@ class DirectPath(paths.PathPath, PathAssertions):
         for a_path in self.listdir():
             yield a_path
 
+    def __add__(self, other: StringPath) -> StringPath:
+        return paths.makepath(f"{self}/{other}")
+
     def contains(self, other: strings.StrPath) -> bool:
         """If other is a path then use that sense of "in"
 
