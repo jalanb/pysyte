@@ -17,11 +17,11 @@ from pysyte.cli import lines
 from pysyte.cli.main import run
 
 
-def add_args(main_parser):
-    parser = lines.add_args(main_parser)
-    parser.positional("searches", help="What to search for")
-    parser.add_files(action="search")
-    return parser
+def add_args(parser: ArgumentsParser):
+    parser_ = lines.add_args(parser)
+    parser_.positional("searches", help="What to search for")
+    parser_.add_files(action="search")
+    return parser_
 
 
 def parse_sought(string, separator):

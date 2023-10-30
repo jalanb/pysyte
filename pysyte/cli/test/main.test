@@ -28,7 +28,7 @@ Running the method through the run() function makes it a program
 
 run() can also take a function which adds cli arguments
 
-    >>> def add_args(parser):
+    >>> def add_args(parser: ArgumentsParser) -> ArgumentsParser:
     ...     parser.add_argument('stuff')
     ...     return parser
     ...

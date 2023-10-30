@@ -15,7 +15,7 @@ class ScriptError(NotImplementedError):
     pass
 
 
-def add_args(parser):
+def add_args(parser: ArgumentsParser):
     parser.boolean("", "codes", help="Show raw codes")
     parser.boolean(
         "",
