@@ -26,11 +26,11 @@ def default_args(arg=None):
     return arg
 
 
-def method():
-    pass
+def none() -> type(None):
+    return None
 
 
-def average(a, b, stream):
+def printer(a, b, stream):
     result = (a + b) // 2
     print("Average of", a, "and", b, "is", result, file=stream)
     return result
@@ -52,8 +52,11 @@ class MemoizeTest(unittest.TestCase):
         docstring = initials.__doc__.splitlines()[0]
         self.assertEqual("Print initials of the name", docstring)
 
-    def test_method_module(self):
-        self.assertNotEqual(method.__module__, initials.__module__)
+    def test_same_module(self):
+        self.assertEqual(none.__module__, printer.__module__)
+
+    def test_different_modules(self):
+        self.assertNotEqual(none.__module__, initials.__module__)
 
     def test_second_call_different_args(self):
         """Second call of method gives twice the output"""
@@ -112,7 +115,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertRaises(KeyError, initials.invalidate, "not called")
 
     def test_use_wtithout_decorator(self):
-        memo_average = methods.memoized(average)
+        memo_average = methods.memoized(printer)
         one = memo_average(1, 6, self.stream)
         two = memo_average(2, 5, self.stream)
         three = memo_average(1, 6, self.stream)
@@ -144,4 +147,4 @@ class MemoizeTest(unittest.TestCase):
 
     def test_full_coverage(self):
         """Some tests needed to get full coverage"""
-        self.assertIsNone(method())
+        self.assertIsNone(none())
