@@ -1,3 +1,4 @@
+bidict
 boltons
 deprecated
 inflect>=2.1.0
