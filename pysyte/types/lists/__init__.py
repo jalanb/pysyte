@@ -1,4 +1,4 @@
-"""This module handles lists"""
+"""Handle lists for pysyte"""
 
 import itertools
 
