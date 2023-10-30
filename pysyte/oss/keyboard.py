@@ -3,7 +3,6 @@
 
 import sys
 
-
 from pysyte.oss import getch
 
 

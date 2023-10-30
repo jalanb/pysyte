@@ -12,10 +12,9 @@
 >>> assert two + one == three
 
 """
-from typing import Any
-
 from dataclasses import dataclass
 from dataclasses import field
+from typing import Any
 
 
 @dataclass
@@ -30,7 +29,7 @@ class Nones(list):
     def check_args(self):
         try:
             self.check(len(self.args))
-        except IndexError as e:
+        except IndexError:
             args = self.args
             raise ValueError(f"{self.__class__.__name__}({args=!r}): Too many args")
 

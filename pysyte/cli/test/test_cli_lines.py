@@ -3,9 +3,8 @@
 
 import unittest
 
-
-from pysyte.cli import lines
 from pysyte.cli import arguments
+from pysyte.cli import lines
 
 
 class TestPaths(unittest.TestCase):

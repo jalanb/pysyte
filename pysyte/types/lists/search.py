@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from random import randint
-from random import shuffle
 from functools import partial
 from typing import Callable
 from typing import List
@@ -9,8 +7,8 @@ from typing import List
 >>> faxed, fixed = applied((fax, fix), (+7, -999))
 >>> assert faxed == (7, 0)
 >>> assert fixed == (0, -999)
-
 """
+
 
 fax = lambda x: max(0, x)
 fix = lambda x: min(0, x)
@@ -102,8 +100,9 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
         -1
         >>> i = 1024
         >>> items = list(range(i))
-        >>> j = randint(0, i)
-        >>> shuffle(items)
+        >>> import random
+        >>> j = random.randint(0, i)
+        >>> random.shuffle(items)
         >>> assert binary_search(items, j) < i
     """
     lo, hi = 0, len(arr) - 1
@@ -111,7 +110,6 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
     while lo <= hi:
         i = average.pick(lo, hi)
         item = arr[i]
-        next_ = average.next_(item, sought)
         if item == sought:
             return i
         elif item < sought:

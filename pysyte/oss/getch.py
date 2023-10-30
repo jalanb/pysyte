@@ -12,18 +12,17 @@ Adapted from
         No need here for Windows/Carbon
 """
 
-import re
 import getpass
+import re
 import signal
 import sys
+import termios
 import tty
 from curses import ascii
 from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
-
-import termios
 
 
 class NoKeys(StopIteration):
@@ -229,7 +228,7 @@ def name(codes):
         _ = codes.pop()
         return get_extended_key_name(codes)
     except AttributeError:
-        return control_key_name(code)
+        return control_key_name(codes)
 
 
 def control_key_name(code):

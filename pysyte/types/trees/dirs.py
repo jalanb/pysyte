@@ -1,8 +1,10 @@
 import os
 
-from pysyte.types.trees import strings
+from pysyte.types.trees import errors
 from pysyte.types.trees import files
+from pysyte.types.trees import makes
 from pysyte.types.trees import paths
+from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 
 
@@ -18,7 +20,7 @@ class DirectPath(paths.PathPath, PathAssertions):
         for a_path in self.listdir():
             yield a_path
 
-    def __add__(self, other: StringPath) -> StringPath:
+    def __add__(self, other: strings.StringPath) -> strings.StringPath:
         return paths.makepath(f"{self}/{other}")
 
     def contains(self, other: strings.StrPath) -> bool:
@@ -69,7 +71,7 @@ class DirectPath(paths.PathPath, PathAssertions):
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
-        return cd(StringPath(self))
+        return cd(strings.StringPath(self))
 
     def list_dirs(self, pattern=None):
         return self.list_dirs_files(pattern)[0]
@@ -122,3 +124,55 @@ class DirectPath(paths.PathPath, PathAssertions):
 
     def isroot(self):
         return str(self) == "/"
+
+
+def ignore_fnmatches(ignores):
+    def ignored(a_path):
+        if not ignores:
+            return False
+        for ignore in ignores:
+            if a_path.fnmatch_part(ignore):
+                return True
+        return False
+
+    return ignored
+
+
+def cd(path_to: strings.StringPath) -> bool:
+    """cd to the given path
+
+    If the path is a file, then cd to its parent directory
+
+    Remember current directory before the cd
+        so that we can cd back there with cd('-')
+    """
+    if path_to == "-":
+        previous = getattr(cd, "previous", "")
+        if not previous:
+            raise errors.PathError("No previous directory to return to")
+        return cd(makes.path(previous))
+    if not hasattr(path_to, "cd"):
+        path_to = makes.path(path_to)
+    try:
+        previous = os.getcwd()
+    except OSError as e:
+        if "No such file or directory" not in str(e):
+            raise
+        previous = ""
+    if path_to.isdir():
+        cd_path = path_to
+    elif path_to.isfile():
+        cd_path = path_to.parent
+    elif not path_to.exists():
+        return False
+    else:
+        raise errors.PathError(f"Cannot cd to {path_to}")
+    cd.previous = previous  # type: ignore
+    os.chdir(cd_path)
+    return True
+
+
+try:
+    setattr(cd, "previous", os.getcwd())  # noqa
+except (OSError, AttributeError):
+    setattr(cd, "previous", "")  # noqa

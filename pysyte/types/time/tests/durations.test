@@ -1,14 +1,14 @@
 pysyte.types.time.durations
 ===========================
 
-    >>> pysyte.types.time import durations
+    >>> from pysyte.types.time import durations
     >>> assert 'durations for pysyte' in durations.__doc__
 
 
 Duration
 --------
 
-    >>> pysyte.types.time.durations import Duration
+    >>> from pysyte.types.time.durations import Duration
     >>> one = Duration(0, 0, 1, 15)
     >>> assert one.minutes == 1 and one.seconds == 15
     >>> two = Duration(0, 0, 2, 45)

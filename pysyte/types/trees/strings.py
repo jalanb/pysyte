@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 from typing import Sequence
 from typing import Tuple
 from typing import Union
-from path import Path as JasonOrrendorfPath
+
 from deprecated import deprecated
+from path import Path as JasonOrrendorfPath
+
+from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees.files import FilePath
+from pysyte.types.trees.makes import makepath
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
 
@@ -269,9 +275,6 @@ class NoPath(StringPath):
     def contains(self, other: StrPath) -> bool:
         """As this is not a real path, just use the substring sense"""
         return str(other) in str(self)
-
-    def parent(string):
-        parent_string = "/".join(string.split("/")[:-1]) or "/"
 
     @property
     def parent(self):

@@ -2,8 +2,8 @@ from random import randint
 from unittest import TestCase
 from unittest.mock import patch
 
-from pysyte.types import lines
 from pysyte.randoms import flip
+from pysyte.types import lines
 
 
 class TestLines(TestCase):

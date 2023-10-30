@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import datetime
 from functools import singledispatch
-from typing import Tuple
 
 from lazy import lazy
 
@@ -101,8 +100,6 @@ class Duration:
         attrs = list(aliases.values())
         a_counts = {_: 0 for _ in attrs}
         a_counts["subs"] = 0.0
-        data = dict(zip(attrs, a_counts))
-        names = self.__dict__
         for k, v in kwargs.items():
             if k in aliases:
                 k = aliases[k]
@@ -242,7 +239,7 @@ def __dur(items=None) -> Duration:
     >>> assert passed.minutes == 6
     >>> assert passed.seconds == 7 == duration(6, 7).seconds
     """
-    items = items if items else tuple()
+    items = items if items else ()
     if not all(isinstance(i, int) for i in items):
         raise TypeError(f"Not ints: {items=}")
     return Duration(items)

@@ -9,17 +9,16 @@ import re
 import shlex
 import sys
 from bdb import BdbQuit
-from pprint import pformat
 from functools import partial
+from pprint import pformat
 from typing import Any
 from typing import List
 
 import stackprinter
 
 from pysyte.cli.config import load_configs
-from pysyte.types.numbers import inty
-
 from pysyte.cli.config import pysyte
+from pysyte.types.numbers import inty
 
 
 def config(arguments):
@@ -104,7 +103,7 @@ class ArgumentsParser(object):
         return args
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = post_parser if post_parser else getattr(self, "post_parser")
+        post_parse = post_parser if post_parser else self.post_parser
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
         post_parser_ = post_parse if post_parse else lambda x: x

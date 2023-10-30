@@ -1,3 +1,7 @@
+from pysyte.types.trees.errors import MissingPath
+from pysyte.types.trees.errors import PathError
+
+
 class PathAssertions:
     """Assertions that can be made about paths"""
 

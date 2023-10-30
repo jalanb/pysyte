@@ -3,9 +3,8 @@
 
 import unittest
 
-
-from pysyte.cli import paths
 from pysyte.cli import arguments
+from pysyte.cli import paths
 from pysyte.types.paths import path
 
 
