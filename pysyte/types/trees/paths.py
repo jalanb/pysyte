@@ -12,10 +12,41 @@ class RealPath(strings.StringPath):
 
     We assume it has a familiar root
     """
+    @property
+    def root(self) -> strings.StringPath:
+        """
+        >>> assert RealPath('/usr/local').root == '/'
+        """
+        return strings.StringPath("/")
+
+    def isroot(self) -> bool:
+        """
+        >>> assert RealPath('/').isroot()
+        """
+        return self == self.parent
+
+    def isabs(self) -> bool:
+        """
+        >>> assert RealPath("/one/two").isabs()
+        >>> assert not RealPath("one/two").isabs()
+        """
+        return self.startswith(self.root)
 
 
 class Path(RealPath):
     """This class adds path-handling to a string"""
+
+    @property
+    def name(self) -> str:
+        return str(super().basename())
+
+    @property
+    def stem(self) -> StringPath:
+        stem, *_ = self.splitexts()
+        return stem
+
+    @property
+    def stem_name(self) -> str:
 
     def parent_directory(self):
         if self.isroot():
@@ -190,9 +221,6 @@ class Path(RealPath):
         """Whether this path points to same place as the other"""
         return self.expand() == other.expand()
 
-    def isroot(self):
-        raise NotImplementedError("Only a directory path can be a root")
-
     def ishidden(self):
         """A 'hidden file' has a name starting with a '.'"""
         s = str(self.basename())
@@ -213,7 +241,6 @@ class Path(RealPath):
             return bool(os.stat(self).st_mode & executable_bits)
         except OSError:
             return False
-
 
 @dataclass
 class Paths:
