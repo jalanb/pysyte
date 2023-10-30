@@ -41,7 +41,6 @@ class LinesParser(ArgumentsParser):
         args = {
             "a": ["at", "lines", "inty", "show that line"],
             "c": ["copy", "clipboard", "boolean", "copy text to clipboard"],
-            # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
             "e": ["expression", "ed", "string", "sed expression"],
             "f": ["first", "lines", "inty", "the first line to show", "1"],
             "i": [

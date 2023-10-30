@@ -1,5 +1,4 @@
 """Handle different OS platforms"""
-
 import importlib
 import platform as python_platform
 from subprocess import run

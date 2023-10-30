@@ -1,6 +1,7 @@
 """Handle configs from program name"""
 
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from pysyte import __file__ as path_to_pysyte
 from pysyte.config.types import ConfigPaths

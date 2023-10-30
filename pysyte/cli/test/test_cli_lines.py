@@ -2,7 +2,8 @@
 
 import unittest
 
-from pysyte.cli import arguments, lines
+from pysyte.cli import arguments
+from pysyte.cli import lines
 
 
 class TestPaths(unittest.TestCase):

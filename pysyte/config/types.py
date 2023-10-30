@@ -7,10 +7,9 @@ from typing import List
 from rich import inspect
 from yamlreader import yaml_load
 
-from pysyte.types.trees import paths
-from pysyte.types.trees.files import FilePath
 from pysyte.types.dictionaries import NameSpaces
 from pysyte.types.file_types import FileTypes
+from pysyte.types.trees import paths
 
 
 class Configuration(NameSpaces):
@@ -39,6 +38,7 @@ class ConfigFile(ABC):
     def __init__(self, path: paths.StringPath):
         super().__init__(self.load())
 
+    @abstractmethod
     def load(self):
         raise NotImplementedError
 

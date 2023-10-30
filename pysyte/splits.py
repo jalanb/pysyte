@@ -3,7 +3,8 @@
 import re
 from typing import Any, List, Optional, Tuple
 
-from pysyte.types.literals import nones, punctuation
+from pysyte.types.literals import nones
+from pysyte.types.literals import punctuation
 
 
 def _default_separator() -> str:
@@ -50,7 +51,8 @@ def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> Li
         separator_regexp = _default_separator()
     if not separator_regexp:
         return string.split()
-    return re.split(separator_regexp, string, maxsplit)
+    regexp = re.compile(separator_regexp)
+    return regexp.split(string, maxsplit)
 
 
 def split_and_strip(
@@ -67,7 +69,8 @@ def split_and_strip(
         separator_regexp = _default_separator()
     if not separator_regexp:
         return string.split()
-    return [item.strip() for item in re.split(separator_regexp, string, maxsplit)]
+    regexp = re.compile(separator_regexp)
+    return [_.strip() for _ in regexp.split(string, maxsplit)]
 
 
 def split_and_strip_without(

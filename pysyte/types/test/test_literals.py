@@ -2,7 +2,10 @@
 
 import unittest
 
-from pysyte.types.literals import ansi, digits, numbers, punctuation
+from pysyte.types.literals import ansi
+from pysyte.types.literals import digits
+from pysyte.types.literals import numbers
+from pysyte.types.literals import punctuation
 
 
 class TestLiterals(unittest.TestCase):

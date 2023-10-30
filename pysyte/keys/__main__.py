@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+from pysyte.cli import arguments
 from pysyte.cli.main import run
 from pysyte.oss import getch
 
@@ -13,7 +14,7 @@ class ScriptError(NotImplementedError):
     pass
 
 
-def add_args(parser: ArgumentsParser):
+def add_args(parser: arguments.ArgumentsParser) -> arguments.ArgumentsParser:
     parser.boolean("", "codes", help="Show raw codes")
     parser.boolean(
         "",

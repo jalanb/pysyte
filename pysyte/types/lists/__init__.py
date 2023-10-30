@@ -1,7 +1,12 @@
 """Handle lists for pysyte"""
 
 import itertools
-from typing import Any, Callable, Iterable, List, Tuple, TypeVar
+from typing import Any
+from typing import Callable
+from typing import Iterable
+from typing import List
+from typing import Tuple
+from typing import TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
 

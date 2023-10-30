@@ -6,6 +6,8 @@ Usage: python3 -m pysyte.kat [options] [files]
 
 from pysyte.cli import arguments, lines
 from pysyte.cli.app import App
+from pysyte.types.lines import arg_lines
+from pysyte.types.lines import sed
 
 
 def parse_args():
@@ -19,7 +21,7 @@ def kat(app):
     for file in app.args.files():
         text = file.read()
         start, lines_in = arg_lines(text, app.args)
-        lines_out = args.sed(lines_in, start)
+        lines_out = sed(lines_in, start)
         text_ = "\n".join(lines_out)
         print(f"{text_}\n")
     return True

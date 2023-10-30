@@ -32,8 +32,8 @@ class ColouredTail(object):
         for colour_name in colour_names.cga():
             attr_name = colour_name.replace(" ", "_")
             setattr(self, attr_name, partial(self.colour_text, colour_name))
-        setattr(self, "reddy", partial(self.colour_text, "light red"))
-        setattr(self, "none", partial(self.colour_text, None))
+        self.reddy = partial(self.colour_text, "light red")
+        self.none = partial(self.colour_text, None)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.head!r}{self.tail!r}>"
