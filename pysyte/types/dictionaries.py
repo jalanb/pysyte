@@ -101,9 +101,11 @@ class LazyDefaultDict(DefaultDict):
         and provides a value
     """
 
-    def __init__(self, method):
+    method: Any = None
+
+    def __init__(self, method: Any):
         self.method = method
-        super(LazyDefaultDict, self).__init__(None)
+        super().__init__(None)
 
     def __missing__(self, key):
         result = self.method(key)
