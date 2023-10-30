@@ -6,233 +6,17 @@ The classes all inherit from the original path.path
 from __future__ import annotations
 
 from fnmatch import fnmatch
-import os
+from typing import Iterable
+from typing import List
+
+from deprecated import deprecated
 
 from pysyte.types.lists import flatten
-from pysyte.types.trees.dirs import pwd
 from pysyte.types.trees.makes import path
-from pysyte.types.trees.strings import StringPath
-
-
-class PathError(Exception):
-    """Something went wrong with a path"""
-
-    prefix = "Path Error"
-
-
-class MissingPath(PathError):
-    def __init__(self, path, desc=""):
-        self.path = path
-        description = desc or "path"
-        super().__init__(f"Missing {description}{path}")
-
-
-class MissingImport(MissingPath):
-    def __init__(self, module):
-        self.module = module
-        try:
-            path_ = module.__file__
-        except AttributeError:
-            path_ = module.__name__
-        super().__init__(path_, desc="module")
-
-
-class PathAssertions:
-    """Assertions that can be made about paths"""
-
-    def assertExists(self):
-        if not self.exists():
-            raise MissingPath(self)
-        return self
-
-    def assert_isdir(self):
-        """Raise a PathError if this path is not a directory on disk"""
-        if not self.isdir():
-            raise PathError(f"{self} is not a directory")
-        return self
-
-    def assert_isfile(self):
-        """Raise a PathError if this path is not a file on disk"""
-        if not self.isfile():
-            raise PathError(f"{self} is not a file")
-        return self
-
-
-StrPath = Union["StringPath", str]  # many args can be either string or path
-
-
-class StringPath(path_Path):
-    """This class handles the path as if it were just a string
-
-    Sub-classes know about paths qua paths
-    """
-
-    # pylint: disable=abstract-method
-    # pylint: disable=too-many-public-methods
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self) -> str:
-        string = repr(f"{self}")
-        return f"<{self.__class__.__name__} {string}>"
-
-    @deprecated(version="0.7.5", reason="Please use Python 3")
-    def __div__(self, other) -> StringPath:
-        """Need to cover parent's use of older idiom"""
-        return self.__truediv__(other)
-
-    def __truediv__(self, substring: str) -> StringPath:
-        """Handle the / operator
-
-        Add substring to self
-
-        >>> p = StringPath("/path/to")
-        >>> assert p.__truediv__("fred") == p / "fred"
-        >>> assert p / "fred" == "/path/to/fred"
-        >>> assert p / None is p
-        """
-        if not substring:
-            return self
-        full_string = os.path.join(str(self), substring)
-        return makepath(full_string)
-
-    def __floordiv__(self, substrings: Sequence[str]) -> StringPath:
-        """Handle the // operator
-
-        Add substrings to self like a path in local os
-
-        >>> p = StringPath("/path/to")
-        >>> assert p.__floordiv__("fred") == p // "fred"
-        >>> assert p // ["module", "fred.py"] == "/path/to/module/fred.py"
-        >>> assert p // None is p
-        """
-        if not substrings:
-            return self
-        string = str(self)
-        strings = [string] + list(substrings)
-        return makepath(os.path.join(*strings))
-
-    def __eq__(self, other) -> bool:
-        return str(self) == str(other)
-
-    def __lt__(self, other) -> bool:
-        return str(self) < str(other)
-
-    # functools.total_ordering does not work properly cos we inherit from str
-    # Hence: we do need to define next 3
-    def __le__(self, other):
-        return self.__eq__(other) or self.__lt__(other)
-
-    def __gt__(self, other):
-        return not self.__le__(other)
-
-    def __ge__(self, other):
-        return not self.__lt__(other)
-
-    def __contains__(self, other) -> bool:
-        """The other is in self if self.contains(other)
-
-        this method should be specialised in sub-classes
-        """
-        return self.contains(other)
-
-    def contains(self, other: StrPath) -> bool:
-        """If other is also a path then this path should start with other
-
-        E.g. /path/to/file is "in" /path
-
-        Otherwise, just use the sub-string sense of "in"
-        """
-        if isinstance(other, StringPath):
-            return str(other).startswith(str(self))
-        return str(other) in str(self)
-
-    def basename(self) -> str:
-        return str(super().basename())
-
-    @property
-    def basename_(self) -> str:
-        return self.basename()
-
-    @property
-    def name(self) -> str:
-        return str(super().name)
-
-    @property
-    def stem(self) -> StringPath:
-        stem, *_ = self.splitexts()
-        return stem
-
-    @property
-    def stem_name(self) -> str:
-        return self.stem.name
-
-    def splitexts(self) -> Tuple[StringPath, str]:
-        """Split all extensions from the path
-
-        >>> p = FilePath('here/fred.tar.gz')
-        >>> assert p.splitexts() == ('here/fred', '.tar.gz')
-        """
-        copy = self[:]
-        filename, ext = os.path.splitext(copy)
-        zippers = (
-            ".gz",
-            ".bz",
-            ".zip",
-            ".bzip",
-        )
-        for zipper in zippers:
-            if ext == zipper:
-                filename, ext_ = os.path.splitext(filename)
-                ext = f"{ext_}{zipper}"
-        return self.__class__(filename), ext
-
-    def add_ext(self, *args) -> StringPath:
-        """Join all args as extensions
-
-        Strip any leading `.` from args
-
-        >>> source = makepath(__file__)
-        >>> new = source.add_ext('txt', '.new')
-        >>> assert new.name.endswith('.py.txt.new')
-        """
-        exts = [(a[1:] if a[0] == "." else a) for a in args]
-        string = ".".join([self] + list(exts))
-        return makepath(string)
-
-    def add_missing_ext(self, ext: str) -> StringPath:
-        """Add that extension, if it is missing
-
-        >>> fred = makepath("fred")
-        >>> assert fred.add_missing_ext("") == fred
-        >>> fred_py = makepath("fred.py")
-        >>> assert fred.add_missing_ext(".py") == fred_py
-        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
-        """
-        dot_ext = f'.{ext.lstrip(".")}'
-        copy = self[:]
-        _, self_ext = os.path.splitext(copy)
-        return makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
-
-    def extend_by(self, ext: str) -> StringPath:
-        """The path to the file changed to use the given ext
-
-        >>> fred = "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
-        """
-        copy = self[:]
-        filename, _ = os.path.splitext(copy)
-        ext_ = ext.lstrip(".")
-        return makepath(f"{filename}.{ext_}")
-
-    def has_vcs_dir(self):
-        for vcs_dir in (".git", ".svn", ".hg"):
-            if self.fnmatch_part(vcs_dir):
-                return True
-        return False
+from pysyte.types.trees.paths import PathPath
+from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees.strings import NoPath
+from pysyte.types.trees.errors import PathError
 
 
 def ext_language(ext, exts=None, simple=True):
@@ -745,154 +529,8 @@ def ignore_fnmatches(ignores):
     return ignored
 
 
-class ChmodValues:
-    # pylint: disable=too-few-public-methods
-    readonly_file = 0o444
-    readonly_directory = 0o555
-
-
-def _make_module_path(arg):
-    """Make a path from a thing that has a module
-
-    classes and functions have modules, they'll be needing this
-    """
-    try:
-        return makepath(import_module(arg.__module__))
-    except (AttributeError, ModuleNotFoundError):
-        return None
-
-
-@singledispatch
-def makepath(arg) -> StringPath:
-    attribute = getattr(arg, "path", "")
-    return makepath(attribute) if attribute else makepath(str(arg))
-
-
-path = makepath
-
-
-@makepath.register(type(None))
-def _mp(arg) -> StringPath:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    return NonePath()
-
-
-@makepath.register(DotPath)
-def __mp(arg) -> StringPath:
-    return arg
-
-
-@makepath.register(str)
-def ____mp(arg) -> StringPath:
-    """Make a path from a string
-
-    Expand out any variables, home squiggles, and normalise it
-    See also http://stackoverflow.com/questions/26403972
-
-    See also Lynton Kwesi Johnson:
-        The Eagle and The Bear have people living in fear
-        Of impending nuclear warfare
-    """
-    if not arg:
-        return makepath(None)
-    if os.path.isfile(arg):
-        return FilePath(arg)
-    if os.path.isdir(arg):
-        string = arg if arg == "/" else arg.rstrip("/")
-        return DirectPath(string)
-    v = os.path.expandvars(arg)
-    u = os.path.expanduser(v)
-    if arg == u:
-        return NonePath(arg)
-    if os.path.exists(u):
-        return makepath(u)
-    return NonePath(arg)
-
-
 def imports():
     return {sys, os, re, stat}
-
-
-@makepath.register(type(os))
-def _____mp(arg) -> StringPath:
-    """Make a path from a module"""
-    if arg.__name__ == "builtins":
-        return NonePath("builtins")
-    try:
-        return makepath(arg.__file__)
-    except AttributeError:
-        if arg not in imports() and arg not in sys.path:
-            raise MissingImport(arg)
-        python_ = makepath(sys.executable)
-        assert str(python_.parent.name) == "bin"
-        bin_ = python_.parent
-        root_ = bin_.parent
-        lib = root_ / "lib"
-        assert lib.isdir()
-        module = lib / f"{arg}.py"
-        if module.isfile():
-            return module
-        package = lib / arg
-        if package.isdir():
-            return package
-        raise ModuleNotFoundError(arg)
-
-
-@makepath.register(type(makepath))
-def ______mp(arg) -> StringPath:
-    """Make a path from a function's module"""
-    from pysyte.types.methods import Method
-    method = Method(arg)
-    stdin_regexp = re.compile("<(stdin|.*python-input.*)>")
-    if stdin_regexp.match(method.filename):
-        return NonePath(method.filename)
-    return _make_module_path(method)
-
-
-@makepath.register(type(DotPath))
-def _______mp(arg) -> StringPath:
-    """Make a path from a class's module"""
-    return _make_module_path(arg)
-
-
-@dataclass
-class Paths:
-    """A collection of paths"""
-
-    paths: list[StrPath]
-
-    def __iter__(self):
-        yield self.paths
-
-
-@singledispatch
-def makepaths(arg: Paths) -> Paths:
-    return arg
-
-
-@makepaths.register(type(None))
-def _mps(arg) -> Paths:
-    return Paths([])
-
-
-@makepaths.register(list)
-def __mps(arg) -> Paths:
-    return Paths([makepath(_) for _ in arg])
-
-
-@makepaths.register(str)
-def ___mps(arg) -> Paths:
-    return Paths([makepath(arg)])
-
-
-@makepaths.register(StrPath)
-def ____mps(arg) -> Paths:
-    return Paths([arg])
-
-
-@makepaths.register(str)
-def _____mps(arg) -> Paths:
-    return Paths([makepath(arg)])
 
 
 @deprecated(reason="use pathstr()", version="0.7.57")
@@ -903,8 +541,8 @@ def makestr(string: str) -> StringPath:
 def pathstr(string: str) -> StringPath:
     """Make a path from a string"""
     if os.path.isfile(string) or os.path.isdir(string):
-        return makepath(string)
-    return NonePath(string)
+        return path(string)
+    return NoPath(string)
 
 
 def cd(path_to: StringPath) -> bool:
@@ -919,9 +557,9 @@ def cd(path_to: StringPath) -> bool:
         previous = getattr(cd, "previous", "")
         if not previous:
             raise PathError("No previous directory to return to")
-        return cd(makepath(previous))
+        return cd(path(previous))
     if not hasattr(path_to, "cd"):
-        path_to = makepath(path_to)
+        path_to = path(path_to)
     try:
         previous = os.getcwd()
     except OSError as e:
@@ -951,22 +589,22 @@ def as_path(string_or_path):
     """Return the argument as a DirectPath
 
     If it is already one, return it unchanged
-    If not, return the makepath()
+    If not, return the path()
     """
     if isinstance(string_or_path, DirectPath):
         return string_or_path
-    return makepath(string_or_path)
+    return path(string_or_path)
 
 
 def string_to_paths(string: str) -> List[StringPath]:
     for c in ":, ;":
         if c in string:
             return strings_to_paths(string.split(c))
-    return [makepath(string)]
+    return [path(string)]
 
 
-def strings_to_paths(strings: List[str]) -> List[StringPath]:
-    return [makepath(s) for s in strings]
+def strings_to_paths(strings) -> List[StringPath]:
+    return [path(s) for s in strings]
 
 
 def choose_paths(*strings, chooser) -> List[StringPath]:
@@ -986,22 +624,22 @@ def files(*strings: Iterable) -> List[StringPath]:
 
 
 def root():
-    return makepath("/")
+    return path("/")
 
 
 def tmp():
-    return makepath("/tmp")
+    return path("/tmp")
 
 
 def home():
-    _home = makepath(os.path.expanduser("~"))
+    _home = path(os.path.expanduser("~"))
     assert _home
     _ = _home.expand()
     return _home
 
 
 def pwd():
-    return makepath(os.getcwd())
+    return path(os.getcwd())
 
 
 def first_dir(path_string: str):
@@ -1089,8 +727,9 @@ def contains_file(path_to_directory, glob):
     return contains_glob(path_to_directory, glob, os.path.isfile)
 
 
-def environ_paths(key, default=""):
-    return [path(_) for _ in os.environ.get(key, default).split(":")]
+def environ_paths(key, default=None):
+    default_ = default or ""
+    return [path(_) for _ in os.environ.get(key, default_).split(":")]
 
 
 def environ_path(key, default=None):
