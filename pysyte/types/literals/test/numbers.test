@@ -2,14 +2,14 @@ The numbers module
 ==================
 
     >>> from pysyte.types.literals import numbers
-    >>> assert 'Handle numbers' in numbers.__doc__
+    >>> assert "Handle numbers" in numbers.__doc__
 
-Named numbers
+Known numbers
 -------------
 
 The module names some numbers
 
-    >>> assert numbers.ten == '10'
-    >>> assert numbers.eleven == '11'
-    >>> assert numbers.twelve == '12'
+    >>> assert numbers.ten == 10
+    >>> assert numbers.eleven == 11
+    >>> assert numbers.twelve == 12
 

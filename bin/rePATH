@@ -19,11 +19,11 @@ from __future__ import print_function
 import os
 import sys
 import argparse
-from bdb import BdbQuit
 
 
 from pysyte import __version__
 from pysyte.cli.main import run
+from pysyte.cli import app
 
 
 class ScriptError(NotImplementedError):
@@ -116,10 +116,9 @@ def script(args):
 def main(args):
     """Run the script"""
     try:
-        return os.EX_OK if script(args) else not os.EX_OK
-    except (SystemExit, BdbQuit):
-        pass
-    return os.EX_OK
+        app.exit(lambda : script(args))
+    except SystemExit as e:
+        return e.error
 
 
 run(main, add_args, post_parse)
