@@ -82,7 +82,7 @@ def names():
 
     Look for colours in an X11 rgb.txt
 
-    >>> assert names()['green'] == (0, 255, 0)
+    >>> assert names()["green"] == (0, 255, 0)
     """
     names_and_numbers = _local_rgb_txt_names_and_numbers()
     return dict(names_and_numbers)

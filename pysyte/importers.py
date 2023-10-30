@@ -176,7 +176,7 @@ def parse(script) -> ImportUser:
 def importer(module):
     """Provide a context with that module
 
-    >>> with importer(os) as os_, importer('pysyte.importers') as importers:
+    >>> with importer(os) as os_, importer("pysyte.importers") as importers:
     ...     assert os_.path is os.path
     ...     assert importer.__code__ == importers.importer.__code__
     ...

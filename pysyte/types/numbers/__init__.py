@@ -9,7 +9,14 @@ integers and strings work like int() for both
 inty() does extra computation is done for things with a length
 
 >>> assert numbers.inty("lll") == 3
->>> assert numbers.inty([3,]) == 1
+>>> assert (
+...     numbers.inty(
+...         [
+...             3,
+...         ]
+...     )
+...     == 1
+... )
 
 as_int() does not
 >>> try:
@@ -17,11 +24,17 @@ as_int() does not
 ...     assert False
 ... except numbers.NAN:
 ...     pass
+...
 >>> try:
-...     numbers.as_int([3, ])
+...     numbers.as_int(
+...         [
+...             3,
+...         ]
+...     )
 ...     assert False
 ... except numbers.NAN:
 ...     pass
+...
 """
 
 
@@ -45,7 +58,7 @@ def _to_number(value, kind, default):
     except (ValueError, TypeError):
         if default is None:
             raise NAN(value)
-        if isinstance(value, (type(None), )):
+        if isinstance(value, (type(None),)):
             return kind(default)
         try:
             return len(value)

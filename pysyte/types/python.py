@@ -4,13 +4,16 @@
 
 Doctest normally shows all streams
 
->>> print_out("Hello"); print_err("World")
+>>> print_out("Hello")
+>>> print_err("World")
 Hello
 World
 
 Suppress stderr
 >>> with quietly as suppressor:
-...     print_out("Hello"); print_err("World")
+...     print_out("Hello")
+...     print_err("World")
+...
 Hello
 
 >>> assert "World" in suppressor.stderr
@@ -27,7 +30,6 @@ import io
 
 
 def quieten(name: str, streams: List[Wrapper]) -> Callable:
-
     @contextlib.contextmanager
     def method():
         stdout = io.StringIO()

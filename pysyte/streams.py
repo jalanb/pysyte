@@ -21,17 +21,18 @@ def print_out(*args, **kwargs):
 
 def print_err(*args, **kwargs):
     """Direct print() to sys.stderr"""
-    kwargs['file'] = sys.stderr
+    kwargs["file"] = sys.stderr
     print(*args, **kwargs)
+
 
 @contextmanager
 def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
     """Divert stdout into the given stream
 
     >>> with swallow_stdout() as stream:
-    ...     print('hello', end='')
+    ...     print("hello", end="")
     ...
-    >>> assert stream.getvalue() == 'hello'
+    >>> assert stream.getvalue() == "hello"
     """
     saved = sys.stdout
     if stream is None:
@@ -48,9 +49,9 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     """Divert stderr into the given stream
 
     >>> with swallow_stderr() as string:
-    ...     print('hello', end='', file=sys.stderr)
+    ...     print("hello", end="", file=sys.stderr)
     ...
-    >>> assert string.getvalue() == 'hello'
+    >>> assert string.getvalue() == "hello"
     """
     saved = sys.stderr
     if stream is None:
@@ -67,10 +68,10 @@ def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:
-    ...     print('hello', end=' ', file=sys.stderr)
-    ...     print('world', end='', file=sys.stderr)
+    ...     print("hello", end=" ", file=sys.stderr)
+    ...     print("world", end="", file=sys.stderr)
     ...
-    >>> assert streams[0].getvalue() + streams[1].getvalue() == 'hello world'
+    >>> assert streams[0].getvalue() + streams[1].getvalue() == "hello world"
     """
     saved = sys.stdout, sys.stderr
     out, err = StringIO(), StringIO()

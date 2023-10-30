@@ -5,7 +5,7 @@
     >>> dt = datetime.datetime
 
 
-    >>> assert this.seconds_since_epoch()      > 1_000_000_000
+    >>> assert this.seconds_since_epoch() > 1_000_000_000
     >>> assert this.microseconds_since_epoch() > 1_000_000_000_000
     >>> one = dt(1979, 12, 25, 1, 2, 3)
     >>> two = dt(1979, 12, 25, 1, 2, 4)
