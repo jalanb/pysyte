@@ -1,3 +1,15 @@
+"""Handle methods for pysyte
+
+>>> from pysyte.types import methods
+
+>>> def fred(i: int = 0, s: str = "") -> str:
+...     '''If in doubt, call it Fred'''
+...     return "fred"
+
+>>> foo = methods.method(fred)
+>>> assert "def fred" in foo.code
+"""
+
 import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -77,6 +89,15 @@ class Method:
             raise
 
 
+def method(callable: Callable) -> Method:
+    """Convenience method to avoid importing capitals
+
+    >>> fred = lambda : "fred"
+    >>> assert method(fred) == Method(fred)
+    """
+    return Method(callable)
+
+
 @contextmanager
 def caller():
     yield inspect.currentframe().f_back.f_back.f_back
@@ -92,6 +113,19 @@ def _represent_args(*args, **kwargs):
     argument_strings = [repr(a) for a in args]
     keyword_strings = ["=".join((k, repr(v))) for k, v in kwargs.items()]
     return ", ".join(argument_strings + keyword_strings)
+
+
+def none_args(*args, **kwargs)
+    """Whether there are no args, or all args are falsy
+
+    >>> assert none_args()
+    >>> assert none_args(None)
+    >>> assert none_args(x=None)
+    >>> assert none_args(None, "", 0, x=None, y=[])
+    >>> assert not none_args(1)
+    """
+    arguments = args + kwargs.values()
+    return not arguments or all(not _ for _ in arguments)
 
 
 def memoized(method):
@@ -149,3 +183,45 @@ def memoized(method):
     new_method.__doc__ = method.__doc__
     new_method.__name__ = f"memoized({method.__name__})"
     return new_method
+
+
+def read_lines(path: str, line: int) -> list[str]:
+    """Read the source of the function starting at that line in that file"""
+    with open(path) as stream:
+        text = stream.read()
+        return text.splitlines()[line - 1:]
+
+@dataclass
+class Def:
+    path: str
+    line: int
+    source: str
+
+    def __str__(self):
+        return self.source
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__} {self.path}:{self.line}\n{self.source}\n>'
+
+    @lazy
+    def ast(self) -> ast.AST:
+        return parse(self.source)
+
+    @lazy
+    def lines(self) -> list[str]:
+        return self.source.splitlines()
+
+
+def read_def(path: str, line: int) -> Def:
+    """Read the function definition starting at that line in that file"""
+    lines = read_lines(path, line)
+    def_line, *strings = lines
+    def_indent = len(def_line) - len(def_line.lstrip())
+    for i, string in enumerate(strings):
+        if not string:
+            continue
+        indent = len(string) - len(string.lstrip())
+        if indent <= def_indent:
+            break
+    source = '\n'.join(lines[:i+1])
+    return Def(path, line, source)
