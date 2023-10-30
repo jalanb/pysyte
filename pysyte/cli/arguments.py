@@ -75,9 +75,15 @@ class ArgumentsParser(object):
         self.add_option(*args_, **kwargs_)
 
     def add_option(self, initial, name, *args, **kwargs):
-        n = name.lstrip("-")
-        i = initial.lstrip("-") or n[0]
-        return self.parser.add_argument(f"-{i}", f"--{n}", *args, **kwargs)
+        name_ = name.lstrip("-")
+        initial_ = (
+            None
+            if initial == " "
+            else f"-{name_[0]}"
+            if not initial
+            else f'-{initial.lstrip("-")}'
+        )
+        return self.parser.add_argument(initial_, f"--{name_}", *args, **kwargs)
 
         if not initial:
             initial = name[0]
