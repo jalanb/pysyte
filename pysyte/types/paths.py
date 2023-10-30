@@ -10,19 +10,16 @@ import stat
 import sys
 from dataclasses import dataclass
 from fnmatch import fnmatch
-from functools import singledispatch
-from importlib import import_module
 from typing import Iterable
 from typing import List
 
 from deprecated import deprecated
 
 from pysyte.types.lists import flatten
+from pysyte.types.trees.makes import path
 from pysyte.types.trees.paths import PathPath
-from pysyte.types.trees.files import FilePath
 from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.strings import NoPath
-from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.errors import PathError
 
 
@@ -60,143 +57,8 @@ def ignore_fnmatches(ignores):
     return ignored
 
 
-class ChmodValues:
-    # pylint: disable=too-few-public-methods
-    readonly_file = 0o444
-    readonly_directory = 0o555
-
-
-def _make_module_path(arg):
-    """Make a path from a thing that has a module
-
-    classes and functions have modules, they'll be needing this
-    """
-    try:
-        return makepath(import_module(arg.__module__))
-    except (AttributeError, ModuleNotFoundError):
-        return None
-
-
-@singledispatch
-def makepath(arg) -> StringPath:
-    attribute = getattr(arg, "path", "")
-    return makepath(attribute)
-    if attribute:
-        return attribute
-    raise NotImplementedError(f"Cannot find a path in `{arg!r}`")
-
-
-path = makepath
-
-
-@makepath.register(type(None))
-def _mp(arg) -> StringPath:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"Zilch: {arg!r}")
-
-
-@makepath.register(PathPath)
-def __mp(arg) -> StringPath:
-    return arg
-
-
-@makepath.register(str)
-def ____mp(arg) -> StringPath:
-    """Make a path from a string
-
-    Expand out any variables, home squiggles, and normalise it
-    See also http://stackoverflow.com/questions/26403972
-
-    See also Lynton Kwesi Johnson:
-        The Eagle and The Bear have people living in fear
-        Of impending nuclear warfare
-    """
-    if not arg:
-        return makepath(None)
-    if os.path.isfile(arg):
-        return FilePath(arg)
-    if os.path.isdir(arg):
-        string = arg if arg == "/" else arg.rstrip("/")
-        return DirectPath(string)
-    v = os.path.expandvars(arg)
-    u = os.path.expanduser(v)
-    if arg == u:
-        return NoPath(arg)
-    if os.path.exists(u):
-        return makepath(u)
-    return NoPath(arg)
-
-
 def imports():
     return {sys, os, re, stat}
-
-
-@makepath.register(type(os))
-def _____mp(arg) -> StringPath:
-    """Make a path from a module"""
-    if arg.__name__ == "builtins":
-        return NoPath("builtins")
-    try:
-        return makepath(arg.__file__)
-    except AttributeError:
-        if arg not in imports() and arg not in sys.path:
-            raise MissingImport(arg)
-        python_ = makepath(sys.executable)
-        assert str(python_.parent.name) == "bin"
-        bin_ = python_.parent
-        root_ = bin_.parent
-        lib = root_ / "lib"
-        assert lib.isdir()
-        module = lib / f"{arg}.py"
-        if module.isfile():
-            return module
-        package = lib / arg
-        if package.isdir():
-            return package
-        raise ModuleNotFoundError(arg)
-
-
-@makepath.register(type(makepath))
-def ______mp(arg) -> StringPath:
-    """Make a path from a function's module"""
-    terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
-    method = getattr(arg, "__wrapped__", arg)
-    filename = method.__code__.co_filename
-    if terminal_regexp.match(filename):
-        return NoPath(filename)
-    return _make_module_path(method)
-
-
-@makepath.register(type(PathPath))
-def _______mp(arg) -> StringPath:
-    """Make a path from a class's module"""
-    return _make_module_path(arg)
-
-
-@singledispatch
-def makepaths(arg) -> Paths:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"Do not know the type of arg: {arg!r}")
-
-
-@makepaths.register(type(None))
-def _mps(arg) -> Paths:
-    return Paths([])
-
-
-@makepaths.register(list)
-def __mps(arg) -> Paths:
-    return Paths([makepath(_) for _ in arg])
-
-
-@makepaths.register(str)
-def ___mps(arg) -> Paths:
-    return Paths([makepath(arg)])
-
-
-@makepaths.register(StringPath)
-def ____mps(arg) -> Paths:
-    return Paths([arg])
 
 
 @deprecated(reason="use pathstr()", version="0.7.57")
@@ -207,7 +69,7 @@ def makestr(string: str) -> StringPath:
 def pathstr(string: str) -> StringPath:
     """Make a path from a string"""
     if os.path.isfile(string) or os.path.isdir(string):
-        return makepath(string)
+        return path(string)
     return NoPath(string)
 
 
@@ -223,9 +85,9 @@ def cd(path_to: StringPath) -> bool:
         previous = getattr(cd, "previous", "")
         if not previous:
             raise PathError("No previous directory to return to")
-        return cd(makepath(previous))
+        return cd(path(previous))
     if not hasattr(path_to, "cd"):
-        path_to = makepath(path_to)
+        path_to = path(path_to)
     try:
         previous = os.getcwd()
     except OSError as e:
@@ -255,22 +117,22 @@ def as_path(string_or_path):
     """Return the argument as a DirectPath
 
     If it is already one, return it unchanged
-    If not, return the makepath()
+    If not, return the path()
     """
     if isinstance(string_or_path, DirectPath):
         return string_or_path
-    return makepath(string_or_path)
+    return path(string_or_path)
 
 
 def string_to_paths(string) -> List[StringPath]:
     for c in ":, ;":
         if c in string:
             return strings_to_paths(string.split(c))
-    return [makepath(string)]
+    return [path(string)]
 
 
 def strings_to_paths(strings) -> List[StringPath]:
-    return [makepath(s) for s in strings]
+    return [path(s) for s in strings]
 
 
 def choose_paths(*strings, chooser) -> List[StringPath]:
@@ -290,22 +152,22 @@ def files(*strings: Iterable) -> List[StringPath]:
 
 
 def root():
-    return makepath("/")
+    return path("/")
 
 
 def tmp():
-    return makepath("/tmp")
+    return path("/tmp")
 
 
 def home():
-    _home = makepath(os.path.expanduser("~"))
+    _home = path(os.path.expanduser("~"))
     assert _home
     _ = _home.expand()
     return _home
 
 
 def pwd():
-    return makepath(os.getcwd())
+    return path(os.getcwd())
 
 
 def first_dir(path_string):
@@ -361,7 +223,7 @@ def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPat
 
     By default, every path is wanted
     """
-    path_to_directory_ = makepath(path_to_directory)
+    path_to_directory_ = path(path_to_directory)
     if not path_to_directory_:
         return []
     result = []
@@ -404,16 +266,16 @@ def contains_file(path_to_directory, glob):
 
 def environ_paths(key, default=None):
     default_ = default or ""
-    return [makepath(_) for _ in os.environ.get(key, default_).split(":")]
+    return [path(_) for _ in os.environ.get(key, default_).split(":")]
 
 
 def environ_path(key, default=None):
     default_ = default or ""
-    return makepath(os.environ.get(key, default_))
+    return path(os.environ.get(key, default_))
 
 
 def default_environ_path(key, default):
-    return makepath(os.environ.get(key, default))
+    return path(os.environ.get(key, default))
 
 
 def add_star(string):
