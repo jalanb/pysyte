@@ -1,7 +1,6 @@
 import os
 from typing import TextIO
 
-from pysyte.types.trees import chmod
 from pysyte.types.trees import errors
 from pysyte.types.trees import files
 from pysyte.types.trees import makes
@@ -25,8 +24,7 @@ class DirectPath(paths.Path, PathAssertions):
             yield a_path
 
     def __add__(self, other: strings.StringPath) -> strings.StringPath:
-        string = f"{self}/{other}"
-        return makes.makepath(string)
+        return paths.makepath(f"{self}/{other}")
 
     def contains(self, other: strings.StrPath) -> bool:
         """If other is a path then use that sense of "in"
@@ -130,13 +128,6 @@ class DirectPath(paths.Path, PathAssertions):
     def isroot(self):
         return str(self) == "/"
 
-    def open(self, mode="r", encoding=None, errors="") -> TextIO:
-        """Needs to exist in case callers treat a directory like a file"""
-        return StringIO('\n'.join([str(_) for _ in self.listdir()]))
-
-    def text(self):
-        """For similar cases"""
-        return self.open().read()
 
 def ignore_fnmatches(ignores):
     def ignored(a_path):
@@ -188,22 +179,3 @@ try:
     setattr(cd, "previous", os.getcwd())  # noqa
 except (OSError, AttributeError):
     setattr(cd, "previous", "")  # noqa
-
-
-def root():
-    return makes.path("/")
-
-
-def tmp():
-    return makes.path("/tmp")
-
-
-def home():
-    _home = makes.path(os.path.expanduser("~"))
-    assert _home
-    _ = _home.expand()
-    return _home
-
-
-def pwd():
-    return makes.path(os.getcwd())

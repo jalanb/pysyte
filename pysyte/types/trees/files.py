@@ -1,7 +1,6 @@
 import os
 from typing import Tuple
 
-from pysyte.types.trees import chmod
 from pysyte.types.trees import dirs
 from pysyte.types.trees import errors
 from pysyte.types.trees import paths
@@ -72,9 +71,9 @@ class FilePath(paths.Path, PathAssertions):
 
     def cd(self) -> bool:
         """Change program's current directory to self"""
-        return self.parent.cd()
+        return dirs.cd(self.parent)
 
-    def dirname(self) -> dirs.DirectPath:
+    def dirname(self):
         return dirs.DirectPath(os.path.dirname(self))
 
     parent: dirs.DirectPath = property(dirname)
@@ -108,9 +107,6 @@ class FilePath(paths.Path, PathAssertions):
     def language(self, value):
         self._language = value
 
-    def write(self, string: str):
-        self.file.write_text(string)
-
 
 def ext_language(ext, exts=None, simple=True):
     """Language of the extension in those extensions
@@ -132,91 +128,3 @@ def ext_language(ext, exts=None, simple=True):
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
-
-
-class StringFile(FilePath):
-    """A path to an unknown file with a string"""
-
-    def __init__(self, *args: str):
-        self.file = FilePath()
-        self.file.write(*args)
-        super().__init__(*args)
-
-
-class ExtendedPath(FilePath):
-    """A file path with an extension"""
-
-    def dezip(self) -> Tuple[StringPath, str]:
-        """Split all zipping extensions from the path
-
-        >>> p = FilePath("here/fred.tar.gz")
-        >>> assert p.dezip() == ("here/fred", ".tar.gz")
-        """
-        copy = self[:]
-        filename, ext = os.path.splitext(copy)
-        zippers = (
-            ".gz",
-            ".bz",
-            ".zip",
-            ".bzip",
-        )
-        for zipper in zippers:
-            if ext == zipper:
-                filename, ext_ = os.path.splitext(filename)
-                ext = f"{ext_}{zipper}"
-        return self.__class__(filename), ext
-
-    def add_ext(self, *args) -> StringPath:
-        """Join all args as extensions
-
-        Strip any leading `.` from args
-
-        >>> file = makepath(__file__)
-        >>> new = file.add_ext("txt", "new")
-        >>> newer = file.add_ext(".txt", ".new")
-        >>> newest = file.add_ext([".txt", "new"])
-
-        >>> assert new.name.endswith(".py.txt.new")
-        >>> assert newer == new == newest
-        """
-        exts = [(a[1:] if a[0] == "." else a) for a in args]
-        string = ".".join([self] + list(exts))
-        return makepath(string)
-
-    def __add__(self, ext: str) -> StringPath:
-        return self.add_ext(ext)
-
-    def add_missing_ext(self, ext: str) -> StringPath:
-        """Add that extension, if it is missing
-
-        >>> fred = makepath("fred")
-        >>> assert fred.add_missing_ext("") == fred
-        >>> fred_py = makepath("fred.py")
-        >>> fred_py_py = fred.add_missing_ext(".py")
-        >>> assert fred_py_py == fred_py
-        >>> assert fred_py_py.add_missing_ext(".txt") == "fred.py.txt"
-        """
-        dot_ext = f'.{ext.lstrip(".")}'
-        copy = self[:]
-        _, self_ext = os.path.splitext(copy)
-        return makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
-
-    def extend_by(self, ext: str) -> StringPath:
-        """The path to the file changed to use the given ext
-
-        >>> fred = "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
-        """
-        copy = self[:]
-        filename, _ = os.path.splitext(copy)
-        ext_ = ext.lstrip(".")
-        return makepath(f"{filename}.{ext_}")
-
-    def as_python(self):
-        """The path to the file with a .py extension
-
-        >>> assert ExtendedPath("/dir/fred.txt").as_python() == "/dir/fred.py"
-        """
-        return self.extend_by(".py")

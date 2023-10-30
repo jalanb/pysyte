@@ -14,10 +14,9 @@
 >>> assert not zero
 >>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))
 """
-
 from dataclasses import dataclass
-from functools import total_ordering
-
+from dataclasses import field
+from typing import Any
 
 
 @dataclass
@@ -29,24 +28,34 @@ class OTMLData:
 class OTML(OTMLData):
     """A number in the "1, 2, many, lots" number system
 
-    >>> i = OTML(7)
-    >>> assert i.is_many and not (i.is_one or i.is_two or i.is_lots)
     """
+    def check_args(self):
+        try:
+            if self.limit and self.i > self.limit:
+                 raise IndexError(f"{self.__class__.__name__}: {self.i=} > {self.limit}")
+        except IndexError:
+            args = self.i
+            raise ValueError(f"{self.__class__.__name__}({args=!r}): Too many args")
 
     def __postinit__(self):
-        """Set some 'is_...' booleans
+        """Set some 'is_...' booleans"""
+        self.too_many = 10
+        self.is_lots = len(self.i) >= self.too_many_digits
+        self.is_one = len(self.i) == 1
+        self.is_two = len(self.i) == 2
+        self.is_many = len(self.i) > 2 and not self.is_lots
 
     def __str__(self):
         return str(int(self))
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {int(self)} {self.args}>"
+        return f"<{self.__class__.__name__} {int(self)} {self.i}>"
 
     def __add__(self, other):
-        return lots(self.args + other.args)
+        return lots(self.i + other.i)
 
     def __sub__(self, other):
-        return lots(self.args[-len(other.args) :])  # + other.args)
+        return lots(self.i[-len(other.i) :])
 
     def __eq__(self, other):
         return self.__class__.__name__ == other.__class__.__name__
@@ -54,21 +63,6 @@ class OTML(OTMLData):
     def __lt__(self, other):
         return int(self) < int(other)
 
-    def __getitem__(self, i) -> Any:
-        self.check(i)
-        return super().__getitem__(i)
-
-    @property
-    def max(self):
-        return 5
-
-    def check(self, i) -> bool:
-        if self.limit >= self.max:
-            return True
-        if len(self.args) > self.limit:
-            raise IndexError(f"{self.__class__.__name__} has nothing at {i=}")
-        return True
-        raise TypeError(f"{self.__class__.__name__} has nothing at {i=}")
 
 
 class One(Nones):
@@ -85,13 +79,13 @@ class Two(Nones):
 
 class Many(Two):
     def __post_init__(self):
-        self.limit = 4
+        self.limit = self.too_many - 1
         self.check_args()
 
 
 class Lots(Many):
     def __post_init__(self):
-        self.limit = self.max + 1
+        self.limit = None
         self.check_args()
 
 

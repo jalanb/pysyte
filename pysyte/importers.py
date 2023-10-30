@@ -1,6 +1,4 @@
 """Import imports for pysyte"""
-
-import abc
 import ast
 from collections import defaultdict
 from contextlib import contextmanager

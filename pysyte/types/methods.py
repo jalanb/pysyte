@@ -10,22 +10,19 @@
 >>> assert "def fred" in foo.code
 """
 
+import ast
 import inspect
 import ast
 import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
-from types import FrameType, ModuleType
-from typing import Callable, Optional
+from types import FrameType
+from types import ModuleType
+from typing import Callable
+from typing import Optional
 
 from lazy import lazy
 from pym.ast import parse
-
-
-def unwrap(method: Callable) -> tuple[Callable, Callable | None]:
-    """Get the original method from a method even if it's wrapped"""
-    wrapped = getattr(method, "__wrapped__", None)
-    return method, wrapped
 
 
 @dataclass
@@ -250,11 +247,11 @@ def read_def(path: str, line: int) -> Def:
     lines = read_lines(path, line)
     def_line, *strings = lines
     def_indent = len(def_line) - len(def_line.lstrip())
-    for i, string in enumerate(strings):
+    for string in strings:
         if not string:
             continue
         indent = len(string) - len(string.lstrip())
         if indent <= def_indent:
             break
-    source = "\n".join(lines[: i + 1])
+    source = "\n".join(lines[: len(strings)])
     return Def(path, line, source)

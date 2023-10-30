@@ -1,7 +1,6 @@
 """Methods to handle streams"""
 
 from contextlib import contextmanager
-import sys
 from typing import Generator
 from typing import Optional
 from typing import TextIO

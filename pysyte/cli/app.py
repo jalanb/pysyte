@@ -4,7 +4,7 @@ from bdb import BdbQuit
 from contextlib import ContextDecorator
 import sys
 
-from pysyte.cli import exits
+from pysyte import os
 from pysyte.cli.exceptions import rich_exceptions
 from pysyte.types.functions import Function
 

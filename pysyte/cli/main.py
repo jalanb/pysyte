@@ -12,8 +12,8 @@ from typing import Optional
 from pysyte.cli import app
 from pysyte.cli import arguments
 from pysyte.cli.config import load_configs
-from pysyte.types.functions import Callable
-from pysyte.types.functions import Method
+from pysyte.types.methods import Callable
+from pysyte.types.methods import Method
 from pysyte.types.paths import makepath
 
 

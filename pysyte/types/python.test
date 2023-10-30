@@ -10,15 +10,15 @@ pysyte.types.python
 
 Doctest normally shows all streams
 
-    >>> std.out("Hello")
-    >>> std.err("World")
+    >>> print_out("Hello")
+    >>> print_err("World")
     Hello
     World
 
 Suppress stderr
-    >>> with quietly as fred:
-    ...     std.out("Hello")
-    ...     std.err("World")
+    >>> with quietly:
+    ...     print_out("Hello")
+    ...     print_err("World")
     ...
     Hello
 
@@ -26,15 +26,15 @@ Suppress stderr
 
 Suppress stdout
     >>> with Quietly:
-    ...     std.out("Hello")
-    ...     std.err("World")
+    ...     print_out("Hello")
+    ...     print_err("World")
     ...
     World
 
 Suppress both
-    >>> with QUIETLY as fred:
-    ...     std.out("Hello")
-    ...     std.err("World")
+    >>> with QUIETLY as suppressor:
+    ...     print_out("Hello")
+    ...     print_err("World")
     ...
 
 Suppressed streams were stored in attributes

@@ -19,12 +19,11 @@ import signal
 import sys
 import termios
 import tty
+from curses import ascii
 from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
-
-from pysyte.streams import std
 
 
 class NoKeys(StopIteration):

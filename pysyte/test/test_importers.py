@@ -31,9 +31,9 @@ class TestDashboardImports(unittest.TestCase):
             Hence we need many "noqa" qualifiers
         """
         import os  # noqa: F401, F811
-        from os import kill as killer
-        from os import path  # noqa: F401
         import sys as system  # noqa: F811, F401, E401
+        from os import kill as killer  # noqa: F401
+        from os import path  # noqa: F401
 
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)

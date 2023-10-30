@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Sequence,
-)
+from typing import Any
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath
+
+from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees.files import FilePath
+from pysyte.types.trees.makes import makepath
 
 StrPath = "StringPath" | str  # many args can be either string or path
 

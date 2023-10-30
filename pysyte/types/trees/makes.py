@@ -1,5 +1,6 @@
 import os
 import re
+import stat
 import sys
 from functools import singledispatch
 from importlib import import_module
@@ -17,24 +18,32 @@ class Pathed(Protocol):
     path: Any
 
 
+from pysyte.types.trees import strings
+from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees.errors import MissingImport
+from pysyte.types.trees.files import FilePath
+
 
 @singledispatch
-def makepath(arg: Pathed) -> StringPath:
-    return makepath(arg.path)
+def makepath(arg) -> strings.StringPath:
+    attribute = getattr(arg, "path", "")
+    return makepath(attribute)
+    if attribute:
+        return attribute
+    raise NotImplementedError(f"Cannot find a path in `{arg!r}`")
+
+
+path = makepath
 
 
 @makepath.register(type(None))
-def _mp(arg) -> StringPath:
-    """Make no path from nothing
-
-    >>> p = makepath(None)
-    >>> assert not p
-    """
-    return NoPath()
+def _mp(arg) -> strings.StringPath:
+    """In the face of ambiguity, refuse the temptation to guess."""
+    raise NotImplementedError(f"Zilch: {arg!r}")
 
 
 @makepath.register(str)
-def ____mp(arg) -> StringPath:
+def ____mp(arg) -> strings.StringPath:
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
@@ -56,27 +65,25 @@ def ____mp(arg) -> StringPath:
 
         string = arg if arg == "/" else arg.rstrip("/")
         return DirectPath(string)
-    expanded_path = os.path.expandvars(arg)
-    full_path = os.path.expanduser(expanded_path)
-    if arg == full_path:
-        # then nothing has changed since we tried above
-        return NoPath(arg)
-    if os.path.exists(full_path):
-        return makepath(full_path)
-    return NoPath(arg)
+    v = os.path.expandvars(arg)
+    u = os.path.expanduser(v)
+    if arg == u:
+        return strings.NoPath(arg)
+    if os.path.exists(u):
+        return makepath(u)
+    return strings.NoPath(arg)
+
+
+def imports():
+    return {sys, os, re, stat}
 
 
 @makepath.register(type(os))
-def _____mp(arg) -> StringPath:
-    """Make a path from a module
-
-    >>> import os, sys
-    >>> assert makepath(os)
-    >>> assert not makepath(sys)
-    """
-    if arg.__name__ in sys.builtin_module_names:
-        return NoPath(arg.__name__)
-    if hasattr(arg, "__file__"):
+def _____mp(arg) -> strings.StringPath:
+    """Make a path from a module"""
+    if arg.__name__ == "builtins":
+        return strings.NoPath("builtins")
+    try:
         return makepath(arg.__file__)
     if hasattr(arg, '__path__'):
         p, *_ = arg.__path__
@@ -104,13 +111,13 @@ def _make_module_path(arg):
 
 
 @makepath.register(type(makepath))
-def ______mp(arg) -> StringPath:
+def ______mp(arg) -> strings.StringPath:
     """Make a path from a function's module"""
     terminal_regexp = re.compile("<(stdin|.*python-input.*)>")
     method = getattr(arg, "__wrapped__", arg)
     filename = method.__code__.co_filename
     if terminal_regexp.match(filename):
-        return NoPath(filename)
+        return strings.NoPath(filename)
     return _make_module_path(method)
 
 
@@ -119,7 +126,7 @@ class Fred:
 
 
 @makepath.register(type(Fred))
-def _______mp(arg) -> StringPath:
+def _______mp(arg) -> strings.StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
 
