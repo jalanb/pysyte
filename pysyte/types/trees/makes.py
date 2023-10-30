@@ -4,6 +4,7 @@ import os
 from functools import singledispatch
 from importlib import import_module
 
+
 @singledispatch
 def makepath(arg) -> "StringPath":
     attribute = getattr(arg, "path", "")

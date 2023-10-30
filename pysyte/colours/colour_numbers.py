@@ -183,7 +183,7 @@ def name_to_id(name):
 
     if not a name, then not a number
 
-    >>> assert name_to_id('red') == 1
+    >>> assert name_to_id("red") == 1
     """
     if not name:
         return None
@@ -195,7 +195,7 @@ def name_to_id(name):
 def id_to_name(i):
     """get the name of the colour with that id
 
-    >>> assert id_to_name(1) == 'red'
+    >>> assert id_to_name(1) == "red"
     """
     assert i >= 0
     cgas = colour_names.cga()

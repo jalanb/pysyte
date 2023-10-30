@@ -39,12 +39,12 @@ def _chop(lines_in, at, first, last):
 def chop(text, at, first=1, last=-1):
     r"""Make that text fit those boundaries
 
-    >>> lines = ['one', 'two', 'three', 'four']
-    >>> text = '\n'.join(lines)
+    >>> lines = ["one", "two", "three", "four"]
+    >>> text = "\n".join(lines)
 
-    >>> assert 'three' not in chop(text, 1, last=2)
+    >>> assert "three" not in chop(text, 1, last=2)
 
-    >>> assert chop(text, at=2) == chop(text, '[t][w][o]')
+    >>> assert chop(text, at=2) == chop(text, "[t][w][o]")
     """
     return _chop(text.splitlines() or [], at, first, last)
 
@@ -60,7 +60,7 @@ def _number_format(count=999):
 
     Should give a '%d' format with width big enough to `count` lines
 
-    >>> assert _number_format(77) == '%2d: '
+    >>> assert _number_format(77) == "%2d: "
     """
     digits = len(str(count))
     return "%%%dd: " % digits

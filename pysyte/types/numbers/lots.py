@@ -1,6 +1,6 @@
 """handle numbers for pysyte
 
->>> one = lots([''])
+>>> one = lots([""])
 >>> assert one.limit == 1
 >>> two = lots(["", ""])
 >>> assert two.limit == 2
@@ -41,7 +41,7 @@ class Nones(list):
         return str(int(self))
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} {int(self)} {self.args}>'
+        return f"<{self.__class__.__name__} {int(self)} {self.args}>"
 
     def __add__(self, other):
         return lots(self.args + other.args)
@@ -94,3 +94,17 @@ class Lots(Many):
     def __post_init__(self):
         self.limit = self.max + 1
         self.check_args()
+
+
+def lots(args: list, many=3):
+    a = len(args)
+    match a:
+        case 0:
+            return None
+        case 1:
+            return One(args)
+        case 2:
+            return Two(args)
+    if a <= many:
+        return Many(args)
+    return Lots(args)

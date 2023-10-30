@@ -18,7 +18,8 @@ class FileType:
     """A file extension and associated type
 
     >>> class Python:
-    >>>     path: files.FilePath
+    ...     path: files.FilePath
+    ...
 
     >>> ft = FileType(Python, "py")
     >>> typed = ft.typed(__file__)
@@ -48,7 +49,9 @@ class FileTypes:
 
     Assuming "fred.yml", or "fred.yaml" exist, then
     >>> class YamlConfig:
-    >>>     pass
+    ...     pass
+    ...
+
     >>> configs = FileTypes((YamlConfig, "yaml"), (YamlConfig, "yml"))
     >>> fred = configs.typed("fred")
     >>> assert isinstance(fred, YamlConfig)

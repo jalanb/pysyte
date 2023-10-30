@@ -222,11 +222,11 @@ def get_as_key():
 def name(codes):
     """name for that code
 
-    >>> assert name(3) == '^3'
-    >>> assert name 51 == '3' == name('3')
+    >>> assert name(3) == "^3"
+    >>> assert name(3) == "3" == name("3")
     """
     try:
-        _ codes.pop()
+        _ = codes.pop()
         return get_extended_key_name(codes)
     except AttributeError:
         return control_key_name(code)
@@ -299,9 +299,9 @@ def _add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
     """Update the data with ascii keys
 
     >>> data = _add_ascii_keys({})
-    >>> assert data[(48,)] == '0'
-    >>> assert data[(66,)] == 'B'
-    >>> assert data[(99,)] == 'c'
+    >>> assert data[(48,)] == "0"
+    >>> assert data[(66,)] == "B"
+    >>> assert data[(99,)] == "c"
     """
     # See previous function for previous key, value pairs
     for i in range(32):
@@ -375,8 +375,9 @@ def main() -> bool:
     breakpoint()
     return False
 
+
 exit_code = 0
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
     sys.exit(exit_code)

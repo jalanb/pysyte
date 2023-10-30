@@ -92,7 +92,7 @@ class Method:
 def method(callable: Callable) -> Method:
     """Convenience method to avoid importing capitals
 
-    >>> fred = lambda : "fred"
+    >>> fred = lambda: "fred"
     >>> assert method(fred) == Method(fred)
     """
     return Method(callable)
@@ -107,7 +107,7 @@ def _represent_args(*args, **kwargs):
     """Represent the aruments in a form suitable as a key (hashable)
 
     And which will be recognisable to user in error messages
-    >>> print(_represent_args([1, 2], **{'fred': 'here'}))
+    >>> print(_represent_args([1, 2], **{"fred": "here"}))
     [1, 2], fred='here'
     """
     argument_strings = [repr(a) for a in args]
@@ -115,7 +115,7 @@ def _represent_args(*args, **kwargs):
     return ", ".join(argument_strings + keyword_strings)
 
 
-def none_args(*args, **kwargs)
+def none_args(*args, **kwargs):
     """Whether there are no args, or all args are falsy
 
     >>> assert none_args()
@@ -134,7 +134,7 @@ def memoized(method):
     See https://en.wikipedia.org/wiki/Memoization for the general idea
         >>> @memoized
         ... def test(arg):
-        ...     print('called')
+        ...     print("called")
         ...     return arg + 1
         ...
         >>> test(1)
@@ -189,7 +189,8 @@ def read_lines(path: str, line: int) -> list[str]:
     """Read the source of the function starting at that line in that file"""
     with open(path) as stream:
         text = stream.read()
-        return text.splitlines()[line - 1:]
+        return text.splitlines()[line - 1 :]
+
 
 @dataclass
 class Def:
@@ -201,7 +202,7 @@ class Def:
         return self.source
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} {self.path}:{self.line}\n{self.source}\n>'
+        return f"<{self.__class__.__name__} {self.path}:{self.line}\n{self.source}\n>"
 
     @lazy
     def ast(self) -> ast.AST:
@@ -223,5 +224,5 @@ def read_def(path: str, line: int) -> Def:
         indent = len(string) - len(string.lstrip())
         if indent <= def_indent:
             break
-    source = '\n'.join(lines[:i+1])
+    source = "\n".join(lines[: i + 1])
     return Def(path, line, source)

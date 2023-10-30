@@ -113,18 +113,18 @@ def name(n: int) -> str:
         return result
 
     if n < 0:
-        return f'minus {name(-n)}'
+        return f"minus {name(-n)}"
     result_ = f"{n:_}"
     data = {k: v for k, v in globals().items() if isinstance(v, int)}
     numbers = dict(bidict(data).inverse)
     if n in numbers:
-        return numbers[n].replace('_', ' ')
+        return numbers[n].replace("_", " ")
     thousands, units = divmod(n, 1_000)
     hundreds, tens = divmod(units, 100)
     tens_ = f"{name(tens)}" if tens else ""
     hundreds_ = f"{name(hundreds)} hundred" if 0 < hundreds < 100 else ""
     and_ = " and " if hundreds and tens else ""
-    result = f'{hundreds_}{and_}{tens_}'
+    result = f"{hundreds_}{and_}{tens_}"
     if n < 1_000:
         return result
     and_ = ""
@@ -174,7 +174,7 @@ globals().update(on_import())
 
 del on_import
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
 
     doctest.testmod()

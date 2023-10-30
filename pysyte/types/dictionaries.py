@@ -10,8 +10,8 @@ from yamlreader import data_merge
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
-    >>> things = {'Fred': 9}
-    >>> print(get_caselessly(things, 'fred'))
+    >>> things = {"Fred": 9}
+    >>> print(get_caselessly(things, "fred"))
     9
     """
     try:
@@ -25,7 +25,7 @@ def get_caselessly(dictionary, sought):
 def swap_dictionary(dictionary):
     """Swap keys for values in the given dictionary
 
-    >>> swap_dictionary({'one': 1})[1] == 'one'
+    >>> swap_dictionary({"one": 1})[1] == "one"
     True
     """
     if dictionary is None:
@@ -71,9 +71,9 @@ def group_list_by(items, key_from_item):
     key_from_item is a method to get the key from the item
 
     >>> items = [(1, 9), (2, 8), (1, 7)]
-    >>> key_from_item = lambda x: 'a' if x[0] == 1 else 'b'
+    >>> key_from_item = lambda x: "a" if x[0] == 1 else "b"
     >>> grouped = group_list_by(items, key_from_item)
-    >>> grouped['a'] == [(1, 9), (1, 7)]
+    >>> grouped["a"] == [(1, 9), (1, 7)]
     True
     """
     groups = defaultdict(list)
@@ -117,7 +117,7 @@ class LazyDefaultDict(DefaultDict):
 class NameSpace(dict):
     """Convert dictionary keys to attributes of self
 
-    >>> assert NameSpace({'fred': 1}).fred == 1
+    >>> assert NameSpace({"fred": 1}).fred == 1
     """
 
     def __init__(self, *args, **kwargs):
@@ -132,7 +132,7 @@ class NameSpace(dict):
 class NameSpaces(NameSpace):
     """Convert dictionary keys to attributes of self, recursively
 
-    >>> spaces = NameSpaces({'fred': {'mary': 1}})
+    >>> spaces = NameSpaces({"fred": {"mary": 1}})
     >>> assert spaces.fred.mary == 1
     """
 
@@ -150,6 +150,7 @@ class SpaceName:
     >>> class Fred:
     ...     foo = "Hello"
     ...     bar = "World"
+    ...
     >>> dic = SpaceName(Fred())
     >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
     """
@@ -172,11 +173,12 @@ class SpaceNames(SpaceName):
     >>> class Fred:
     ...     foo = "Hello"
     ...     bar = "World"
+    ...
     >>> fred = Fred()
     >>> fred.fred = Fred()
     >>> dic = SpaceNames(fred)
     >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
-    >>> assert dic['fred']['foo'] == "Hello" == dic['foo']
+    >>> assert dic["fred"]["foo"] == "Hello" == dic["foo"]
     """
 
     def getitem(self, string: str):

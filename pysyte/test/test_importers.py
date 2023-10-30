@@ -66,9 +66,9 @@ class TestDashboardImports(unittest.TestCase):
             See above to verify
         """
         lines = self.visitor.unused_lines()
-        assert 'os' in lines[10]
-        assert 'system' in lines[30]
-        assert 'killer' in lines[31]
+        assert "os" in lines[10]
+        assert "system" in lines[30]
+        assert "killer" in lines[31]
 
 
 class TestErrorImports(unittest.TestCase):

@@ -31,6 +31,7 @@ class MainMethod(Method):
                 return doc
         return ""
 
+
 ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsParser]
 
 

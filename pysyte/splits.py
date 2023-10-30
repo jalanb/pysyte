@@ -36,7 +36,7 @@ def join(items: list, separator: Optional[str] = None) -> str:
 def seamless_join(items: list) -> str:
     """A seamless join does not show where the joins are
 
-    >>> seamless_join(['fred', 'was', 'here'])
+    >>> seamless_join(["fred", "was", "here"])
     'fredwashere'
     """
     return join(items, nones.string)
@@ -45,7 +45,7 @@ def seamless_join(items: list) -> str:
 def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> List[str]:
     """Split a string to a list
 
-    >>> split('fred, was, here')
+    >>> split("fred, was, here")
     ['fred', ' was', ' here']
     """
     if not string:
@@ -62,7 +62,7 @@ def split_and_strip(
 ) -> List[str]:
     """Split a string into items and trim any excess spaces from the items
 
-    >>> split_and_strip('fred, was, here  ')
+    >>> split_and_strip("fred, was, here  ")
     ['fred', 'was', 'here']
     """
     if not string:
@@ -81,7 +81,7 @@ def split_and_strip_without(
 
     Any items in exclude are not in the returned list
 
-    >>> split_and_strip_without('fred, was, here  ', ['was'])
+    >>> split_and_strip_without("fred, was, here  ", ["was"])
     ['fred', 'here']
     """
     result = split_and_strip(string, separator_regexp)
@@ -97,7 +97,7 @@ def split_and_strip_whole(
 
     Exclude any empty items
 
-    >>> split_and_strip_whole('fred, , was,here,')
+    >>> split_and_strip_whole("fred, , was,here,")
     ['fred', 'was', 'here']
     """
     return split_and_strip_without(string, [""], separator_regexp)
@@ -163,7 +163,7 @@ def despaced(string: str) -> List[str]:
 
     Split on spaces, trim excess space, exclude any empty strings
 
-    >>> despaced('fred, , was,here today')
+    >>> despaced("fred, , was,here today")
     ['fred,', ',', 'was,here', 'today']
     """
     return split_and_strip_without(string, [""], " ")
@@ -174,7 +174,7 @@ def words(string: str) -> List[str]:
 
     Split on (English) punctuaution, trim space, exclude any empty strings
 
-    >>> words('fred, , was,here today')
+    >>> words("fred, , was,here today")
     ['fred', 'was', 'here', 'today']
     """
     return split_and_strip_without(string, [""], "[,;. ]")
@@ -185,7 +185,7 @@ def rejoin(string: str, separator_regexp: Optional[str] = None, spaced=False) ->
 
     Spaces are interspersed between items only if spaced is True
 
-    >>> rejoin('fred, was, here  ')
+    >>> rejoin("fred, was, here  ")
     'fred,was,here'
     """
     strings = split_and_strip(string)
