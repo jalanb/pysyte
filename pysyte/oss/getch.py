@@ -219,6 +219,19 @@ def get_as_key():
         return e.codes
 
 
+def name(codes):
+    """name for that code
+
+    >>> assert name(3) == '^3'
+    >>> assert name 51 == '3' == name('3')
+    """
+    try:
+        _ codes.pop()
+        return get_extended_key_name(codes)
+    except AttributeError:
+        return control_key_name(code)
+
+
 def control_key_name(code):
     """Prefix the name of a control key with '^'"""
     name = chr(code - 1 + ord("A"))
@@ -279,13 +292,13 @@ def known_keys() -> Dict[Tuple[int, ...], str]:
         (97,): "a",
         (127,): "backspace",
     }
-    return add_ascii_keys(result)
+    return _add_ascii_keys(result)
 
 
-def add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
+def _add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
     """Update the data with ascii keys
 
-    >>> data = add_ascii_keys({})
+    >>> data = _add_ascii_keys({})
     >>> assert data[(48,)] == '0'
     >>> assert data[(66,)] == 'B'
     >>> assert data[(99,)] == 'c'
@@ -350,3 +363,20 @@ def ask_user_simplified(
         raise KeyboardInterrupt
     print()
     return result
+
+
+def main() -> bool:
+    """Run the script
+
+    >>> sys.argv = ["main", "A", "-x"]
+    >>> main()
+    >>> assert exit_code == 65
+    """
+    breakpoint()
+    return False
+
+exit_code = 0
+
+if __name__ == '__main__':
+    main()
+    sys.exit(exit_code)
