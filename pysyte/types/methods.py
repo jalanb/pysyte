@@ -8,28 +8,38 @@ from types import ModuleType
 
 
 def unwrap(method: Callable) -> Callable:
-    """Get the original method from a methodeven if it's wrapped """
+    """Get the original method from a method, even if it's wrapped """
     return getattr(method, "__wrapped__", method)
 
 
 @dataclass
-class MethodData:
+class Method:
+    """A callable object, usually a function or method"""
+
     method: Callable
 
-
-class Method(MethodData):
-    """A callable method with some convenience attributes"""
-
-    def __init__(self, method: Callable):
-        super().__init__(unwrap(method))
-        if self.method != method:
-            self.wrapped = method
+    def __post_init__(self):
         self.code = self.method.__code__
+        unwrapped = unwrap(self.method)
+        self.wrapped = unwrapped if unwrapped != self.method else None
         self.init_frame = inspect.currentframe()
         self.callers = [self.init_frame.f_back]
 
+    def __str__(self):
+        return self.code
+
+    def __repr__(self):
+        return f"""<{self.__class__.__name__} {self.module}{self.name}
+
+{self.doc}
+>"""
+
     def run(self, *args, **kwargs):
         return self.method(*args, **kwargs)
+
+    @property
+    def name(self) -> Optional[ModuleType]:
+        return self.method.name
 
     def __call__(self, *args, **kwargs):
         call_frame = inspect.currentframe()
@@ -47,6 +57,10 @@ class Method(MethodData):
     @property
     def module(self) -> Optional[ModuleType]:
         return inspect.getmodule(self.method)
+
+    @property
+    def module_name(self) -> Optional[ModuleType]:
+        return self.method.__module__
 
     @property
     def doc(self) -> str:
