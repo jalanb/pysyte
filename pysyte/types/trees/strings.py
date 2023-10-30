@@ -24,6 +24,8 @@ class StringPath(JasonOrrendorfPath):
     Not in a dir
     """
 
+    sep = "/"
+
     # pylint: disable=abstract-method
     # pylint: disable=too-many-public-methods
 
@@ -101,6 +103,49 @@ class StringPath(JasonOrrendorfPath):
         """
         return self.contains(other)
 
+    def __add__(self, other:StrPath) -> StringPath:
+        """Concatenate the other
+
+        >>> assert StringPath("/usr/loc") + "al" == "/usr/local"
+        """
+        return self.__class__(f"{self}{other}")
+
+    def __sub__(self, other: int) -> DirectPath:
+        """Subtract dirs from end of path
+
+        >>> assert StringPath("/usr/local/bin/conf.d/fred.toml") - 3 == "/usr/local"
+        """
+        parts = self.split(str(self))
+        i = int(other)
+        fewer = parts[:-i]
+        return self.join(fewer)
+
+    def split(self, string: str="", maxsplit: int=-1) -> list[str]:
+        """Split a path into root and strings
+
+        >>> StringPath('/1/2/3/4/5').split(2)
+        StringPath('/'), 'one', 'two'
+        """
+        data = string if string else str(self)
+        return data.split(self.sep, maxsplit)
+                        
+    def rsplit(self, string: str="", maxsplit: int=-1) -> list[str]:
+        """Split a path into root and strings, from the right
+
+        >>> StringPath('/1/2/3/4/5').rsplit(2)
+        StringPath('/1/2/3'), '4', '5'
+        """
+        data = string if string else str(self)
+        return data.rsplit(self.sep, maxsplit)
+
+    def join(self, other: list) -> str:
+        """Join a list into a path
+
+        >>> assert StringPath('').join(['one', 'two']) == "/one/two"
+        """
+        return self.sep.join(other or [])
+
+                        
     def contains(self, other: StrPath) -> bool:
         """If other is also a path then this path should start with other
 
@@ -111,32 +156,22 @@ class StringPath(JasonOrrendorfPath):
         if isinstance(other, StringPath):
             return str(other).startswith(str(self))
         return str(other) in str(self)
-
-    def basename(self) -> str:
-        return str(super().basename())
-
-    @property
-    def basename_(self) -> str:
         return self.basename()
 
     @property
     def name(self) -> str:
         return str(super().name)
-
-    @property
-    def stem(self) -> StringPath:
-        stem, *_ = self.splitexts()
-        return stem
-
-    @property
-    def stem_name(self) -> str:
         return self.stem.name
 
-    def splitexts(self) -> Tuple[StringPath, str]:
-        """Split all extensions from the path
+
+class ExentendPath(StringPath):
+    """A path with extensions"""
+
+    def dezip(self) -> Tuple[StringPath, str]:
+        """Split all zipping extensions from the path
 
         >>> p = FilePath('here/fred.tar.gz')
-        >>> assert p.splitexts() == ('here/fred', '.tar.gz')
+        >>> assert p.dezip() == ('here/fred', '.tar.gz')
         """
         copy = self[:]
         filename, ext = os.path.splitext(copy)
@@ -158,7 +193,7 @@ class StringPath(JasonOrrendorfPath):
         Strip any leading `.` from args
 
         >>> source = makepath(__file__)
-        >>> new = source.add_ext('txt', '.new')
+        >>> new = source.add_ext('txt', 'new')
         >>> assert new.name.endswith('.py.txt.new')
         """
         exts = [(a[1:] if a[0] == "." else a) for a in args]
@@ -192,11 +227,6 @@ class StringPath(JasonOrrendorfPath):
         ext_ = ext.lstrip(".")
         return makepath(f"{filename}.{ext_}")
 
-    def has_vcs_dir(self):
-        for vcs_dir in (".git", ".svn", ".hg"):
-            if self.fnmatch_part(vcs_dir):
-                return True
-        return False
 
 
 class NoPath(StringPath):
@@ -233,18 +263,21 @@ class NoPath(StringPath):
             return str(self) < str(other)
         return bool(other)
 
-    def contains(self, other: StrPath) -> bool:
-        """As this is not a real path, just use the substring sense"""
-        return str(other) in str(self)
-
     def __truediv__(self, child):
         result = os.path.join(self.string, child) if child else self.string
         return makepath(result)
 
+    def contains(self, other: StrPath) -> bool:
+        """As this is not a real path, just use the substring sense"""
+        return str(other) in str(self)
+
+    def parent(string):
+        parent_string = "/".join(string.split("/")[:-1]) or "/"
+
     @property
     def parent(self):
         if "/" not in self.string:
-            return None
+            return ""
         parent_string = "/".join(self.string.split("/")[:-1])
         return makepath(parent_string)
 
