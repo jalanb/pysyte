@@ -18,16 +18,17 @@ class RealPath(strings.StringPath):
 
     We assume it has a familiar root
     """
+
     @property
     def root(self) -> strings.StringPath:
         """
-        >>> assert RealPath('/usr/local').root == '/'
+        >>> assert RealPath("/usr/local").root == "/"
         """
         return strings.StringPath("/")
 
     def isroot(self) -> bool:
         """
-        >>> assert RealPath('/').isroot()
+        >>> assert RealPath("/").isroot()
         """
         return self == self.parent
 
@@ -51,9 +52,6 @@ class Path(RealPath):
         stem, *_ = self.splitexts()
         return stem
 
-    @property
-    def stem_name(self) -> str:
-
     def parent_directory(self):
         if self.isroot():
             return None
@@ -74,9 +72,9 @@ class Path(RealPath):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> Path('/path/to/module.py').dirnames() == ['/', 'path', 'to']
+        >>> Path("/path/to/module.py").dirnames() == ["/", "path", "to"]
         True
-        >>> Path('path/to/module.py').dirnames() == ['path', 'to']
+        >>> Path("path/to/module.py").dirnames() == ["path", "to"]
         True
         """
         return [str(_) for _ in self.directory().split(os.path.sep)]
@@ -86,7 +84,7 @@ class Path(RealPath):
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> p = Path('/path/to/x.py')
+        >>> p = Path("/path/to/x.py")
         >>> assert p.paths == p.dirpaths()
         """
         parts = self.split()
@@ -100,9 +98,9 @@ class Path(RealPath):
 
         No empty parts are included
 
-        >>> Path('path/to/module.py').directories() == ['path', 'to']
+        >>> Path("path/to/module.py").directories() == ["path", "to"]
         True
-        >>> Path('/path/to/module.py').directories() == ['/', 'path', 'to']
+        >>> Path("/path/to/module.py").directories() == ["/", "path", "to"]
         True
         """
         return [d for d in self.dirnames() if d]
@@ -113,7 +111,7 @@ class Path(RealPath):
         None,
         """ This path's parent directories, as a list of strings.
 
-        >>> Path('/path/to/module.py').parents == ['/', 'path', 'to']
+        >>> Path("/path/to/module.py").parents == ["/", "path", "to"]
         True
         """,
     )
@@ -124,7 +122,7 @@ class Path(RealPath):
         None,
         """ This path's parent directories, as a sequence of paths.
 
-        >>> paths = Path('/usr/bin/vim').paths
+        >>> paths = Path("/usr/bin/vim").paths
         >>> assert paths[-1].exists()  # vim might be a link
         >>> assert paths[-2] == paths[-1].parent
         >>> assert paths[-3] == paths[-2].parent
@@ -151,11 +149,17 @@ class Path(RealPath):
         """The shorter of either the absolute path of the destination,
             or the relative path to it
 
-        >>> print(Path('/home/guido/bin').short_relative_path_to(
-        ...     '/home/guido/build/python.tar'))
+        >>> print(
+        ...     Path("/home/guido/bin").short_relative_path_to(
+        ...         "/home/guido/build/python.tar"
+        ...     )
+        ... )
         ../build/python.tar
-        >>> print(Path('/home/guido/bin').short_relative_path_to(
-        ...     '/mnt/guido/build/python.tar'))
+        >>> print(
+        ...     Path("/home/guido/bin").short_relative_path_to(
+        ...         "/mnt/guido/build/python.tar"
+        ...     )
+        ... )
         /mnt/guido/build/python.tar
         """
         relative = self.relpathto(destination)
@@ -248,6 +252,7 @@ class Path(RealPath):
         except OSError:
             return False
 
+
 @dataclass
 class Paths:
     """A collection of paths"""
@@ -277,8 +282,6 @@ def __mps(arg) -> Paths:
 @makepaths.register(str)
 def ___mps(arg) -> Paths:
     return Paths([makepath(arg)])
-
-
 
 
 @makepaths.register(strings.StringPath)

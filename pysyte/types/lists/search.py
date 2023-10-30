@@ -53,6 +53,7 @@ def average(lo: int, hi: int) -> int:
 @dataclass
 class Chooser:
     """A context manager for choosers"""
+
     chooser: Callable = None
 
     def choose(self, a, b):
@@ -62,6 +63,7 @@ class Chooser:
 @dataclass
 class Picker:
     """A context manager for pickers"""
+
     picker: Callable = None
 
     def __post_init__(self):
@@ -117,6 +119,7 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
             hi = i - 1
 
     return -1
+
 
 binary_search = partial(directed_search, Picker(average))
 

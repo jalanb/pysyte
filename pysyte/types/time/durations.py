@@ -29,6 +29,7 @@ from lazy import lazy
 from pysyte.types.methods import none_args
 from pysyte.types.time import times
 
+
 class Duration:
     """How long an event lasted
 
@@ -39,25 +40,25 @@ class Duration:
     """
 
     limits = [
-        ('seconds', 60),
-        ('minutes', 60),
-        ('hours', 24),
-        ('days', 365),
-        ('years', 9999)
+        ("seconds", 60),
+        ("minutes", 60),
+        ("hours", 24),
+        ("days", 365),
+        ("years", 9999),
     ]
 
     @classmethod
-    def seconds_dict(cls, seconds:int) -> dict:
+    def seconds_dict(cls, seconds: int) -> dict:
         """divide seconds into intervals
 
         >>> seven = Duration.seconds_dict(7)
-        >>> assert seven['seconds'] == 7
+        >>> assert seven["seconds"] == 7
         >>> seventy = Duration.seconds_dict(70)
-        >>> assert seventy['seconds'] == 10
-        >>> assert seventy['minutes'] == 1
+        >>> assert seventy["seconds"] == 10
+        >>> assert seventy["minutes"] == 1
         """
         names = {
-            'seconds': 0,
+            "seconds": 0,
         }
         i = seconds
         for name, limit in cls.limits:
@@ -91,15 +92,15 @@ class Duration:
             if i < 0:
                 break
         aliases = {
-            'dd': 'days',
-            'hh': 'hours',
-            'mm': 'minutes',
-            'ss': 'seconds',
-            'uu': 'subs',
+            "dd": "days",
+            "hh": "hours",
+            "mm": "minutes",
+            "ss": "seconds",
+            "uu": "subs",
         }
         attrs = list(aliases.values())
-        a_counts = { _: 0 for _ in attrs }
-        a_counts['subs'] = 0.0
+        a_counts = {_: 0 for _ in attrs}
+        a_counts["subs"] = 0.0
         data = dict(zip(attrs, a_counts))
         names = self.__dict__
         for k, v in kwargs.items():
@@ -119,13 +120,13 @@ class Duration:
         return str(int(self))
 
     def __repr__(self) -> str:
-        return f'''{self.__class__.__name__}(
+        return f"""{self.__class__.__name__}(
 days={self.days},
 hours={self.hours},
 minutes={self.minutes},
 seconds={self.seconds},
 subs={self.subs},
-) == int({int(self)})'''
+) == int({int(self)})"""
 
     def __add__(self, other: Duration) -> Duration:
         """Add self to other
@@ -148,7 +149,7 @@ subs={self.subs},
         >>> one = Duration(0, 0, 1, 15)
         >>> two = Duration(0, 0, 2, 45)
         >>> both = Duration(0, 0, 4, 0)
-        >>> assert two = both - one
+        >>> assert two == both - one
         """
         days = self.days - other.days
         hours = self.hours - other.hours
@@ -176,8 +177,9 @@ class NoDuration(Duration):
     For mypy and other typing nerds
 
     >>> none = duration(None)
-    >>> assert none isinstance(NoDuration)
+    >>> assert isinstance(none, NoDuration)
     """
+
     def __init__(self):
         super().__init__(0, 0, 0, 0)
 
@@ -191,7 +193,7 @@ class NoDuration(Duration):
         return ""
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(0) == 0'
+        return f"{self.__class__.__name__}(0) == 0"
 
     def __eq__(self, other) -> bool:
         return not other
@@ -209,7 +211,7 @@ def duration(*args, **kwargs) -> Duration:
 
     >>> one = duration(67)
     >>> two = duration((1, 7))
-    >>> assert one.seconds == 7 == two.seconds, f'{one.seconds=}, {two=}'
+    >>> assert one.seconds == 7 == two.seconds, f"{one.seconds=}, {two=}"
     >>> assert one.minutes == 1 == two.minutes
     >>> diff = two - one
     >>> assert diff.seconds == 0 and diff.minutes == 1
@@ -252,7 +254,7 @@ def ___dur(arg=None) -> Duration:
     >>> one = datetime.datetime(1979, 12, 25, 1, 2, 3)
     >>> two = datetime.datetime(1979, 12, 25, 1, 2, 4)
     >>> x = duration(two - one)
-    >>> assert x.second = 1
+    >>> assert x.second == 1
     >>> assert x.days + x.hours + x.minutes == 0
     """
     arg = arg if arg else datetime.timedelta(seconds=0)
@@ -262,7 +264,7 @@ def ___dur(arg=None) -> Duration:
 def dict_to_duration(data: dict) -> Duration:
     """Make a Duration from a dict
 
-    >>> fred = dict_to_duration({'minutes': 3, 'seconds': 7})
+    >>> fred = dict_to_duration({"minutes": 3, "seconds": 7})
     >>> assert fred.seconds == 7
     >>> assert fred.minutes == 3
     >>> assert fred.years is 0
@@ -271,11 +273,9 @@ def dict_to_duration(data: dict) -> Duration:
     default = lambda x: data.get(x, 0)
 
     return Duration(
-        days=default('days'),
-        hours=default('hours'),
-        minutes=default('minutes'),
-        seconds=default('seconds'),
-        subs=default('subs'),
+        days=default("days"),
+        hours=default("hours"),
+        minutes=default("minutes"),
+        seconds=default("seconds"),
+        subs=default("subs"),
     )
-
-

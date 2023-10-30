@@ -21,6 +21,7 @@ class StringPath(JasonOrrendorfPath):
     ...     print("in a dir")
     ... except AttributeError:
     ...     print("Not in a dir")
+    ...
     Not in a dir
     """
 
@@ -103,7 +104,7 @@ class StringPath(JasonOrrendorfPath):
         """
         return self.contains(other)
 
-    def __add__(self, other:StrPath) -> StringPath:
+    def __add__(self, other: StrPath) -> StringPath:
         """Concatenate the other
 
         >>> assert StringPath("/usr/loc") + "al" == "/usr/local"
@@ -120,19 +121,19 @@ class StringPath(JasonOrrendorfPath):
         fewer = parts[:-i]
         return self.join(fewer)
 
-    def split(self, string: str="", maxsplit: int=-1) -> list[str]:
+    def split(self, string: str = "", maxsplit: int = -1) -> list[str]:
         """Split a path into root and strings
 
-        >>> StringPath('/1/2/3/4/5').split(2)
+        >>> StringPath("/1/2/3/4/5").split(2)
         StringPath('/'), 'one', 'two'
         """
         data = string if string else str(self)
         return data.split(self.sep, maxsplit)
-                        
-    def rsplit(self, string: str="", maxsplit: int=-1) -> list[str]:
+
+    def rsplit(self, string: str = "", maxsplit: int = -1) -> list[str]:
         """Split a path into root and strings, from the right
 
-        >>> StringPath('/1/2/3/4/5').rsplit(2)
+        >>> StringPath("/1/2/3/4/5").rsplit(2)
         StringPath('/1/2/3'), '4', '5'
         """
         data = string if string else str(self)
@@ -141,11 +142,10 @@ class StringPath(JasonOrrendorfPath):
     def join(self, other: list) -> str:
         """Join a list into a path
 
-        >>> assert StringPath('').join(['one', 'two']) == "/one/two"
+        >>> assert StringPath("").join(["one", "two"]) == "/one/two"
         """
         return self.sep.join(other or [])
 
-                        
     def contains(self, other: StrPath) -> bool:
         """If other is also a path then this path should start with other
 
@@ -170,8 +170,8 @@ class ExentendPath(StringPath):
     def dezip(self) -> Tuple[StringPath, str]:
         """Split all zipping extensions from the path
 
-        >>> p = FilePath('here/fred.tar.gz')
-        >>> assert p.dezip() == ('here/fred', '.tar.gz')
+        >>> p = FilePath("here/fred.tar.gz")
+        >>> assert p.dezip() == ("here/fred", ".tar.gz")
         """
         copy = self[:]
         filename, ext = os.path.splitext(copy)
@@ -193,8 +193,8 @@ class ExentendPath(StringPath):
         Strip any leading `.` from args
 
         >>> source = makepath(__file__)
-        >>> new = source.add_ext('txt', 'new')
-        >>> assert new.name.endswith('.py.txt.new')
+        >>> new = source.add_ext("txt", "new")
+        >>> assert new.name.endswith(".py.txt.new")
         """
         exts = [(a[1:] if a[0] == "." else a) for a in args]
         string = ".".join([self] + list(exts))
@@ -218,15 +218,14 @@ class ExentendPath(StringPath):
         """The path to the file changed to use the given ext
 
         >>> fred = "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred").extend_by("fred")       == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred")  == fred
+        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
         >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
         """
         copy = self[:]
         filename, _ = os.path.splitext(copy)
         ext_ = ext.lstrip(".")
         return makepath(f"{filename}.{ext_}")
-
 
 
 class NoPath(StringPath):
