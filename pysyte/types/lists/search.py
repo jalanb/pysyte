@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from random import randint
+from random import shuffle
 from functools import partial
 from typing import Callable
 from typing import List
@@ -52,8 +54,7 @@ def average(lo: int, hi: int) -> int:
 @dataclass
 class Chooser:
     """A context manager for choosers"""
-
-    chooser: Callable
+    chooser: Callable = None
 
     def choose(self, a, b):
         return self.chooser(a, b)
@@ -62,8 +63,7 @@ class Chooser:
 @dataclass
 class Picker:
     """A context manager for pickers"""
-
-    picker: Callable
+    picker: Callable = None
 
     def __post_init__(self):
         pass
@@ -100,9 +100,8 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
         -1
         >>> i = 1024
         >>> items = list(range(i))
-        >>> import random
-        >>> j = random.randint(0, i)
-        >>> random.shuffle(items)
+        >>> j = randint(0, i)
+        >>> shuffle(items)
         >>> assert binary_search(items, j) < i
     """
     lo, hi = 0, len(arr) - 1
@@ -110,6 +109,7 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
     while lo <= hi:
         i = average.pick(lo, hi)
         item = arr[i]
+        next_ = average.next_(item, sought)
         if item == sought:
             return i
         elif item < sought:
@@ -119,11 +119,9 @@ def directed_search(average: Picker, arr: List[int], sought: int) -> int:
 
     return -1
 
-
 binary_search = partial(directed_search, Picker(average))
 
 # Doctest
 if __name__ == "__main__":
     import doctest
-
     doctest.testmod()
