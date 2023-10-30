@@ -8,28 +8,39 @@ from types import ModuleType
 
 
 @dataclass
-class MethodData:
-    method: Callable
-
-
-class Method(MethodData):
+class Method:
     """A callable method with some convenience attributes"""
 
-    def __init__(self, method: Callable):
-        super().__init__(method)
-        self.code = self.method.__code__
+    callable: Callable
+
+    def __post_init__(self):
+        self.code = self.callable.__code__
         self.init_frame = inspect.currentframe()
+        assert self.init_frame
+
+    def __str__(self):
+        return self.code
+
+    def __repr__(self):
+        return f"""<{self.__class__.__name__} {self.module}{self.name}
+
+{self.doc}
+>"""
 
     def run(self, *args, **kwargs):
-        return self.method(*args, **kwargs)
+        return self.callable(*args, **kwargs)
+
+    @property
+    def name(self) -> Optional[ModuleType]:
+        return self.callable.name
 
     @property
     def module(self) -> Optional[ModuleType]:
-        return inspect.getmodule(self.method)
+        return inspect.getmodule(self.callable)
 
     @property
     def doc(self) -> str:
-        return inspect.getdoc(self.method) or ""
+        return inspect.getdoc(self.callable) or ""
 
     @property
     def caller(self) -> Optional[FrameType]:
