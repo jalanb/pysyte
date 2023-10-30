@@ -13,7 +13,9 @@ def unwrap(method: Callable) -> tuple[Callable, Callable | None]:
 
 
 @dataclass
-class MethodData:
+class Method:
+    """A callable object, usually a function or method"""
+
     method: Callable
     wrapper: Callable | None = None
 
@@ -28,11 +30,26 @@ class Method(MethodData):
 
     def __post_init__(self):
         self.code = self.method.__code__
+        unwrapped = unwrap(self.method)
+        self.wrapped = unwrapped if unwrapped != self.method else None
         self.init_frame = inspect.currentframe()
         self.callers = [self.init_frame.f_back]
 
+    def __str__(self):
+        return self.code
+
+    def __repr__(self):
+        return f"""<{self.__class__.__name__} {self.module}{self.name}
+
+{self.doc}
+>"""
+
     def run(self, *args, **kwargs):
         return self.method(*args, **kwargs)
+
+    @property
+    def name(self) -> Optional[ModuleType]:
+        return self.method.name
 
     def __call__(self, *args, **kwargs):
         call_frame = inspect.currentframe()
@@ -55,6 +72,10 @@ class Method(MethodData):
     @property
     def module(self) -> ModuleType | None:
         return inspect.getmodule(self.method)
+
+    @property
+    def module_name(self) -> Optional[ModuleType]:
+        return self.method.__module__
 
     @property
     def doc(self) -> str:
