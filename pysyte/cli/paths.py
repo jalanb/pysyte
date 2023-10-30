@@ -5,19 +5,18 @@ from pysyte.types.paths import path
 class PathParser(ArgumentsParser):
     """Handle positional args as paths"""
 
-    def __init__(self, argparser, paths_arg=None):
+    def __init__(self, argparser, paths="paths"):
         super().__init__(argparser)
-        self.paths_arg = paths_arg if paths_arg else "paths"
-        super().positionals(self.paths_arg)
+        self.paths = paths
+        super().positionals(self.paths)
 
     def post_parser(self, arguments):
-        strings = arguments.get_arg(self.paths_arg)
+        strings = arguments.get_arg(self.paths)
         paths = [path(_) for _ in strings]
-        arguments.set_arg(self.paths_arg, [_ for _ in paths if _])
-        arguments.set_arg(f"not_{self.paths_arg}", [_ for _ in paths if not _])
+        arguments.set_arg(self.paths, [_ for _ in paths if _])
+        arguments.set_arg(f"not_{self.paths}", [_ for _ in paths if not _])
         return arguments
 
 
-def add_args(old_parser, name=None):
-    parser = PathParser(old_parser.parser, name)
-    return parser
+def add_args(parser: ArgumentsParser, paths="paths") -> ArgumentsParser:
+    return PathParser(parser.parser, paths)
