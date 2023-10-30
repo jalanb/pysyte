@@ -1,11 +1,11 @@
 import os
 
 from pysyte.types.trees import strings
-from pysyte.types.trees.paths import PathPath
+from pysyte.types.trees import paths
 from pysyte.types.trees.asserts import PathAssertions
 
 
-class FilePath(PathPath, PathAssertions):
+class FilePath(paths.Path, PathAssertions):
     """A path to a known file"""
 
     def __truediv__(self, child):
@@ -14,6 +14,9 @@ class FilePath(PathPath, PathAssertions):
     def __iter__(self):
         for line in self.stripped_lines():
             yield line
+
+    def __add__(self, other: StrPath) -> StringPath:
+        return self.addext(other)
 
     def contains(self, other: strings.StrPath) -> bool:
         """Whether other is in this file's text"""
@@ -66,7 +69,7 @@ class FilePath(PathPath, PathAssertions):
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
-        self.chmod(ChmodValues.readonly_file)
+        self.chmod(paths.ChmodValues.readonly_file)
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
