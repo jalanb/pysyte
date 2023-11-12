@@ -145,14 +145,14 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
 
 
 @dataclass
-class AttributesDictData:
+class SpaceNameData:
     proxy: Any
 
 
-class AttributesDict(AttributesDictData):
+class SpaceName(SpaceNameData):
     """Access attributes of a thing like a dict"""
 
-    def __item__(self, name):
+    def __getitem__(self, name):
         return self.getitem(name)
 
     def getitem(self, name):
@@ -162,18 +162,16 @@ class AttributesDict(AttributesDictData):
             raise KeyError(name)
 
 
-class AttributesDicts(AttributesDict):
+class SpaceNames(SpaceName):
     def getitem(self, name_):
         name, *names_ = name_.split(".", 1)
         value = super().getitem(name)
         try:
-            names = names_.pop()
-            return AttributesDicts(value).getitem(names)
+#           names = names.pop()
+            return SpaceNames(value).getitem(".".join(names))
         except IndexError:
             return value
 
 
 NameSpace = DictionaryAttributes
 NameSpaces = RecursiveDictionaryAttributes
-SpaceName = AttributesDict
-SpaceNames = AttributesDicts

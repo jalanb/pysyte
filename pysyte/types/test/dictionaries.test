@@ -42,7 +42,7 @@ A class is provided, which is initialised with a dictionary
     and offers those keys as attributes
 
     >>> dictionary = {'stuff': 1, 'non sense': 2}
-    >>> shallow = dictionaries.DictionaryAttributes(dictionary)
+    >>> shallow = dictionaries.NameSpace(dictionary)
     >>> assert shallow.stuff == 1
 
 It still acts as a dictionary
@@ -58,7 +58,7 @@ Any names which can't be converted aren't
 
 It adds only only level of attributes
     >>> dictionary = {'stuff': 1, 'names': {'alan': 1, 'fred': 2}}
-    >>> shallow = dictionaries.DictionaryAttributes(dictionary)
+    >>> shallow = dictionaries.NameSpace(dictionary)
     >>> assert shallow.names
     >>> try:
     ...     shallow.names.fred
@@ -68,6 +68,6 @@ It adds only only level of attributes
     ...
 
 A second class goes deeper
-    >>> deep = dictionaries.RecursiveDictionaryAttributes(dictionary)
+    >>> deep = dictionaries.NameSpaces(dictionary)
     >>> assert deep['names']['fred'] == deep.names.fred
 
