@@ -111,25 +111,25 @@ class LazyDefaultDict(DefaultDict):
         return result
 
 
-class DictionaryAttributes(dict):
+class NameSpace(dict):
     """Convert dictionary keys to attributes of self
 
-    >>> assert DictionaryAttributes({'fred': 1}).fred == 1
+    >>> assert NameSpace({'fred': 1}).fred == 1
     """
 
     def __init__(self, *args, **kwargs):
-        """>>> assert DictionaryAttributes({'fred': 1}).fred == 1"""
-        super(DictionaryAttributes, self).__init__(*args, **kwargs)
+        """>>> assert NameSpace({'fred': 1}).fred == 1"""
+        super(NameSpace, self).__init__(*args, **kwargs)
         self.__dict__ = self
 
     def update(self, other):
         self.__dict__ = data_merge(self.__dict__, other)
 
 
-class RecursiveDictionaryAttributes(DictionaryAttributes):
+class NameSpaces(NameSpace):
     """Convert dictionary keys to attributes of self, recursively
 
-    >>> instance = RecursiveDictionaryAttributes({'fred': {'mary': 1}})
+    >>> instance = NameSpaces({'fred': {'mary': 1}})
     >>> assert instance.fred.mary == 1
     """
 
@@ -137,22 +137,22 @@ class RecursiveDictionaryAttributes(DictionaryAttributes):
         data = {}
         for key, value in (thing or {}).items():
             data[key] = (
-                RecursiveDictionaryAttributes(value)
+                NameSpaces(value)
                 if isinstance(value, dict)
                 else value
             )
-        super(RecursiveDictionaryAttributes, self).__init__(data)
+        super(NameSpaces, self).__init__(data)
 
 
 @dataclass
-class AttributesDictData:
+class SpaceNameData:
     proxy: Any
 
 
-class AttributesDict(AttributesDictData):
+class SpaceName(SpaceNameData):
     """Access attributes of a thing like a dict"""
 
-    def __item__(self, name):
+    def __getitem__(self, name):
         return self.getitem(name)
 
     def getitem(self, name):
@@ -162,18 +162,12 @@ class AttributesDict(AttributesDictData):
             raise KeyError(name)
 
 
-class AttributesDicts(AttributesDict):
+class SpaceNames(SpaceName):
     def getitem(self, name_):
         name, *names_ = name_.split(".", 1)
         value = super().getitem(name)
         try:
-            names = names_.pop()
-            return AttributesDicts(value).getitem(names)
+            return SpaceNames(value).getitem(".".join(names))
         except IndexError:
             return value
 
-
-NameSpace = DictionaryAttributes
-NameSpaces = RecursiveDictionaryAttributes
-SpaceName = AttributesDict
-SpaceNames = AttributesDicts
