@@ -224,7 +224,7 @@ Using it on a DirectPath can give a DirectPath, or a FilePath
 
 Attributes of may also be DirectPaths or FilePaths
     >>> parent = bashrc.parent
-    >>> expected = paths.DirectPath if bashrc.isfile() else paths.NonePath
+    >>> expected = paths.DirectPath if bashrc.isfile() else paths.NoPath
     >>> assert isinstance(parent, expected)
 
 
