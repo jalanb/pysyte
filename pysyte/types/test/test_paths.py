@@ -405,7 +405,7 @@ class TestPaths(TestCase):
 
 
 class TestNonePath(TestCase):
-    """A NonePath is made from an empty or non-existent path
+    """A NoPath is made from an empty or non-existent path
 
     It should act like None (always false, contains nothing, ...)
     But still act like a Path (has 'isfile()', can be extended ...)
@@ -414,16 +414,16 @@ class TestNonePath(TestCase):
     def test_none_to_none(self):
         for item in (None, "", 0):
             path = paths.path(item)
-            self.assertTrue(isinstance(path, paths.NonePath))
+            self.assertTrue(isinstance(path, paths.NoPath))
 
     def test_repr(self):
         actual = repr(paths.path(None))
-        expected = '<NonePath "">'
+        expected = '<NoPath "">'
         self.assertEqual(actual, expected)
 
     def test_string_repr(self):
         actual = repr(paths.path("not/real/path"))
-        expected = '<NonePath "not/real/path">'
+        expected = '<NoPath "not/real/path">'
         self.assertEqual(actual, expected)
 
     def test_has_parent(self):
@@ -433,7 +433,7 @@ class TestNonePath(TestCase):
         self.assertTrue(path.parent.exists())
 
     def test_has_no_parent_without_slash(self):
-        """A NonePath with no '/' has no parent
+        """A NoPath with no '/' has no parent
 
         This is unlike an existing path which always has a parent
             all the way up to root of the filesystem
@@ -441,13 +441,13 @@ class TestNonePath(TestCase):
         self.assertIsNone(paths.path("fred_was_here").parent)
 
     def test_equality(self):
-        """A NonePath is equal to anything else none-ish"""
+        """A NoPath is equal to anything else none-ish"""
         path = paths.path(None)
         self.assertEqual(path, "")
         self.assertEqual(path, 0)
 
     def test_equality_from_string(self):
-        """A NonePath is equal to anything else none-ish
+        """A NoPath is equal to anything else none-ish
 
         Except: if made from a string, then do a string comparison
         """
@@ -456,26 +456,26 @@ class TestNonePath(TestCase):
         self.assertEqual(paths.path(None), path)
 
     def test_less_than(self):
-        """A NonePath is less than anything that's not false-y"""
+        """A NoPath is less than anything that's not false-y"""
         path = paths.path("/path/to/nowhere")
         self.assertLess(path, "/path/to/nowhere/else")
         self.assertLess(path, paths.path("/usr"))
 
     def test_not_less_than(self):
-        """A NonePath is not less than anything that's false-y"""
+        """A NoPath is not less than anything that's false-y"""
         path = paths.path("/path/to/nowhere")
         self.assertGreaterEqual(path, False)
         self.assertGreaterEqual(path, paths.path(None))
 
     def test_total_ordering(self):
-        """NonePath has __eq__, and __lt__, but can use other comparisons"""
+        """NoPath has __eq__, and __lt__, but can use other comparisons"""
         path = paths.path("/path/to/nowhere")
         self.assertGreater(path, "/path/to")
         self.assertLessEqual(path, paths.path("/usr"))
         self.assertLessEqual(path, paths.path("/path/to/nowhere"))
 
     def test_contains_nothing(self):
-        """There's nothing in a NonePath
+        """There's nothing in a NoPath
 
         Unlike an existing path
             where "in" means "in that directory"
@@ -484,11 +484,11 @@ class TestNonePath(TestCase):
         self.assertNotIn(paths.path("/a/path"), paths.path("/a"))
 
     def test_div(self):
-        """Can still use the '/' operator with a NonePath"""
+        """Can still use the '/' operator with a NoPath"""
         parent = paths.path("/path/to")
         child = paths.path("/path/to/nowhere")
         self.assertEqual(parent / "nowhere", child)
 
     def test_executable(self):
-        """A NonePath should not be executable"""
+        """A NoPath should not be executable"""
         self.assertFalse(paths.path(None).has_executable())
