@@ -15,9 +15,6 @@ from pysyte.types.trees.strings import NoPath
 from pysyte.types.trees.strings import StringPath
 
 
-class Pathed(Protocol):
-    path: Any
-
 @singledispatch
 def makepath(arg) -> StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
@@ -123,6 +120,15 @@ class Fred:
 def _______mp(arg) -> StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
+
+
+class Pathed(Protocol):
+    path: Any
+
+
+@singledispatch
+def ________mp(arg: Pathed) -> StringPath:
+    return makepath(arg.path)
 
 
 @singledispatch
