@@ -21,7 +21,7 @@ class Pathed(Protocol):
 @singledispatch
 def makepath(arg) -> StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"Zilch: {arg!r}")
+    raise NotImplementedError(f"What is {arg!r} ?")
 
 
 @makepath.register(type(None))
