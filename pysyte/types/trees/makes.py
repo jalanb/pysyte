@@ -18,7 +18,6 @@ class Pathed(Protocol):
     path: Any
 
 
-path = makepath
 
 
 @singledispatch
