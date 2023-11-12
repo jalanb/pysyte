@@ -264,34 +264,3 @@ class Paths:
 
     def __iter__(self):
         yield self.paths
-
-
-@singledispatch
-def makepaths(arg) -> Paths:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"Do not know the type of arg: {arg!r}")
-
-
-@makepaths.register(type(None))
-def _mps(arg) -> Paths:
-    return Paths([])
-
-
-@makepaths.register(list)
-def __mps(arg) -> Paths:
-    return Paths([makes.path(_) for _ in arg])
-
-
-@makepaths.register(str)
-def ___mps(arg) -> Paths:
-    return Paths([makes.path(arg)])
-
-
-@makepaths.register(strings.StringPath)
-def make_string_paths(arg) -> Paths:
-    return Paths([arg])
-
-
-@makes.path.register(Path)
-def make_path_path(arg) -> strings.StringPath:
-    return arg
