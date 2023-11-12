@@ -7,6 +7,8 @@ from functools import singledispatch
 from pysyte.types.trees import makes
 from pysyte.types.trees import strings
 
+path = makes.makepath
+paths = makes.makepaths
 
 class ChmodValues:
     # pylint: disable=too-few-public-methods
