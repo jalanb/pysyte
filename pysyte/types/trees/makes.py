@@ -4,6 +4,9 @@ import stat
 import sys
 from functools import singledispatch
 from importlib import import_module
+from typing import Any
+from typing import Protocol
+
 
 from pysyte.types.trees import strings
 from pysyte.types.trees.dirs import DirectPath
@@ -11,22 +14,21 @@ from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.files import FilePath
 
 
-@singledispatch
-def makepath(arg) -> strings.StringPath:
-    attribute = getattr(arg, "path", "")
-    return makepath(attribute)
-    if attribute:
-        return attribute
-    raise NotImplementedError(f"Cannot find a path in `{arg!r}`")
+class Pathed(Protocol):
+    path: Any
 
 
 path = makepath
 
 
+@singledispatch
+def makepath(arg: Pathed) -> strings.StringPath:
+    return makepath(arg.path)
+
+
 @makepath.register(type(None))
 def _mp(arg) -> strings.StringPath:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"Zilch: {arg!r}")
+    return NoPath()
 
 
 @makepath.register(str)
@@ -115,3 +117,34 @@ class Fred:
 def _______mp(arg) -> strings.StringPath:
     """Make a path from a class's module"""
     return _make_module_path(arg)
+
+
+@singledispatch
+def makepaths(arg) -> Paths:
+    """Refuse the temptation again."""
+    return [makepath(arg)]
+
+
+@makepaths.register(type(None))
+def _mps(arg) -> Paths:
+    return Paths([])
+
+
+@makepaths.register(list)
+def __mps(arg) -> Paths:
+    return Paths([makes.path(_) for _ in arg])
+
+
+@makepaths.register(str)
+def ___mps(arg) -> Paths:
+    return Paths([makes.path(arg)])
+
+
+@makepaths.register(strings.StringPath)
+def make_string_paths(arg) -> Paths:
+    return Paths([arg])
+
+
+@makes.path.register(Path)
+def make_path_path(arg) -> strings.StringPath:
+    return arg
