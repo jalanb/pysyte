@@ -8,10 +8,6 @@ from typing import Any
 from typing import Protocol
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from pysyte.types.trees.dirs import DirectPath
-    from pysyte.types.trees.files import FilePath
-
 from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.paths import Path
 from pysyte.types.trees.paths import Paths
@@ -22,18 +18,17 @@ from pysyte.types.trees.strings import StringPath
 class Pathed(Protocol):
     path: Any
 
-
 @singledispatch
-def makepath(arg: Pathed) -> StringPath:
-    return makepath(arg.path)
+def makepath(arg) -> StringPath:
+    """In the face of ambiguity, refuse the temptation to guess."""
+    raise NotImplementedError(f"Zilch: {arg!r}")
 
 
 @makepath.register(type(None))
 def _mp(arg) -> StringPath:
-    """Make no path from nothing
+    """Make a path from nothing
 
-    >>> p = makepath(None)
-    >>> assert not p
+    >>> assert not makepath(None)
     """
     return NoPath()
 
@@ -154,11 +149,6 @@ def ___mps(arg) -> Paths:
 @makepaths.register(StringPath)
 def make_string_paths(arg) -> Paths:
     return Paths([arg])
-
-
-@makepath.register(Path)
-def make_path_path(arg) -> StringPath:
-    return arg
 
 
 # Alias for backward compatibility
