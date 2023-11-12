@@ -167,7 +167,6 @@ class SpaceNames(SpaceName):
         name, *names_ = name_.split(".", 1)
         value = super().getitem(name)
         try:
-#           names = names.pop()
             return SpaceNames(value).getitem(".".join(names))
         except IndexError:
             return value
