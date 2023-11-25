@@ -5,5 +5,4 @@ ipython
 pudb
 pytest-pudb
 pytest-sugar
-rich-cli
 sh
