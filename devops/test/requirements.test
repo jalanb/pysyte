@@ -15,11 +15,12 @@ Find requirements files in pysyte
 ---------------------------------
 
 The expected dir ".../pysyte/requirements"
-    >>> p = path(pysyte) / "requirements"
+    >>> p = path(pysyte).parent / "requirements"
+    >>> r = requirements.RequirementDir(p)
 
-I bet it has many txt files
+I bet it has many requirement files
 
-    >>> length = len(p.files('*.txt'))
+    >>> length = len(r.requirement_files())
     >>> i = numbers.otml(length)
     >>> assert i.is_many
 
