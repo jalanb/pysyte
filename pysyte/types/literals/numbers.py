@@ -4,17 +4,48 @@
 
 >>> assert numbers.ten == 10
 >>> assert numbers.twelve == 12
->>> assert numbers.ninety_nine = 99
+>>> assert numbers.ninety_nine == 99
 
 """
 from bidict import bidict
 
 zero = 0
 
+
 def on_import():
-    digits = ( "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", )
-    teens = ( "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", )
-    tens = ( "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety", )
+    digits = (
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+    )
+    teens = (
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
+    )
+    tens = (
+        "ten",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety",
+    )
 
     data = {}
     data.update({v: k for k, v in enumerate(digits, 1)})
@@ -79,7 +110,7 @@ def name(n: int) -> str:
     thousands, units = divmod(n, 1_000)
     hundreds, tens = divmod(units, 100)
     tens_ = f"{name(tens)}" if tens else ""
-    hundreds_ = f"{name(hundreds)} hundred" if  0 < hundreds < 100 else ""
+    hundreds_ = f"{name(hundreds)} hundred" if 0 < hundreds < 100 else ""
     and_ = " and " if hundreds and tens else ""
     result = f'{hundreds_}{and_}{tens_}'
     if n < 1_000:
@@ -87,14 +118,35 @@ def name(n: int) -> str:
     and_ = ""
     if thousands:
         if tens:
-            and_= " and "
+            and_ = " and "
         if hundreds:
             and_ = ", "
-    thousands_ = f"{name(thousands)} thousand" if  0 < thousands else ""
+    thousands_ = f"{name(thousands)} thousand" if 0 < thousands else ""
     result = f"{thousands_}{and_}{result}"
     if n < 1_000_000:
         return result
-    prefixes = ( "m",  "b", "tr", "quadr", "quint", "sext", "hept", "oct", "non", "dec", "undec", "duodec", "tredec", "quattuordec", "quindec", "sexdec", "septdec", "octodec", "novemdec", "vigint")
+    prefixes = (
+        "m",
+        "b",
+        "tr",
+        "quadr",
+        "quint",
+        "sext",
+        "hept",
+        "oct",
+        "non",
+        "dec",
+        "undec",
+        "duodec",
+        "tredec",
+        "quattuordec",
+        "quindec",
+        "sexdec",
+        "septdec",
+        "octodec",
+        "novemdec",
+        "vigint",
+    )
     i = 1_000_000
     for prefix in prefixes:
         j = i * 1_000
@@ -112,4 +164,5 @@ del on_import
 
 if __name__ == '__main__':
     import doctest
+
     doctest.testmod()

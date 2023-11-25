@@ -11,8 +11,10 @@ from typing import TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
 
+
 class Nones(list):
     limit: int = 0
+
     def __init__(self, limit: int, *args):
         self.limit = limit
         self.check(len(args))
@@ -33,13 +35,13 @@ class Nones(list):
 
 class One(Nones):
     def __init__(self, *args):
-        self.one, *_ =_args
+        self.one, *_ = _args
         super().__init__(1, [self.one])
 
 
 class Two(Nones):
     def __init__(self, *args):
-        self.one, self.two, *_ =_args
+        self.one, self.two, *_ = _args
         super().__init__(2, args)
 
 
@@ -52,7 +54,6 @@ class Lots(Many):
     def __init__(self, *args):
         self.limit = -1
         super().__init__(-1, args)
-
 
 
 # https://stackoverflow.com/a/25464724/500942

@@ -819,6 +819,7 @@ def makepaths(arg) -> Paths:
     attribute = getattr(arg, "paths", [])
     return makepaths(attribute) if attribute else makepaths(list(arg))
 
+
 @singledispatch
 def makepath(arg) -> StringPath:
     attribute = getattr(arg, "path", "")

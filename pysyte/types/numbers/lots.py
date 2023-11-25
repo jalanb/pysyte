@@ -17,6 +17,7 @@ from typing import Any
 from dataclasses import dataclass
 from dataclasses import field
 
+
 @dataclass
 class Nones(list):
     args: list = field(default_factory=list)
@@ -46,10 +47,10 @@ class Nones(list):
         return lots(self.args + other.args)
 
     def __sub__(self, other):
-        return lots(self.args[-len(other.args):]) # + other.args)
+        return lots(self.args[-len(other.args) :])  # + other.args)
 
     def __eq__(self, other):
-        return  self.__class__.__name__ == other.__class__.__name__
+        return self.__class__.__name__ == other.__class__.__name__
 
     def __lt__(self, other):
         return int(self) < int(other)
@@ -72,41 +73,24 @@ class Nones(list):
 
 
 class One(Nones):
-
     def __post_init__(self):
         self.limit = 1
         self.check_args()
 
 
 class Two(Nones):
-
     def __post_init__(self):
         self.limit = 2
         self.check_args()
 
 
 class Many(Two):
-
     def __post_init__(self):
         self.limit = 4
         self.check_args()
 
-class Lots(Many):
 
+class Lots(Many):
     def __post_init__(self):
         self.limit = self.max + 1
         self.check_args()
-
-
-def lots(args: list, many = 3):
-    a = len(args)
-    match a:
-        case 0:
-            return None
-        case 1:
-            return One(args)
-        case 2:
-            return Two(args)
-    if a <= many:
-        return Many(args)
-    return Lots(args)

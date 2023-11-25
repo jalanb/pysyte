@@ -11,11 +11,13 @@ from pysyte.types.python import packages
 @dataclass
 class Requirement(packages.Package):
     """A python package required by something or other"""
+
     min_: versions.version = versions.NoVersion()
     max_: versions.version = versions.NoVersion()
 
     def __postinit__(self):
         import re
+
         breakpoint()
         if re.search('[<=>]', self.name):
             pass
@@ -25,7 +27,7 @@ class Requirement(packages.Package):
 class Requirements:
     """A collection of requirements"""
 
-    required : list = [Requirement]
+    required: list = [Requirement]
 
     def extend(self, items: list[Requirement]):
         self.required.extend(items)
@@ -42,12 +44,11 @@ class Requirements:
 
 class RequirementDir(dirs.DirPath):
     """A directory, with requirements files as *.txt"""
+
     def requirement_files(self):
         """The requirements files in here"""
         return self.files('*.txt')
 
 
-
 def parse(file: files.FilePath) -> Requirements:
     breakpoint()
-

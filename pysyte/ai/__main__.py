@@ -5,8 +5,8 @@ import sys
 from rich import print
 
 from pysyte import os
-import pysyte.ai.open import OpenaiApp
-import pysyte.ai.open import wwts
+from pysyte.ai.open import OpenaiApp
+from pysyte.ai.open import wwts
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
 
@@ -21,23 +21,20 @@ models = NameSpaces(
 )
 
 
-
 def main():
-
     app = OpenaiApp("wwts")
     app = pysyte.ai.open.OpenaiApp()
 
     breakpoint()
     question = " ".join(sys.argv[1:]) or config.prompt.final
-    messages=[
+    messages = [
         {"role": "system", "content": config.prompt.prefix},
         {"role": "system", "content": config.prompt.context},
         {"role": "system", "content": config.prompt.task},
         {"role": "system", "content": config.prompt.rules},
         {"role": "user", "content": question},
     ]
-    choices = app.ask([
-    ], config)
+    choices = app.ask([], config)
 
     allowed = []
     for i, choice in enumerate(choices, 1):
@@ -62,4 +59,3 @@ def main():
 if __name__ == "__main__":
     x = os.EX_OK if main() else 1
     sys.exit(x)
-
