@@ -78,10 +78,22 @@ def name(n: int) -> str:
     >>> assert name(2_001_001) == "two million, one thousand and one"
     >>> assert name(2_001_100) == "two million and one thousand, one hundred"
     >>> assert name(2_001_101) == "two million, one thousand, one hundred and one"
-    >>> assert name(7654321) == "seven million, six hundred and fifty four thousand, three hundred and twenty one"
-    >>> assert name(77654021) == "seventy seven million, six hundred and fifty four thousand and twenty one"
-    >>> assert name(7777654001) == "seven billion, seven hundred and seventy seven million, six hundred and fifty four thousand and one"
-    >>> assert name(12000000000000000000007890000000000000000000045391) == "twelve quindecillion, seven octillion, eight hundred and ninety heptillion, forty five thousand, three hundred and ninety one"
+    >>> assert (
+    ...     name(7654321)
+    ...     == "seven million, six hundred and fifty four thousand, three hundred and twenty one"
+    ... )
+    >>> assert (
+    ...     name(77654021)
+    ...     == "seventy seven million, six hundred and fifty four thousand and twenty one"
+    ... )
+    >>> assert (
+    ...     name(7777654001)
+    ...     == "seven billion, seven hundred and seventy seven million, six hundred and fifty four thousand and one"
+    ... )
+    >>> assert (
+    ...     name(12000000000000000000007890000000000000000000045391)
+    ...     == "twelve quindecillion, seven octillion, eight hundred and ninety heptillion, forty five thousand, three hundred and ninety one"
+    ... )
     """
 
     def bigger_name(n: int, m: int, units: str) -> str:
