@@ -341,7 +341,7 @@ def ask_user_simplified(
 ):
     if prompt or default_key:
         print(f"{prompt} [{default_key}] ", end="")
-    result = simplifier(getch())
+    result = simplifier(get_key())
     if not result:
         result = default_key
     if not result:
