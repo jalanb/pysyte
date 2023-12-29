@@ -9,19 +9,18 @@ import os
 import re
 import stat
 import sys
+from dataclasses import dataclass
 from fnmatch import fnmatch
 from typing import Iterable
 from typing import List
-from typing import Union
-
-from deprecated import deprecated
 
 from pysyte.types.lists import flatten
-from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees import dirs
 from pysyte.types.trees.makes import path
 from pysyte.types.trees.paths import PathPath
 from pysyte.types.trees.strings import NoPath
 from pysyte.types.trees.strings import StringPath
+from pysyte.types.trees.strings import StrPath
 
 
 class PathError(Exception):
@@ -175,13 +174,13 @@ class DotPath(StringPath):
     def path_split(self, sep=None, maxsplit=-1):
         separator = sep or os.path.sep
         parts = super().split(separator, maxsplit)
-        parts[0] = makepath(parts[0] if parts[0] else "/")
+        parts[0] = path(parts[0] if parts[0] else "/")
         return parts
 
     split = path_split
 
     def abspath(self):
-        return makepath(os.path.abspath(str(self)))
+        return path(os.path.abspath(str(self)))
 
     def slashpath(self):
         return self + "/" if self.isdir() else self
@@ -266,7 +265,7 @@ class DotPath(StringPath):
         u = os.path.expanduser(str(self))
         v = os.path.expandvars(u)
         r = os.path.realpath(v)
-        return makepath(r)
+        return path(r)
 
     def same_path(self, other):
         """Whether this path points to same place as the other"""
@@ -318,7 +317,7 @@ class FilePath(DotPath, PathAssertions):
         """
         try:
             return [_.rstrip() for _ in self.lines(retain=False)]
-        except (OSError, IOError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):
             return []
 
     def stripped_whole_lines(self):
@@ -362,10 +361,10 @@ class FilePath(DotPath, PathAssertions):
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""
-        return cd(self.parent)
+        return dirs.cd(self.parent)
 
     def dirname(self):
-        return DirectPath(os.path.dirname(self))
+        return dirs.DirectPath(os.path.dirname(self))
 
     parent = property(dirname)
 
@@ -457,77 +456,8 @@ class ChmodValues:
     readonly_directory = 0o555
 
 
-def _make_module_path(arg):
-    """Make a path from a thing that has a module
-
-    classes and functions have modules, they'll be needing this
-    """
-    try:
-        return makepath(import_module(arg.__module__))
-    except (AttributeError, ModuleNotFoundError):
-        return None
-
-
-@singledispatch
-def makepaths(arg) -> Paths:
-    attribute = getattr(arg, "paths", [])
-    return makepaths(attribute) if attribute else makepaths(list(arg))
-
-
-@singledispatch
-def makepath(arg) -> StringPath:
-    attribute = getattr(arg, "path", "")
-    return makepath(attribute) if attribute else makepath(str(arg))
-
-
-path = makepath
-
-
-@makepath.register(type(None))
-def _mp(arg) -> StringPath:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    return NonePath()
-
-
-@makepath.register(DotPath)
-def __mp(arg) -> StringPath:
-    return arg
-
-
-@makepath.register(str)
-def ____mp(arg) -> StringPath:
-    """Make a path from a string
-
-    Expand out any variables, home squiggles, and normalise it
-    See also http://stackoverflow.com/questions/26403972
-
-    See also Lynton Kwesi Johnson:
-        The Eagle and The Bear have people living in fear
-        Of impending nuclear warfare
-    """
-    if not arg:
-        return makepath(None)
-    if os.path.isfile(arg):
-        return FilePath(arg)
-    if os.path.isdir(arg):
-        string = arg if arg == "/" else arg.rstrip("/")
-        return DirectPath(string)
-    v = os.path.expandvars(arg)
-    u = os.path.expanduser(v)
-    if arg == u:
-        return NonePath(arg)
-    if os.path.exists(u):
-        return makepath(u)
-    return NonePath(arg)
-
-
 def imports():
     return {sys, os, re, stat}
-
-
-@deprecated(reason="use pathstr()", version="0.7.57")
-def makestr(string: str) -> StringPath:
-    return pathstr(string)
 
 
 def pathstr(string: str) -> StringPath:
@@ -543,7 +473,7 @@ def as_path(string_or_path):
     If it is already one, return it unchanged
     If not, return the path()
     """
-    if isinstance(string_or_path, DirectPath):
+    if isinstance(string_or_path, dirs.DirectPath):
         return string_or_path
     return path(string_or_path)
 

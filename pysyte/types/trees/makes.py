@@ -17,11 +17,13 @@ from pysyte.types.trees.strings import NoPath, StringPath
 class Pathed(Protocol):
     path: Any
 
-
 from pysyte.types.trees import strings
 from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.files import FilePath
+from pysyte.types.trees.paths import Path
+from pysyte.types.trees.paths import Paths
+from pysyte.types.trees.strings import NoPath
 
 
 class Pathed(Protocol):
@@ -162,7 +164,7 @@ def make_string_paths(arg) -> Paths:
 
 
 @makepath.register(Path)
-def make_path_path(arg) -> StringPath:
+def make_path_path(arg) -> strings.StringPath:
     return arg
 
 

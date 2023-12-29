@@ -5,8 +5,8 @@ import os
 import random
 from unittest import TestCase
 
-from pysyte.types.trees import paths
 from pysyte.types.trees import files
+from pysyte.types.trees import paths
 
 
 class MockSketch(files.FilePath):

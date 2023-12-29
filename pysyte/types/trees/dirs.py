@@ -144,23 +144,23 @@ def ignore_fnmatches(ignores):
 
 
 def root():
-    return path("/")
+    return makes.path("/")
 
 
 def tmp():
-    users = path("~/tmp")
-    return users if users else path("/tmp")
+    users = makes.path("~/tmp")
+    return users if users else makes.path("/tmp")
 
 
 def home():
-    _home = path(os.path.expanduser("~"))
+    _home = makes.path(os.path.expanduser("~"))
     assert _home
     _ = _home.expand()
     return _home
 
 
 def pwd():
-    return path(os.getcwd())
+    return makes.path(os.getcwd())
 
 
 def here():
