@@ -5,7 +5,7 @@ import os
 import random
 from unittest import TestCase
 
-from pysyte.types import paths
+from pysyte.types.trees import paths
 from pysyte.types.trees import files
 
 
@@ -42,7 +42,7 @@ class MockLinesError(MockSketch):
 
 class TestPaths(TestCase):
     def setUp(self):
-        self.setup_dir = paths.pwd()
+        self.setup_dir = paths.dirs.pwd()
         self.path_to_test = paths.path(__file__).extend_by("py")
         self.dir = self.path_to_test.parent
         self.path_to_paths = paths.path(paths).extend_by("py")
@@ -129,20 +129,6 @@ class TestPaths(TestCase):
         self.assertTrue(paths.path("/usr/local/.svn/fred").has_vcs_dir())
         self.assertTrue(paths.path("/.hg/etc").has_vcs_dir())
         self.assertFalse(paths.path("/usr/local/bin").has_vcs_dir())
-
-    def test_cd_back(self):
-        paths.cd.previous = None
-        paths.cd("/usr")
-        paths.cd("/usr/local")
-        paths.cd("-")
-        self.assertEqual(paths.pwd(), "/usr")
-
-    def test_cd_back_without_previous(self):
-        paths.cd.previous = None
-        self.assertRaises(paths.PathError, paths.cd, "-")
-
-    def test_cd_nowhere(self):
-        self.assertFalse(paths.cd("/path/to/nowhere"))
 
     def test_as_path_with_path(self):
         path = paths.makepath("/usr/local")

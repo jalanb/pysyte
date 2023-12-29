@@ -17,6 +17,7 @@ from deprecated import deprecated
 
 from pysyte.types.lists import flatten
 from pysyte.types.trees.dirs import DirectPath
+from pysyte.types.trees.dirs import here
 from pysyte.types.trees.makes import path
 from pysyte.types.trees.paths import PathPath
 from pysyte.types.trees.strings import NoPath
@@ -77,26 +78,7 @@ def files(*strings: Iterable) -> List[StringPath]:
     return choose_paths(*strings, chooser=lambda p: p.isfile())
 
 
-def root():
-    return path("/")
-
-
-def tmp():
-    return path("/tmp")
-
-
-def home():
-    _home = path(os.path.expanduser("~"))
-    assert _home
-    _ = _home.expand()
-    return _home
-
-
-def pwd():
-    return path(os.getcwd())
-
-
-def first_dir(path_string: str):
+def first_dir(path_string):
     """Get the first directory in that path
 
     >>> first_dir("usr/local/bin") == "usr"
@@ -225,14 +207,14 @@ def tab_complete(strings, globber=add_stars):
     """
     strings_ = [strings] if isinstance(strings, str) else strings
     globs = flatten([globber(s) for s in strings_])
-    here_ = pwd()
+    here = dirs.here()
     matches = []
     for glob_ in globs:
         if "/" in glob_:
             directory, base = os.path.split(glob_)
-            dir_ = here_ / directory
+            dir_ = here / directory
         else:
-            dir_ = here_
+            dir_ = here
             base = glob_
         match = [p for p in dir_.listdir() if p.fnmatch_basename(base)]
         matches.extend(match)
