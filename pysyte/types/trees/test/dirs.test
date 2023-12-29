@@ -1,0 +1,79 @@
+The dirs module
+================
+
+    >>> from pysyte.types.paths import dirs
+    >>> assert 'Handle directories' in dirs.__doc__
+
+We'll need the os module for some of the tests below
+
+    >>> import os
+
+Some known dirs
+----------------
+
+Root of the filesystem
+    >>> assert dirs.root().isroot()
+
+The tmp directory
+    >>> assert dirs.tmp() == '/tmp'
+
+The pwd() method gets os.getcwd() as a DirectPath
+
+    >>> start_here = dirs.pwd()
+    >>> assert start_here == os.getcwd()
+    >>> assert isinstance(start_here, dirs.DirectPath)
+
+And here() does same
+
+    >>> assert dirs.here() == dirs.pwd()
+
+cd()
+----
+
+The cd() method (at least) calls os.chdir()
+It returns True if the change of directory is successful
+
+    >>> assert dirs.here() == start_here
+    >>> assert not dirs.cd('/no/such/path')
+    >>> assert dirs.here() == start_here
+
+Assuming a standard Unix filesystem
+    >>> assert dirs.cd('/usr/lib')
+    >>> assert dirs.here() == '/usr/lib'
+
+cd() recognises the special value '-' to go back to the previous directory
+
+    >>> assert dirs.cd('-')
+    >>> assert dirs.here() == start_here
+
+If a cd() fails the value used gets ignored for going back
+    >>> dirs.cd('/no/such/path') and dirs.pwd() or 'fail'
+    'fail'
+    >>> dirs.cd('-') and dirs.pwd() or 'fail'
+    <DirectPath '/usr/lib'>
+
+Calling using '-' repeatedly will toggle between two directories:
+
+    >>> assert dirs.cd('/usr')
+    >>> assert dirs.cd('/opt')
+    >>> for i in range(0, 4):
+    ...     _ = dirs.cd('-')
+    ...     print(dirs.pwd())
+    ...
+    /usr
+    /opt
+    /usr
+    /opt
+
+If the path to a file is given
+    cd() will change to that file's parent directory
+
+/bin/cp is a file on nearly all Unix systems
+    but merely as a link to /usr/bin/cp on some of them
+
+If it is a file we can cd to it
+    >>> assert dirs.cd('/bin/cp')
+
+And now expect to be in one of its known parents
+    >>> assert dirs.here() in ('/bin', '/usr/bin')
+

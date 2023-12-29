@@ -1,3 +1,5 @@
+"""Handle directories for pysyte"""
+
 import os
 from typing import TextIO
 
@@ -139,6 +141,30 @@ def ignore_fnmatches(ignores):
         return False
 
     return ignored
+
+
+def root():
+    return path("/")
+
+
+def tmp():
+    users = path("~/tmp")
+    return users if users else path("/tmp")
+
+
+def home():
+    _home = path(os.path.expanduser("~"))
+    assert _home
+    _ = _home.expand()
+    return _home
+
+
+def pwd():
+    return path(os.getcwd())
+
+
+def here():
+    return pwd()
 
 
 def cd(path_to: strings.StringPath) -> bool:
