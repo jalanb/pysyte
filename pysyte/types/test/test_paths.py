@@ -400,13 +400,13 @@ class TestNonePath(TestCase):
         self.assertFalse(path.exists())
         self.assertTrue(path.parent.exists())
 
-    def test_has_no_parent_without_slash(self):
-        """A NoPath with no '/' has no parent
-
-        This is unlike an existing path which always has a parent
-            all the way up to root of the filesystem
-        """
-        self.assertIsNone(paths.path("fred_was_here").parent)
+    def test_here_has_parent(self):
+        """A non-existent path's parent is here, if it has no '/'"""
+        path = paths.path("very_unlikely_to_be_a_real_file")
+        self.assertFalse(path.exists())
+        parent = path.parent
+        self.assert.parent.same_dir(paths.path("."))
+        self.assertTrue(parent.exists())
 
     def test_equality(self):
         """A NoPath is equal to anything else none-ish"""
