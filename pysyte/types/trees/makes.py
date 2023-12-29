@@ -24,6 +24,10 @@ from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.files import FilePath
 
 
+class Pathed(Protocol):
+    path: Any
+
+
 @singledispatch
 def makepath(arg) -> strings.StringPath:
     attribute = getattr(arg, "path", "")

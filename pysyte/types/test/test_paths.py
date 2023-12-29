@@ -405,8 +405,8 @@ class TestNonePath(TestCase):
         path = paths.path("very_unlikely_to_be_a_real_file")
         self.assertFalse(path.exists())
         parent = path.parent
-        self.assert.parent.same_dir(paths.path("."))
-        self.assertTrue(parent.exists())
+        assert parent.same_dir(paths.path("."))
+        assert parent.exists()
 
     def test_equality(self):
         """A NoPath is equal to anything else none-ish"""

@@ -6,6 +6,10 @@ from functools import singledispatch
 
 from pysyte.types.trees import strings
 
+path = makes.makepath
+paths = makes.makepaths
+
+
 class ChmodValues:
     readonly_file = 0o444
     readonly_directory = 0o555

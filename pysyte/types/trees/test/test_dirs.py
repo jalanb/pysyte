@@ -4,6 +4,7 @@ from unittest import TestCase
 from pysyte.types.trees import dirs
 from pysyte.types.trees import paths
 
+
 class TestHere(TestCase):
     def test_here(self):
         assert dirs.here().isdir()
@@ -11,7 +12,6 @@ class TestHere(TestCase):
 
 
 class TestCD(TestCase):
-
     def test_cd_back(self):
         dirs.cd.previous = None
         dirs.cd("/usr")
