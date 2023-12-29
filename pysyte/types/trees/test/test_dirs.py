@@ -1,8 +1,8 @@
 import os
 from unittest import TestCase
 
-from pysyte.types import paths
-from pysyte.types.paths import dirs
+from pysyte.types.trees import dirs
+from pysyte.types.trees import paths
 
 class TestHere(TestCase):
     def test_here(self):

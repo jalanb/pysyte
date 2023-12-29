@@ -1,5 +1,5 @@
 from pysyte.cli.arguments import ArgumentsParser
-from pysyte.types.paths import path
+from pysyte.types.trees.paths import path
 
 
 class PathParser(ArgumentsParser):

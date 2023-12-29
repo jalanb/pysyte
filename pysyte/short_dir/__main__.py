@@ -6,7 +6,7 @@ import sys
 
 from pysyte import __version__
 from pysyte.cli import main
-from pysyte.types import paths
+from pysyte.types.trees import paths
 
 
 class ScriptError(NotImplementedError):
@@ -108,7 +108,7 @@ def abs_path(p):
 
 
 def home_links():
-    home = paths.home()
+    home = paths.dirs.home()
     links = [
         (str(x), str(x.realpath())) for x in home.listdir() if x.islink() and x.isdir()
     ]

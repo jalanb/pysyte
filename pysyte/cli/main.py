@@ -14,7 +14,7 @@ from pysyte.cli import arguments
 from pysyte.cli.config import load_configs
 from pysyte.types.methods import Callable
 from pysyte.types.methods import Method
-from pysyte.types.paths import makepath
+from pysyte.types.trees.paths import makepath
 
 
 class MainMethod(Method):

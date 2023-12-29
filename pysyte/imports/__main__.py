@@ -9,7 +9,7 @@ import linecache
 from pysyte import importers
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.cli.main import run
-from pysyte.types import paths
+from pysyte.types.trees import paths
 
 
 def add_args(parser: ArgumentsParser) -> ArgumentsParser:

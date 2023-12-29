@@ -8,7 +8,7 @@ More imports for testing
 ------------------------
 
     >>> import os
-    >>> from pysyte.types import paths
+    >>> from pysyte.types.trees import dirs
 
 XDG
 ---

@@ -1,6 +1,7 @@
 """Linux-specific code"""
 
-from pysyte.types import paths
+
+from pysyte.types.trees import paths
 
 
 def xdg_home():

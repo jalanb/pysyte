@@ -3,8 +3,7 @@
 import unittest
 
 from pysyte.cli import arguments
-from pysyte.cli import paths
-from pysyte.types.paths import path
+from pysyte.types.trees import paths
 
 
 class TestPaths(unittest.TestCase):
@@ -23,7 +22,7 @@ class TestPaths(unittest.TestCase):
         Anything else (not a real path) comes back in the "not_paths" argument
         """
         parser = paths.add_args(arguments.test_parser())
-        path_to_test = path(__file__)
+        path_to_test = paths.path(__file__)
         path_to_tests = path_to_test.parent
         parsed = parser.parse([path_to_test, path_to_tests, "another"])
         self.assertIn(path_to_test, parsed.paths)
@@ -34,7 +33,7 @@ class TestPaths(unittest.TestCase):
     def test_named_parse(self):
         """CHeck that the paths argument can be named differently"""
         parser = paths.add_args(arguments.test_parser(), "fred")
-        path_to_test = path(__file__)
+        path_to_test = paths.path(__file__)
         parsed = parser.parse([path_to_test, "another"])
         self.assertIn(path_to_test, parsed.fred)
         self.assertNotIn("another", parsed.fred)
