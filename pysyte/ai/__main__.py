@@ -6,7 +6,6 @@ from rich import print
 
 from pysyte import os
 from pysyte.ai.open import OpenaiApp
-from pysyte.ai.open import wwts
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
 
@@ -23,7 +22,6 @@ models = NameSpaces(
 
 def main():
     app = OpenaiApp("wwts")
-    app = pysyte.ai.open.OpenaiApp()
 
     breakpoint()
     question = " ".join(sys.argv[1:]) or config.prompt.final
