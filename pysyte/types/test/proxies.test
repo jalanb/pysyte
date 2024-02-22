@@ -1,0 +1,51 @@
+The proxies module
+==================
+
+    >>> from psyte.typies import proxies
+    >>> assert "proxy other objects" in proxies.__doc__
+
+
+A Proxy class
+-------------
+
+Proxy objects have their own attributes
+    plus those of the other object supplied at instantiation
+
+A mock class to proxy
+
+    >>> class Thing:
+    ...     stuff = 1
+    ...
+    >>> thing = Thing()
+
+    >>> assert thing.stuff == 1
+    >>> proxy = proxies.Proxy(thing)
+    >>> assert proxy.stuff == 1
+
+They do not acquire any other attributes
+
+    >>> assert getattr(proxy, "tuff", None) is None
+
+But they can add other attributes as needed
+
+    >>> proxy.x = 1
+    >>> assert proxy.x == proxy.stuff
+
+Can also write to proxied attributes
+
+    >>> assert thing.stuff == 1
+    >>> proxy.stuff = 6
+    >>> assert thing.stuff == 6
+
+
+The Proxy class is mainly intended for specialisation
+
+    >>> class Fred(proxies.Proxy):
+    ...     def __init__(self, item):
+    ...         super().__init__(item)
+    ...         self.x = 6
+    ...
+
+    >>> fred = Fred(thing)
+    >>> assert fred.x == fred.stuff
+
