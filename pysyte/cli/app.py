@@ -7,16 +7,16 @@ from contextlib import ContextDecorator
 
 from pysyte.types.methods import Method
 from pysyte.cli.exceptions import rich_exceptions
-from pysyte import os
+from pysyte.cli import exits
 
 
 def exit(method, locals_=None):
-    exit_code = os.EX_FAIL
+    exit_code = exits.fail
     with rich_exceptions(locals_ if locals_ else {}):
         try:
-            exit_code = os.EX_OK if method() else os.EX_FAIL
+            exit_code = exits.ExitCode(method())
         except BdbQuit:
-            exit_code = os.EX_OK
+            exit_code = exits.pass_
     sys.exit(exit_code)
 
 

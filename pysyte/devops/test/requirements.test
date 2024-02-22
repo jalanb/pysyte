@@ -1,0 +1,26 @@
+The pysyte.devops.requirements module
+=====================================
+
+    >>> from pysyte.devops import requirements
+    >>> assert "Handle requirements" in requirements.__doc__
+
+imports
+-------
+
+    >>> import pysyte
+    >>> from pysyte.types.paths import path
+    >>> from pysyte.types import numbers
+
+Find requirements files in pysyte
+---------------------------------
+
+The expected dir ".../pysyte/requirements"
+    >>> p = path(pysyte).parent / "requirements"
+    >>> r = requirements.RequirementDir(p)
+
+I bet it has many requirement files
+
+    >>> length = len(r.requirement_files())
+    >>> i = numbers.otml(length)
+    >>> assert i.is_many
+

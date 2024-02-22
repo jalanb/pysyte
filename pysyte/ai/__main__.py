@@ -4,9 +4,8 @@ import sys
 
 from rich import print
 
-from pysyte import os
-import pysyte.ai.open import OpenaiApp
-import pysyte.ai.open import wwts
+from pysyte.cli import exits
+from pysyte.ai.open import OpenaiApp
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
 
@@ -21,23 +20,20 @@ models = NameSpaces(
 )
 
 
-
-def main():
+def main() -> exits.ExitCode:
 
     app = OpenaiApp("wwts")
-    app = pysyte.ai.open.OpenaiApp()
 
     breakpoint()
     question = " ".join(sys.argv[1:]) or config.prompt.final
-    messages=[
+    messages = [
         {"role": "system", "content": config.prompt.prefix},
         {"role": "system", "content": config.prompt.context},
         {"role": "system", "content": config.prompt.task},
         {"role": "system", "content": config.prompt.rules},
         {"role": "user", "content": question},
     ]
-    choices = app.ask([
-    ], config)
+    choices = app.ask([], config)
 
     allowed = []
     for i, choice in enumerate(choices, 1):
@@ -46,20 +42,19 @@ def main():
         allowed.append(str(i))
     answer = ask_user_simplified("Which reply is best?", "")
     if answer not in allowed:
-        return False
+        return exits.fail
     choice = choices[int(answer) - 1]
     messages.append({"role": "assistant", "content": choice['message']['content']})
     question = input("Ask more? ")
     if not question:
-        return True
+        return exits.pass_
     messages.append({"role": "user", "content": question})
     choices = app.ask(messages, config)
     for i, choice in enumerate(choices, 1):
         reply = choice['message']['content']
         print(f"Reply {i}: {reply}\n\n")
+    return exits.pass_
 
 
 if __name__ == "__main__":
-    x = os.EX_OK if main() else 1
-    sys.exit(x)
-
+    sys.exit(int(main()))

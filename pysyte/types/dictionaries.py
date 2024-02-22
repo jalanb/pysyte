@@ -136,11 +136,7 @@ class NameSpaces(NameSpace):
     def __init__(self, thing):
         data = {}
         for key, value in (thing or {}).items():
-            data[key] = (
-                NameSpaces(value)
-                if isinstance(value, dict)
-                else value
-            )
+            data[key] = NameSpaces(value) if isinstance(value, dict) else value
         super(NameSpaces, self).__init__(data)
 
 
@@ -170,4 +166,3 @@ class SpaceNames(SpaceName):
             return SpaceNames(value).getitem(".".join(names))
         except IndexError:
             return value
-
