@@ -1,4 +1,5 @@
 """Import imports for pysyte"""
+import abc
 import os
 import importlib
 import linecache
@@ -8,18 +9,21 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Iterator
 
+from pym.ast.visit import visitors
 
-class ImportVisitor(ast.NodeVisitor):
+
+class ImportVisitor(visitors.PymVisitor):
     def __init__(self):
         super().__init__()
         self.imports = defaultdict(list)
         self.froms = defaultdict(list)
 
+    @abc.abstractmethod
     def imported(self, name, line):
-        raise NotImplementedError(f"imported({name}, {line}")
+        pass
 
     def collect_names(self, node):
-        names = [(_.name, getattr(_, "asname", None)) for _ in node.names]
+        names = [(_.name, getattr(_, "asname", "")) for _ in node.names]
         for name, alias in names:
             self.imports[alias if alias else name].append(node.lineno)
         return names
@@ -61,7 +65,7 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Import(self, node):
-        self.collect_names(node)
+        _ = self.collect_names(node)
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
@@ -112,7 +116,7 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-class ImportUser(ImportVisitor):
+class UsedImportVistor(ImportVisitor):
     def __init__(self):
         super().__init__()
         self.used = defaultdict(list)
@@ -149,8 +153,8 @@ class AS3:
     tree: ast.Module
 
 
-def find_imports(as3: AS3) -> ImportUser:
-    import_user = ImportUser()
+def find_imports(as3: AS3) -> UsedImportVistor:
+    import_user = UsedImportVistor()
     import_user.visit(as3.tree)
     return import_user
 
@@ -162,7 +166,7 @@ def parse_python(script) -> Iterator[AS3]:
         yield AS3(script, as3)
 
 
-def parse(script) -> ImportUser:
+def parse(script) -> UsedImportVistor:
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
         raise FileNotFoundError(f"Not a file: {script}")
