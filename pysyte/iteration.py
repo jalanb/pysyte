@@ -10,7 +10,7 @@ def first(sequence: Sequence[T], message=None) -> T:  # Generic function
 
     If there aren't any, raise a ValueError with that message
 
-    >>> assert first([1, 2, 3]) == 1
+    >>> assert first("fred") == "f"
     """
     try:
         return next(iter(sequence))
@@ -50,4 +50,31 @@ def first_that(predicate, sequence: Sequence[T], message=None) -> T:
     try:
         return first([_ for _ in sequence if predicate(_)])
     except (ValueError, StopIteration):
-        raise KeyError(message or "Not Found")
+        raise KeyError(f":-(\n{message}\n{e}" if message else f":-(\n{e}")
+
+
+def take_until(predicate, iterable):
+    """All items in iterable (inclusive) until predicate is truish
+
+    >>> list(take_until(lambda x: x == 6, [1, 4, 6, 4, 1])) == [1, 4, 6]
+    True
+    """
+    for item in iterable:
+        yield item
+        if predicate(item):
+            break
+
+
+def drop_from_end(predicate, iterable):
+    """Drop items from end as long as predicate is True
+
+    >>> drop_from_end(lambda x: not x, [0, 1, 2, 3, None, 3, 0, None])
+    [0, 1, 2, 3, None, 3]
+    """
+    type_ = type(iterable)
+    return type_(reversed(type_(dropwhile(lambda x: predicate(x), reversed(iterable)))))
+
+
+def drop_falsies_from_end(iterable):
+    return drop_from_end(lambda x: not x, iterable)
+
