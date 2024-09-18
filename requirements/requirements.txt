@@ -9,3 +9,4 @@ rich
 stackprinter
 yamlreader
 textual
+sh
