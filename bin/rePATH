@@ -24,6 +24,7 @@ import argparse
 from pysyte import __version__
 from pysyte.cli.main import run
 from pysyte.cli import app
+from pysyte.streams import std
 
 
 class ScriptError(NotImplementedError):
@@ -44,7 +45,7 @@ def add_args(parser: ArgumentsParser):
 
 def post_parse(args):
     if args.version:
-        sys.stdout.write(f"{sys.argv[0]} version: {__version__}")
+        std.out(f"{sys.argv[0]} version: {__version__}")
         raise SystemExit
     if not args.index:
         if args.start:

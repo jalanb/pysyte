@@ -24,6 +24,7 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+from pysyte.streams import std
 
 class NoKeys(StopIteration):
     """A StopIteration caused by running out of keys"""
@@ -33,7 +34,7 @@ class NoKeys(StopIteration):
 
 def get_ord():
     """The integer ordinal of the next byte read from sys.stdin"""
-    return ord(sys.stdin.read(1))
+    return ord(std.in(1))
 
 
 class TerminalContext(object):
@@ -44,7 +45,7 @@ class TerminalContext(object):
         self.old_settings = None
 
     def __enter__(self):
-        self.fd = sys.stdin.fileno()
+        self.fd = std.in_fileno()
         self.old_settings = termios.tcgetattr(self.fd)
         mode = termios.tcgetattr(self.fd)
         mode[tty.LFLAG] = mode[tty.LFLAG] & ~(termios.ECHO | termios.ICANON)
@@ -185,7 +186,7 @@ def get_menu(**kwargs):
 
 
 def get_ascii():
-    """Get ASCII key from stdin
+    """Get ASCII key
 
     return None for others
     """
@@ -196,7 +197,7 @@ def get_ascii():
 
 
 def get_ASCII():
-    """Get ASCII key from stdin
+    """Get ASCII key
 
     raise error on other
     """
@@ -207,7 +208,7 @@ def get_ASCII():
 
 
 def get_as_key():
-    """Get key from stdin
+    """Get key
 
     return ASCII keys as (single char) strings
     others as tuples
@@ -353,8 +354,8 @@ def ask_user_simplified(
 ):
     if prompt or default_key:
         default_prompt = f"[{default_key}] " if default_key else ""
-        sys.stdout.write(f"{prompt} {default_prompt}")
-        sys.stdout.flush()
+        std.out(f"{prompt} {default_prompt}")
+        std.flush()
     result = simplifier(get_key())
     if not result or result in ("^i", "^j", "^m"):
         result = default_key

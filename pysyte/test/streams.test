@@ -34,3 +34,20 @@ Simpler - use default stream
     ...     print('Hello World')
     ...
     >>> assert stream.getvalue() == 'Hello World\n'
+
+
+std
+===
+
+streams provides a simpler interface to sys.stdin, sys.stdout, sys.stderr
+
+    >>> std = streams.std
+    >>> std.out("Hello"); std.err("World")
+    Hello
+    World
+    >>> std.write("Hello World")
+    Hello World
+
+#   >>> key = std.in(1)
+    >>> assert std.in_fileno() == 0
+

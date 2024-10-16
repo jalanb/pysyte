@@ -9,6 +9,7 @@ from typing import List
 from pysyte import __version__
 from pysyte.bash.screen import alt_screen
 from pysyte.cli.arguments import ArgumentsParser
+from pysyte.streams import std
 from pysyte.types import lines as pylines
 
 
@@ -68,7 +69,7 @@ class LinesParser(ArgumentsParser):
 
     def post_parser(self, args):
         if args.version and self.version:
-            sys.stdout.write(f"{sys.argv[0]} version: {self.version}")
+            std.out(f"{sys.argv[0]} version: {self.version}")
             raise SystemExit
         args.sed = partial(pylines.sed, args=args)
         args.alt_screen = alt_screen()

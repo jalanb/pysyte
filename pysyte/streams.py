@@ -14,6 +14,10 @@ from six import StringIO
 class Print():
     """
     """
+    def in(self, *args, **kwargs) -> str:
+        """Read from sys.stdin"""
+        return sys.stdin.read(*args, **kwargs)
+
     def out(*args, **kwargs):
         """Direct print() to sys.stdout"""
         kwargs["file"] = sys.stdout
@@ -23,6 +27,16 @@ class Print():
         """Direct print() to sys.stderr"""
         kwargs["file"] = sys.stderr
         print(*args, **kwargs)
+
+    def write(text: str):
+        return sys.stdout.write(text)
+
+    def flush():
+        return sys.stdout.flush()
+
+    def in_fileno(self):
+        """Get stdin's fileno"""
+        return sys.stdin.fileno()
 
 std = Print()
 
