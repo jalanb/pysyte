@@ -1,18 +1,18 @@
 """Make a method to suppress sys.stdout and/or sys.stderr
 
->>> from pysyte.streams import print_out, print_err
+>>> from pysyte.streams import std
 
 Doctest normally shows all streams
 
->>> print_out("Hello")
->>> print_err("World")
+>>> std.out("Hello")
+>>> std.err("World")
 Hello
 World
 
 Suppress stderr
 >>> with quietly as suppressor:
-...     print_out("Hello")
-...     print_err("World")
+...     std.out("Hello")
+...     std.err("World")
 ...
 Hello
 

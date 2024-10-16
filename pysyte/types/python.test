@@ -2,38 +2,40 @@ pysyte.types.python
 ===================
 
 
-    >>> from pysyte.streams import print_out, print_err
+    >>> from pysyte.streams import std
 
 
 Doctest normally shows all streams
 
-    >>> print_out("Hello")
-    >>> print_err("World")
+    >>> std.out("Hello")
+    >>> std.err("World")
     Hello
     World
 
 Suppress stderr
-    >>> with quietly:
-    ...     print_out("Hello")
-    ...     print_err("World")
+    >>> with quietly as fred:
+    ...     std.out("Hello")
+    ...     std.err("World")
     ...
     Hello
 
+    >>> assert "World" in fred.stderr
+
 Suppress stdout
     >>> with Quietly:
-    ...     print_out("Hello")
-    ...     print_err("World")
+    ...     std.out("Hello")
+    ...     std.err("World")
     ...
     World
 
 Suppress both
-    >>> with QUIETLY as suppressor:
-    ...     print_out("Hello")
-    ...     print_err("World")
+    >>> with QUIETLY as fred:
+    ...     std.out("Hello")
+    ...     std.err("World")
     ...
 
 Suppressed streams were stored in attributes
 
-    >>> assert "Hello" in suppressor.stdout
-    >>> assert "World" in suppressor.stderr
+    >>> assert "Hello" in fred.stdout
+    >>> assert "World" in fred.stderr
 
