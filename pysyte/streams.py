@@ -11,6 +11,22 @@ from typing import Tuple
 from six import StringIO
 
 
+class Print():
+    """
+    """
+    def out(*args, **kwargs):
+        """Direct print() to sys.stdout"""
+        kwargs["file"] = sys.stdout
+        print(*args, **kwargs)
+
+    def err(*args, **kwargs):
+        """Direct print() to sys.stderr"""
+        kwargs["file"] = sys.stderr
+        print(*args, **kwargs)
+
+std = Print()
+
+
 def print_out(*args, **kwargs):
     """Direct print() to sys.stdout
 
