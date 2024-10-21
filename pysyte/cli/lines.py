@@ -7,9 +7,10 @@ from typing import DefaultDict
 from typing import List
 
 from pysyte import __version__
-from pysyte.cli.arguments import ArgumentsParser
-from pysyte.types import lines as pylines
 from pysyte.bash.screen import alt_screen
+from pysyte.cli.arguments import ArgumentsParser
+from pysyte.streams import std
+from pysyte.types import lines as pylines
 
 
 class LinesParser(ArgumentsParser):
@@ -42,7 +43,6 @@ class LinesParser(ArgumentsParser):
         args = {
             "a": ["at", "lines", "inty", "show that line"],
             "c": ["copy", "clipboard", "boolean", "copy text to clipboard"],
-            # 'd': ['delete', 'lines', 'string', 'lines to be deleted'],
             "e": ["expression", "ed", "string", "sed expression"],
             "f": ["first", "lines", "inty", "the first line to show", "1"],
             "i": [
@@ -69,16 +69,16 @@ class LinesParser(ArgumentsParser):
 
     def post_parser(self, args):
         if args.version and self.version:
-            sys.stdout.write(f"{sys.argv[0]} version: {self.version}")
+            std.out(f"{sys.argv[0]} version: {self.version}")
             raise SystemExit
         args.sed = partial(pylines.sed, args=args)
         args.alt_screen = alt_screen()
         return args
 
 
-def add_args(old_parser: ArgumentsParser) -> LinesParser:
+def add_args(parser: ArgumentsParser) -> LinesParser:
     """Create a new parser to handle some lines from given parser"""
-    result = LinesParser(old_parser.parser)
+    result = LinesParser(parser.parser)
     result.add_lines()
     return result
 

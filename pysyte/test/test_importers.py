@@ -27,8 +27,10 @@ class TestDashboardImports(unittest.TestCase):
             to make sure getting more than top-level imports
             and can handle the edge-cases
         """
-        import os, sys as system  # noqa: F811, F401, E401
-        from os import path, kill as killer  # noqa: F401
+        import os  # noqa: F401, F811
+        import sys as system  # noqa: F811, F401, E401
+        from os import kill as killer  # noqa: F401
+        from os import path  # noqa: F401
 
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)
@@ -66,9 +68,9 @@ class TestDashboardImports(unittest.TestCase):
             See above to verify
         """
         lines = self.visitor.unused_lines()
-        assert 'os' in lines[10]
-        assert 'system' in lines[30]
-        assert 'killer' in lines[31]
+        assert "os" in lines[10]
+        assert "system" in lines[30]
+        assert "killer" in lines[31]
 
 
 class TestErrorImports(unittest.TestCase):

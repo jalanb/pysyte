@@ -7,8 +7,8 @@ from typing import List
 >>> faxed, fixed = applied((fax, fix), (+7, -999))
 >>> assert faxed == (7, 0)
 >>> assert fixed == (0, -999)
-
 """
+
 
 fax = lambda x: max(0, x)
 fix = lambda x: min(0, x)
@@ -53,7 +53,7 @@ def average(lo: int, hi: int) -> int:
 class Chooser:
     """A context manager for choosers"""
 
-    chooser: Callable
+    chooser: Callable = None
 
     def choose(self, a, b):
         return self.chooser(a, b)
@@ -63,7 +63,7 @@ class Chooser:
 class Picker:
     """A context manager for pickers"""
 
-    picker: Callable
+    picker: Callable = None
 
     def __post_init__(self):
         pass
@@ -125,5 +125,4 @@ binary_search = partial(directed_search, Picker(average))
 # Doctest
 if __name__ == "__main__":
     import doctest
-
     doctest.testmod()

@@ -2,10 +2,12 @@ bidict
 boltons
 deprecated
 inflect>=2.1.0
+lazy>1.4
 path.py==7.7.1
+psutil
 pym
 pyyaml
 rich
 stackprinter
-yamlreader
 textual
+yamlreader

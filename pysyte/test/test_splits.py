@@ -3,7 +3,6 @@
 
 import unittest
 
-
 from pysyte import splits
 
 
@@ -115,10 +114,10 @@ class TestSplits(unittest.TestCase):
 
     def test_split_mirrors_join(self):
         tests = ["", ",", "a,", ",b", "a,b"]
-        actual = all([splits.join(splits.split(t)) == t for t in tests])
+        actual = all(splits.join(splits.split(t)) == t for t in tests)
         self.assertTrue(actual)
         tests = [[], ["one"], ["one", "two"]]
-        actual = all([splits.split(splits.join(t)) == t for t in tests])
+        actual = all(splits.split(splits.join(t)) == t for t in tests)
         self.assertTrue(actual)
 
     def test_empty_separator(self):

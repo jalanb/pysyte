@@ -7,7 +7,7 @@ from pysyte.types import paths
 def xdg_home():
     """path to $XDG_CONFIG_HOME
 
-    >>> assert xdg_home() == paths.path('~/.config').expand()
+    >>> assert xdg_home() == paths.path("~/.config").expand()
     """
     return paths.environ_path("XDG_CONFIG_HOME", "~/.config")
 
@@ -15,7 +15,7 @@ def xdg_home():
 def xdg_home_config(filename):
     """path to that file in $XDG_CONFIG_HOME
 
-    >>> assert xdg_home_config('fred') == paths.path('~/.config/fred').expand()
+    >>> assert xdg_home_config("fred") == paths.path("~/.config/fred").expand()
     """
     return xdg_home() / filename
 

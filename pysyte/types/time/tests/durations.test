@@ -1,0 +1,27 @@
+pysyte.types.time.durations
+===========================
+
+    >>> from pysyte.types.time import durations
+    >>> assert 'durations for pysyte' in durations.__doc__
+
+
+Duration
+--------
+
+    >>> from pysyte.types.time.durations import Duration
+    >>> one = Duration(0, 0, 1, 15)
+    >>> assert one.minutes == 1 and one.seconds == 15
+    >>> two = Duration(0, 0, 2, 45)
+    >>> assert two.minutes == 2 and two.seconds == 45
+
+
+Durations can be added
+
+    >>> sum_ = one + two
+    >>> assert sum_.minutes == 4 and sum_.seconds == 0
+
+    >>> assert sum_.days + sum_.hours == 0
+
+And subtracted
+    >>> assert one == sum_ - two
+

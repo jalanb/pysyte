@@ -78,21 +78,21 @@ def name(n: int) -> str:
     >>> assert name(2_001_001) == "two million, one thousand and one"
     >>> assert name(2_001_100) == "two million and one thousand, one hundred"
     >>> assert name(2_001_101) == "two million, one thousand, one hundred and one"
-    >>> assert (
-    ...     name(7654321)
-    ...     == "seven million, six hundred and fifty four thousand, three hundred and twenty one"
+    >>> assert name(7654321) == (
+    ...     "seven million, six hundred and fifty four thousand, three hundred and "
+    ...     "twenty one"
     ... )
-    >>> assert (
-    ...     name(77654021)
-    ...     == "seventy seven million, six hundred and fifty four thousand and twenty one"
+    >>> assert name(77654021) == (
+    ...     "seventy seven million, six hundred and fifty four thousand and "
+    ...     "twenty one"
     ... )
-    >>> assert (
-    ...     name(7777654001)
-    ...     == "seven billion, seven hundred and seventy seven million, six hundred and fifty four thousand and one"
+    >>> assert name(7777654001) == (
+    ...     "seven billion, seven hundred and seventy seven million, "
+    ...     "six hundred and fifty four thousand and one"
     ... )
-    >>> assert (
-    ...     name(12000000000000000000007890000000000000000000045391)
-    ...     == "twelve quindecillion, seven octillion, eight hundred and ninety heptillion, forty five thousand, three hundred and ninety one"
+    >>> assert name(12000000000000000000007890000000000000000000045391) == (
+    ...     "twelve quindecillion, seven octillion, eight hundred and "
+    ...     "ninety heptillion, forty five thousand, three hundred and ninety one"
     ... )
     """
 
@@ -113,18 +113,17 @@ def name(n: int) -> str:
         return result
 
     if n < 0:
-        return f'minus {name(-n)}'
-    result_ = f"{n:_}"
+        return f"minus {name(-n)}"
     data = {k: v for k, v in globals().items() if isinstance(v, int)}
     numbers = dict(bidict(data).inverse)
     if n in numbers:
-        return numbers[n].replace('_', ' ')
+        return numbers[n].replace("_", " ")
     thousands, units = divmod(n, 1_000)
     hundreds, tens = divmod(units, 100)
     tens_ = f"{name(tens)}" if tens else ""
     hundreds_ = f"{name(hundreds)} hundred" if 0 < hundreds < 100 else ""
     and_ = " and " if hundreds and tens else ""
-    result = f'{hundreds_}{and_}{tens_}'
+    result = f"{hundreds_}{and_}{tens_}"
     if n < 1_000:
         return result
     and_ = ""
@@ -174,7 +173,7 @@ globals().update(on_import())
 
 del on_import
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
 
     doctest.testmod()

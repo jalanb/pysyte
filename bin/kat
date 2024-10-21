@@ -11,7 +11,7 @@ from pysyte.types.lines import arg_lines
 from pysyte.types.lines import as_text
 
 
-def add_args(parser):
+def add_args(parser: ArgumentsParser):
     """Parse out command line arguments"""
     parser_ = lines.add_args(parser)
     parser_.add_files(action="kat")

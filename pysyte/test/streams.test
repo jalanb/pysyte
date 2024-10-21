@@ -4,6 +4,21 @@ The streams module
     >>> from pysyte import streams
     >>> assert 'handle streams' in streams.__doc__
 
+Printing to stdout
+------------------
+
+pysyte.streams offers 2 functions which print to stdout/stderr
+
+    >>> from pysyte.streams import print_out
+    >>> from pysyte.streams import print_err
+
+    >>> print_out("Hello World")
+    Hello World
+    >>> print_err("Goodbye World")
+    Goodbye World
+
+
+
 Swallowing stdout
 -----------------
 
@@ -19,3 +34,20 @@ Simpler - use default stream
     ...     print('Hello World')
     ...
     >>> assert stream.getvalue() == 'Hello World\n'
+
+
+std
+===
+
+streams provides a simpler interface to sys.stdin, sys.stdout, sys.stderr
+
+    >>> std = streams.std
+    >>> std.out("Hello"); std.err("World")
+    Hello
+    World
+    >>> std.write("Hello World")
+    Hello World
+
+#   >>> key = std.in(1)
+    >>> assert std.in_fileno() == 0
+

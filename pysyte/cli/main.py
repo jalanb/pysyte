@@ -4,28 +4,25 @@ This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
 
-import bdb
 import sys
 from dataclasses import dataclass
 from typing import Optional
 
-from pysyte.cli import arguments
 from pysyte.cli import app
+from pysyte.cli import arguments
 from pysyte.cli.config import load_configs
-from pysyte.types.paths import makepath
 from pysyte.types.methods import Callable
 from pysyte.types.methods import Method
+from pysyte.types.paths import makepath
 
 
 class MainMethod(Method):
+    """A method that can be called from the command line"""
     def __init__(self, method):
         super().__init__(method)
         self.in_main_module = self.module.__name__ == "__main__"
         self.needs_args = self.argcount > 0
         self.needs_one_arg = self.argcount == 1
-
-    def __call__(self, *args_, **kwargs):
-        return self.method(*args_, **kwargs)
 
     @property
     def doc(self) -> str:

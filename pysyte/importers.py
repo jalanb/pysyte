@@ -1,9 +1,9 @@
 """Import imports for pysyte"""
 import abc
-import os
+import ast
 import importlib
 import linecache
-import ast
+import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -180,7 +180,7 @@ def parse(script) -> UsedImportVistor:
 def importer(module):
     """Provide a context with that module
 
-    >>> with importer(os) as os_, importer('pysyte.importers') as importers:
+    >>> with importer(os) as os_, importer("pysyte.importers") as importers:
     ...     assert os_.path is os.path
     ...     assert importer.__code__ == importers.importer.__code__
     ...

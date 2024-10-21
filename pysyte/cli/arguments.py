@@ -9,17 +9,16 @@ import re
 import shlex
 import sys
 from bdb import BdbQuit
-from pprint import pformat
 from functools import partial
+from pprint import pformat
 from typing import Any
 from typing import List
 
 import stackprinter
 
 from pysyte.cli.config import load_configs
-from pysyte.types.numbers import inty
-
 from pysyte.cli.config import pysyte
+from pysyte.types.numbers import inty
 
 
 def config(arguments):
@@ -75,9 +74,15 @@ class ArgumentsParser(object):
         self.add_option(*args_, **kwargs_)
 
     def add_option(self, initial, name, *args, **kwargs):
-        n = name.lstrip("-")
-        i = initial.lstrip("-") or n[0]
-        return self.parser.add_argument(f"-{i}", f"--{n}", *args, **kwargs)
+        name_ = name.lstrip("-")
+        initial_ = (
+            None
+            if initial == " "
+            else f"-{name_[0]}"
+            if not initial
+            else f'-{initial.lstrip("-")}'
+        )
+        return self.parser.add_argument(initial_, f"--{name_}", *args, **kwargs)
 
         if not initial:
             initial = name[0]
@@ -98,7 +103,7 @@ class ArgumentsParser(object):
         return args
 
     def parse_args(self, arguments=None, post_parser=None):
-        post_parse = post_parser if post_parser else getattr(self, "post_parser")
+        post_parse = post_parser if post_parser else self.post_parser
         parsed_args = self.parser.parse_args(arguments)
         argument_namespace = ArgumentsNamespace(parsed_args)
         post_parser_ = post_parse if post_parse else lambda x: x
@@ -167,14 +172,14 @@ class ArgumentHandler:
             ctrl_c = 3
             return ctrl_c
         except BdbQuit:
-            return os.X_OK
+            return os.EX_OK
         except SystemExit as e:
             return e.code
         except Exception as e:
             stackprinter.show(e, style=pysyte.stackprinter.style)
 
 
-def parser(description=None, usage=None, epilog=None):
+def parser(description=None, usage=None, epilog=None) -> ArgumentsParser:
     """Make a command line argument parser"""
 
     if usage:
@@ -191,7 +196,7 @@ def parser(description=None, usage=None, epilog=None):
     return DescribedParser(description, usage, epilog)
 
 
-def test_parser():
+def test_parser() -> ArgumentsParser:
     """A parser for testing convenience"""
     return parser("Testing", "Use this from a test", "")
 

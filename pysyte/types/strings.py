@@ -1,10 +1,15 @@
-"""Miscellaneous string handlers"""
+"""Miscellaneous string handlers
+
+"""
 
 from functools import total_ordering
 
 
 class Repper:
-    """Make a nice repr(x) for any x that can do str(x)"""
+    """Add a repr() to anything that can do str(self)"""
+
+    def __str(self):
+        raise NotImplementedError
 
     def __repr__(self) -> str:
         string = str(self)
@@ -12,11 +17,8 @@ class Repper:
 
 
 @total_ordering
-class Stringer(Repper):
+class Stringer:
     """A Mixin to provide more ops to a class that can str()"""
-
-    def __str__(self):
-        raise NotImplementedError
 
     def __hash__(self):
         """Derive a hash value from the string"""
@@ -33,3 +35,12 @@ class Stringer(Repper):
     def __lt__(self, other):
         """Whether this is less than other, compared as strings"""
         return str(self) < str(other)
+
+
+def pp(name, value):
+    """
+    >>> assert pp("x", 0) == "x: int == 0"
+    """
+    named = name
+    valued = f"{value.__class__.__name__} == {value!r}"
+    return f"{named}: {valued}"

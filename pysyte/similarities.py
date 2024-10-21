@@ -19,8 +19,8 @@ The similarity is subjective and is highly dependent on domain and application.
 
 """
 
-from math import sqrt
 from decimal import Decimal
+from math import sqrt
 
 
 def euclidean(x: list, y: list) -> float:

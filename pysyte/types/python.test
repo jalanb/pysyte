@@ -1,0 +1,44 @@
+pysyte.types.python
+===================
+
+
+    >>> from pysyte.streams import std
+    >>> from pysyte.types.python import QUIETLY
+    >>> from pysyte.types.python import Quietly
+    >>> from pysyte.types.python import quietly
+
+
+Doctest normally shows all streams
+
+    >>> std.out("Hello")
+    >>> std.err("World")
+    Hello
+    World
+
+Suppress stderr
+    >>> with quietly as fred:
+    ...     std.out("Hello")
+    ...     std.err("World")
+    ...
+    Hello
+
+    >>> assert "World" in fred.stderr
+
+Suppress stdout
+    >>> with Quietly:
+    ...     std.out("Hello")
+    ...     std.err("World")
+    ...
+    World
+
+Suppress both
+    >>> with QUIETLY as fred:
+    ...     std.out("Hello")
+    ...     std.err("World")
+    ...
+
+Suppressed streams were stored in attributes
+
+    >>> assert "Hello" in fred.stdout
+    >>> assert "World" in fred.stderr
+

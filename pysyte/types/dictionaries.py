@@ -10,8 +10,8 @@ from yamlreader import data_merge
 def get_caselessly(dictionary, sought):
     """Find the sought key in the given dictionary regardless of case
 
-    >>> things = {'Fred': 9}
-    >>> print(get_caselessly(things, 'fred'))
+    >>> things = {"Fred": 9}
+    >>> print(get_caselessly(things, "fred"))
     9
     """
     try:
@@ -25,7 +25,7 @@ def get_caselessly(dictionary, sought):
 def swap_dictionary(dictionary):
     """Swap keys for values in the given dictionary
 
-    >>> swap_dictionary({'one': 1})[1] == 'one'
+    >>> swap_dictionary({"one": 1})[1] == "one"
     True
     """
     if dictionary is None:
@@ -71,9 +71,9 @@ def group_list_by(items, key_from_item):
     key_from_item is a method to get the key from the item
 
     >>> items = [(1, 9), (2, 8), (1, 7)]
-    >>> key_from_item = lambda x: 'a' if x[0] == 1 else 'b'
+    >>> key_from_item = lambda x: "a" if x[0] == 1 else "b"
     >>> grouped = group_list_by(items, key_from_item)
-    >>> grouped['a'] == [(1, 9), (1, 7)]
+    >>> grouped["a"] == [(1, 9), (1, 7)]
     True
     """
     groups = defaultdict(list)
@@ -94,6 +94,7 @@ class DefaultDict(defaultdict):
         return f"<{name}\n    {value}\n>"
 
 
+@dataclass
 class LazyDefaultDict(DefaultDict):
     """A defaultdict which waits for key access to provide default
 
@@ -101,9 +102,11 @@ class LazyDefaultDict(DefaultDict):
         and provides a value
     """
 
-    def __init__(self, method):
+    method: Any = None
+
+    def __init__(self, method: Any):
         self.method = method
-        super(LazyDefaultDict, self).__init__(None)
+        super().__init__(None)
 
     def __missing__(self, key):
         result = self.method(key)
@@ -114,7 +117,7 @@ class LazyDefaultDict(DefaultDict):
 class NameSpace(dict):
     """Convert dictionary keys to attributes of self
 
-    >>> assert NameSpace({'fred': 1}).fred == 1
+    >>> assert NameSpace({"fred": 1}).fred == 1
     """
 
     def __init__(self, *args, **kwargs):
@@ -129,8 +132,8 @@ class NameSpace(dict):
 class NameSpaces(NameSpace):
     """Convert dictionary keys to attributes of self, recursively
 
-    >>> instance = NameSpaces({'fred': {'mary': 1}})
-    >>> assert instance.fred.mary == 1
+    >>> spaces = NameSpaces({"fred": {"mary": 1}})
+    >>> assert spaces.fred.mary == 1
     """
 
     def __init__(self, thing):
@@ -141,17 +144,23 @@ class NameSpaces(NameSpace):
 
 
 @dataclass
-class SpaceNameData:
+class SpaceName:
+    """Access attributes of a thing like a dict
+
+    >>> class Fred:
+    ...     foo = "Hello"
+    ...     bar = "World"
+    ...
+    >>> dic = SpaceName(Fred())
+    >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
+    """
+
     proxy: Any
-
-
-class SpaceName(SpaceNameData):
-    """Access attributes of a thing like a dict"""
 
     def __getitem__(self, name):
         return self.getitem(name)
 
-    def getitem(self, name):
+    def getitem(self, name: str):
         try:
             return getattr(self.proxy, name)
         except AttributeError:
@@ -159,10 +168,23 @@ class SpaceName(SpaceNameData):
 
 
 class SpaceNames(SpaceName):
-    def getitem(self, name_):
-        name, *names_ = name_.split(".", 1)
+    """Access attributes of a thing like a dict, recursively
+
+    >>> class Fred:
+    ...     foo = "Hello"
+    ...     bar = "World"
+    ...
+    >>> fred = Fred()
+    >>> fred.fred = Fred()
+    >>> dic = SpaceNames(fred)
+    >>> assert f'{dic["foo"]} {dic["bar"]}' == "Hello World"
+    >>> assert dic["fred"]["foo"] == "Hello" == dic["foo"]
+    """
+
+    def getitem(self, string: str):
+        name, *names = string.split(".")
         value = super().getitem(name)
         try:
-            return SpaceNames(value).getitem(".".join(names))
+            return SpaceNames(value).getitem(names)
         except IndexError:
             return value

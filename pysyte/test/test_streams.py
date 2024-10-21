@@ -4,8 +4,8 @@ import sys
 from io import StringIO
 from unittest import TestCase
 
-
-from pysyte.streams import swallow_stdout, swallow_stderr
+from pysyte.streams import swallow_stderr
+from pysyte.streams import swallow_stdout
 
 
 class TestStreams(TestCase):

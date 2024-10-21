@@ -12,10 +12,11 @@ Adapted from
         No need here for Windows/Carbon
 """
 
-import re
 import getpass
+import re
 import signal
 import sys
+import termios
 import tty
 from curses import ascii
 from typing import Callable
@@ -23,8 +24,7 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-import termios
-
+from pysyte.streams import std
 
 class NoKeys(StopIteration):
     """A StopIteration caused by running out of keys"""
@@ -34,7 +34,7 @@ class NoKeys(StopIteration):
 
 def get_ord():
     """The integer ordinal of the next byte read from sys.stdin"""
-    return ord(sys.stdin.read(1))
+    return ord(std.in(1))
 
 
 class TerminalContext(object):
@@ -45,7 +45,7 @@ class TerminalContext(object):
         self.old_settings = None
 
     def __enter__(self):
-        self.fd = sys.stdin.fileno()
+        self.fd = std.in_fileno()
         self.old_settings = termios.tcgetattr(self.fd)
         mode = termios.tcgetattr(self.fd)
         mode[tty.LFLAG] = mode[tty.LFLAG] & ~(termios.ECHO | termios.ICANON)
@@ -186,7 +186,7 @@ def get_menu(**kwargs):
 
 
 def get_ascii():
-    """Get ASCII key from stdin
+    """Get ASCII key
 
     return None for others
     """
@@ -197,7 +197,7 @@ def get_ascii():
 
 
 def get_ASCII():
-    """Get ASCII key from stdin
+    """Get ASCII key
 
     raise error on other
     """
@@ -208,7 +208,7 @@ def get_ASCII():
 
 
 def get_as_key():
-    """Get key from stdin
+    """Get key
 
     return ASCII keys as (single char) strings
     others as tuples
@@ -217,6 +217,19 @@ def get_as_key():
         return getch()
     except ExtendedKey as e:
         return e.codes
+
+
+def name(codes):
+    """name for that code
+
+    >>> assert name(3) == "^3"
+    >>> assert name(3) == "3" == name("3")
+    """
+    try:
+        _ = codes.pop()
+        return get_extended_key_name(codes)
+    except AttributeError:
+        return control_key_name(codes)
 
 
 def control_key_name(code):
@@ -279,16 +292,16 @@ def known_keys() -> Dict[Tuple[int, ...], str]:
         (97,): "a",
         (127,): "backspace",
     }
-    return add_ascii_keys(result)
+    return _add_ascii_keys(result)
 
 
-def add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
+def _add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
     """Update the data with ascii keys
 
-    >>> data = add_ascii_keys({})
-    >>> assert data[(48,)] == '0'
-    >>> assert data[(66,)] == 'B'
-    >>> assert data[(99,)] == 'c'
+    >>> data = _add_ascii_keys({})
+    >>> assert data[(48,)] == "0"
+    >>> assert data[(66,)] == "B"
+    >>> assert data[(99,)] == "c"
     """
     # See previous function for previous key, value pairs
     for i in range(32):
@@ -341,12 +354,30 @@ def ask_user_simplified(
 ):
     if prompt or default_key:
         default_prompt = f"[{default_key}] " if default_key else ""
-        sys.stdout.write(f"{prompt} {default_prompt}")
-        sys.stdout.flush()
+        std.out(f"{prompt} {default_prompt}")
+        std.flush()
     result = simplifier(get_key())
-    if not result or result in ('^i', '^j', '^m'):
+    if not result or result in ("^i", "^j", "^m"):
         result = default_key
     if not result:
         raise KeyboardInterrupt
     print()
     return result
+
+
+def main() -> bool:
+    """Run the script
+
+    >>> sys.argv = ["main", "A", "-x"]
+    >>> main()
+    >>> assert exit_code == 65
+    """
+    breakpoint()
+    return False
+
+
+exit_code = 0
+
+if __name__ == "__main__":
+    main()
+    sys.exit(exit_code)

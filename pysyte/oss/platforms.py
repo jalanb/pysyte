@@ -1,6 +1,6 @@
 """Handle different OS platforms"""
-import platform as python_platform
 import importlib
+import platform as python_platform
 from subprocess import run
 
 name = python_platform.system().lower()

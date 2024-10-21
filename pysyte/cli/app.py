@@ -1,13 +1,12 @@
 """Provide a runnable app to pysyte"""
 
-from bdb import BdbQuit
 import sys
-
+from bdb import BdbQuit
 from contextlib import ContextDecorator
 
-from pysyte.types.methods import Method
-from pysyte.cli.exceptions import rich_exceptions
 from pysyte.cli import exits
+from pysyte.cli.exceptions import rich_exceptions
+from pysyte.types.methods import Method
 
 
 def exit(method, locals_=None):

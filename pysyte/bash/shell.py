@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from subprocess import getstatusoutput
 from typing import List
 
+import psutil
 from boltons.setutils import IndexedSet
 
 
@@ -52,3 +53,13 @@ def run(command: str) -> str:
     if status:
         raise BashError(f"{run_command}\n{output}")
     return output
+
+
+def parent_command() -> str:
+    """Find the parent of this process
+
+    Returns: the command line of the parent process
+    """
+    parent_pid = os.getppid()
+    parent = psutil.Process(parent_pid)
+    return parent.cmdline()
