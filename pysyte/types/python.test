@@ -3,6 +3,9 @@ pysyte.types.python
 
 
     >>> from pysyte.streams import std
+    >>> from pysyte.types.python import QUIETLY
+    >>> from pysyte.types.python import Quietly
+    >>> from pysyte.types.python import quietly
 
 
 Doctest normally shows all streams
