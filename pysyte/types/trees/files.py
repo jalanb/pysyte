@@ -111,6 +111,9 @@ class FilePath(paths.Path, PathAssertions):
     def language(self, value):
         self._language = value
 
+    def write(self, string:str):
+        self.file.write_text(string)
+
 
 def ext_language(ext, exts=None, simple=True):
     """Language of the extension in those extensions
@@ -132,3 +135,12 @@ def ext_language(ext, exts=None, simple=True):
     }
     ext_languages = {_: languages[_] for _ in exts} if exts else languages
     return ext_languages.get(ext)
+
+
+class StringFile(FilePath):
+    """A path to an unknown file with a string"""
+
+    def __init__(self, string: str):
+        self.file = files.FilePath()
+        self.file.write(string)
+        super().__init__(*args)
