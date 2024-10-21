@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pysyte import os
 
 def exits():
