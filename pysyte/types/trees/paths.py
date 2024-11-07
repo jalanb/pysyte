@@ -185,45 +185,6 @@ class Path(RealPath):
         """A short path relative to self to the current working directory"""
         return self.__class__(os.getcwd()).short_relative_path_to(self)
 
-    def fnmatch_basename(self, glob):
-        if glob.startswith(os.path.sep):
-            glob = glob.lstrip(os.path.sep)
-        string = self.basename()
-        if fnmatch(string, glob):
-            return self
-        return None
-
-    def fnmatch_directory(self, glob):
-        if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
-            glob = glob.strip(os.path.sep)
-        if self.isdir():
-            string = self.basename()
-        else:
-            string = self.parent.basename()
-        if fnmatch(string, glob):
-            return self
-        return None
-
-    def fnmatch_directories(self, glob):
-        if glob.startswith(os.path.sep) or glob.endswith(os.path.sep):
-            glob = glob.strip(os.path.sep)
-        strings_ = reversed(self.directory().splitall()[1:])
-        for string in strings_:
-            if fnmatch(string, glob):
-                return self
-        return None
-
-    def fnmatch_part(self, glob):
-        if self.fnmatch(glob):
-            return self
-        if self.fnmatch_basename(glob):
-            return self
-        if self.fnmatch_directory(glob):
-            return self
-        if self.fnmatch_directories(glob):
-            return self
-        return None
-
     def expand(self):
         """Expand the path completely
 
