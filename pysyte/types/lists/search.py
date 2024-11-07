@@ -124,4 +124,5 @@ binary_search = partial(directed_search, Picker(average))
 # Doctest
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

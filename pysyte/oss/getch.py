@@ -26,6 +26,7 @@ from typing import Tuple
 
 from pysyte.streams import std
 
+
 class NoKeys(StopIteration):
     """A StopIteration caused by running out of keys"""
 
@@ -34,7 +35,7 @@ class NoKeys(StopIteration):
 
 def get_ord():
     """The integer ordinal of the next byte read from sys.stdin"""
-    return ord(std.in(1))
+    return ord(std.in_(1))
 
 
 class TerminalContext(object):

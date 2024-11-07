@@ -42,7 +42,8 @@ std
 streams provides a simpler interface to sys.stdin, sys.stdout, sys.stderr
 
     >>> std = streams.std
-    >>> std.out("Hello"); std.err("World")
+    >>> std.out("Hello")
+    >>> std.err("World")
     Hello
     World
     >>> std.write("Hello World")

@@ -115,7 +115,7 @@ class FilePath(paths.Path, PathAssertions):
     def language(self, value):
         self._language = value
 
-    def write(self, string:str):
+    def write(self, string: str):
         self.file.write_text(string)
 
 
@@ -199,7 +199,7 @@ class ExtendedPath(FilePath):
         >>> fred = makepath("fred")
         >>> assert fred.add_missing_ext("") == fred
         >>> fred_py = makepath("fred.py")
-        >>> fred_py_py = fred.add_missing_ext(".py") 
+        >>> fred_py_py = fred.add_missing_ext(".py")
         >>> assert fred_py_py == fred_py
         >>> assert fred_py_py.add_missing_ext(".txt") == "fred.py.txt"
         """

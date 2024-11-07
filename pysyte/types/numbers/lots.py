@@ -9,6 +9,7 @@
 >>> assert not zero
 >>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))
 """
+
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Any

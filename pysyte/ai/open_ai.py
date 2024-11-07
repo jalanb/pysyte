@@ -1,4 +1,5 @@
 """Handle openai for pysyte"""
+
 from dataclasses import dataclass
 
 import openai

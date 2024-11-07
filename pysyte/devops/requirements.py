@@ -18,7 +18,7 @@ class Requirement(packages.Package):
         import re
 
         breakpoint()
-        if re.search('[<=>]', self.name):
+        if re.search("[<=>]", self.name):
             pass
 
 
@@ -46,7 +46,7 @@ class RequirementDir(dirs.DirPath):
 
     def requirement_files(self):
         """The requirements files in here"""
-        return self.files('*.txt')
+        return self.files("*.txt")
 
 
 def parse(file: files.FilePath) -> Requirements:
