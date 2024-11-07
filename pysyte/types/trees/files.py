@@ -3,6 +3,7 @@ import os
 from pysyte.types.trees import dirs
 from pysyte.types.trees import errors
 from pysyte.types.trees import paths
+from pysyte.types.trees import chmod
 from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 
@@ -71,7 +72,7 @@ class FilePath(paths.Path, PathAssertions):
 
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
-        self.chmod(paths.ChmodValues.readonly_file)
+        self.chmod(chmod.readonly_file)
 
     def cd(self):  # pylint: disable=invalid-name
         """Change program's current directory to self"""

@@ -4,6 +4,7 @@ from pysyte.types.trees import errors
 from pysyte.types.trees import files
 from pysyte.types.trees import makes
 from pysyte.types.trees import paths
+from pysyte.types.trees import chmod
 from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 
@@ -91,7 +92,7 @@ class DirectPath(paths.PathPath, PathAssertions):
 
     def make_read_only(self):
         """chmod the directory permissions to -r-xr-xr-x"""
-        self.chmod(paths.ChmodValues.readonly_directory)
+        self.chmod(chmod.readonly_directory)
 
     def touch_file(self, filename):
         """Touch a file in the directory"""
