@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from typing import Any
 from typing import Sequence
-from typing import Tuple
 from typing import Union
 
 from deprecated import deprecated
@@ -15,7 +15,7 @@ from pysyte.types.trees.makes import makepath
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
 
-
+@dataclass
 class StringPath(JasonOrrendorfPath):
     """This class handles the path as if it were just a string
 
@@ -31,7 +31,7 @@ class StringPath(JasonOrrendorfPath):
     Not in a dir
     """
 
-    sep = "/"
+    sep: str = "/"
 
     # pylint: disable=abstract-method
     # pylint: disable=too-many-public-methods
@@ -168,70 +168,6 @@ class StringPath(JasonOrrendorfPath):
     def name(self) -> str:
         return str(super().name)
         return self.stem.name
-
-
-class ExentendPath(StringPath):
-    """A path with extensions"""
-
-    def dezip(self) -> Tuple[StringPath, str]:
-        """Split all zipping extensions from the path
-
-        >>> p = FilePath("here/fred.tar.gz")
-        >>> assert p.dezip() == ("here/fred", ".tar.gz")
-        """
-        copy = self[:]
-        filename, ext = os.path.splitext(copy)
-        zippers = (
-            ".gz",
-            ".bz",
-            ".zip",
-            ".bzip",
-        )
-        for zipper in zippers:
-            if ext == zipper:
-                filename, ext_ = os.path.splitext(filename)
-                ext = f"{ext_}{zipper}"
-        return self.__class__(filename), ext
-
-    def add_ext(self, *args) -> StringPath:
-        """Join all args as extensions
-
-        Strip any leading `.` from args
-
-        >>> source = makepath(__file__)
-        >>> new = source.add_ext("txt", "new")
-        >>> assert new.name.endswith(".py.txt.new")
-        """
-        exts = [(a[1:] if a[0] == "." else a) for a in args]
-        string = ".".join([self] + list(exts))
-        return makepath(string)
-
-    def add_missing_ext(self, ext: str) -> StringPath:
-        """Add that extension, if it is missing
-
-        >>> fred = makepath("fred")
-        >>> assert fred.add_missing_ext("") == fred
-        >>> fred_py = makepath("fred.py")
-        >>> assert fred.add_missing_ext(".py") == fred_py
-        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
-        """
-        dot_ext = f'.{ext.lstrip(".")}'
-        copy = self[:]
-        _, self_ext = os.path.splitext(copy)
-        return makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
-
-    def extend_by(self, ext: str) -> StringPath:
-        """The path to the file changed to use the given ext
-
-        >>> fred = "/path/to/fred.fred"
-        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
-        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
-        """
-        copy = self[:]
-        filename, _ = os.path.splitext(copy)
-        ext_ = ext.lstrip(".")
-        return makepath(f"{filename}.{ext_}")
 
 
 class NoPath(StringPath):
