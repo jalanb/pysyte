@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 from pysyte.types.trees import dirs
 from pysyte.types.trees import errors
@@ -6,6 +7,8 @@ from pysyte.types.trees import paths
 from pysyte.types.trees import chmod
 from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
+from pysyte.types.trees.makes import makepath
+from pysyte.types.trees.strings import StringPath
 
 
 class FilePath(paths.Path, PathAssertions):
@@ -145,3 +148,67 @@ class StringFile(FilePath):
         self.file = files.FilePath()
         self.file.write(string)
         super().__init__(*args)
+
+
+class ExentendPath(StringPath):
+    """A path with extensions"""
+
+    def dezip(self) -> Tuple[StringPath, str]:
+        """Split all zipping extensions from the path
+
+        >>> p = FilePath("here/fred.tar.gz")
+        >>> assert p.dezip() == ("here/fred", ".tar.gz")
+        """
+        copy = self[:]
+        filename, ext = os.path.splitext(copy)
+        zippers = (
+            ".gz",
+            ".bz",
+            ".zip",
+            ".bzip",
+        )
+        for zipper in zippers:
+            if ext == zipper:
+                filename, ext_ = os.path.splitext(filename)
+                ext = f"{ext_}{zipper}"
+        return self.__class__(filename), ext
+
+    def add_ext(self, *args) -> StringPath:
+        """Join all args as extensions
+
+        Strip any leading `.` from args
+
+        >>> source = makepath(__file__)
+        >>> new = source.add_ext("txt", "new")
+        >>> assert new.name.endswith(".py.txt.new")
+        """
+        exts = [(a[1:] if a[0] == "." else a) for a in args]
+        string = ".".join([self] + list(exts))
+        return makepath(string)
+
+    def add_missing_ext(self, ext: str) -> StringPath:
+        """Add that extension, if it is missing
+
+        >>> fred = makepath("fred")
+        >>> assert fred.add_missing_ext("") == fred
+        >>> fred_py = makepath("fred.py")
+        >>> assert fred.add_missing_ext(".py") == fred_py
+        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
+        """
+        dot_ext = f'.{ext.lstrip(".")}'
+        copy = self[:]
+        _, self_ext = os.path.splitext(copy)
+        return makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
+
+    def extend_by(self, ext: str) -> StringPath:
+        """The path to the file changed to use the given ext
+
+        >>> fred = "/path/to/fred.fred"
+        >>> assert makepath("/path/to/fred").extend_by("fred") == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by(".fred") == fred
+        >>> assert makepath("/path/to/fred.txt").extend_by("..fred") == fred
+        """
+        copy = self[:]
+        filename, _ = os.path.splitext(copy)
+        ext_ = ext.lstrip(".")
+        return makepath(f"{filename}.{ext_}")
