@@ -1,6 +1,5 @@
 """Test the splits module"""
 
-
 import unittest
 
 from pysyte import splits

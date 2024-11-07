@@ -1,6 +1,5 @@
 """Methods to handle streams"""
 
-
 import sys
 from contextlib import contextmanager
 from typing import Generator
@@ -11,10 +10,10 @@ from typing import Tuple
 from six import StringIO
 
 
-class Print():
-    """
-    """
-    def in(self, *args, **kwargs) -> str:
+class Print:
+    """ """
+
+    def in_(self, *args, **kwargs) -> str:
         """Read from sys.stdin"""
         return sys.stdin.read(*args, **kwargs)
 
@@ -37,6 +36,7 @@ class Print():
     def in_fileno(self):
         """Get stdin's fileno"""
         return sys.stdin.fileno()
+
 
 std = Print()
 

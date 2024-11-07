@@ -10,7 +10,6 @@ Methods handle two known representations:
         See http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 """
 
-
 import re
 
 from pysyte.colours import colour_names

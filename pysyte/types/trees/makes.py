@@ -20,8 +20,6 @@ class Pathed(Protocol):
     path: Any
 
 
-
-
 @singledispatch
 def makepath(arg: Pathed) -> StringPath:
     return makepath(arg.path)

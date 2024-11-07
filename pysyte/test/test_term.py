@@ -1,6 +1,5 @@
 """Test the term module"""
 
-
 import unittest
 
 from pysyte import term

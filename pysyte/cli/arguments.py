@@ -78,9 +78,7 @@ class ArgumentsParser(object):
         initial_ = (
             None
             if initial == " "
-            else f"-{name_[0]}"
-            if not initial
-            else f'-{initial.lstrip("-")}'
+            else f"-{name_[0]}" if not initial else f'-{initial.lstrip("-")}'
         )
         return self.parser.add_argument(initial_, f"--{name_}", *args, **kwargs)
 

@@ -24,7 +24,7 @@ from pym.ast import parse
 
 
 def unwrap(method: Callable) -> Callable:
-    """Get the original method from a method, even if it's wrapped """
+    """Get the original method from a method, even if it's wrapped"""
     return getattr(method, "__wrapped__", method)
 
 

@@ -15,6 +15,7 @@ from pysyte.types.trees.makes import makepath
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
 
+
 @dataclass
 class StringPath(JasonOrrendorfPath):
     """This class handles the path as if it were just a string

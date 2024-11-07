@@ -1,6 +1,5 @@
 """Test the arguments module"""
 
-
 import unittest
 
 from pysyte.cli import arguments

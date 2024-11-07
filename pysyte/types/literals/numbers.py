@@ -7,6 +7,7 @@
 >>> assert numbers.ninety_nine == 99
 
 """
+
 from bidict import bidict
 
 zero = 0

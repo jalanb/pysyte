@@ -9,7 +9,6 @@ The rgb.txt file is expected to contain X11 colour names
     See http://en.wikipedia.org/wiki/X11_color_names
 """
 
-
 import os
 import re
 

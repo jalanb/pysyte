@@ -2,6 +2,7 @@
 
 The classes all inherit from the original path.path
 """
+
 from __future__ import annotations
 
 import os

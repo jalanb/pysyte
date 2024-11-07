@@ -7,7 +7,6 @@ Nicer version: https://jonasjacek.github.io/colors/
 Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/winterpy/blob/master/pyexe/gui2term.py  # noqa
 """
 
-
 from __future__ import absolute_import
 
 from functools import partial

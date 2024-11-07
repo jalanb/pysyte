@@ -1,6 +1,5 @@
 """Test the methods module"""
 
-
 import unittest
 from io import StringIO
 

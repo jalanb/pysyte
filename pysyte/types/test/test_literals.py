@@ -1,4 +1,5 @@
 """Test the literal namespaces"""
+
 import unittest
 
 from pysyte.types.literals import ansi

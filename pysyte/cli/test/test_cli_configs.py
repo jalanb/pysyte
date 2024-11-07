@@ -1,6 +1,5 @@
 """Test the configs module"""
 
-
 import unittest
 
 from pysyte.cli import config

@@ -1,8 +1,11 @@
 from pysyte import os
 
+
 def exits():
     import os
-    return {k:v for k, v in os.globals().items() if k.startswith("EX_")}
+
+    return {k: v for k, v in os.globals().items() if k.startswith("EX_")}
+
 
 @dataclass
 class ExitCode:
@@ -29,12 +32,13 @@ class ExitCode:
         if self.ok:
             return "EX_OK"
         import os
+
         for ex_name, code in exits().items():
             if code == self.exit_code:
                 return ex_name
         exit = self.exit_code
         return f"{exit=}"
 
+
 pass_ = os.ExitCode(os.EX_OK)
 fail = os.ExitCode(os.EX_FAIL)
-

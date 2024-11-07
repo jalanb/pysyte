@@ -1,4 +1,5 @@
 """Handle some random choices"""
+
 import random
 
 from pysyte.cli import app

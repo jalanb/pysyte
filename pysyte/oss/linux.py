@@ -1,6 +1,5 @@
 """Linux-specific code"""
 
-
 from pysyte.types import paths
 
 

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from fnmatch import fnmatch
 from pysyte.types.trees.strings import StringPath
 
+
 @dataclass
 class PathGlobber:
     pattern: str

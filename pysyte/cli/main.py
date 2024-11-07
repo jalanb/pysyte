@@ -18,6 +18,7 @@ from pysyte.types.paths import makepath
 
 class MainMethod(Method):
     """A method that can be called from the command line"""
+
     def __init__(self, method):
         super().__init__(method)
         self.in_main_module = self.module.__name__ == "__main__"
