@@ -144,13 +144,13 @@ def ext_language(ext, exts=None, simple=True):
 class StringFile(FilePath):
     """A path to an unknown file with a string"""
 
-    def __init__(self, string: str):
+    def __init__(self, *args: str):
         self.file = files.FilePath()
-        self.file.write(string)
+        self.file.write(*args)
         super().__init__(*args)
 
 
-class ExentendPath(StringPath):
+class ExtendedPath(FilePath):
     """A path with extensions"""
 
     def dezip(self) -> Tuple[StringPath, str]:
@@ -178,13 +178,20 @@ class ExentendPath(StringPath):
 
         Strip any leading `.` from args
 
-        >>> source = makepath(__file__)
-        >>> new = source.add_ext("txt", "new")
+        >>> file = makepath(__file__)
+        >>> new = file.add_ext("txt", "new")
+        >>> newer = file.add_ext(".txt", ".new")
+        >>> newest = file.add_ext([".txt", "new"])
+
         >>> assert new.name.endswith(".py.txt.new")
+        >>> assert newer == new == newest
         """
         exts = [(a[1:] if a[0] == "." else a) for a in args]
         string = ".".join([self] + list(exts))
         return makepath(string)
+
+    def __add__(self, ext: str) -> StringPath:
+        return self.add_ext(ext)
 
     def add_missing_ext(self, ext: str) -> StringPath:
         """Add that extension, if it is missing
@@ -192,8 +199,9 @@ class ExentendPath(StringPath):
         >>> fred = makepath("fred")
         >>> assert fred.add_missing_ext("") == fred
         >>> fred_py = makepath("fred.py")
-        >>> assert fred.add_missing_ext(".py") == fred_py
-        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
+        >>> fred_py_py = fred.add_missing_ext(".py") 
+        >>> assert fred_py_py == fred_py
+        >>> assert fred_py_py.add_missing_ext(".txt") == "fred.py.txt"
         """
         dot_ext = f'.{ext.lstrip(".")}'
         copy = self[:]

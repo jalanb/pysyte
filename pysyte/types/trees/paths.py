@@ -4,11 +4,9 @@ from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
 
-from pysyte.types.trees import makes
 from pysyte.types.trees import strings
-
-path = makes.makepath
-paths = makes.makepaths
+from pysyte.types.trees.makes import makepath as path
+from pysyte.types.trees.makes import makepaths as paths
 
 
 class RealPath(strings.StringPath):
@@ -18,6 +16,17 @@ class RealPath(strings.StringPath):
 
     We assume it has a familiar root
     """
+
+    def __post_init__(self):
+        string = str(self)
+        init = string[0]
+        if init == "/":
+            self.root = "/"
+        else:
+            path = self.parent
+            while not path.isroot():
+                path = path.parent
+            self.root = path
 
     @property
     def root(self) -> strings.StringPath:
