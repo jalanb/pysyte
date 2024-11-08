@@ -9,7 +9,7 @@ from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 
 
-class DirectPath(paths.PathPath, PathAssertions):
+class DirectPath(paths.Path, PathAssertions):
     """A path which knows it might be a directory
 
     And that files are in directories
@@ -22,7 +22,8 @@ class DirectPath(paths.PathPath, PathAssertions):
             yield a_path
 
     def __add__(self, other: strings.StringPath) -> strings.StringPath:
-        return paths.makepath(f"{self}/{other}")
+        string = f"{self}/{other}"
+        return makes.makepath(string)
 
     def contains(self, other: strings.StrPath) -> bool:
         """If other is a path then use that sense of "in"
@@ -31,7 +32,7 @@ class DirectPath(paths.PathPath, PathAssertions):
 
         Otherwise see if other is listed "in" this directory
         """
-        if isinstance(other, paths.PathPath):
+        if isinstance(other, paths.Path):
             return self in other.parent_directories()
         return str(other) in [_.name for _ in self.listdir()] + [".", ".."]
 
@@ -151,9 +152,9 @@ def cd(path_to: strings.StringPath) -> bool:
         previous = getattr(cd, "previous", "")
         if not previous:
             raise errors.PathError("No previous directory to return to")
-        return cd(makes.path(previous))
+        return cd(paths.path(previous))
     if not hasattr(path_to, "cd"):
-        path_to = makes.path(path_to)
+        path_to = paths.path(path_to)
     try:
         previous = os.getcwd()
     except OSError as e:

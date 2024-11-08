@@ -20,6 +20,7 @@ Hello
 
 """
 
+from dataclasses import dataclass
 import contextlib
 import io
 from sys import stderr as err
@@ -28,6 +29,12 @@ from typing import Callable
 from typing import List
 
 from _io import TextIOWrapper as Wrapper
+
+
+@dataclass
+class StdStreams:
+    stdout: str = ""
+    stderr: str = ""
 
 
 def quieten(name: str, streams: List[Wrapper]) -> Callable:
@@ -47,9 +54,9 @@ def quieten(name: str, streams: List[Wrapper]) -> Callable:
             with contextlib.redirect_stderr(stderr):
                 yield
 
-        method.stdout, method.stderr = stdout.getvalue(), stderr.getvalue()
+        result = StdStreams(stdout.getvalue(), stderr.getvalue())
+        return result
 
-    method.stdout, method.stderr = "", ""
     return method
 
 

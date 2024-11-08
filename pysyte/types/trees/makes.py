@@ -27,7 +27,11 @@ def makepath(arg: Pathed) -> StringPath:
 
 @makepath.register(type(None))
 def _mp(arg) -> StringPath:
-    """Make no path from nothing"""
+    """Make no path from nothing
+
+    >>> p = makepath(None)
+    >>> assert not p
+    """
     return NoPath()
 
 
