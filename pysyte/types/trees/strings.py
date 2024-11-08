@@ -111,7 +111,7 @@ class StringPath(JasonOrrendorfPath):
         """
         return self.contains(other)
 
-    def __add__(self, other: StrPath) -> StringPath:
+    def __add__(self, other: StringPath) -> StringPath:
         """Concatenate the other
 
         >>> assert StringPath("/usr/loc") + "al" == "/usr/local"

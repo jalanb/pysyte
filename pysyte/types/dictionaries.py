@@ -184,7 +184,6 @@ class SpaceNames(SpaceName):
     def getitem(self, string: str):
         name, *names = string.split(".")
         value = super().getitem(name)
-        try:
-            return SpaceNames(value).getitem(names)
-        except IndexError:
-            return value
+        if names:
+            return SpaceNames(value).getitem(".".join(names))
+        return value
