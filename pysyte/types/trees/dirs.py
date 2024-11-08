@@ -1,10 +1,10 @@
 import os
 
+from pysyte.types.trees import chmod
 from pysyte.types.trees import errors
 from pysyte.types.trees import files
 from pysyte.types.trees import makes
 from pysyte.types.trees import paths
-from pysyte.types.trees import chmod
 from pysyte.types.trees import strings
 from pysyte.types.trees.asserts import PathAssertions
 

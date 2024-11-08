@@ -7,13 +7,13 @@ from importlib import import_module
 from typing import Any
 from typing import Protocol
 
-
-from pysyte.types.trees import strings
 from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.errors import MissingImport
 from pysyte.types.trees.files import FilePath
-from pysyte.types.trees.strings import StringPath
+from pysyte.types.trees.paths import Path
+from pysyte.types.trees.paths import Paths
 from pysyte.types.trees.strings import NoPath
+from pysyte.types.trees.strings import StringPath
 
 
 class Pathed(Protocol):
@@ -95,7 +95,7 @@ def _make_module_path(arg):
     classes and functions have modules, they'll be needing this
     """
     try:
-        return path(import_module(arg.__module__))
+        return makepath(import_module(arg.__module__))
     except (AttributeError, ModuleNotFoundError):
         return None
 
@@ -134,12 +134,12 @@ def _mps(arg) -> Paths:
 
 @makepaths.register(list)
 def __mps(arg) -> Paths:
-    return Paths([makes.path(_) for _ in arg])
+    return Paths([makepath(_) for _ in arg])
 
 
 @makepaths.register(str)
 def ___mps(arg) -> Paths:
-    return Paths([makes.path(arg)])
+    return Paths([makepath(arg)])
 
 
 @makepaths.register(StringPath)
@@ -147,6 +147,6 @@ def make_string_paths(arg) -> Paths:
     return Paths([arg])
 
 
-@makes.path.register(Path)
+@makepath.register(Path)
 def make_path_path(arg) -> StringPath:
     return arg

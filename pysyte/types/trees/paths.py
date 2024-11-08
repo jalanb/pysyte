@@ -1,12 +1,8 @@
 import os
 import stat
 from dataclasses import dataclass
-from fnmatch import fnmatch
-from functools import singledispatch
 
 from pysyte.types.trees import strings
-from pysyte.types.trees.makes import makepath as path
-from pysyte.types.trees.makes import makepaths as paths
 
 
 class RealPath(strings.StringPath):
@@ -143,13 +139,13 @@ class Path(RealPath):
     def path_split(self, sep=None, maxsplit=-1):
         separator = sep or os.path.sep
         parts = super().split(separator, maxsplit)
-        parts[0] = makes.path(parts[0] if parts[0] else "/")
+        parts[0] = parts[0] if parts[0] else "/"
         return parts
 
     split = path_split
 
     def abspath(self):
-        return makes.path(os.path.abspath(str(self)))
+        return Path(os.path.abspath(str(self)))
 
     def slashpath(self):
         return self + "/" if self.isdir() else self
@@ -195,7 +191,7 @@ class Path(RealPath):
         u = os.path.expanduser(str(self))
         v = os.path.expandvars(u)
         r = os.path.realpath(v)
-        return makes.path(r)
+        return r
 
     def same_path(self, other):
         """Whether this path points to same place as the other"""

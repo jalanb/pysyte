@@ -4,7 +4,6 @@ import sys
 
 from rich import print
 
-from pysyte import os
 from pysyte.ai.open_ai import OpenaiApp
 from pysyte.cli import exits
 from pysyte.oss.getch import ask_user_simplified
