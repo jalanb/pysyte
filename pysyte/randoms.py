@@ -26,12 +26,3 @@ def coin() -> str:
     >>> assert coin() in ('heads', 'tails')
     """
     return "heads" if flip() else "tails"
-
-
-def main():
-    result = coin()
-    assert result == "heads", f"{result=}"
-
-
-if __name__ == "__main__":
-    app.exit(main)
