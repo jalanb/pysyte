@@ -1,4 +1,4 @@
-import open as openai
+import openai
 
 __all__ = [
     "openai",

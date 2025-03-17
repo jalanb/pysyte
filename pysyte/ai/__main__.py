@@ -23,7 +23,6 @@ def main() -> exits.ExitCode:
 
     app = OpenaiApp("wwts")
 
-    breakpoint()
     question = " ".join(sys.argv[1:]) or app.config.prompt.final
     messages = [
         {"role": "system", "content": app.config.prompt.prefix},
@@ -32,7 +31,7 @@ def main() -> exits.ExitCode:
         {"role": "system", "content": app.config.prompt.rules},
         {"role": "user", "content": question},
     ]
-    choices = app.ask([], app.config)
+    choices = app.ask(messages)
 
     allowed = []
     for i, choice in enumerate(choices, 1):

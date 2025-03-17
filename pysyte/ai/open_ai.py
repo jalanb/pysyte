@@ -9,13 +9,17 @@ from pysyte.config import apis
 
 
 @dataclass
+class AiAppConfig:
+    config: apis.ApiConfiguration
+
+@dataclass
 class OpenaiApp:
     key_provider: str
 
-    def __init__(self, key_provider):
-        self.config = apis.ApiConfiguration(__file__, key_provider, "openai")
+    def __post_init__(self):
+        self.config = apis.ApiConfiguration(__file__, self.key_provider, apis.Apis("openai"))
 
-    def ask(self, messages):
+    def ask(self, messages: list[dict]):
         response = openai.ChatCompletion.create(
             messages=messages,
             model=self.config.model,
@@ -26,7 +30,5 @@ class OpenaiApp:
 
 
 jalanb = OpenaiApp("jalanb")
-wwts = OpenaiApp("wwts")
-
-app = wwts
-app.ask("Have we started now?")
+app = jalanb
+app.ask(["Have we started now?"])
