@@ -4,6 +4,11 @@ from dataclasses import dataclass
 
 from pysyte.types.trees import strings
 
+class ChmodValues:
+    # pylint: disable=too-few-public-methods
+    readonly_file = 0o444
+    readonly_directory = 0o555
+
 
 class RealPath(strings.StringPath):
     """This is a path to a real place, e.g. on a filesystem

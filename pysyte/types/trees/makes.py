@@ -30,17 +30,21 @@ def _mp(arg) -> StringPath:
     return NoPath()
 
 
+@makepath.register(StringPath)
+def __mp(arg) -> StringPath:
+    return arg
+
+
 @makepath.register(str)
 def ____mp(arg) -> StringPath:
     """Make a path from a string
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
-
-    See also Lynton Kwesi Johnson:
-        The Eagle and The Bear have people living in fear
-        Of impending nuclear warfare
     """
+    # Avoiding circular imports
+    from .dirs import DirectPath
+    from .files import FilePath
     if not arg:
         return makepath(None)
     if os.path.isfile(arg):
@@ -122,12 +126,12 @@ def _______mp(arg) -> StringPath:
     return _make_module_path(arg)
 
 
-class Pathed(Protocol):
+class _Pathed(Protocol):
     path: Any
 
 
 @singledispatch
-def ________mp(arg: Pathed) -> StringPath:
+def ________mp(arg: _Pathed) -> StringPath:
     return makepath(arg.path)
 
 
