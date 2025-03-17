@@ -77,14 +77,14 @@ class FilePath(paths.Path, PathAssertions):
         """chmod the file permissions to -r--r--r--"""
         self.chmod(chmod.readonly_file)
 
-    def cd(self):  # pylint: disable=invalid-name
+    def cd(self) -> bool:
         """Change program's current directory to self"""
-        return dirs.cd(self.parent)
+        return self.parent.cd()
 
-    def dirname(self):
+    def dirname(self) -> dirs.DirectPath:
         return dirs.DirectPath(os.path.dirname(self))
 
-    parent = property(dirname)
+    parent: dirs.DirectPath = property(dirname)
 
     def shebang(self):
         """The  #! entry from the first line of the file
