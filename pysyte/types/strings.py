@@ -7,8 +7,13 @@ class Repper:
     """Make a nice repr(x) for any x that can do str(x)"""
 
     def __repr__(self) -> str:
-        string = str(self)
-        return f'<{self.__class__.__name__} "{string}">'
+        string = self.repr_value()
+        klass = self.__class__.__name__
+        return f'<{klass} "{string}">'
+
+    def repr_value(self) -> str:
+        """The string that goes into quotes in the repr()"""
+        return str(self)
 
 
 @total_ordering

@@ -1,0 +1,41 @@
+The exits module
+================
+
+    >>> from pysyte.cli import exits
+    >>> assert "handle exit codes" in exits.__doc__
+
+    >>> from pysyte import os
+
+
+Mirrors os.EX_...
+-----------------
+
+    >>> assert int(exits.ok) == os.EX_OK
+    >>> assert str(exits.ok) == "EX_OK"
+
+    >>> assert exits.fail == os.EX_FAIL
+    >>> assert exits.usage == os.EX_USAGE
+
+Usage
+-----
+
+    >>> usage = exits.usage
+
+    >>> i = int(usage)
+    >>> assert i == usage.code
+    >>> assert i == os.EX_USAGE
+
+	>>> s =	str(usage)
+    >>> assert usage.NAME == "EX_USAGE" == s
+    >>> assert usage.name == "usage"
+
+Exit program
+------------
+
+    >>> try:
+    ...     usage.raise()
+    ...     assert False, "Test failed, no exception"
+    ... except SystemExit as e:
+    ...     assert e.code == os.EX_USAGE
+    ... except Exception as e:
+    ...     assert False, "Test failed, wrong exception {e=}"
