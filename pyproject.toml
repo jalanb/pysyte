@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=65.5.1", "wheel>=0.29.0"]
+requires = ["setuptools>=80.0.0", "wheel>=0.45.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysyte"
-version = "0.8.74"   # version is controlled by bumpversion, which rewrites this
+version = "0.8.74"
 description = "Pysyte extends Python"
 readme = "README.rst"
 requires-python = ">=3.9"
@@ -23,7 +23,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-# Core dependencies
 dependencies = [
     "bidict",
     "boltons",
@@ -39,7 +38,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Linting tools - standalone, no project dependencies needed
 lint = [
     "black",
     "blackdoc",
@@ -53,7 +51,6 @@ lint = [
     "mypy",
 ]
 
-# Testing needs project + dependencies
 test = [
     "pysyte",
     "callee",
@@ -61,22 +58,21 @@ test = [
     "coverage",
     "pytest",
     "pytest-cov",
+    "pytest-random-order",
+    "pytest-xdist",
     "tox",
 ]
 
-# DevOps needs testing capabilities plus deployment tools
 devops = [
     "pysyte[test]",
     "pysyte[lint]",
-    "bump2version",
-    "ansible",
+    "bumpver",
     "pipx",
     "pyinfra",
     "build",
     "twine",
 ]
 
-# Full development environment
 dev = [
     "pysyte[devops]",
     "httpie",
@@ -99,8 +95,86 @@ pysyte = ["**/*.test", "**/*.tests", "**/*.yaml"]
 include = ["pysyte*"]
 exclude = ["test_*.py"]
 
+[tool.tox]
+envlist = [
+    "formats", 
+    "lints", 
+    "tests", 
+    "devs",
+    "patch", 
+    "minor", 
+    "major",
+]
+
+[tool.tox.env.formats]
+deps = [".[lint]"]
+commands = [
+    ["black", "-S", "."],
+    ["blackdoc", "-S", "--include", "[.](md|py|test)", "--exclude", ".*\\.swp$", "."],
+    ["isort", "pysyte", "test"],
+]
+
+[tool.tox.env.lints]
+deps = [".[lint]"]
+commands = [
+    ["black", "-S", "--check", "."],
+    ["blackdoc", "-S", "--include", "[.](md|py|test)", "--check", "."],
+    ["isort", "--check-only", "pysyte", "test"],
+    ["flake8", "pysyte", "test"],
+    ["mypy", "--ignore-missing-imports", "--install-types", "--non-interactive", "pysyte", "test"],
+]
+
+[tool.tox.env.tests]
+deps = [".[test]"]
+pass_env = ["PYTHONPATH"]
+commands = [
+    ["py.test", "--cov=pysyte", "pysyte" ]
+]
+
+[tool.tox.env.devs]
+deps = [".[test]"]
+commands = [
+    ["py.test", "--exitfirst", "-m'not slow'", "--random-order","pysyte"]
+]
+
+[tool.tox.env.pudb]
+deps = [".[develop]"]
+commands = [
+    ["py.test", "--pudb", "pysyte", "tests" ]
+]
+
+[tool.tox.env.patch]
+description = "Bump patch version"
+allowlist_externals = ["bumpver"]
+commands = [
+    ["bumpver", "update", "-n", "--patch"]
+]
+
+[tool.tox.env.minor]
+description = "Bump minor version"
+allowlist_externals = ["bumpver"]
+commands = [
+    ["bumpver", "update", "-n", "--minor"]
+]
+
+[tool.tox.env.major]
+description = "Bump major version"
+allowlist_externals = ["bumpver"]
+commands = [
+    ["bumpver", "update", "-n", "--major"]
+]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+line_length = 88
+force_grid_wrap = 0
+use_parentheses = true
+combine_as_imports = true
+
 [tool.flake8]
-# https://black.readthedocs.io/en/stable/compatible_configs.html#flake8
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#flake8
 max-line-length = 88
 ignore = ["E731", "E203", "W503"]
 
@@ -112,9 +186,15 @@ check_untyped_defs = true
 strict_optional = true
 
 [tool.coverage.run]
+branch = true
+parallel = true
+source = ["beamer"]
 omit = ["*/test/*"]
+concurrency = ["thread", "multiprocessing"]
 
 [tool.coverage.report]
+show_missing = true
+skip_covered = true
 exclude_also = [
     "if __name__ == \"__main__\":",
     "raise AssertionError",
@@ -126,29 +206,15 @@ testpaths = ["test"]
 addopts = "--doctest-modules --doctest-glob=*.test --doctest-glob=*.tests"
 doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]
 
-[tool.tox]
-env_list = ["lints", "tests"]
+[tool.bumpver]
+current_version = "0.8.74"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version: {old_version} → {new_version}"
+tag_message = "Release {new_version}"
 
-[tool.tox.env.lints]
-deps = [".[lint]"]
-commands = [
-    ["black", "-S", "--check", "pysyte"],
-    ["blackdoc", "-S", "--include", "[.](md|py|test|tests)", "--check", "pysyte"],
-    ["flake8", "pysyte"],
-    ["mypy", "pysyte"],
-]
-
-[tool.tox.env.tests]
-deps = [".[test]"]
-commands = [
-    ["py.test", "--cov=pysyte", "pysyte" ]
-]
-
-[tool.tox.env.devs]
-deps = [".[dev]"]
-commands = [
-    ["py.test", "--exitfirst", "pysyte" ]
-]
+[tool.bumpver.file_patterns]
+"pysyte/__init__.py" = [ '__version__ = "{version}"$' ]
+"pyproject.toml" = [ '^version = "{version}"$' ]
 
 [project.scripts]
 kat = "pysyte.kat.__main__:main"
