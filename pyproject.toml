@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysyte"
-version = "0.8.74"
+version = "0.8.75"
 description = "Pysyte extends Python"
 readme = "README.rst"
 requires-python = ">=3.9"
@@ -207,7 +207,7 @@ addopts = "--doctest-modules --doctest-glob=*.test --doctest-glob=*.tests"
 doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]
 
 [tool.bumpver]
-current_version = "0.8.74"
+current_version = "0.8.75"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version: {old_version} → {new_version}"
 tag_message = "Release {new_version}"
