@@ -1,13 +1,16 @@
 from dataclasses import dataclass
+
 from pysyte import os
+
 
 def exits():
     import os
     return {k:v for k, v in os.globals().items() if k.startswith("EX_")}
 
+
 @dataclass
 class ExitCode:
-    exit_code: int = EX_OK
+    exit_code: int = os.EX_OK
 
     def __post_init__(self):
         self.exit = self.string()
@@ -20,7 +23,7 @@ class ExitCode:
 
     @property
     def ok(self):
-        return self.exit_code == EX_OK
+        return self.exit_code == os.EX_OK
 
     @property
     def errors(self):
@@ -29,13 +32,13 @@ class ExitCode:
     def string(self) -> str:
         if self.ok:
             return "EX_OK"
-        import os
+
         for ex_name, code in exits().items():
             if code == self.exit_code:
                 return ex_name
         exit = self.exit_code
         return f"{exit=}"
 
+
 pass_ = os.ExitCode(os.EX_OK)
 fail = os.ExitCode(os.EX_FAIL)
-
