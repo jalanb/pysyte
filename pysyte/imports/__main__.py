@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
-"""Find imports in python files"""
+"""Find imports in python files
+
+Show any imports which are unused, or mutiple
+"""
 
 import linecache
 
@@ -18,14 +21,21 @@ def add_args(parser):
 
 
 def texter(path):
-    def text(line):
-        string = "% 4d: %s" % (line, linecache.getline(path, line))
+    """Make a function to get a line form that file"""
+
+    def text(line_number: int) -> str:
+        """Get the line at that number
+
+        Return a string showing the line number and the line
+        """
+        string = "% 4d: %s" % (line_number, linecache.getline(path, line_number))
         return string.rstrip()
 
     return text
 
 
 def show_unused(visitor):
+    """Show the unused lines that visitor found"""
     unused_lines = visitor.unused_lines()
     if not unused_lines:
         return []
@@ -39,6 +49,7 @@ def show_unused(visitor):
 
 
 def show_multiples(visitor):
+    """Show the multiple imports that visitor found"""
     multiples = visitor.multiples()
     if multiples:
         print("Multiples:")
@@ -50,6 +61,11 @@ def show_multiples(visitor):
 
 
 def find_sources(args):
+    """Find all the source files in those args
+
+    args might include paths to files/dirs
+        all files in the args (or in the dirs) should be returned
+    """
     ignores = ["__pycache__", ".tox", ".git", ".venv"]
     result = []
     for arg in args:
@@ -65,6 +81,7 @@ def find_sources(args):
 
 
 def show_imports(args, source):
+    """Parse any source files from the args, showing imports"""
     visitor = importers.parse(source)
     modules = []
     if args.multiple:
@@ -78,6 +95,7 @@ def show_imports(args, source):
 
 
 def main(args) -> bool:
+    """Find some sources, show imports in them"""
     result = False
     sources = find_sources(args.source)
     for source in sources:
