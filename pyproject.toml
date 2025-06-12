@@ -49,10 +49,13 @@ lint = [
     "Flake8-pyproject",
     "isort",
     "mypy",
+    "types-PyYAML",
+    "types-setuptools",
+    "types-deprecated",
 ]
 
 test = [
-    "pysyte",
+#   "pysyte",
     "callee",
     "codecov",
     "coverage",
@@ -97,12 +100,12 @@ exclude = ["test_*.py"]
 
 [tool.tox]
 envlist = [
-    "formats", 
-    "lints", 
-    "tests", 
+    "formats",
+    "lints",
+    "tests",
     "devs",
-    "patch", 
-    "minor", 
+    "patch",
+    "minor",
     "major",
 ]
 
@@ -111,7 +114,7 @@ deps = [".[lint]"]
 commands = [
     ["black", "-S", "."],
     ["blackdoc", "-S", "--include", "[.](md|py|test)", "--exclude", ".*\\.swp$", "."],
-    ["isort", "pysyte", "test"],
+    ["isort", "pysyte"],
 ]
 
 [tool.tox.env.lints]
@@ -119,9 +122,9 @@ deps = [".[lint]"]
 commands = [
     ["black", "-S", "--check", "."],
     ["blackdoc", "-S", "--include", "[.](md|py|test)", "--check", "."],
-    ["isort", "--check-only", "pysyte", "test"],
-    ["flake8", "pysyte", "test"],
-    ["mypy", "--ignore-missing-imports", "--install-types", "--non-interactive", "pysyte", "test"],
+    ["isort", "--check-only", "pysyte"],
+    ["flake8", "pysyte"],
+    ["mypy", "--ignore-missing-imports", "--install-types", "--non-interactive", "pysyte"],
 ]
 
 [tool.tox.env.tests]
@@ -138,9 +141,9 @@ commands = [
 ]
 
 [tool.tox.env.pudb]
-deps = [".[develop]"]
+deps = [".[dev]"]
 commands = [
-    ["py.test", "--pudb", "pysyte", "tests" ]
+    ["py.test", "--pudb", "pysyte"]
 ]
 
 [tool.tox.env.patch]
@@ -188,7 +191,7 @@ strict_optional = true
 [tool.coverage.run]
 branch = true
 parallel = true
-source = ["beamer"]
+source = ["pysyte"]
 omit = ["*/test/*"]
 concurrency = ["thread", "multiprocessing"]
 
@@ -202,7 +205,7 @@ exclude_also = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["test"]
+testpaths = ["pysyte"]
 addopts = "--doctest-modules --doctest-glob=*.test --doctest-glob=*.tests"
 doctest_optionflags = ["ELLIPSIS", "NORMALIZE_WHITESPACE"]
 
