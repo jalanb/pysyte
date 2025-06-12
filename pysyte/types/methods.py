@@ -1,14 +1,12 @@
 import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Callable
-from typing import Optional
-from types import FrameType
-from types import ModuleType
+from types import FrameType, ModuleType
+from typing import Callable, Optional
 
 
 def unwrap(method: Callable) -> Callable:
-    """Get the original method from a methodeven if it's wrapped """
+    """Get the original method from a methodeven if it's wrapped"""
     return getattr(method, "__wrapped__", method)
 
 

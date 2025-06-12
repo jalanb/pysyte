@@ -3,13 +3,12 @@
 import sys
 from collections import defaultdict
 from functools import partial
-from typing import DefaultDict
-from typing import List
+from typing import DefaultDict, List
 
 from pysyte import __version__
+from pysyte.bash.screen import alt_screen
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.types import lines as pylines
-from pysyte.bash.screen import alt_screen
 
 
 class LinesParser(ArgumentsParser):

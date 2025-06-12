@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable
-from typing import List
+from typing import Callable, List
 
 """
 >>> faxed, fixed = applied((fax, fix), (+7, -999))

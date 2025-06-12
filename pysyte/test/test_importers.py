@@ -30,8 +30,9 @@ class TestDashboardImports(unittest.TestCase):
         Notice that this test itself "breaks all the rules" for imports
             Hence we need many "noqa" qualifiers
         """
-        import os, sys as system  # noqa: F811, F401, E401
-        from os import path, kill as killer  # noqa: F401
+        import os
+        import sys as system  # noqa: F811, F401, E401
+        from os import kill as killer, path  # noqa: F401
 
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)
@@ -82,6 +83,7 @@ class TestDashboardImports(unittest.TestCase):
 
 class TestErrorImports(unittest.TestCase):
     """Check edge cases when trying to parse files"""
+
     def test_handles_missing_file(self):
         with self.assertRaises(FileNotFoundError):
             importers.parse("/not/a/file")

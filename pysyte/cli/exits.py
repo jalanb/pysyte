@@ -5,6 +5,7 @@
 >>> assert x.NAME == "EX_USAGE"
 
 """
+
 from dataclasses import dataclass
 
 from pysyte import os
@@ -14,7 +15,7 @@ from pysyte.types.strings import Repper
 
 @dataclass
 class ExitCode(Repper):
-    """ Has an exit code and a name
+    """Has an exit code and a name
 
     >>> x = ExitCode(os.EX_USAGE)
     >>> assert x == os.EX_USAGE
@@ -22,6 +23,7 @@ class ExitCode(Repper):
     >>> assert x.NAME == "EX_USAGE"
     >>> assert x.name == "usage"
     """
+
     code: int
 
     def __bool__(self) -> bool:
@@ -79,7 +81,7 @@ def EX_NAMES() -> dict[str, int]:
 
     >>> assert EX_NAMES()["EX_USAGE"] == 64 == os.EX_USAGE
     """
-    return {_:getattr(os, _) for _ in dir(os) if _.startswith("EX_")}
+    return {_: getattr(os, _) for _ in dir(os) if _.startswith("EX_")}
 
 
 @memoized
@@ -88,7 +90,7 @@ def names() -> dict[str]:
 
     >>> assert names()["usage"] == 64 == os.EX_USAGE
     """
-    return {ex_low_name(k):v for k, v in EX_NAMES().items()}
+    return {ex_low_name(k): v for k, v in EX_NAMES().items()}
 
 
 @memoized
@@ -97,7 +99,7 @@ def EX_CODES() -> dict[int, str]:
 
     >>> assert EX_CODES()[os.EX_USAGE] == "EX_USAGE"
     """
-    return {v:k for k, v in EX_NAMES().items()}
+    return {v: k for k, v in EX_NAMES().items()}
 
 
 @memoized
@@ -106,7 +108,7 @@ def exit_codes() -> dict[str, ExitCode]:
 
     >>> assert exit_codes()["usage"] == ExitCode(os.EX_USAGE)
     """
-    return {k:ExitCode(v) for k, v in names().items()}
+    return {k: ExitCode(v) for k, v in names().items()}
 
 
 globals().update(EX_NAMES())

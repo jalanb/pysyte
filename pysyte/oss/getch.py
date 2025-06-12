@@ -12,18 +12,14 @@ Adapted from
         No need here for Windows/Carbon
 """
 
-import re
 import getpass
+import re
 import signal
 import sys
+import termios
 import tty
 from curses import ascii
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Tuple
-
-import termios
+from typing import Callable, Dict, List, Tuple
 
 
 class NoKeys(StopIteration):

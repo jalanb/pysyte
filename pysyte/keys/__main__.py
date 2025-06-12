@@ -3,10 +3,8 @@
 
 from __future__ import print_function
 
-
-from pysyte.oss import getch
 from pysyte.cli.main import run
-
+from pysyte.oss import getch
 
 __version__ = "0.1.1"
 

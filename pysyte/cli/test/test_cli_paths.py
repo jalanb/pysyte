@@ -1,11 +1,8 @@
 """Test the paths module"""
 
-
 import unittest
 
-
-from pysyte.cli import paths
-from pysyte.cli import arguments
+from pysyte.cli import arguments, paths
 from pysyte.types.paths import path
 
 

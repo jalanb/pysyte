@@ -1,8 +1,6 @@
 """Test the dictionaries module"""
 
-
 import unittest
-
 
 from pysyte.types import dictionaries
 

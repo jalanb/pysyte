@@ -1,10 +1,9 @@
 """Test paths module"""
 
+import builtins
 import os
 import random
-import builtins
 from unittest import TestCase
-
 
 from pysyte.types import paths
 

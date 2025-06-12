@@ -1,12 +1,8 @@
 """Methods to handle streams"""
 
-
 import sys
 from contextlib import contextmanager
-from typing import Optional
-from typing import TextIO
-from typing import Tuple
-from typing import Generator
+from typing import Generator, Optional, TextIO, Tuple
 
 from six import StringIO
 

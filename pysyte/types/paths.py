@@ -2,6 +2,7 @@
 
 The classes all inherit from the original path.path
 """
+
 from __future__ import annotations
 
 import os
@@ -12,15 +13,11 @@ from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
 from importlib import import_module
-from typing import Iterable
-from typing import List
-from typing import Sequence
-from typing import Tuple
-from typing import Union
+from typing import Iterable, List, Sequence, Tuple, Union
 
 from deprecated import deprecated
-
 from path import Path as path_Path
+
 from pysyte.types.lists import flatten
 from pysyte.types.methods import Method
 
