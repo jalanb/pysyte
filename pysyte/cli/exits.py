@@ -46,8 +46,8 @@ class ExitCode(Repper):
         try:
             name = self.NAME
         except KeyError:
-            name = "EX_???
-        return f"{name}:{self.code}"
+            name = "EX_???"
+        return f"{name} == {self.code}"
 
     def exit(self, message: str = "") -> None:
         raise SystemExit(self.code, message)
@@ -88,7 +88,7 @@ def names() -> dict[str]:
 
     >>> assert names()["usage"] == 64 == os.EX_USAGE
     """
-    return {ex_low_name(k):v for k, v for k, v in EX_NAMES().items()}
+    return {ex_low_name(k):v for k, v in EX_NAMES().items()}
 
 
 @memoized
@@ -106,7 +106,7 @@ def exit_codes() -> dict[str, ExitCode]:
 
     >>> assert exit_codes()["usage"] == ExitCode(os.EX_USAGE)
     """
-    return {k:ExitCode(v) for k, v for k, v in names.items()}
+    return {k:ExitCode(v) for k, v in names().items()}
 
 
 globals().update(EX_NAMES())
