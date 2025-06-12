@@ -26,6 +26,9 @@ class TestDashboardImports(unittest.TestCase):
         Adding some unusual imports in this test
             to make sure getting more than top-level imports
             and can handle the edge-cases
+
+        Notice that this test itself "breaks all the rules" for imports
+            Hence we need many "noqa" qualifiers
         """
         import os, sys as system  # noqa: F811, F401, E401
         from os import path, kill as killer  # noqa: F401
@@ -35,6 +38,12 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(len(self.visitor.used), 2)
 
     def test_redundant_imports(self):
+        """Should be able to find all the imports herein
+
+        And we should know which ones one them are not used
+            e.g. the name "killer" is imported in test_import_count()
+            but it is not used
+        """
         self.assertEqual(
             set(self.visitor.unused().keys()),
             {"defaultdict", "system", "killer", "path", "os"},
@@ -50,7 +59,7 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(multiples["os"], [10, 30])
 
     def test_redundant_has_line_numbers(self):
-        """Check that each module entry in unused imports has a line numbers
+        """Check that each module entry in unused imports has a line number
 
         We will only test here for the first line number
             See above to verify
@@ -72,6 +81,7 @@ class TestDashboardImports(unittest.TestCase):
 
 
 class TestErrorImports(unittest.TestCase):
+    """Check edge cases when trying to parse files"""
     def test_handles_missing_file(self):
         with self.assertRaises(FileNotFoundError):
             importers.parse("/not/a/file")
