@@ -2,43 +2,51 @@ from dataclasses import dataclass
 
 from pysyte import os
 
+OK = os.EX_OK
+FAIL = os.EX_FAIL
 
 def exits():
-    import os
-    return {k:v for k, v in os.globals().items() if k.startswith("EX_")}
+    """All the EX_* symbols in the os module, by name
+
+    >>> x = exits()
+    >>> assert x["EX_OK"] == 0
+    """
+    return {_: getattr(os, _) for _ in dir(os) if 'EX_' in _}
+
 
 
 @dataclass
 class ExitCode:
-    exit_code: int = os.EX_OK
+    code: int = OK
 
     def __post_init__(self):
         self.exit = self.string()
 
     def __int__(self) -> int:
-        return self.exit_code
+        return self.code
 
     def __str__(self):
-        return self.exit
+        return self.name
+
+    def raise(self, message: str = "") -> None:
+        raise SystemExit(self.code, message) if message else SystemExit(self.code)
 
     @property
     def ok(self):
-        return self.exit_code == os.EX_OK
+        return self.code == OK
 
     @property
     def errors(self):
         return not self.ok
 
-    def string(self) -> str:
-        if self.ok:
-            return "EX_OK"
-
-        for ex_name, code in exits().items():
-            if code == self.exit_code:
-                return ex_name
-        exit = self.exit_code
-        return f"{exit=}"
+    @property
+    def name(self) -> str:
+        for name, code in exits().items():
+            if code == self.code:
+                return name
+        code = self.code
+        return f"{code=}"
 
 
-pass_ = os.ExitCode(os.EX_OK)
-fail = os.ExitCode(os.EX_FAIL)
+ok = ExitCode(OK)
+fail = ExitCode(FAIL)
