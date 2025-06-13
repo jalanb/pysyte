@@ -118,7 +118,6 @@ class ImportVisitor(visitors.PymVisitor):
 
 
 class UsedImportVistor(ImportVisitor):
-    # class ImportUser(ImportVisitor):
     """Visit all imports, and find usages of each import
 
     Naming: "user" as in "thing that uses imports"
