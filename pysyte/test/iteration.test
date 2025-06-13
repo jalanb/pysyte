@@ -35,3 +35,27 @@ If not true for any item, expect a KeyError
     ... except KeyError as e:
     ...     assert e.args[0] == 'all odd'
     ...
+
+drop_from_end()
+---------------
+
+The drop_from_end() function is to sequences as .rstrip() is to strings
+    drop_from_end() works list, tuples, ...
+    It needs a predicate
+        any items at end for which predicate is true
+            are removed
+
+    >>> from bots.data.iterating import drop_from_end
+    >>> def space_char(c):
+    ...     return c.isspace()
+    ...
+
+    >>> s = "Hello   "
+    >>> assert drop_from_end(space_char, [c for c in s]) == [c for c in s.rstrip()]
+
+drop_falsies_from_end()
+-----------------------
+
+Convenience method to drop all items from end which are not true-ish
+
+    >>> assert iterating.drop_falsies_from_end([1, 2, 0, None, []]) == [1, 2]
