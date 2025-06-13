@@ -9,8 +9,6 @@
 from dataclasses import dataclass
 
 from pysyte import os
-from pysyte.types.methods import memoized
-from pysyte.types.strings import Repper
 
 
 @dataclass
