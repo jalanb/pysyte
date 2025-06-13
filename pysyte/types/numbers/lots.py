@@ -1,96 +1,51 @@
 """handle numbers for pysyte
 
->>> one = lots([''])
->>> assert one.limit == 1
->>> two = lots(["", ""])
->>> assert two.limit == 2
->>> three = lots([1, "7", 9])
->>> assert three.limit == 3
->>> four = lots([9, 5, 3, 0])
->>> assert four.limit == 4
+>>> zero = otml(0)
+>>> one = otml(1)
+>>> two = otml(2)
+>>> many = otml(random.randint(3,9))
+>>> lots = otml(random.randint(10,9_999_999_999))
 
->>> assert two + one == three
-
+>>> assert not zero
+>>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))
 """
-from typing import Any
 
+import random
 from dataclasses import dataclass
-from dataclasses import field
+from functools import total_ordering
 
 
 @dataclass
-class Nones(list):
-    args: list = field(default_factory=list)
+class OTMLData:
+    i : int = 0
 
-    def __post_init__(self):
-        breakpoint()
-        self.limit = 0
-        self.check_args()
+@total_ordering
+class OTML(OTMLData):
+    """A number in the "1, 2, many, lots" number system
 
-    def check_args(self):
-        try:
-            self.check(len(self.args))
-        except IndexError as e:
-            args = self.args
-            raise ValueError(f"{self.__class__.__name__}({args=!r}): Too many args")
+    >>> i = OTML(7)
+    >>> assert i.is_many and not (i.is_one or i.is_two or i.is_lots)
+    """
 
-    def __int__(self):
-        return len(self.args)
+    def __postinit__(self):
+        """Set some 'is_...' booleans
 
-    def __str__(self):
-        return str(int(self))
-
-    def __repr__(self):
-        return f'<{self.__class__.__name__} {int(self)} {self.args}>'
-
-    def __add__(self, other):
-        return lots(self.args + other.args)
-
-    def __sub__(self, other):
-        return lots(self.args[-len(other.args) :])  # + other.args)
-
-    def __eq__(self, other):
-        return self.__class__.__name__ == other.__class__.__name__
-
-    def __lt__(self, other):
-        return int(self) < int(other)
-
-    def __getitem__(self, i) -> Any:
-        self.check(i)
-        return super().__getitem__(i)
-
-    @property
-    def max(self):
-        return 5
-
-    def check(self, i) -> bool:
-        if self.limit >= self.max:
-            return True
-        if len(self.args) > self.limit:
-            raise IndexError(f"{self.__class__.__name__} has nothing at {i=}")
-        return True
-        raise TypeError(f"{self.__class__.__name__} has nothing at {i=}")
+        >>> i = OTML(7)
+        >>> assert i.is_many
+        >>> assert not (i.is_one or i.is_two or i.is_lots)
+        """
+        rules = {
+            "one": self.i == 1,
+            "two": self.i == 2,
+            "many":  2 < self.i <= 9,
+            "lots": self.i > 9,
+        }
+        [setattr(f'is_{k}', v) for k, v in rules.items()]
 
 
-class One(Nones):
-    def __post_init__(self):
-        self.limit = 1
-        self.check_args()
-
-
-class Two(Nones):
-    def __post_init__(self):
-        self.limit = 2
-        self.check_args()
-
-
-class Many(Two):
-    def __post_init__(self):
-        self.limit = 4
-        self.check_args()
-
-
-class Lots(Many):
-    def __post_init__(self):
-        self.limit = self.max + 1
-        self.check_args()
+def otml(i: int) -> OTML:
+    try:
+        j = int(i)
+        return OTML(j)
+    except (ValueError, TypeError):
+        raise TypeError(f'Cannot use {i!r} in "1, 2, many, lots"')

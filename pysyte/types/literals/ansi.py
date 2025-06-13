@@ -5,6 +5,7 @@ Colour sequences are derived from the table at
 http://en.wikipedia.org/wiki/ANSI_escape_sequences#Colors
 
 """
+
 light_colour = "\033[1;%sm"
 light_black = light_colour % 30
 light_red = light_colour % 31

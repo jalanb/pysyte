@@ -7,13 +7,11 @@ Nicer version: https://jonasjacek.github.io/colors/
 Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/winterpy/blob/master/pyexe/gui2term.py  # noqa
 """
 
-
 from __future__ import absolute_import
+
 from functools import partial
 
-from pysyte.colours import ansi_escapes
-from pysyte.colours import colour_names
-from pysyte.colours import colour_numbers
+from pysyte.colours import ansi_escapes, colour_names, colour_numbers
 
 
 class ColouredTail(object):

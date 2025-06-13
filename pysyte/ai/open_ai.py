@@ -2,8 +2,8 @@
 
 import openai
 
-from pysyte.config import apis
 from pysyte.ai import apis
+from pysyte.config import apis
 
 
 @dataclass

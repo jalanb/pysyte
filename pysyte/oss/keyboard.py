@@ -1,8 +1,6 @@
 """Some keyboard handling code"""
 
-
 import sys
-
 
 from pysyte.oss import getch
 

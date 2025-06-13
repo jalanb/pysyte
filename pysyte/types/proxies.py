@@ -27,4 +27,3 @@ class Proxy(object):
             setattr(proxy, name, value)
         except AttributeError:
             self.__dict__[name] = value
-

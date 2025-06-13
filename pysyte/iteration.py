@@ -1,7 +1,6 @@
 """Handle iterators for pysyte"""
 
-from typing import Sequence
-from typing import TypeVar
+from typing import Sequence, TypeVar
 
 T = TypeVar("T")  # Declare Type variable
 

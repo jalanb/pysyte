@@ -1,13 +1,9 @@
 """Generic methods for splitting strings"""
 
 import re
-from typing import Any
-from typing import List
-from typing import Optional
-from typing import Tuple
+from typing import Any, List, Optional, Tuple
 
-from pysyte.types.literals import punctuation
-from pysyte.types.literals import nones
+from pysyte.types.literals import nones, punctuation
 
 
 def _default_separator() -> str:

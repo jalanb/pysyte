@@ -4,11 +4,10 @@ import sys
 
 from rich import print
 
-from pysyte.cli import exits
 from pysyte.ai.open import OpenaiApp
+from pysyte.cli import exits
 from pysyte.oss.getch import ask_user_simplified
 from pysyte.types.dictionaries import NameSpaces
-
 
 models = NameSpaces(
     dict(

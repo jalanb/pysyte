@@ -1,11 +1,8 @@
 """Test the lines module"""
 
-
 import unittest
 
-
-from pysyte.cli import lines
-from pysyte.cli import arguments
+from pysyte.cli import arguments, lines
 
 
 class TestPaths(unittest.TestCase):

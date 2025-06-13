@@ -9,17 +9,14 @@ import re
 import shlex
 import sys
 from bdb import BdbQuit
-from pprint import pformat
 from functools import partial
-from typing import Any
-from typing import List
+from pprint import pformat
+from typing import Any, List
 
 import stackprinter
 
-from pysyte.cli.config import load_configs
+from pysyte.cli.config import load_configs, pysyte
 from pysyte.types.numbers import inty
-
-from pysyte.cli.config import pysyte
 
 
 def config(arguments):

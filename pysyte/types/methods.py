@@ -1,29 +1,32 @@
 import inspect
+import ast
 from contextlib import contextmanager
 from dataclasses import dataclass
+from types import FrameType, ModuleType
 from typing import Callable
-from typing import Optional
-from types import FrameType
-from types import ModuleType
 
 
-def unwrap(method: Callable) -> Callable:
-    """Get the original method from a methodeven if it's wrapped """
-    return getattr(method, "__wrapped__", method)
+def unwrap(method: Callable) -> tuple[Callable, Callable | None]:
+    """Get the original method from a method even if it's wrapped"""
+    wrapped = getattr(method, "__wrapped__", None)
+    return method, wrapped
 
 
 @dataclass
 class MethodData:
     method: Callable
+    wrapper: Callable | None = None
 
+    def __post_init__(self):
+        method, wrapped = unwrap(self.method)
+        if wrapped:
+            self.method = wrapped
+            self.wrapper = method
 
 class Method(MethodData):
     """A callable method with some convenience attributes"""
 
-    def __init__(self, method: Callable):
-        super().__init__(unwrap(method))
-        if self.method != method:
-            self.wrapped = method
+    def __post_init__(self):
         self.code = self.method.__code__
         self.init_frame = inspect.currentframe()
         self.callers = [self.init_frame.f_back]
@@ -37,7 +40,12 @@ class Method(MethodData):
         return self.method(*args, **kwargs)
 
     @property
-    def caller(self) -> Optional[FrameType]:
+    def ast(sefl) -> ast.AST:
+        from pym.ast.parse import parse
+        return parse(self.code)
+
+    @property
+    def caller(self) -> FrameType | None:
         return self.callers[-1]
 
     @property
@@ -45,7 +53,7 @@ class Method(MethodData):
         return self.code.co_filename
 
     @property
-    def module(self) -> Optional[ModuleType]:
+    def module(self) -> ModuleType | None:
         return inspect.getmodule(self.method)
 
     @property
@@ -61,6 +69,27 @@ class Method(MethodData):
             if hasattr(self.code, f"co_{name}"):
                 return getattr(self.code, f"co_{name}")
             raise
+
+    def about_that_egg(self, arg_name: str) -> list[str]:
+        """Duck type that arg in this method"""
+        requirements = [f"{self.name}()"]
+        return about_that_egg(self.ast, arg_name, requirements)
+
+
+
+def about_that_egg(ast: ast.AST, arg_name: str, requirements : list[str]) -> list[str]:
+    """Duck type that arg in this method
+
+    About the name:
+        Comes from a cartoon, where the bad guy threatens Daffy with
+        > Alright Duck. About that egg!
+
+        But Daffy is not that type of duck
+    """
+    from pym.ast.visitors import DuckVisitor
+    visitor = DuckVisitor(ast, arg_name, requirements)
+    visitor.visit(ast)
+    return visitor.usages
 
 
 @contextmanager

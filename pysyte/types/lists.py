@@ -1,13 +1,7 @@
 """This module handles lists"""
 
 import itertools
-
-from typing import Any
-from typing import Callable
-from typing import Iterable
-from typing import List
-from typing import Tuple
-from typing import TypeVar
+from typing import Any, Callable, Iterable, List, Tuple, TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
 

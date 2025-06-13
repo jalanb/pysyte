@@ -1,9 +1,10 @@
 """Import imports for pysyte"""
+
 import abc
-import os
+import ast
 import importlib
 import linecache
-import ast
+import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -117,12 +118,12 @@ class ImportVisitor(visitors.PymVisitor):
 
 
 class UsedImportVistor(ImportVisitor):
-    # class ImportUser(ImportVisitor):
     """Visit all imports, and find usages of each import
 
     Naming: "user" as in "thing that uses imports"
                NOT as in "logged in person"
     """
+
     def __init__(self):
         super().__init__()
         self.used = defaultdict(list)

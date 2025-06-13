@@ -1,14 +1,12 @@
 """Handle configs from program name"""
 
-from typing import Optional
-from typing import List
+from typing import List, Optional
 
 from pysyte import __file__ as path_to_pysyte
-from pysyte.oss import linux
 from pysyte.config.types import ConfigPaths
+from pysyte.oss import linux
 from pysyte.types.dictionaries import NameSpaces
-from pysyte.types.paths import DirectPath
-from pysyte.types.paths import path
+from pysyte.types.paths import DirectPath, path
 
 
 def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:

@@ -2,6 +2,7 @@
 
 The classes all inherit from the original path.path
 """
+
 from __future__ import annotations
 
 import os
@@ -12,17 +13,12 @@ from dataclasses import dataclass
 from fnmatch import fnmatch
 from functools import singledispatch
 from importlib import import_module
-from typing import Iterable
-from typing import List
-from typing import Sequence
-from typing import Tuple
-from typing import Union
+from typing import Iterable, List, Sequence, Tuple, Union
 
 from deprecated import deprecated
-
 from path import Path as path_Path
+
 from pysyte.types.lists import flatten
-from pysyte.types.methods import Method
 
 
 class PathError(Exception):
@@ -360,7 +356,7 @@ class DotPath(StringPath):
         >>> p = DotPath('/path/to/x.py')
         >>> assert p.paths == p.dirpaths()
         """
-        parts = self.split()
+        parts = self.path_split()
         result = [DotPath(parts[0] or "/")]
         for name in parts[1:]:
             result.append(result[-1] / name)
@@ -409,8 +405,6 @@ class DotPath(StringPath):
         parts = super().split(separator, maxsplit)
         parts[0] = makepath(parts[0] if parts[0] else "/")
         return parts
-
-    split = path_split
 
     def abspath(self):
         return makepath(os.path.abspath(str(self)))
@@ -900,6 +894,7 @@ def _____mp(arg) -> StringPath:
 @makepath.register(type(makepath))
 def ______mp(arg) -> StringPath:
     """Make a path from a function's module"""
+    from pysyte.types.methods import Method
     method = Method(arg)
     stdin_regexp = re.compile("<(stdin|.*python-input.*)>")
     if stdin_regexp.match(method.filename):
@@ -976,14 +971,14 @@ def as_path(string_or_path):
     return makepath(string_or_path)
 
 
-def string_to_paths(string) -> List[StringPath]:
+def string_to_paths(string: str) -> List[StringPath]:
     for c in ":, ;":
         if c in string:
             return strings_to_paths(string.split(c))
     return [makepath(string)]
 
 
-def strings_to_paths(strings) -> List[StringPath]:
+def strings_to_paths(strings: List[str]) -> List[StringPath]:
     return [makepath(s) for s in strings]
 
 
@@ -1022,7 +1017,7 @@ def pwd():
     return makepath(os.getcwd())
 
 
-def first_dir(path_string):
+def first_dir(path_string: str):
     """Get the first directory in that path
 
     >>> first_dir('usr/local/bin') == 'usr'
