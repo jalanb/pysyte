@@ -19,7 +19,6 @@ from deprecated import deprecated
 from path import Path as path_Path
 
 from pysyte.types.lists import flatten
-from pysyte.types.methods import Method
 
 
 class PathError(Exception):
@@ -895,6 +894,7 @@ def _____mp(arg) -> StringPath:
 @makepath.register(type(makepath))
 def ______mp(arg) -> StringPath:
     """Make a path from a function's module"""
+    from pysyte.types.methods import Method
     method = Method(arg)
     stdin_regexp = re.compile("<(stdin|.*python-input.*)>")
     if stdin_regexp.match(method.filename):

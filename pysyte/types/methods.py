@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from types import FrameType, ModuleType
 from typing import Callable
 
-from pym.ast import parse
 
 def unwrap(method: Callable) -> tuple[Callable, Callable | None]:
     """Get the original method from a method even if it's wrapped"""
@@ -42,6 +41,7 @@ class Method(MethodData):
 
     @property
     def ast(sefl) -> ast.AST:
+        from pym.ast.parse import parse
         return parse(self.code)
 
     @property
@@ -72,10 +72,12 @@ class Method(MethodData):
 
     def about_that_egg(self, arg_name: str) -> list[str]:
         """Duck type that arg in this method"""
-        return about_that_egg(self.ast, arg_name)
+        requirements = [f"{self.name}()"]
+        return about_that_egg(self.ast, arg_name, requirements)
 
 
-def about_that_egg(ast: ast.AST, arg_name: str) -> list[str]:
+
+def about_that_egg(ast: ast.AST, arg_name: str, requirements : list[str]) -> list[str]:
     """Duck type that arg in this method
 
     About the name:
@@ -85,8 +87,9 @@ def about_that_egg(ast: ast.AST, arg_name: str) -> list[str]:
         But Daffy is not that type of duck
     """
     from pym.ast.visitors import DuckVisitor
-    visitor = DuckVisitor(ast)
-    return visitor.visit(ast)
+    visitor = DuckVisitor(ast, arg_name, requirements)
+    visitor.visit(ast)
+    return visitor.usages
 
 
 @contextmanager
