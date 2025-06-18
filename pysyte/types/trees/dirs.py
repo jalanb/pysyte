@@ -15,7 +15,9 @@ class DirectPath(paths.Path, PathAssertions):
     And that files are in directories
     """
 
-    __file_class__ = files.FilePath
+    @property
+    def __file_class__(self):
+        return files.FilePath
 
     def __iter__(self):
         for a_path in self.listdir():

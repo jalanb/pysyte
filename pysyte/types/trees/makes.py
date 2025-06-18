@@ -6,10 +6,13 @@ from functools import singledispatch
 from importlib import import_module
 from typing import Any
 from typing import Protocol
+from typing import TYPE_CHECKING
 
-from pysyte.types.trees.dirs import DirectPath
+if TYPE_CHECKING:
+    from pysyte.types.trees.dirs import DirectPath
+    from pysyte.types.trees.files import FilePath
+
 from pysyte.types.trees.errors import MissingImport
-from pysyte.types.trees.files import FilePath
 from pysyte.types.trees.paths import Path
 from pysyte.types.trees.paths import Paths
 from pysyte.types.trees.strings import NoPath
@@ -49,8 +52,10 @@ def ____mp(arg) -> StringPath:
     if not arg:
         return makepath(None)
     if os.path.isfile(arg):
+        from pysyte.types.trees.files import FilePath
         return FilePath(arg)
     if os.path.isdir(arg):
+        from pysyte.types.trees.dirs import DirectPath
         string = arg if arg == "/" else arg.rstrip("/")
         return DirectPath(string)
     expanded_path = os.path.expandvars(arg)
@@ -154,3 +159,7 @@ def make_string_paths(arg) -> Paths:
 @makepath.register(Path)
 def make_path_path(arg) -> StringPath:
     return arg
+
+
+# Alias for backward compatibility
+path = makepath

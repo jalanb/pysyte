@@ -5,13 +5,14 @@ from dataclasses import dataclass
 from typing import Any
 from typing import Sequence
 from typing import Union
+from typing import TYPE_CHECKING
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath
 
-from pysyte.types.trees.dirs import DirectPath
-from pysyte.types.trees.files import FilePath
-from pysyte.types.trees.makes import makepath
+if TYPE_CHECKING:
+    from pysyte.types.trees.dirs import DirectPath
+    from pysyte.types.trees.files import FilePath
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
 
@@ -69,6 +70,7 @@ class StringPath(JasonOrrendorfPath):
         if not substring:
             return self
         full_string = os.path.join(str(self), substring)
+        from pysyte.types.trees.makes import makepath
         return makepath(full_string)
 
     def __floordiv__(self, substrings: Sequence[str]) -> StringPath:
@@ -85,6 +87,7 @@ class StringPath(JasonOrrendorfPath):
             return self
         string = str(self)
         strings = [string] + list(substrings)
+        from pysyte.types.trees.makes import makepath
         return makepath(os.path.join(*strings))
 
     def __eq__(self, other) -> bool:
@@ -181,6 +184,8 @@ class NoPath(StringPath):
 
     def __init__(self, string: Any = ""):
         self.string = string or ""
+        from pysyte.types.trees.dirs import DirectPath
+        from pysyte.types.trees.files import FilePath
         self.fake_path = FilePath(self.string) or DirectPath(self.string)
 
     def __str__(self):
@@ -207,6 +212,7 @@ class NoPath(StringPath):
 
     def __truediv__(self, child):
         result = os.path.join(self.string, child) if child else self.string
+        from pysyte.types.trees.makes import makepath
         return makepath(result)
 
     def contains(self, other: StrPath) -> bool:
@@ -218,6 +224,7 @@ class NoPath(StringPath):
         if "/" not in self.string:
             return ""
         parent_string = "/".join(self.string.split("/")[:-1])
+        from pysyte.types.trees.makes import makepath
         return makepath(parent_string)
 
     def exists(self):

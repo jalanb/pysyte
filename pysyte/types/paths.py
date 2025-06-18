@@ -18,7 +18,7 @@ from deprecated import deprecated
 from pysyte.types.lists import flatten
 from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.makes import path
-from pysyte.types.trees.paths import PathPath
+from pysyte.types.trees.paths import Path as PathPath
 from pysyte.types.trees.strings import NoPath
 from pysyte.types.trees.strings import StringPath
 
