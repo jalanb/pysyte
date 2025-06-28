@@ -1,27 +1,27 @@
-"""Test the methods module"""
+"""Test the functions module"""
 
 import unittest
 from io import StringIO
 
-from pysyte.types import methods
+from pysyte.types import functions
 
 
-@methods.memoized
+@functions.memoized
 def initials(forename, surname, stream):
     """Print initials of the name
 
-    Method is memoized, so we show an actual call by writing to stream
+    Function is memoized, so we show an actual call by writing to stream
     """
     print(" ".join(("Call:", str(forename), str(surname))), file=stream)
     return "%s%s" % (forename[0], surname[0])
 
 
-@methods.memoized
+@functions.memoized
 def no_args():
     return None
 
 
-@methods.memoized
+@functions.memoized
 def default_args(arg=None):
     return arg
 
@@ -44,11 +44,11 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual("FM", initials("Fred", "Murphy", self.stream))
         self.assertEqual("Call: Fred Murphy\n", self.stream.getvalue())
 
-    def test_method_name(self):
-        """A memoized method has been renamed"""
+    def test_function_name(self):
+        """A memoized function has been renamed"""
         self.assertEqual("memoized(initials)", initials.__name__)
 
-    def test_method_docstring(self):
+    def test_function_docstring(self):
         docstring = initials.__doc__.splitlines()[0]
         self.assertEqual("Print initials of the name", docstring)
 
@@ -59,7 +59,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertNotEqual(none.__module__, initials.__module__)
 
     def test_second_call_different_args(self):
-        """Second call of method gives twice the output"""
+        """Second call of function gives twice the output"""
         self.assertEqual("FS", initials("Fred", "Smith", self.stream))
         self.assertEqual("FS", initials("Fred", "Silly", self.stream))
         actual = self.stream.getvalue()
@@ -67,7 +67,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_second_call_same_args(self):
-        """Second call of method with same args gives once the output"""
+        """Second call of function with same args gives once the output"""
         self.assertEqual("OS", initials("One", "Smith", self.stream))
         self.assertEqual("OS", initials("One", "Smith", self.stream))
         actual = self.stream.getvalue()
@@ -115,7 +115,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertRaises(KeyError, initials.invalidate, "not called")
 
     def test_use_wtithout_decorator(self):
-        memo_average = methods.memoized(printer)
+        memo_average = functions.memoized(printer)
         one = memo_average(1, 6, self.stream)
         two = memo_average(2, 5, self.stream)
         three = memo_average(1, 6, self.stream)
@@ -127,12 +127,12 @@ class MemoizeTest(unittest.TestCase):
         )
 
     def test_no_arguments(self):
-        """Methods without arguments can lead to barfing in some memoisers"""
+        """Functions without arguments can lead to barfing in some memoisers"""
         self.assertIsNone(no_args())
         self.assertIsNone(no_args())
 
     def test_default_arguments(self):
-        """Methods without arguments can lead to barfing in some memoisers
+        """Functions without arguments can lead to barfing in some memoisers
 
         Defaults are a slightly different form of "no args"
         """

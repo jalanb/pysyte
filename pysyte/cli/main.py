@@ -11,19 +11,20 @@ from typing import Optional
 from pysyte.cli import app
 from pysyte.cli import arguments
 from pysyte.cli.config import load_configs
-from pysyte.types.methods import Callable
-from pysyte.types.methods import Method
+from pysyte.types.functions import Callable
+from pysyte.types.functions import Method
 from pysyte.types.paths import makepath
 
 
 class MainMethod(Method):
-    """A method that can be called from the command line"""
-
-    def __init__(self, method):
-        super().__init__(method)
+    def __init__(self, function):
+        super().__init__(function)
         self.in_main_module = self.module.__name__ == "__main__"
         self.needs_args = self.argcount > 0
         self.needs_one_arg = self.argcount == 1
+
+    def __call__(self, *args_, **kwargs):
+        return self.function(*args_, **kwargs)
 
     @property
     def doc(self) -> str:
@@ -38,7 +39,7 @@ ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsPars
 
 @dataclass
 class CallerData:
-    method: MainMethod
+    function: MainMethod
     add_args: Optional[ArgumentsParsers]
 
 
@@ -84,12 +85,12 @@ def run(
                 parser = self.arg_parser()
                 assert parser  # Dont trust callers' coder to return the parser
                 return parser.parse_args(post_parser=post_parse)
-            assert self.method.needs_one_arg
+            assert self.function.needs_one_arg
             return sys.argv[1:]
 
         def config_name(self, name):
             if not isinstance(name, str):
-                return makepath(self.method).name
+                return makepath(self.function).name
             p = makepath(name)
             return p.name if p else name
 
@@ -97,13 +98,13 @@ def run(
             return load_configs(self.config_name(config_name))
 
         def main(self, argument_handler):
-            if self.method.needs_args:
+            if self.function.needs_args:
                 self.args = self.parse_args()
             if config_name:
-                return self.method(self.args, self.config())
-            if self.method.needs_args:
-                return self.method(self.args)
-            return self.method()
+                return self.function(self.args, self.config())
+            if self.function.needs_args:
+                return self.function(self.args)
+            return self.function()
 
     caller = Caller(MainMethod(main_method), add_args)
     if caller.method.in_main_module:

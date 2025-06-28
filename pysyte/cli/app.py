@@ -6,20 +6,20 @@ from contextlib import ContextDecorator
 
 from pysyte.cli import exits
 from pysyte.cli.exceptions import rich_exceptions
-from pysyte.types.methods import Method
+from pysyte.types.functions import Function
 
 
-def exit(method, locals_=None):
-    exit_code = exits.fail
+def exit(function, locals_=None):
+    exit_code = os.EX_FAIL
     with rich_exceptions(locals_ if locals_ else {}):
         try:
-            exit_code = exits.ExitCode(method())
+            exit_code = os.EX_OK if function() else os.EX_FAIL
         except BdbQuit:
             exit_code = exits.pass_
     sys.exit(exit_code)
 
 
-class App(Method, ContextDecorator):
+class App(Function, ContextDecorator):
     def __enter__(self):
         self.exit_code = None
         return self

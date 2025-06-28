@@ -25,7 +25,7 @@ from functools import singledispatch
 
 from lazy import lazy
 
-from pysyte.types.methods import none_args
+from pysyte.types.functions import none_args
 from pysyte.types.time import times
 
 
