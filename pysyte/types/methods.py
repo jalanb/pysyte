@@ -2,21 +2,26 @@
 
 >>> from pysyte.types import methods
 
->>> def fred(i: int = 0, s: str = "") -> str:
-...     '''If in doubt, call it Fred'''
-...     return "fred"
+>>> class Fred:
+...     def fred(i: int = 0, s: str = "") -> str:
+...         '''If in doubt, call it Fred'''
+...         return "fred"
 
->>> foo = methods.method(fred)
+>>> foo = methods.method(Fred().fred)
 >>> assert "def fred" in foo.code
+>>> assert foo() == "fred"
 """
 
 import ast
 from dataclasses import dataclass
 
-from lazy import lazy
-from pym.ast import parse
 
 from pysyte.types import functions
+
+
+class NotMethod(Exception):
+    pass
+
 
 @dataclass
 class Method(functions.Function):
@@ -27,7 +32,10 @@ class Method(functions.Function):
     def __post_init__(self):
         super().__post_init__()
         if isinstance(self.callable, MethodType):
-            self.selfie = self.callable.__self__
+            try:
+                self.selfie = self.callable.__self__
+            except AttributeError:
+                raise NotMethod(self.callable)
 
     def run(self, *args, **kwargs):
         return self.callable(self.selfie, *args, **kwargs)

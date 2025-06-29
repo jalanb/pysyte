@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from pysyte.types.trees import strings
 
 class ChmodValues:
-    # pylint: disable=too-few-public-methods
     readonly_file = 0o444
     readonly_directory = 0o555
 
@@ -209,7 +208,6 @@ class Path(RealPath):
 
     def is_executable(self):
         """Whether the path is executable"""
-        # pylint: disable=no-self-use
         return False
 
     def isexec(self):
@@ -217,9 +215,9 @@ class Path(RealPath):
 
     def has_executable(self):
         """Whether the path has any executable bits set"""
-        executable_bits = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
+        executable_stats = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH
         try:
-            return bool(os.stat(self).st_mode & executable_bits)
+            return bool(os.stat(self).st_mode & executable_stats)
         except OSError:
             return False
 
