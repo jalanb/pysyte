@@ -9,13 +9,6 @@ from pysyte.types import paths
 from pysyte.types.trees import files
 
 
-class SourcePath(files.FilePath):
-    pass
-
-
-SourcePath.__file_class__ = SourcePath
-
-
 class MockFilePathWithLines(files.FilePath):
     """Mock some known lines into a file"""
 
