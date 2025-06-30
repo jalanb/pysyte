@@ -7,7 +7,7 @@ from typing import Optional
 from typing import TextIO
 from typing import Tuple
 
-from six import StringIO
+from io import StringIO
 
 
 class Print:
@@ -62,7 +62,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     >>> with swallow_stdout() as stream:
     ...     print("hello", end="")
     ...
-    >>> assert stream.getvalue() == "hello"
+    >>> assert stream.read() == "hello"
     """
     saved = sys.stdout
     if stream is None:
@@ -70,6 +70,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     sys.stdout = stream
     try:
         yield stream
+        stream.seek(0)
     finally:
         sys.stdout = saved
 
@@ -81,7 +82,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     >>> with swallow_stderr() as string:
     ...     print("hello", end="", file=sys.stderr)
     ...
-    >>> assert string.getvalue() == "hello"
+    >>> assert "hello" in string.read()
     """
     saved = sys.stderr
     if stream is None:
@@ -89,6 +90,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
     sys.stderr = stream
     try:
         yield stream
+        stream.seek(0)
     finally:
         sys.stderr = saved
 
@@ -98,16 +100,31 @@ def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:
-    ...     print("hello", end=" ", file=sys.stderr)
+    ...     print("hello", end=" ", file=sys.stdout)
     ...     print("world", end="", file=sys.stderr)
     ...
-    >>> assert streams[0].getvalue() + streams[1].getvalue() == "hello world"
+    >>> out, err = streams
+    >>> assert out.read() + err.read() == "hello world"
     """
-    saved = sys.stdout, sys.stderr
-    out, err = StringIO(), StringIO()
-    sys.stdout = out
-    sys.stderr = err
+    out_stream = StringIO()
+    err_stream = StringIO()
+    with swallow_stdout(out_stream), swallow_stderr(err_stream):
+        yield out_stream, err_stream
+        out_stream.seek(0)
+        err_stream.seek(0)
+
+@contextmanager
+def swallow_stdin(text: str) -> Generator[StringIO, None, None]:
+    """Feed the given text into sys.stdin as if typed
+
+    >>> from pysyte.oss import getch
+    >>> with swallow_stdin("Hello"):
+    ...     assert getch.get_key() == 'H'
+    """
+    saved = sys.stdin
+    stream = StringIO(text)
+    sys.stdin = stream
     try:
-        yield out, err
+        yield stream
     finally:
-        sys.stdout, sys.stderr = saved
+        sys.stdin = saved

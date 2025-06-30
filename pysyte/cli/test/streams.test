@@ -1,0 +1,34 @@
+The pysyte.cli.streams module
+=============================
+
+    >>> from pysyte.cli import streams
+    >>> assert 'streams of text from cli arguments' in streams.__doc__
+
+    >>> import sys
+    >>> from pysyte.oss import platforms
+
+Typical usage patterns
+----------------------
+
+Parse command line args for stream handling
+    >>> args = streams.parse_args('testing')
+    >>> assert 'streams' in dir(args)
+
+Set up streams
+    >>> platforms.copy("He's a very naughty boy")
+    >>> sys.argv.append("-")
+    >>> sys.stdin = StringIO("Nobody expects the Spanish Inquisition!")
+    
+    >>> path_to_python = streams.__file__
+    >>> sys.argv.append(path_to_python)
+
+Can say what we want the args to be called
+    >>> args = streams.parse_args(name="files")
+    >>> assert path_to_python in args
+
+
+We added "-" to sys.argv, so stdin was requested
+    >>> assert args["stdin"] == sys.stdin
+
+Clipboard integration was turned on too
+    >>> assert 'very naughty boy' in args["cliboard"].read()

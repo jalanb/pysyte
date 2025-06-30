@@ -1,4 +1,5 @@
 import os
+from typing import TextIO
 
 from pysyte.types.trees import chmod
 from pysyte.types.trees import errors
@@ -129,6 +130,13 @@ class DirectPath(paths.Path, PathAssertions):
     def isroot(self):
         return str(self) == "/"
 
+    def open(self, mode="r", encoding=None, errors="") -> TextIO:
+        """Needs to exist in case callers treat a directory like a file"""
+        return StringIO('\n'.join([str(_) for _ in self.listdir()]))
+
+    def text(self):
+        """For similar cases"""
+        return self.open().read()
 
 def ignore_fnmatches(ignores):
     def ignored(a_path):

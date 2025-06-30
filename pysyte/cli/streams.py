@@ -2,37 +2,41 @@
 
 import os
 import sys
+from typing import TextIO
 
-from six import StringIO
+from dataclasses import dataclass
+from io import StringIO
 
 from pysyte import iteration
 from pysyte.cli import arguments
 from pysyte.oss.platforms import get_clipboard_data
+from pysyte.types.trees.paths import path
 
 
-def parse_args(description=""):
+@dataclass
+class ParsedStreams:
+    streams: list[TextIO]
+    stdin: TextIO
+    clipboard: TextIO
+
+
+def parse_args(name:str="", docs:str="") -> ParsedStreams:
     """Parse out command line arguments"""
-    parser = arguments.parser(description or __doc__)
-    parser.positional("streams", help="streams to use")
+    parser = arguments.parser(docs or __doc__)
+    if not name:
+        name = "streams"
+    parser.positional(name, help=f"{name} to use")
     parser.boolean("p", "paste", help="paste text from clipboard")
     parser.boolean("i", "stdin", help="wait for text from stdin")
-    return parser.parse_args()
-
-
-def args(parsed_args, name="streams", files_only=False):
-    """Interpret parsed args to streams"""
-    streams = []
-    strings = parsed_args.get_strings(name)
-    files = [s for s in strings if os.path.isfile(s)]
-    if files:
-        streams = [open(f) for f in files]
-    if strings or files_only:
-        return streams
-    if "-" in files or getattr(parsed_args, "stdin", False):
-        streams = [sys.stdin]
-    if getattr(parsed_args, "paste", False):
-        streams.append(clipboard_stream())
-    return streams
+    parsed = parser.parse_args()
+    named = parsed.args(name)
+    paths = [path(_) for _ in named]
+    exists = [_ for _ in paths if _]
+    return ParsedStreams(
+        streams = [_.open() for _ in exists if _.isfile() or _.isdir()]
+        stdin = parsed.stdin or StringIO("")
+        clipboard = parsed.paste or StringIO("")
+    )
 
 
 def files(parsed_args, name=None):

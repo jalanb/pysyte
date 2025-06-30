@@ -4,6 +4,8 @@ The streams module
     >>> from pysyte import streams
     >>> assert 'handle streams' in streams.__doc__
 
+    >>> from io import StringIO
+
 Printing to stdout
 ------------------
 
@@ -22,16 +24,15 @@ pysyte.streams offers 2 functions which print to stdout/stderr
 Swallowing stdout
 -----------------
 
-    >>> from io import StringIO
     >>> stream = StringIO()
-    >>> with streams.swallow_stdout(stream):
-    ...     print('Hello World')
+    >>> with streams.swallow_stdout(stream) as stream:
+    ...     print_out('Hello World')
     ...
-    >>> assert stream.getvalue() == 'Hello World\n'
+    >>> assert stream.read() == 'Hello World\n'
 
 Simpler - use default stream
-    >>> with streams.swallow_stdout() as stream:
-    ...     print('Hello World')
+    >>> with streams.swallow_stdout() as out:
+    ...     print_out('Hello World')
     ...
     >>> assert stream.getvalue() == 'Hello World\n'
 
@@ -51,4 +52,3 @@ streams provides a simpler interface to sys.stdin, sys.stdout, sys.stderr
 
 #   >>> key = std.in(1)
     >>> assert std.in_fileno() == 0
-

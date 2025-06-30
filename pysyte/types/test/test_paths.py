@@ -9,26 +9,31 @@ from pysyte.types import paths
 from pysyte.types.trees import files
 
 
-class MockFilePathWithLines(files.FilePath):
+class MockSketch(files.FilePath):
     """Mock some known lines into a file"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
-        return [
-            "\n",
-            "line ends with spaces    ",
-            "# comment\n",
-            "Normal line\n",
-        ]
+        return "\n".join([
+            "",
+            "# Scene: An Army Barracks",
+            "# ",
+            "# Cue Pythons"
+            "# ",
+            "You can't just end it!",
+            "Aww. The General Public's never gonna accept this!",
+            "Yes, they will. Cue Cine!",
+        ])
 
+punchlines = MockSketch("/not/punchlines")
 
-class MockPythonShebang(MockFilePathWithLines):
+class MockPythonShebang(MockSketch):
     """Mock some lines into a file, with first having '#!'"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
         return ["#! /usr/bin/env python3\n", "i = 5\n", "pass"]
 
 
-class MockPythonShebangError(MockFilePathWithLines):
+class MockLinesError(MockSketch):
     """Mock some lines into a file, but raise an error"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
@@ -91,34 +96,29 @@ class TestPaths(TestCase):
         self.assertIn(self.dir.name, self.path_to_test.dirnames())
 
     def test_stripped_lines(self):
-        path = MockFilePathWithLines("/not/a/real/file")
-        line = random.choice(path.lines())
+        line = random.choice(punchlines.lines())
         self.assertTrue(line[-1].isspace())
-        line = random.choice(path.stripped_lines())
+        line = random.choice(punchlines.stripped_lines())
         if line:
             self.assertFalse(line[-1].isspace())
 
     def test_stripped_whole_lines(self):
-        path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue([_ for _ in path.stripped_lines() if not _])
-        self.assertFalse([_ for _ in path.stripped_whole_lines() if not _])
+        self.assertTrue([_ for _ in punchlines.stripped_lines() if not _])
+        self.assertFalse([_ for _ in punchlines.stripped_whole_lines() if not _])
 
     def test_non_comment_lines(self):
-        path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue([_ for _ in path.stripped_whole_lines() if _.startswith("#")])
-        self.assertFalse([_ for _ in path.non_comment_lines() if _.startswith("#")])
+        self.assertTrue([_ for _ in punchlines.stripped_whole_lines() if _.startswith("#")])
+        self.assertFalse([_ for _ in punchlines.non_comment_lines() if _.startswith("#")])
 
     def test_has_line(self):
-        path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue(path.has_line("Normal line"))
-        self.assertFalse(path.has_line("Normal"))
-        self.assertFalse(path.has_line("Abnormal line"))
+        self.assertTrue(punchlines.has_line("Yes, they will. Cue Cine!"))
+        self.assertFalse(punchlines.has_line("Cine"))
+        self.assertFalse(punchlines.has_line("Punchline"))
 
     def test_any_line_has(self):
-        path = MockFilePathWithLines("/not/a/real/file")
-        self.assertTrue(path.any_line_has("Normal line"))
-        self.assertTrue(path.any_line_has("Normal"))
-        self.assertFalse(path.any_line_has("Abnormal line"))
+        self.assertTrue(punchlines.any_line_has("Yes, they will. Cue Cine!"))
+        self.assertTrue(punchlines.any_line_has("Cine"))
+        self.assertFalse(punchlines.any_line_has("Punchline"))
 
     def test_directory(self):
         self.assertEqual(self.path_to_test.directory(), self.path_to_test.parent)
@@ -376,7 +376,7 @@ class TestPaths(TestCase):
         It should not propogate the error
             just give an empty result
         """
-        path = MockPythonShebangError("/not/a/real/file")
+        path = MockLinesError("/not/a/real/file")
         expected = ""
         actual = path.shebang()
         self.assertEqual(actual, expected)
