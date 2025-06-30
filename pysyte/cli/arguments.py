@@ -156,6 +156,8 @@ class ArgumentsNamespace(object):
             return []
         return extract_strings(self._result.__dict__, name)
 
+    args = get_strings
+
     def set_arg(self, name: str, value: Any) -> None:
         setattr(self._result, name, value)
 
