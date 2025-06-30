@@ -2,6 +2,7 @@
 
 import sys
 
+from pysyte.os import EX_CTRL_C
 from pysyte.oss import getch
 
 
@@ -31,4 +32,4 @@ def quit_on_q():
             sys.exit()
         return key
     except KeyboardInterrupt:
-        sys.exit()
+        sys.exit(EX_CTRL_C)

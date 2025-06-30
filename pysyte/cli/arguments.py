@@ -16,6 +16,7 @@ from typing import Any, List
 import stackprinter
 
 from pysyte.cli.config import load_configs, pysyte
+from pysyte.os import EX_CTRL_C
 from pysyte.types.numbers import inty
 
 
@@ -161,8 +162,7 @@ class ArgumentHandler:
             return caller.main(self)
         except KeyboardInterrupt:
             sys.stderr.write("^c ^C ^c    ^C ^c ^C    ^c ^C ^c\n")
-            ctrl_c = 3
-            return ctrl_c
+            return EX_CTRL_C
         except BdbQuit:
             return os.X_OK
         except SystemExit as e:
