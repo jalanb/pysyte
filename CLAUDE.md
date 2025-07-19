@@ -1,61 +1,28 @@
-# pysyte 
 
-`pysyte` provides "more batteries" for Python.
+# trees
 
-`pysyte` is available from [pypi](pypi.org), and is an open source project, written in Python
+This is a major refactor of `pysyte.types.paths` as `pysyte.types.trees`
 
-## Affordances
 
-The `pysyte` project offers several key capabilities:
+## Current Status
+- **Circular imports FIXED** - The main blocker has been resolved using TYPE_CHECKING and lazy imports
+- **Basic structure working** - imports succeed, modular structure is functional
+- **Many tests failing** - Missing classes (DotPath), methods (extend_by), and other functionality
+- **Incomplete migration** - Not all functionality has been moved/implemented in the new structure
 
-  1. Enhanced path handling and filesystem operations
-  2. CLI application framework with argument parsing
-  3. Extended type utilities (dictionaries, lists, strings)
-  4. System interaction tools for cross-platform OS operations
-  5. AI integration with various providers
-  6. Terminal text styling with ANSI colors
-  7. Import utilities for dynamic module loading
-  8. Command-line tools like 'kat' and 'rePATH'
+## What's Working
+- `from pysyte.types import paths` - imports successfully
+- `from pysyte.types.trees.*` - all tree modules import without circular dependency errors
+- Basic path creation and manipulation
 
-### Examples
+## What's Broken/Missing
+- `DotPath` class - referenced in tests but doesn't exist
+- `extend_by` method on FilePath - used in test setup
+- Various other methods and functionality that haven't been migrated yet
+- Complete Public API should be covered by doctests
 
-```doctest
->>> from pysyte.trees.paths import path
->>> here = path(__file__)
->>> assert 'pysyte' in here.parents
->>> there = path(path)
->>> assert 'trees' in there.parents
+## Next Steps
+When we are finished we shall rename "trees" to "paths"
 
->>> from pysyte.colours import colour_names as names
->>> assert "light cyan" in names.cga()
-```
+**Don't panic about test failures** - this is expected during a major refactor!
 
-## Build & Test Commands
-
-Run all tests
-```shell
-$ tox -e tests
-```
-
-Run all linters
-```shell
-$ tox -e lints
-```
-
-## Code Style Guidelines
-- Black formatting (`-S` flag to skip string normalization)
-- Line length: 88 characters
-- All code should have tests (unit tests or doctests)
-- Docstrings should include doctests, as examples
-- Type hints recommended 
-- Follow PEP 8 guidelines
-- Single line imports (isort with force_single_line)
-- Custom exceptions should be defined as needed
-- Tests in `test/` subdirectories with naming conventions:
-  - Unit tests: `test_*.py` files
-  - Doctests: `*.test` or `*.tests` files
-- Exceptions should be handled explicitly with appropriate error reporting
-
-# See also
-
-- `.clawed/CLAUDE.md`
