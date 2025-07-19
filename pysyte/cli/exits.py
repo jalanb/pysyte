@@ -61,7 +61,7 @@ class ExitCode(Repper):
     @property
     def NAME(self) -> str:
         try:
-            return EX_CODES()[self.code]
+            return OS_EX_NAMES()[self.code]
         except KeyError:
             code = self.code
             raise KeyError(f"{code=}")
@@ -76,12 +76,21 @@ def ex_low_name(ex_str: str) -> str:
 
 
 @memoized
-def EX_NAMES() -> dict[str, int]:
+def OS_EX() -> dict[str, int]:
     """a dict of exit names, from os module
 
-    >>> assert EX_NAMES()["EX_USAGE"] == 64 == os.EX_USAGE
+    >>> assert OS_EX()["EX_USAGE"] == 64 == os.EX_USAGE
     """
     return {_: getattr(os, _) for _ in dir(os) if _.startswith("EX_")}
+
+
+@memoized
+def OS_EX_NAMES() -> dict[int, str]:
+    """a dict of exit codes, from os module
+
+    >>> assert OS_EX_NAMES()[os.EX_USAGE] == "EX_USAGE"
+    """
+    return {v: k for k, v in OS_EX().items()}
 
 
 @memoized
@@ -90,26 +99,20 @@ def names() -> dict[str]:
 
     >>> assert names()["usage"] == 64 == os.EX_USAGE
     """
-    return {ex_low_name(k): v for k, v in EX_NAMES().items()}
-
-
-@memoized
-def EX_CODES() -> dict[int, str]:
-    """a dict of exit codes
-
-    >>> assert EX_CODES()[os.EX_USAGE] == "EX_USAGE"
-    """
-    return {v: k for k, v in EX_NAMES().items()}
+    return {ex_low_name(k): v for k, v in OS_EX().items()}
 
 
 @memoized
 def exit_codes() -> dict[str, ExitCode]:
-    """a dict of exit codes
+    """a dict of ExitCodes, for the names()
 
     >>> assert exit_codes()["usage"] == ExitCode(os.EX_USAGE)
     """
-    return {k: ExitCode(v) for k, v in names().items()}
+    result = {k: ExitCode(v) for k, v in names().items()}
+    result.update({k: ExitCode(v) for k, v in OS_EX().items()})
+    return result
 
 
-globals().update(EX_NAMES())
+globals().update(OS_EX())
+globals().update(names())
 globals().update(exit_codes())
