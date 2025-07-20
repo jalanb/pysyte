@@ -182,8 +182,9 @@ class SpaceNames(SpaceName):
     """
 
     def getitem(self, string: str):
-        name, *names = string.split(".")
+        name, *names = string.split('.')
         value = super().getitem(name)
-        if names:
-            return SpaceNames(value).getitem(".".join(names))
-        return value
+        try:
+            return SpaceNames(value).getitem('.'.join(names))
+        except IndexError:
+            return value
