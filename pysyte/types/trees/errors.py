@@ -11,11 +11,15 @@ class MissingPath(PathError):
         super().__init__(f"Missing {description}{path}")
 
 
-class MissingImport(MissingPath):
+class MissingImport(MissingPath, ModuleNotFoundError):
     def __init__(self, module):
         self.module = module
         try:
-            path_ = module.__file__
+            key = module.__file__
         except AttributeError:
-            path_ = module.__name__
-        super().__init__(path_, desc="module")
+            try:
+                key = module.__name__
+            except AttributeError:
+                key = str(module)
+        MissingPath.__init__(self, key, desc="module")
+        ModuleNotFoundError.__init__(self, f"No module named '{key=}'")
