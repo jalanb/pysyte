@@ -54,12 +54,14 @@ All tox commands are defined in `[tool.tox]` sections of pyproject.toml - check 
 
 - We use pytest with doctests enabled
 - Test patterns: `**/*.py`,`**/*.test`, `**/*.tests`, `test_*.py`
- - `**/*.py`: doctests in docstrings of that show examples of use
+ - `**/*.py`: doctests in docstrings that show examples of use
  - `**/*.test`: doctests with a story to tell
  - `**/*.tests`: doctests that got long and boring
  - `test_*.py`: traditional unit tests
 - Coverage reporting with branch coverage
 - Supports parallel test execution
+- **Current test files**: 554 `.test`/`.tests` files across the project
+- **Testing strategy effectiveness**: The .test/.tests approach has been working well in practice
 
 ## Code Quality
 
@@ -68,6 +70,7 @@ All tox commands are defined in `[tool.tox]` sections of pyproject.toml - check 
 - **Linting**: flake8 with bugbear, comprehensions, eradicate
 - **Type checking**: mypy with strict optional checking
 - **Line length**: 88 characters
+- **Documentation**: No emojis in *.md files
 
 ## Development Notes
 
@@ -109,14 +112,6 @@ Although primarily designed to be used like `from pysyte import`, we did add som
 - `imports`: used by a script that show unused and duplicate imports
 - `short_dir`: Shortens a directory path for my prompt
 
-### Core Modules
-- **ai/**: AI and language model integration
-- **bash/**: Shell and screen utilities
-- **cli/**: Command-line application framework
-- **colours/**: ANSI escape codes and color handling
-- **config/**: Configuration management
-- **types/**: Extended type system (paths, strings, lists, etc.)
-- **unix/**: Unix-specific utilities
 
 ## Development Context
 

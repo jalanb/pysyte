@@ -67,12 +67,11 @@
 ### Dependencies Management
 - Minimize dependency footprint
 - Maintain Python 3.13 compatibility, till 3.14 is out
-- examine the effects of upgrading the code through all the steps pyupgrade allows
-  - and capturing on a single branch
-  - and we re-do that for every version bump
-   - make an "upgrades" branch, go through pyupgrade step-by-step
-   - then merge that back into __main__
-   - this needs more questions
+- **pyupgrade workflow**: Create systematic upgrade process
+  - Make "upgrades" branch for each version bump
+  - Go through pyupgrade step-by-step on that branch
+  - Merge back into __main__ when complete
+  - Repeat for every version bump cycle
 
 ## Release Planning
 
@@ -80,7 +79,9 @@
 **Primary Goal**: Complete `trees/` refactor integration
 - Finalize paths → trees → paths migration
 - Entry point feature completions
- - we must ask questions about `python -m pysyte`
+ - **Entry point strategy review**: Need questions about `python -m pysyte` vs console script aliases
+   - Consider redundancy: could use `alias kat="python -m pysyte kat"` instead of console scripts
+   - Gather questions and solutions before implementation decisions
 - Significant API improvements
  - and this
  - although I think we need to expand doctest coverage of what we have
@@ -91,10 +92,11 @@
 
 ### v1.0 (Major Release)
 **Primary Goal**: Production-ready foundation with DevOps integration
-- Integrate DevOps code donated by WWTS
-- Major cleanup and refactoring
+- **WWTS DevOps integration**: 3-5 DevOps projects + 7-8 app projects (Python, ansible, bash)
+- Major cleanup and refactoring (zero breaking changes acceptable)
 - Comprehensive doctest coverage across all modules
 - API stabilization
+- **Contributors campaign**: Big "contributions welcome" push for v1.0
 - Full production readiness certification
 
 ### Patch Releases (as needed)
@@ -102,6 +104,28 @@
 - Documentation improvements
 - Minor feature enhancements
 
+
+## Strategic Notes
+
+### AI Module Future
+- **ai/ module**: Likely to be consigned to dustbin (not proving useful)
+- No plans for expansion beyond OpenAI integration
+
+### Multi-AI Integration Strategy
+- pysyte will use maco for Hub communication
+- pysyte serves as "extra batteries" library
+- Expected to simplify maco interface for all projects
+- May enhance maco functionality project-wide
+
+### Entry Point Strategy
+- Current 4 entry points likely final set
+- No additional entry points planned post-v1.0
+
+### Process Notes
+- **Trees refactor**: Only blocker is time - needs to get done
+- **prompt.sh cleanup**: Very low priority ("it ain't broke")
+- **Version pattern**: Continue vX.Y.{PR_NUMBER} numbering
+- **Clone sync**: Manual process preferred (pros: as needed, cons: can get out of sync)
 
 ## Development Priorities
 
