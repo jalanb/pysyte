@@ -22,37 +22,26 @@ Hello
 
 import contextlib
 import io
-from sys import stderr as err
-from sys import stdout as out
-from typing import Callable
-from typing import List
-
-from _io import TextIOWrapper as Wrapper
 
 
-def quieten(name: str, streams: List[Wrapper]) -> Callable:
-    @contextlib.contextmanager
-    def method():
-        stdout = io.StringIO()
-        stderr = io.StringIO()
-        if out in streams:
-            if err in streams:
-                with contextlib.redirect_stdout(stdout):
-                    with contextlib.redirect_stderr(stderr):
-                        yield
-            else:
-                with contextlib.redirect_stdout(stdout):
-                    yield
-        elif err in streams:
-            with contextlib.redirect_stderr(stderr):
-                yield
-
-        result = StdStreams(stdout.getvalue(), stderr.getvalue())
-        return result
-
-    return method
+@contextlib.contextmanager
+def quietly():
+    stderr = io.StringIO()
+    with contextlib.redirect_stderr(stderr):
+        yield
 
 
-quietly = quieten("quietly", [err])
-Quietly = quieten("Quietly", [out])
-QUIETLY = quieten("QUIETLY", [out, err])
+@contextlib.contextmanager
+def Quietly():
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        yield
+
+
+@contextlib.contextmanager
+def QUIETLY():
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        with contextlib.redirect_stderr(stderr):
+            yield
