@@ -35,6 +35,7 @@ All tox commands are defined in `[tool.tox]` sections of pyproject.toml - check 
 - **Testing**: Target >90% test coverage, comprehensive doctests for public APIs
 - **Type Hints**: Minimize mypy ignore statements, use proper type annotations
 - **Documentation**: Standardized docstring formats, examples in doctests
+- **API Development**: Write failing doctests first for API improvements (established practice, needs more adoption)
 
 ### Testing Strategy
 
@@ -42,6 +43,11 @@ All tox commands are defined in `[tool.tox]` sections of pyproject.toml - check 
 - **`tox -e tests`**: Comprehensive coverage for CI/CD (full test suite)
 - **Doctests**: Embedded in `.test` and `.tests` files throughout codebase
 - **Coverage**: Branch coverage tracking with parallel execution support
+
+### Testing Context
+- Uses pytest with doctests embedded in `.test` and `.tests` files
+- Branch coverage tracking with parallel execution support
+- Two main testing modes: fast development feedback vs comprehensive CI/CD
 
 
 ## Testing Files
@@ -52,6 +58,8 @@ All tox commands are defined in `[tool.tox]` sections of pyproject.toml - check 
  - `**/*.test`: doctests with a story to tell
  - `**/*.tests`: doctests that got long and boring
  - `test_*.py`: traditional unit tests
+- Coverage reporting with branch coverage
+- Supports parallel test execution
 
 ## Code Quality
 
@@ -77,11 +85,29 @@ This clone is part of a multi-clone development strategy:
 
 ## Project Structure
 
+### Core Dependencies
+- bidict, boltons, deprecated, inflect>=2.1.0
+- path.py==7.7.1, pym, pyyaml, rich
+- stackprinter, textual, yamlreader
+
+### Main Modules
+- **ai/**: AI and language model integration
+- **bash/**: Shell and screen utilities
+- **cli/**: Command-line application framework
+- **colours/**: ANSI escape codes and color handling
+- **config/**: Configuration management
+- **devops/**: Development operations utilities
+- **types/**: Extended type system (paths, strings, lists, etc.)
+- **unix/**: Unix-specific utilities
+
 ### Entry Points (Console Scripts)
-- `kat`: File and directory catalog management
-- `keys`: Keyboard and key handling utilities
-- `imports`: Python import analysis and management
-- `short_dir`: Directory path abbreviation
+
+Although primarily designed to be used like `from pysyte import`, we did add some scripts over the years:
+
+- `kat`: an enhanced `cat`
+- `keys`: frontend for `pysyte.oss.getch`
+- `imports`: used by a script that show unused and duplicate imports
+- `short_dir`: Shortens a directory path for my prompt
 
 ### Core Modules
 - **ai/**: AI and language model integration
