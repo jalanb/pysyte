@@ -32,20 +32,19 @@ class Pathed(Protocol):
 
 @singledispatch
 def makepath(arg) -> strings.StringPath:
-    attribute = getattr(arg, "path", "")
-    return makepath(attribute)
-    if attribute:
-        return attribute
-    raise NotImplementedError(f"Cannot find a path in `{arg!r}`")
-
-
-path = makepath
+    raise TypeError(f"Refuse the temptation to guess the type of {arg!r}")
+    return makepath(arg.path)
 
 
 @makepath.register(type(None))
 def _mp(arg) -> strings.StringPath:
     """In the face of ambiguity, refuse the temptation to guess."""
     raise NotImplementedError(f"Zilch: {arg!r}")
+
+
+@makepath.register(Pathed)
+def makepath(arg) -> strings.StringPath:
+    return makepath(arg.path)
 
 
 @makepath.register(str)

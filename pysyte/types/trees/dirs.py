@@ -26,7 +26,7 @@ class DirectPath(paths.Path, PathAssertions):
             yield a_path
 
     def __add__(self, other: strings.StringPath) -> strings.StringPath:
-        return paths.makepath(f"{self}/{other}")
+        return makes.makepath(f"{self}/{other}")
 
     def contains(self, other: strings.StrPath) -> bool:
         """If other is a path then use that sense of "in"
