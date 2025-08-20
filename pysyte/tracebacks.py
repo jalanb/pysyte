@@ -3,31 +3,28 @@
 import re
 
 
-def _line_regexp():
-    """Regular expression to match a traceback file line"""
-    return re.compile(
-        r"""\s*
-        File\s
-        (
-            (
-                ["']
-                (?P<path_to_python>[^"']+)
-                ["']
-            ) | (
-                (?P<spaceless_path_to_python>[^ ]+)
-            )
-        )
-        ,\sline\s
-        (?P<line_number>[0-9]+)
-        ,.in..*
-    """,
-        re.VERBOSE,
-    )
-
-
 def parse_line(string):
     """Parse a single string as traceback line"""
-    match = _line_regexp().match(string)
+
+    line_regexp = re.compile(
+        r"""\s*
+            File\s
+            (
+                (
+                    ["']
+                    (?P<path_to_python>[^"']+)
+                    ["']
+                ) | (
+                    (?P<spaceless_path_to_python>[^ ]+)
+                )
+            )
+            ,\sline\s
+            (?P<line_number>[0-9]+)
+            ,.in..*
+        """,
+        re.VERBOSE,
+    )
+    match = line_regexp.match(string)
     if match:
         matches = match.groupdict()
         line_number = int(matches["line_number"])
