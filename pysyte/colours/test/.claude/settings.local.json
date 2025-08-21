@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/opt/clones/github/jalanb/pysyse/__dev__"
+    ]
+  }
+}
