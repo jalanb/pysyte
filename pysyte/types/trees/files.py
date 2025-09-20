@@ -24,7 +24,7 @@ class FilePath(paths.Path, PathAssertions):
     def __add__(self, other: strings.StrPath) -> strings.StringPath:
         return self.addext(other)
 
-    def contains(self, other: strings.StrPath) -> bool:
+    def contains(self, other: str) -> bool:
         """Whether other is in this file's text"""
         return str(other) in self.text()
 

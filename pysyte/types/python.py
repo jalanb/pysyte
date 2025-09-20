@@ -26,7 +26,6 @@ import io
 from sys import stderr as err
 from sys import stdout as out
 from typing import Callable
-from typing import List
 
 from _io import TextIOWrapper as Wrapper
 
@@ -37,7 +36,7 @@ class StdStreams:
     stderr: str = ""
 
 
-def quieten(name: str, streams: List[Wrapper]) -> Callable:
+def quieten(name: str, streams: list[Wrapper]) -> Callable:
     @contextlib.contextmanager
     def method():
         stdout = io.StringIO()
