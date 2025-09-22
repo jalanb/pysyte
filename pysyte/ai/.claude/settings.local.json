@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//opt/clones/github/jalanb/pysyse/__dev__/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
