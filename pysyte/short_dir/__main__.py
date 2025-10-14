@@ -3,6 +3,7 @@
 
 import os
 import sys
+from dataclasses import dataclass
 
 from pysyte import __version__
 from pysyte.cli import main
