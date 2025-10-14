@@ -2,10 +2,10 @@
 
 from typing import Sequence, TypeVar
 
-T = TypeVar("T")  # Declare Type variable
+T = TypeVar("T")
 
 
-def first(sequence: Sequence[T], message=None) -> T:  # Generic function
+def first(sequence: Sequence[T], message:str = "") -> T:  # Generic function
     """The first item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -15,20 +15,20 @@ def first(sequence: Sequence[T], message=None) -> T:  # Generic function
     try:
         return next(iter(sequence))
     except StopIteration:
-        raise ValueError(message or (f"Sequence is empty: {sequence}"))
+        raise ValueError(message or f"{sequence!r} is empty")
 
 
-def last(sequence: Sequence[T], message=None) -> T:
+def last(sequence: Sequence[T], message:str = "") -> T:
     """The last item in that sequence
 
     If there aren't any, raise a ValueError with that message
 
-    >>> assert last([1, 2, 3]) == 3
+    >>> assert last("fred") == "d"
     """
     return first(list(reversed(sequence)), message)
 
 
-def first_or(sequence: Sequence[T], value) -> T:
+def first_or(sequence: Sequence[T], value: T) -> T:
     """First item in that sequence, or that value
 
     >>> assert first_or([1, 2, 3], 4) == 1
@@ -45,10 +45,11 @@ def first_that(predicate, sequence: Sequence[T], message=None) -> T:
 
     If none matches raise a KeyError with that message
 
-    >>> assert first_that(lambda x: x > 1, [1, 2, 3]) == 2
+    >>> too = lambda x: x > 1
+    >>> assert first_that(too, [1, 2, 3]) == 2
     """
     try:
-        return first([_ for _ in sequence if predicate(_)])
+        return first((_ for _ in sequence if predicate(_)))
     except (ValueError, StopIteration):
         raise KeyError(f":-(\n{message}\n{e}" if message else f":-(\n{e}")
 
@@ -56,8 +57,8 @@ def first_that(predicate, sequence: Sequence[T], message=None) -> T:
 def take_until(predicate, iterable):
     """All items in iterable (inclusive) until predicate is truish
 
-    >>> list(take_until(lambda x: x == 6, [1, 4, 6, 4, 1])) == [1, 4, 6]
-    True
+    >>> sixy = lambda x: x == 6
+    >>> assert list(take_until(sixy, [1, 4, 6, 4, 1])) == [1, 4, 6]
     """
     for item in iterable:
         yield item
@@ -68,13 +69,16 @@ def take_until(predicate, iterable):
 def drop_from_end(predicate, iterable):
     """Drop items from end as long as predicate is True
 
-    >>> drop_from_end(lambda x: not x, [0, 1, 2, 3, None, 3, 0, None])
-    [0, 1, 2, 3, None, 3]
+    >>> too = lambda x: x >= 2
+    >>> assert drop_from_end(too, [0, 1, 2, 3, 4, 5]) == [0, 1, ]
     """
     type_ = type(iterable)
     return type_(reversed(type_(dropwhile(lambda x: predicate(x), reversed(iterable)))))
 
 
 def drop_falsies_from_end(iterable):
+    """
+    >>> assert drop_falsies_from_end([0, 1, 2, 0, None]) == [0, 1, 2]
+    """
     return drop_from_end(lambda x: not x, iterable)
 
