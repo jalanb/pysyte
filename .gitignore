@@ -88,12 +88,37 @@ docs/_build/
 .svn
 .DS_Store
 
-# Editors
-.*.swp
-*~
+# Editor files
+mps
+.idea
+.*.sw[po]
 
-# PyBuilder
-target/
+# Backups
+*~
+*.bak
+*.history
+history.*
+
+# Temporary files
+fred
+fred.*
+*.tmp
+*.new
+src/python/tmp*-vim.sh
+src/bash/fd
+etc/config/pudb/pudb.cfg
+etc/history
+bin/venv_bin
+vim/bundle.remote
+vim/plugged
+src/bash/keyboard/__init__.sh
+src/bash/crayons.sh.sh
+local
+# Derived development files
+tags
+*.fail
+*.pyc
+.noseids
 
 # Jupyter Notebook
 .ipynb_checkpoints
