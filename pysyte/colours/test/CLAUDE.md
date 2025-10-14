@@ -1,109 +1,79 @@
-# CLAUDE.md
+# pysyte.colours.test
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This directory contains the test suite for the `pysyte.colours` module, following pysyte's hybrid testing architecture.
 
-## Project Overview
+## Test Structure
 
-**pysyte** is a foundational Python library that "adds batteries to Python, bash, and other languages near them". This is the `__dev__` clone, which is the primary development branch for active work.
+The test directory uses pysyte's three-tier testing approach:
 
-- **License**: MIT License
-- **Python Requirements**: 3.13+
-- **Version**: 0.8.79 (see fred.toml)
+### Doctest Files (`.test`)
+Narrative-driven tests that serve as both documentation and validation:
+- **`ansi_escapes.test`**: Tests ANSI escape sequence generation and text coloring
+- **`colour_names.test`**: Tests color name definitions and groupings
+- **`colour_numbers.test`**: Tests color format conversions (HTML hex, ANSI codes, RGB)
+- **`texts.test`**: Tests high-level text coloring API and `ColouredTail` fluent interface
+- **`x11_colour_names.test`**: Tests X11 color name parsing from system files
 
-## Development Commands
+### Extended Doctests (`.tests`)
+More comprehensive doctest files for edge cases:
+- **`colour_numbers.tests`**: Extended testing of color conversion edge cases and boundary conditions
 
-All development is managed through tox commands defined in `fred.toml`:
+### Pytest Unit Tests (`test_*.py`)
+Traditional unit tests for comprehensive coverage:
+- **`test_ansi_escapes.py`**: Unit tests for ANSI escape functions, emphasis, foreground/background colors
+
+## Running Tests
+
+From the project root (`/opt/clones/github/jalanb/pysyse/__dev__/`):
 
 ```bash
-# Code formatting and style
-tox -e formats    # Reformat code with black (-S for single quotes) and isort
-tox -e lints      # Run all linters: black, blackdoc, isort, flake8, mypy
+# Run all colours tests
+py.test pysyte/colours/test/
 
-# Testing
-tox -e devs       # Fast development tests (--exitfirst, skip slow tests)
-tox -e tests      # Full test suite with coverage reporting
-tox -e pudb       # Run tests with pudb debugger
+# Run specific test file
+py.test pysyte/colours/test/test_ansi_escapes.py
 
-# Version management
-tox -e patch      # Bump patch version using bumpver
-tox -e minor      # Bump minor version
-tox -e major      # Bump major version
+# Run with tox (includes doctests)
+tox -e devs    # Fast development tests
+tox -e tests   # Full test suite with coverage
 ```
 
-## Testing Architecture
+## Test Coverage Areas
 
-The project uses a unique testing approach with multiple file patterns:
-- `**/*.py`: Doctests in docstrings for usage examples
-- `**/*.test`: Doctest files with narrative/story structure  
-- `**/*.tests`: Longer doctest files for comprehensive testing
-- `test_*.py`: Traditional pytest unit tests
+### ANSI Escape Sequences
+- Basic color codes (foreground/background)
+- Text emphasis (bold, italic)
+- 256-color support
+- Bash prompt escape sequences
 
-All tests run through pytest with doctest integration. Current count: 554 `.test`/.tests` files across the project.
+### Color Conversions
+- HTML hex to ANSI code mapping
+- RGB to ANSI conversions
+- CGA color set validation
+- Edge cases and boundary conditions
 
-## Code Quality Standards
+### High-Level Text API
+- `ColouredTail` fluent interface chaining
+- Color name method generation
+- Text concatenation and formatting
+- Integration with terminal output
 
-- **Formatting**: Black with single quotes (`-S` flag), 88 character line length
-- **Import sorting**: isort with black profile
-- **Linting**: flake8 with bugbear, comprehensions, eradicate plugins
-- **Type checking**: mypy with strict optional checking
-- **Coverage**: Branch coverage with parallel execution support
+### X11 Color Integration
+- System `rgb.txt` file parsing
+- Fallback to basic 8 colors
+- Color name resolution
 
-## Project Architecture
+## Integration Context
 
-### Core Module Structure
-- **ai/**: AI and language model integration (may be deprecated)
-- **bash/**: Shell utilities and screen management
-- **cli/**: Command-line application framework  
-- **colours/**: ANSI escape codes and color handling
-- **config/**: Configuration management with XDG support
-- **devops/**: Development operations utilities
-- **types/**: Extended type system (paths, strings, lists, etc.)
-  - **types/paths.py**: Core path handling (being refactored to trees/)
-  - **types/trees/**: New path system under development
-- **unix/**: Unix-specific utilities
+These tests validate the colours module's integration with:
+- Terminal output systems
+- Command-line applications using pysyte.cli
+- Bash prompt generation
+- Screen management functionality
 
-### Entry Points (Console Scripts)
-- `kat`: Enhanced `cat` command
-- `keys`: Frontend for `pysyte.oss.getch`
-- `imports`: Import analysis and management
-- `short_dir`: Directory path shortening for prompts
+## Development Notes
 
-## Development Context
-
-### Multi-Clone Strategy
-This is part of a coordinated multi-clone development approach:
-- **`__dev__`**: Active development (this clone)
-- **`__main__`**: Stable main branch with version bumps after PR merges
-- **`__pypi__`**: PyPI publishing branch
-- **`trees/`**: Major refactor branch (paths → trees → paths)
-
-### Version Strategy
-- Pattern: `vX.Y.{PR_NUMBER}` 
-- Patch bumps happen in `__main__` after each PR merge
-- Major/minor bumps handled manually in `__pypi__` clone
-
-### Current Development Focus
-- **Primary blocker**: Complete `trees/` refactor for v0.9 release
-- **Target**: Stabilize trees integration and path system migration
-- **Next major**: v1.0 with DevOps code integration and comprehensive doctest coverage
-
-## Testing Notes
-
-- Coverage targeting >90% with branch coverage
-- Parallel test execution supported
-- Fast feedback loop with `tox -e devs` for development
-- Comprehensive CI/CD testing with `tox -e tests`
-- Doctest-driven API development recommended
-
-## Dependencies
-
-Core runtime dependencies include bidict, boltons, deprecated, inflect, path.py==7.7.1, pym, pyyaml, rich, stackprinter, textual, yamlreader.
-
-## Integration Workflow
-
-Development follows the pattern:
-```
-__dev__ → PR → __main__ → pull/rebase → other clones
-```
-
-All development happens in `__dev__` or feature branches, merges to `__main__` via PRs, and other clones sync from `__main__`.
+- Doctest files use narrative structure to demonstrate API usage
+- Unit tests focus on edge cases and error conditions
+- Color output is tested via ANSI escape sequence validation
+- Tests account for different terminal capabilities and system configurations
