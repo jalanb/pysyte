@@ -1,27 +1,19 @@
 #! /usr/bin/env python3
-"""Script to get a key from the keyboard"""
-
-from __future__ import print_function
+"""Script to show a key from the keyboard"""
 
 from pysyte.cli.main import run
 from pysyte.oss import getch
 
-__version__ = "0.1.1"
-
-
-class ScriptError(NotImplementedError):
-    pass
-
 
 def add_args(parser):
-    parser.boolean("", "codes", help="Show raw codes")
+    parser.boolean("-c", "--codes", help="Show raw codes")
     parser.boolean(
-        "",
-        "prompt",
+        "-p",
+        "--prompt",
         default="",
         help="Prompt to show before getting keys " "(default: none)",
     )
-    parser.boolean("", "string", help="Show string")
+    parser.boolean("-s", "--string", help="Show string")
     return parser
 
 
