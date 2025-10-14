@@ -109,3 +109,6 @@ def run(
     if caller.method.in_main_module:
         handler = arguments.ArgumentHandler()
         app.exit(lambda: handler.run(caller))
+
+
+main = run

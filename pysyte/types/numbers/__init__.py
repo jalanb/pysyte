@@ -2,36 +2,25 @@
 
 >>> from pysyte.types import numbers
 
-integers and strings work like int() for both
->>> assert numbers.as_int(5) == 5 == numbers.as_int(" 5  ")
+Provides `inty()`
 >>> assert numbers.inty(5) == 5 == numbers.inty("5   ")
 
-inty() does extra computation is done for things with a length
+And `as_int()`
+>>> assert numbers.as_int(5) == 5 == numbers.as_int(" 5  ")
 
->>> assert numbers.inty("lll") == 3
->>> assert (
-...     numbers.inty(
-...         [
-...             3,
-...         ]
-...     )
-...     == 1
-... )
+inty() does extra computation for types with a length
+
+>>> assert numbers.inty("lllll") == 5
+>>> assert numbers.inty([7, 4, 3,]) == 3
 
 as_int() does not
 >>> try:
-...     numbers.as_int("lll")
-...     assert False
+...     asset numbers.as_int("lll") == 42
 ... except numbers.NAN:
 ...     pass
 ...
 >>> try:
-...     numbers.as_int(
-...         [
-...             3,
-...         ]
-...     )
-...     assert False
+...     assert numbers.as_int([3, 4, 7]) == 42
 ... except numbers.NAN:
 ...     pass
 ...
