@@ -248,52 +248,68 @@ class NoPath(StringPath):
         from pysyte.types.trees.files import FilePath
         self.fake_path = FilePath(self.string) or DirectPath(self.string)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """>>> assert NoPath('not a path') == 'not a path'"""
         return self.string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """>>> assert repr(NoPath("not a path")) == "<NoPath 'not a path'>"""
         string = self.string
         if self.fake_path:
             string = str(self.fake_path)
         return f'<{self.__class__.__name__} "{string}">'
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
+        """>>> assert not NoPath('not a path')"""
         return False
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
+        """
+        >>> assert NoPath('') == NoPath() == NoPath(None)
+        >>> assert NoPath('not a path') == 'not a path'
+        """
         if self.string:
             return str(self) == str(other)
         return not other
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         if self.string and other:
             return str(self) < str(other)
         return bool(other)
 
-    def __truediv__(self, child):
+    def __truediv__(self, child: str) -> StringPath:
+        """
+        >>> bin = NoPath("/") / "bin"
+        >>> assert bin and bin.isdir()
+        >>> bin = NoPath("not a path") / "bin"
+        >>> assert not bin and not bin.isdir()
+        """
         result = os.path.join(self.string, child) if child else self.string
         from pysyte.types.trees.makes import makepath
         return makepath(result)
 
     def contains(self, other: StrPath) -> bool:
-        """As this is not a real path, just use the substring sense"""
+        """As this is not a real path, just use the substring sense
+
+        >>> assert NoPath("not a path").contains(" a ")
+        """
         return str(other) in str(self)
 
     @property
-    def parent(self):
+    def parent(self) -> StringPath:
         if "/" not in self.string:
-            return ""
+            return self
         parent_string = "/".join(self.string.split("/")[:-1])
         from pysyte.types.trees.makes import makepath
         return makepath(parent_string)
 
-    def exists(self):
+    def exists(self) -> bool:
         return False
 
     isdir = isfile = isexec = isroot = exists
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         return getattr(self.fake_path, name, None)
 
-    def makedirs(self):
+    def makedirs(self) -> None:
         os.makedirs(str(self))
