@@ -64,34 +64,30 @@ def ____mp(arg) -> StringPath:
     return NoPath(arg)
 
 
-def imports():
-    """The modules that we can make paths from"""
-    return {sys, os, re, stat}
-
-
 @makepath.register(type(os))
 def _____mp(arg) -> StringPath:
-    """Make a path from a module"""
-    if arg.__name__ == "builtins":
-        return NoPath("builtins")
-    try:
+    """Make a path from a module
+
+    >>> import os, sys
+    >>> assert makepath(os)
+    >>> assert not makepath(sys)
+    """
+    if arg.__name__ in sys.builtin_module_names:
+        return NoPath(arg.__name__)
+    if hasattr(arg, "__file__"):
         return makepath(arg.__file__)
-    except AttributeError:
-        if arg not in imports() and arg not in sys.path:
-            raise MissingImport(arg)
-        python_ = makepath(sys.executable)
-        assert str(python_.parent.name) == "bin"
-        bin_ = python_.parent
-        root_ = bin_.parent
-        lib = root_ / "lib"
-        assert lib.isdir()
-        module = lib / f"{arg}.py"
-        if module.isfile():
-            return module
-        package = lib / arg
-        if package.isdir():
-            return package
-        raise ModuleNotFoundError(arg)
+    if hasattr(arg, '__path__'):
+        p, * = arg.__path__
+        return makepath(p)
+    if hasattr(arg, '__spec__') and arg.__spec__:
+        if arg.__spec__.origin:
+            return makepath(arg.__spec__.origin)
+        if arg.__spec__.submodule_search_locations:
+            l, * = arg.__spec__.submodule_search_locations
+            return makepath(l)
+    if arg.__name__ not in sys.modules:
+        raise MissingImport(arg)
+    return NoPath(arg.__name__)
 
 
 def _make_module_path(arg):
