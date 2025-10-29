@@ -314,8 +314,8 @@ class NonePath(StringPath):
     def __getattr__(self, name):
         return getattr(self.proxy, name, None)
 
-    def makedirs(self):
-        os.makedirs(str(self))
+    def makedirs(self, mode=511, exist_ok=False):
+        os.makedirs(str(self), mode, exist_ok)
 
 
 class DotPath(StringPath):
@@ -533,7 +533,7 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
-    def contains(self, other: StrPath) -> bool:
+    def contains(self, other: str) -> bool:
         """Whether other is in this file's text"""
         return str(other) in self.text()
 
@@ -739,7 +739,6 @@ class DirectPath(DotPath, PathAssertions):
     def isroot(self):
         return str(self) == "/"
 
-
 @dataclass
 class FileTypeData:
     type_: type
@@ -869,26 +868,22 @@ def imports():
 @makepath.register(type(os))
 def _____mp(arg) -> StringPath:
     """Make a path from a module"""
-    if arg.__name__ == "builtins":
-        return NonePath("builtins")
-    try:
+    if arg.__name__ in sys.builtin_module_names:
+        return NonePath(arg.__name__)
+    if hasattr(arg, "__file__"):
         return makepath(arg.__file__)
-    except AttributeError:
-        if arg not in imports() and arg not in sys.path:
-            raise MissingImport(arg)
-        python_ = makepath(sys.executable)
-        assert str(python_.parent.name) == "bin"
-        bin_ = python_.parent
-        root_ = bin_.parent
-        lib = root_ / "lib"
-        assert lib.isdir()
-        module = lib / f"{arg}.py"
-        if module.isfile():
-            return module
-        package = lib / arg
-        if package.isdir():
-            return package
-        raise ModuleNotFoundError(arg)
+    if hasattr(arg, '__path__'):
+        p, *_ = arg.__path__
+        return makepath(p)
+    if hasattr(arg, '__spec__') and arg.__spec__:
+        if arg.__spec__.origin:
+            return makepath(arg.__spec__.origin)
+        if arg.__spec__.submodule_search_locations:
+            l, *_ = arg.__spec__.submodule_search_locations
+            return makepath(l)
+    if arg.__name__ not in sys.modules:
+        raise MissingImport(arg)
+    return NonePath(arg.__name__)
 
 
 @makepath.register(type(makepath))
