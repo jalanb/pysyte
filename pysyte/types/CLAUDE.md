@@ -17,7 +17,6 @@ The `pysyte.types` package provides foundational type system extensions that "ad
 - **`lines.py`** - Text line processing utilities
 
 ### Type Conversion & Validation
-- **`strings.py`** - String handling utilities including `AsString` context manager for safe string conversion
 - **`methods.py`** - Method handling and introspection utilities
 - **`proxies.py`** - Proxy object implementations
 
