@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 """Script to get a key from the keyboard"""
 
-from __future__ import print_function
-
 from pysyte.cli import arguments
 from pysyte.cli.main import run
 from pysyte.oss import getch
