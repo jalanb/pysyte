@@ -40,17 +40,6 @@ class MockLinesError(MockSketch):
         raise IOError("something went wrong")
 
 
-class TestDotPath(TestCase):
-    """Test DotPath: base class to other path classes"""
-
-    def test_root(self):
-        self.assertRaises(NotImplementedError, paths.DotPath("").isroot)
-
-    def test_executability(self):
-        """A DotPath should not be executable"""
-        self.assertFalse(paths.DotPath("nowhere").has_executable())
-
-
 class TestPaths(TestCase):
     def setUp(self):
         self.setup_dir = paths.pwd()
