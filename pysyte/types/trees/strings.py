@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Any
-from typing import Sequence
-from typing import Union
-from typing import TYPE_CHECKING
+from typing import (
+    Any,
+    Callable
+    Iterable,
+    Sequence,
+    Union,
+    TYPE_CHECKING,
+)
 
 from deprecated import deprecated
+
 from path import Path as JasonOrrendorfPath
 
 StrPath = Union["StringPath", str]  # many args can be either string or path
@@ -313,3 +318,31 @@ class NoPath(StringPath):
 
     def makedirs(self) -> None:
         os.makedirs(str(self))
+
+
+def string_to_paths(string: str) -> list[StringPath]:
+    """Convert a string into a list of paths
+
+    >>> assert string_to_paths("/bin:/usr/bin") == [StringPath("/bin"), StringPath("/usr/bin")]
+    """
+    for c in ":,;":
+        if c in string:
+            return strings_to_paths(string.split(c))
+    return [path(string)]
+
+
+def _choose_paths(*strings, chooser: Callable) -> list[StringPath]:
+    paths_ = [path(s) for s in strings]
+    return [_ for _ in paths_ if chooser(_)]
+
+
+def paths(*strings: Iterable) -> list[StringPath]:
+    return _choose_paths(*strings, chooser=os.path.exists)
+
+
+def directories(*strings: Iterable) -> list[StringPath]:
+    return _choose_paths(*strings, chooser=os.path.isdir)
+
+
+def files(*strings: Iterable) -> list[StringPath]:
+    return _choose_paths(*strings, chooser=os.path.isfile)

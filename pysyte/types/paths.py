@@ -6,145 +6,14 @@ The classes all inherit from the original path.path
 from __future__ import annotations
 
 import os
-import re
-import stat
-import sys
 from fnmatch import fnmatch
-from typing import Iterable
-from typing import List
-
-from deprecated import deprecated
 
 from pysyte.types.lists import flatten
-from pysyte.types.trees.dirs import DirectPath
 from pysyte.types.trees.makes import path
-from pysyte.types.trees.paths import Path as PathPath
-from pysyte.types.trees.strings import NoPath
 from pysyte.types.trees.strings import StringPath
 
 
-def imports():
-    return {sys, os, re, stat}
-
-
-@deprecated(reason="use pathstr()", version="0.7.57")
-def makestr(string: str) -> StringPath:
-    return pathstr(string)
-
-
-def pathstr(string: str) -> StringPath:
-    """Make a path from a string"""
-    if os.path.isfile(string) or os.path.isdir(string):
-        return path(string)
-    return NoPath(string)
-
-
-def as_path(string_or_path):
-    """Return the argument as a DirectPath
-
-    If it is already one, return it unchanged
-    If not, return the path()
-    """
-    if isinstance(string_or_path, DirectPath):
-        return string_or_path
-    return path(string_or_path)
-
-
-def string_to_paths(string: str) -> List[StringPath]:
-    for c in ":, ;":
-        if c in string:
-            return strings_to_paths(string.split(c))
-    return [path(string)]
-
-
-def strings_to_paths(strings: List[str]) -> List[StringPath]:
-    return [path(s) for s in strings]
-
-
-def choose_paths(*strings, chooser) -> List[StringPath]:
-    return [_ for _ in strings_to_paths(strings) if chooser(_)]
-
-
-def paths(*strings: Iterable) -> List[StringPath]:
-    return choose_paths(*strings, chooser=lambda p: p.exists())
-
-
-def directories(*strings: Iterable) -> List[StringPath]:
-    return choose_paths(*strings, chooser=lambda p: p.isdir())
-
-
-def files(*strings: Iterable) -> List[StringPath]:
-    return choose_paths(*strings, chooser=lambda p: p.isfile())
-
-
-def root():
-    return path("/")
-
-
-def tmp():
-    return path("/tmp")
-
-
-def home():
-    _home = path(os.path.expanduser("~"))
-    assert _home
-    _ = _home.expand()
-    return _home
-
-
-def pwd():
-    return path(os.getcwd())
-
-
-def first_dir(path_string: str):
-    """Get the first directory in that path
-
-    >>> first_dir("usr/local/bin") == "usr"
-    True
-    """
-    parts = path_string.split(os.path.sep)
-    return parts[0]
-
-
-def first_dirs(path_strings):
-    """Get the roots of those paths
-
-    >>> first_dirs(["usr/bin", "bin"]) == ["usr", "bin"]
-    True
-    """
-    return [first_dir(_) for _ in path_strings]
-
-
-def unique_first_dirs(path_strings):
-    """Get the unique roots of those paths
-
-    >>> unique_first_dirs(["usr/local/bin", "bin"]) == set(["usr", "bin"])
-    True
-    """
-    return set(first_dirs(path_strings))
-
-
-def paths_in_directory(path_: StringPath) -> List[PathPath]:
-    """Get all items in the given directory
-
-    Swallow errors to give an empty list
-    """
-    try:
-        return [_ for _ in path_.listdir() if _]
-    except OSError:
-        return []
-
-
-def list_matcher(pattern, path_to_directory, wanted):
-    """Gives a method to check if an item matches the pattern, and is wanted
-
-    If path_to_directory is given then items are checked there
-    By default, every item is wanted
-    """
-    return lambda x: fnmatch(x, pattern) and wanted(os.path.join(path_to_directory, x))
-
-
-def list_items(path_to_directory, glob, wanted=lambda x: True) -> List[StringPath]:
+def list_items(path_to_directory, glob, wanted=lambda x: True) -> list[StringPath]:
     """All items in the given path which match the given glob and are wanted
 
     By default, every path is wanted
@@ -166,15 +35,6 @@ def list_sub_directories(path_to_directory, glob):
     return list_items(path_to_directory, glob, os.path.isdir)
 
 
-def set_items(path_to_directory, glob, wanted):
-    return set(list_items(path_to_directory, glob, wanted))
-
-
-def set_files(path_to_directory, glob):
-    """A list of all files in the given directory matching the given glob"""
-    return set_items(path_to_directory, glob, os.path.isfile)
-
-
 def contains_glob(path_to_directory, glob, wanted=lambda x: True):
     """Whether the given path contains an item matching the given glob"""
     return any(list_items(path_to_directory, glob, wanted))
@@ -190,9 +50,8 @@ def contains_file(path_to_directory, glob):
     return contains_glob(path_to_directory, glob, os.path.isfile)
 
 
-def environ_paths(key, default=None):
-    default_ = default or ""
-    return [path(_) for _ in os.environ.get(key, default_).split(":")]
+def environ_paths(key, default=""):
+    return [path(_) for _ in os.environ.get(key, default).split(":")]
 
 
 def environ_path(key, default=None):

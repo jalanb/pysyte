@@ -132,11 +132,6 @@ and other things that have paths
     >>> fred = Fred()
     >>> assert paths.path(fred) is fred.path
 
-There is specialised version for strings
-    >>> assert not paths.pathstr('')
-    >>> assert paths.pathstr(paths.__file__).isfile()
-    >>> assert not paths.pathstr('/path/to/nowehere').isfile()
-
 Path expansion at creation
 --------------------------
 
@@ -268,8 +263,6 @@ Sets of paths
 
     >>> assert '/usr/lib' in paths.list_sub_directories('/usr', 'l*')
     >>> assert '/usr/lib' not in paths.list_sub_directories('/usr', 'a*')
-    >>> assert '/bin/ls' in paths.set_files('/bin', 'l*')
-    >>> assert '/bin/ls' not in paths.set_files('/bin', 'a*')
 
 Search directories
 ----------------

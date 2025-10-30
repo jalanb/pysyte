@@ -162,9 +162,9 @@ def cd(path_to: strings.StringPath) -> bool:
         previous = getattr(cd, "previous", "")
         if not previous:
             raise errors.PathError("No previous directory to return to")
-        return cd(paths.path(previous))
+        return cd(makes.path(previous))
     if not hasattr(path_to, "cd"):
-        path_to = paths.path(path_to)
+        path_to = makes.path(path_to)
     try:
         previous = os.getcwd()
     except OSError as e:
@@ -188,3 +188,22 @@ try:
     setattr(cd, "previous", os.getcwd())  # noqa
 except (OSError, AttributeError):
     setattr(cd, "previous", "")  # noqa
+
+
+def root():
+    return makes.path("/")
+
+
+def tmp():
+    return makes.path("/tmp")
+
+
+def home():
+    _home = makes.path(os.path.expanduser("~"))
+    assert _home
+    _ = _home.expand()
+    return _home
+
+
+def pwd():
+    return makes.path(os.getcwd())
