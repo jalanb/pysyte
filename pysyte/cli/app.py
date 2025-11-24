@@ -1,8 +1,8 @@
 """Provide a runnable app to pysyte"""
 
-import sys
 from bdb import BdbQuit
 from contextlib import ContextDecorator
+import sys
 
 from pysyte.cli import exits
 from pysyte.cli.exceptions import rich_exceptions

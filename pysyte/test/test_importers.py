@@ -7,9 +7,9 @@ Find *.py under the package
 # "noqa": This imports a lot of unused modules just for testing with
 
 
+from collections import defaultdict  # noqa: F401
 import os  # noqa: F401
 import unittest
-from collections import defaultdict  # noqa: F401
 
 from pysyte import importers
 
@@ -31,9 +31,9 @@ class TestDashboardImports(unittest.TestCase):
             Hence we need many "noqa" qualifiers
         """
         import os  # noqa: F401, F811
-        import sys as system  # noqa: F811, F401, E401
-        from os import kill as killer  # noqa: F401
+        from os import kill as killer
         from os import path  # noqa: F401
+        import sys as system  # noqa: F811, F401, E401
 
         self.assertEqual(len(self.visitor.imports), 7)
         self.assertEqual(len(self.visitor.froms), 3)

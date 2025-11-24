@@ -12,8 +12,13 @@ This clone contains a major refactor of `pysyte.types.paths` as `pysyte.types.tr
 
 ### Development Commands
 
+We have a venv set up in project root:
 ```bash
-# Development commands (run from project root)
+source .venv/bin/activate
+```
+
+Development commands (run from project root):
+```bash
 tox -e formats    # Reformat code with black and isort
 tox -e lints      # Lint code with black, isort, flake8, mypy
 tox -e devs       # Run developer tests, stopping on first failure

@@ -3,21 +3,21 @@
 >>> zero = otml(0)
 >>> one = otml(1)
 >>> two = otml(2)
->>> many = otml(random.randint(3,9))
->>> lots = otml(random.randint(10,9_999_999_999))
+>>> many = otml(random.randint(3, 9))
+>>> lots = otml(random.randint(10, 9_999_999_999))
 
 >>> assert not zero
 >>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))
 """
 
 from dataclasses import dataclass
-from dataclasses import field
-from typing import Any
+from functools import total_ordering
 
 
 @dataclass
 class OTMLData:
-    i : int = 0
+    i: int = 0
+
 
 @total_ordering
 class OTML(OTMLData):
@@ -37,7 +37,7 @@ class OTML(OTMLData):
         rules = {
             "one": self.i == 1,
             "two": self.i == 2,
-            "many":  2 < self.i <= 9,
+            "many": 2 < self.i <= 9,
             "lots": self.i > 9,
         }
         [setattr(f'is_{k}', v) for k, v in rules.items()]

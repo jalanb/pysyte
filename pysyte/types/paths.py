@@ -5,10 +5,11 @@ The classes all inherit from the original path.path
 
 from __future__ import annotations
 
-import os
 from fnmatch import fnmatch
+import os
 
 from pysyte.types.lists import flatten
+from pysyte.types.trees.dirs import pwd
 from pysyte.types.trees.makes import path
 from pysyte.types.trees.strings import StringPath
 
@@ -80,7 +81,7 @@ def add_stars(strings):
     return [add_star(p) for p in paths_]
 
 
-def tab_complete(strings, globber=add_stars, select=os.path.exists):
+def tab_complete(strings, globber=add_stars):
     """Finish path names "left short" by bash's tab-completion
 
     strings is a string or strings
@@ -90,9 +91,6 @@ def tab_complete(strings, globber=add_stars, select=os.path.exists):
         default: add_stars(['fred.']) == ['fred.*']
             or, e.g: add_python(['fred', 'fred.']) == ['fred.py*']
         if any expanded paths exist return those
-
-    select is a method to choose wanted paths
-        Defaults to selecting existing paths
     """
     strings_ = [strings] if isinstance(strings, str) else strings
     globs = flatten([globber(s) for s in strings_])
@@ -107,15 +105,14 @@ def tab_complete(strings, globber=add_stars, select=os.path.exists):
             base = glob_
         match = [p for p in dir_.listdir() if p.fnmatch_basename(base)]
         matches.extend(match)
-    result = [p for p in set(matches) if select(p)]
+    result = [p for p in set(matches) if os.path.exists(p)]
     return result if result[1:] else strings
 
 
 def pyc_to_py(path_to_file):
     """Change some file extensions to those which are more likely to be text
 
-    >>> pyc_to_py("vim.pyc") == "vim.py"
-    True
+    >>> assert pyc_to_py("vim.pyc") == "vim.py"
     """
     stem, ext = os.path.splitext(path_to_file)
     if ext == ".pyc":

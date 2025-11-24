@@ -2,12 +2,12 @@
 
 import abc
 import ast
-import importlib
-import linecache
-import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
+import importlib
+import linecache
+import os
 from typing import Iterator
 
 from pym.ast.visit import visitors

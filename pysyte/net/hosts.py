@@ -1,8 +1,8 @@
 """Simplified hosts for pysyte"""
 
+from dataclasses import dataclass
 import getpass
 import socket
-from dataclasses import dataclass
 from typing import List
 
 

@@ -9,6 +9,8 @@
 from dataclasses import dataclass
 
 from pysyte import os
+from pysyte.types.methods import memoized
+from pysyte.types.strings import Repper
 
 
 @dataclass
@@ -25,7 +27,7 @@ class ExitCode(Repper):
     code: int
 
     def __bool__(self) -> bool:
-        return self.code == EX_OK
+        return self.code == os.EX_OK
 
     def __int__(self) -> int:
         return self.code

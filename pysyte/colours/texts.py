@@ -9,7 +9,9 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 
 from functools import partial
 
-from pysyte.colours import ansi_escapes, colour_names, colour_numbers
+from pysyte.colours import ansi_escapes
+from pysyte.colours import colour_names
+from pysyte.colours import colour_numbers
 
 
 class ColouredTail(object):

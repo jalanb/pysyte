@@ -4,7 +4,8 @@ Usage: python3 -m pysyte.kat [options] [files]
 
 """
 
-from pysyte.cli import arguments, lines
+from pysyte.cli import arguments
+from pysyte.cli import lines
 from pysyte.cli.app import App
 from pysyte.types.lines import arg_lines
 from pysyte.types.lines import sed

@@ -1,12 +1,12 @@
 """Handle bash commands for pysyte"""
 
-import os
 from contextlib import contextmanager
+import os
 from subprocess import getstatusoutput
 from typing import List
 
-import psutil
 from boltons.setutils import IndexedSet
+import psutil
 
 
 class BashError(ValueError):

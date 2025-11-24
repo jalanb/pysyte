@@ -1,6 +1,4 @@
-"""Miscellaneous string handlers
-
-"""
+"""Miscellaneous string handlers"""
 
 from functools import total_ordering
 

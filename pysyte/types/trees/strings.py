@@ -4,18 +4,15 @@ import os
 from dataclasses import dataclass
 from typing import (
     Any,
-    Callable
+    Callable,
     Iterable,
     Sequence,
-    Union,
-    TYPE_CHECKING,
 )
 
 from deprecated import deprecated
-
 from path import Path as JasonOrrendorfPath
 
-StrPath = Union["StringPath", str]  # many args can be either string or path
+StrPath = "StringPath" | str  # many args can be either string or path
 
 
 @dataclass
@@ -33,6 +30,8 @@ class StringPath(JasonOrrendorfPath):
     ...
     Not in a dir
     """
+
+    from pysyte.types.trees.dirs import DirectPath
 
     sep: str = "/"
 
@@ -72,6 +71,7 @@ class StringPath(JasonOrrendorfPath):
             return self
         full_string = os.path.join(str(self), substring)
         from pysyte.types.trees.makes import makepath
+
         return makepath(full_string)
 
     def __floordiv__(self, substrings: Sequence[str]) -> StringPath:
@@ -89,6 +89,7 @@ class StringPath(JasonOrrendorfPath):
         string = str(self)
         strings = [string] + list(substrings)
         from pysyte.types.trees.makes import makepath
+
         return makepath(os.path.join(*strings))
 
     def __eq__(self, other) -> bool:
@@ -122,7 +123,7 @@ class StringPath(JasonOrrendorfPath):
         """
         return self.__class__(f"{self}{other}")
 
-    def __sub__(self, other: int) -> "DirectPath":
+    def __sub__(self, other: int) -> DirectPath:
         """Subtract dirs from end of path
 
         >>> assert StringPath("/usr/local/bin/conf.d/fred.toml") - 3 == "/usr/local"
@@ -175,68 +176,7 @@ class StringPath(JasonOrrendorfPath):
         return self.stem.name
 
 
-class ExentendPath(StringPath):
-    """A path with extensions"""
-
-    def dezip(self) -> Tuple[StringPath, str]:
-        """Split all zipping extensions from the path
-
-        >>> p = FilePath("here/fred.tar.gz")
-        >>> assert p.dezip() == ("here/fred", ".tar.gz")
-        """
-        copy = self[:]
-        filename, ext = os.path.splitext(copy)
-        zippers = (
-            ".gz",
-            ".bz",
-            ".zip",
-            ".bzip",
-        )
-        for zipper in zippers:
-            if ext == zipper:
-                filename, ext_ = os.path.splitext(filename)
-                ext = f"{ext_}{zipper}"
-        return self.__class__(filename), ext
-
-    def add_ext(self, *args) -> StringPath:
-        """Join all args as extensions
-
-        Strip any leading `.` from args
-
-        >>> source = makes.makepath(__file__)
-        >>> new = source.add_ext("txt", "new")
-        >>> assert new.name.endswith(".py.txt.new")
-        """
-        exts = [(a[1:] if a[0] == "." else a) for a in args]
-        string = ".".join([self] + list(exts))
-        return makes.makepath(string)
-
-    def add_missing_ext(self, ext: str) -> StringPath:
-        """Add that extension, if it is missing
-
-        >>> fred = makes.makepath("fred")
-        >>> assert fred.add_missing_ext("") == fred
-        >>> fred_py = makes.makepath("fred.py")
-        >>> assert fred.add_missing_ext(".py") == fred_py
-        >>> assert fred_py.add_missing_ext(".txt") == "fred.py.txt"
-        """
-        dot_ext = f'.{ext.lstrip(".")}'
-        copy = self[:]
-        _, self_ext = os.path.splitext(copy)
-        return makes.makepath(self) if self_ext == dot_ext else self.add_ext(dot_ext)
-
-    def extend_by(self, ext: str) -> StringPath:
-        """The path to the file changed to use the given ext
-
-        >>> fred = "/path/to/fred.fred"
-        >>> assert makes.makepath("/path/to/fred").extend_by("fred") == fred
-        >>> assert makes.makepath("/path/to/fred.txt").extend_by(".fred") == fred
-        >>> assert makes.makepath("/path/to/fred.txt").extend_by("..fred") == fred
-        """
-        copy = self[:]
-        filename, _ = os.path.splitext(copy)
-        ext_ = ext.lstrip(".")
-        return makes.makepath(f"{filename}.{ext_}")
+StringPaths = list[StringPath]
 
 
 class NoPath(StringPath):
@@ -248,9 +188,10 @@ class NoPath(StringPath):
     """
 
     def __init__(self, string: Any = ""):
-        self.string = string or ""
         from pysyte.types.trees.dirs import DirectPath
         from pysyte.types.trees.files import FilePath
+
+        self.string = string or ""
         self.fake_path = FilePath(self.string) or DirectPath(self.string)
 
     def __str__(self) -> str:
@@ -291,6 +232,7 @@ class NoPath(StringPath):
         """
         result = os.path.join(self.string, child) if child else self.string
         from pysyte.types.trees.makes import makepath
+
         return makepath(result)
 
     def contains(self, other: StrPath) -> bool:
@@ -306,6 +248,7 @@ class NoPath(StringPath):
             return self
         parent_string = "/".join(self.string.split("/")[:-1])
         from pysyte.types.trees.makes import makepath
+
         return makepath(parent_string)
 
     def exists(self) -> bool:
@@ -320,29 +263,34 @@ class NoPath(StringPath):
         os.makedirs(str(self))
 
 
-def string_to_paths(string: str) -> list[StringPath]:
-    """Convert a string into a list of paths
+def string_to_paths(string: str) -> StringPaths:
+    """Split the string into paths
 
-    >>> assert string_to_paths("/bin:/usr/bin") == [StringPath("/bin"), StringPath("/usr/bin")]
+    >>> assert string_to_paths("/bin:/usr/bin") == [
+    ...     StringPath("/bin"),
+    ...     StringPath("/usr/bin"),
+    ... ]
     """
     for c in ":,;":
         if c in string:
-            return strings_to_paths(string.split(c))
-    return [path(string)]
+            return paths(string.split(c))
+    return paths([string])
 
 
-def _choose_paths(*strings, chooser: Callable) -> list[StringPath]:
-    paths_ = [path(s) for s in strings]
+def _choose_paths(*strings, chooser: Callable) -> StringPaths:
+    from .makes import path
+
+    paths_ = [path(_) for _ in strings]
     return [_ for _ in paths_ if chooser(_)]
 
 
-def paths(*strings: Iterable) -> list[StringPath]:
+def paths(*strings: Iterable) -> StringPaths:
     return _choose_paths(*strings, chooser=os.path.exists)
 
 
-def directories(*strings: Iterable) -> list[StringPath]:
+def directories(*strings: Iterable) -> StringPaths:
     return _choose_paths(*strings, chooser=os.path.isdir)
 
 
-def files(*strings: Iterable) -> list[StringPath]:
+def files(*strings: Iterable) -> StringPaths:
     return _choose_paths(*strings, chooser=os.path.isfile)

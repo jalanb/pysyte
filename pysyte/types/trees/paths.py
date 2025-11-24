@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 import os
 import stat
-from dataclasses import dataclass
 
 from pysyte.types.trees import strings
 

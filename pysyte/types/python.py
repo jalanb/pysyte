@@ -20,8 +20,8 @@ Hello
 
 """
 
-from dataclasses import dataclass
 import contextlib
+from dataclasses import dataclass
 import io
 from sys import stderr as err
 from sys import stdout as out

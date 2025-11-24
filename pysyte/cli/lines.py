@@ -1,9 +1,10 @@
 """Any option mentioning "a line" means either a number or a regexp"""
 
-import sys
 from collections import defaultdict
 from functools import partial
-from typing import DefaultDict, List
+import sys
+from typing import DefaultDict
+from typing import List
 
 from pysyte import __version__
 from pysyte.bash.screen import alt_screen

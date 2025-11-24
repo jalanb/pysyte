@@ -1,7 +1,7 @@
 """Test the functions module"""
 
-import unittest
 from io import StringIO
+import unittest
 
 from pysyte.types import functions
 

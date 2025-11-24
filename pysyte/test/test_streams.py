@@ -1,7 +1,7 @@
 """Test stream handlers"""
 
-import sys
 from io import StringIO
+import sys
 from unittest import TestCase
 
 from pysyte.streams import swallow_stderr

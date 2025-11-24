@@ -12,13 +12,13 @@ Adapted from
         No need here for Windows/Carbon
 """
 
+from curses import ascii
 import getpass
 import re
 import signal
 import sys
 import termios
 import tty
-from curses import ascii
 from typing import Callable
 from typing import Dict
 from typing import List

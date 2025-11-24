@@ -1,38 +1,35 @@
 import os
 import re
-import stat
 import sys
 from functools import singledispatch
 from importlib import import_module
-from typing import Any
-from typing import Protocol
-from typing import TYPE_CHECKING
+from typing import (
+    Any,
+    Protocol,
+)
 
 from pysyte.types.trees.errors import MissingImport
-from pysyte.types.trees.paths import Path
-from pysyte.types.trees.paths import Paths
-from pysyte.types.trees.strings import NoPath
-from pysyte.types.trees.strings import StringPath
+from pysyte.types.trees.paths import Path, Paths
+from pysyte.types.trees.strings import NoPath, StringPath
+
+
+class Pathed(Protocol):
+    path: Any
 
 
 @singledispatch
-def makepath(arg) -> StringPath:
-    """In the face of ambiguity, refuse the temptation to guess."""
-    raise NotImplementedError(f"What is {arg!r} ?")
+def makepath(arg: Pathed) -> StringPath:
+    return makepath(arg.path)
 
 
 @makepath.register(type(None))
 def _mp(arg) -> StringPath:
-    """Make a path from nothing
+    """Make no path from nothing
 
-    >>> assert not makepath(None)
+    >>> p = makepath(None)
+    >>> assert not p
     """
     return NoPath()
-
-
-@makepath.register(StringPath)
-def __mp(arg) -> StringPath:
-    return arg
 
 
 @makepath.register(str)
@@ -41,17 +38,21 @@ def ____mp(arg) -> StringPath:
 
     Expand out any variables, home squiggles, and normalise it
     See also http://stackoverflow.com/questions/26403972
+
+    See also Lynton Kwesi Johnson:
+        The Eagle and The Bear
+            Have people living in fear
+            Of impending nuclear warfare
     """
-    # Avoiding circular imports
-    from .dirs import DirectPath
-    from .files import FilePath
     if not arg:
         return makepath(None)
     if os.path.isfile(arg):
         from pysyte.types.trees.files import FilePath
+
         return FilePath(arg)
     if os.path.isdir(arg):
         from pysyte.types.trees.dirs import DirectPath
+
         string = arg if arg == "/" else arg.rstrip("/")
         return DirectPath(string)
     expanded_path = os.path.expandvars(arg)
@@ -77,13 +78,13 @@ def _____mp(arg) -> StringPath:
     if hasattr(arg, "__file__"):
         return makepath(arg.__file__)
     if hasattr(arg, '__path__'):
-        p, * = arg.__path__
+        p, *_ = arg.__path__
         return makepath(p)
     if hasattr(arg, '__spec__') and arg.__spec__:
         if arg.__spec__.origin:
             return makepath(arg.__spec__.origin)
         if arg.__spec__.submodule_search_locations:
-            l, * = arg.__spec__.submodule_search_locations
+            l, *_ = arg.__spec__.submodule_search_locations
             return makepath(l)
     if arg.__name__ not in sys.modules:
         raise MissingImport(arg)
@@ -122,15 +123,6 @@ def _______mp(arg) -> StringPath:
     return _make_module_path(arg)
 
 
-class _Pathed(Protocol):
-    path: Any
-
-
-@singledispatch
-def ________mp(arg: _Pathed) -> StringPath:
-    return makepath(arg.path)
-
-
 @singledispatch
 def makepaths(arg) -> Paths:
     """Refuse the temptation again."""
@@ -155,6 +147,11 @@ def ___mps(arg) -> Paths:
 @makepaths.register(StringPath)
 def make_string_paths(arg) -> Paths:
     return Paths([arg])
+
+
+@makepath.register(Path)
+def make_path_path(arg) -> StringPath:
+    return arg
 
 
 # Alias for backward compatibility

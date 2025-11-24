@@ -66,13 +66,6 @@ class FilePath(paths.Path, PathAssertions):
                 return True
         return False
 
-    def as_python(self):
-        """The path to the file with a .py extension
-
-        >>> assert FilePath("/path/to/fred.txt").as_python() == "/path/to/fred.py"
-        """
-        return self.extend_by(".py")
-
     def make_read_only(self):
         """chmod the file permissions to -r--r--r--"""
         self.chmod(chmod.readonly_file)
@@ -151,7 +144,7 @@ class StringFile(FilePath):
 
 
 class ExtendedPath(FilePath):
-    """A path with extensions"""
+    """A file path with an extension"""
 
     def dezip(self) -> Tuple[StringPath, str]:
         """Split all zipping extensions from the path
@@ -220,3 +213,10 @@ class ExtendedPath(FilePath):
         filename, _ = os.path.splitext(copy)
         ext_ = ext.lstrip(".")
         return makepath(f"{filename}.{ext_}")
+
+    def as_python(self):
+        """The path to the file with a .py extension
+
+        >>> assert ExtendedPath("/dir/fred.txt").as_python() == "/dir/fred.py"
+        """
+        return self.extend_by(".py")

@@ -4,13 +4,13 @@ This module is a simplifying proxy to stdlib's argparse
 """
 
 import argparse
+from bdb import BdbQuit
+from functools import partial
 import os
+from pprint import pformat
 import re
 import shlex
 import sys
-from bdb import BdbQuit
-from functools import partial
-from pprint import pformat
 from typing import Any
 from typing import List
 

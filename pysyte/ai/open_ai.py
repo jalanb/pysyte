@@ -5,7 +5,6 @@ from dataclasses import dataclass
 import openai
 
 from pysyte.ai import apis
-from pysyte.config import apis
 
 
 @dataclass

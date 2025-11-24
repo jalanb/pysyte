@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 
 from pysyte.types import versions
-from pysyte.types.paths import dirs, files
+from pysyte.types.paths import dirs
+from pysyte.types.paths import files
 from pysyte.types.python import packages
 
 

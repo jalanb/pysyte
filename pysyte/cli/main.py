@@ -4,8 +4,8 @@ This module was a simplifying proxy to stdlib's sys.exit()
     but it's grown since then
 """
 
-import sys
 from dataclasses import dataclass
+import sys
 from typing import Optional
 
 from pysyte.cli import app

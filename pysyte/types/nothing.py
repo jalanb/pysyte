@@ -41,6 +41,7 @@ def no_thing(class_: type) -> type:
     >>> class Fred:
     ...     def __str__(self):
     ...         return "fred"
+    ...
     >>> assert str(Fred()) == "fred"
     >>> NoFred = no_thing(Fred)
     >>> assert issubclass(NoFred, Fred)
