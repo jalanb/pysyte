@@ -78,4 +78,3 @@ def drop_from_end(predicate, iterable):
 
 def drop_falsies_from_end(iterable):
     return drop_from_end(lambda x: not x, iterable)
-

@@ -11,10 +11,10 @@
 """
 
 import ast
-import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import singledispatch
+import inspect
 from types import FrameType
 from types import ModuleType
 from typing import Callable
@@ -39,11 +39,13 @@ class Function:
         return self.code
 
     def __repr__(self):
-        return '\n'.join([
-            f"<{self.__class__.__name__} {self.module}{self.name}",
-            "",
-            self.doc,
-        ])
+        return '\n'.join(
+            [
+                f"<{self.__class__.__name__} {self.module}{self.name}",
+                "",
+                self.doc,
+            ]
+        )
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -104,6 +106,7 @@ class NoFunction(Function):
     def __eq__(self, other):
         return not other
 
+
 @singledispatch
 def makefunction(arg) -> Function:
     """In the face of ambiguity, refuse the temptation to guess."""
@@ -119,14 +122,14 @@ def _mm(arg) -> Function:
     return NoFunction()
 
 
-@makefunction.register(callable: Callable)
+@makefunction.register(Callable)
 def __mm(arg) -> Function:
     """Make a function from a Callable
 
     >>> fred = lambda: "fred"
     >>> assert function(fred) == Function(fred)
     """
-    return Function(callable)
+    return Function(arg)
 
 
 @makefunction.register(types.FrameType)
@@ -144,12 +147,12 @@ def ___mm(arg) -> Function:
 
 
 # You’ll eventually want to handle:
-#	•	CodeType: needs a lookup to find the real Callable that wraps it (check globals(), locals(), dir(cls) etc.)
-#	•	FunctionType, BuiltinFunctionType: trivial if covered by Callable
-#	•	MethodType: possibly worth special-casing to preserve self, __func__, etc.
-#	•	staticmethod, classmethod: if needed, unwrap via .__func__
-#	•	property: unwrap .fget
-#	•	And maybe types.TracebackType, GeneratorType, or CoroutineType if you want to go deep
+#   •   CodeType: needs a lookup to find the real Callable that wraps it (check globals(), locals(), dir(cls) etc.)
+#   •   FunctionType, BuiltinFunctionType: trivial if covered by Callable
+#   •   MethodType: possibly worth special-casing to preserve self, __func__, etc.
+#   •   staticmethod, classmethod: if needed, unwrap via .__func__
+#   •   property: unwrap .fget
+#   •   And maybe types.TracebackType, GeneratorType, or CoroutineType if you want to go deep
 
 function = makefunction
 

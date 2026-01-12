@@ -11,12 +11,15 @@ from pysyte.ai import apis
 class AiAppConfig:
     config: apis.ApiConfiguration
 
+
 @dataclass
 class OpenaiApp:
     key_provider: str
 
     def __post_init__(self):
-        self.config = apis.ApiConfiguration(__file__, self.key_provider, apis.Apis("openai"))
+        self.config = apis.ApiConfiguration(
+            __file__, self.key_provider, apis.Apis("openai")
+        )
 
     def ask(self, messages: list[dict]):
         response = openai.ChatCompletion.create(

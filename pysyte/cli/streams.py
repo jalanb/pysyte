@@ -1,11 +1,10 @@
 """Module to handle streams of text from cli arguments"""
 
+from dataclasses import dataclass
+from io import StringIO
 import os
 import sys
 from typing import TextIO
-
-from dataclasses import dataclass
-from io import StringIO
 
 from pysyte import iteration
 from pysyte.cli import arguments
@@ -20,7 +19,7 @@ class ParsedStreams:
     clipboard: TextIO
 
 
-def parse_args(name:str="", docs:str="") -> ParsedStreams:
+def parse_args(name: str = "", docs: str = "") -> ParsedStreams:
     """Parse out command line arguments"""
     parser = arguments.parser(docs or __doc__)
     if not name:
@@ -33,9 +32,9 @@ def parse_args(name:str="", docs:str="") -> ParsedStreams:
     paths = [path(_) for _ in named]
     exists = [_ for _ in paths if _]
     return ParsedStreams(
-        streams = [_.open() for _ in exists if _.isfile() or _.isdir()]
-        stdin = parsed.stdin or StringIO("")
-        clipboard = parsed.paste or StringIO("")
+        streams=[_.open() for _ in exists if _.isfile() or _.isdir()],
+        stdin=parsed.stdin or StringIO(""),
+        clipboard=parsed.paste or StringIO(""),
     )
 
 

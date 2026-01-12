@@ -16,5 +16,6 @@ def get_clipboard_data():
     result = run(platform.bash_paste, capture_output=True, encoding="utf-8")
     return result.stdout
 
+
 copy = put_clipboard_data
 paste = get_clipboard_data

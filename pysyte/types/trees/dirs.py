@@ -138,6 +138,7 @@ class DirectPath(paths.Path, PathAssertions):
         """For similar cases"""
         return self.open().read()
 
+
 def ignore_fnmatches(ignores):
     def ignored(a_path):
         if not ignores:

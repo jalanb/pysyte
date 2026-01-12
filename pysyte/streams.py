@@ -1,13 +1,12 @@
 """Methods to handle streams"""
 
 from contextlib import contextmanager
+from io import StringIO
 import sys
 from typing import Generator
 from typing import Optional
 from typing import TextIO
 from typing import Tuple
-
-from io import StringIO
 
 
 class Print:
@@ -113,6 +112,7 @@ def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
         out_stream.seek(0)
         err_stream.seek(0)
 
+
 @contextmanager
 def swallow_stdin(text: str) -> Generator[StringIO, None, None]:
     """Feed the given text into sys.stdin as if typed
@@ -120,6 +120,7 @@ def swallow_stdin(text: str) -> Generator[StringIO, None, None]:
     >>> from pysyte.oss import getch
     >>> with swallow_stdin("Hello"):
     ...     assert getch.get_key() == 'H'
+    ...
     """
     saved = sys.stdin
     stream = StringIO(text)

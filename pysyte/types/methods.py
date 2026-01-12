@@ -11,11 +11,13 @@
 """
 
 import ast
-import inspect
 from contextlib import contextmanager
 from dataclasses import dataclass
-from types import FrameType, ModuleType
-from typing import Callable, Optional
+import inspect
+from types import FrameType
+from types import ModuleType
+from typing import Callable
+from typing import Optional
 
 from lazy import lazy
 from pym.ast import parse

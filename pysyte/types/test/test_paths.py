@@ -13,18 +13,21 @@ class MockSketch(files.FilePath):
     """Mock some known lines into a file"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
-        return "\n".join([
-            "",
-            "# Scene: An Army Barracks",
-            "# ",
-            "# Cue Pythons"
-            "# ",
-            "You can't just end it!",
-            "Aww. The General Public's never gonna accept this!",
-            "Yes, they will. Cue Cine!",
-        ])
+        return "\n".join(
+            [
+                "",
+                "# Scene: An Army Barracks",
+                "# ",
+                "# Cue Pythons" "# ",
+                "You can't just end it!",
+                "Aww. The General Public's never gonna accept this!",
+                "Yes, they will. Cue Cine!",
+            ]
+        )
+
 
 punchlines = MockSketch("/not/punchlines")
+
 
 class MockPythonShebang(MockSketch):
     """Mock some lines into a file, with first having '#!'"""
@@ -96,8 +99,12 @@ class TestPaths(TestCase):
         self.assertFalse([_ for _ in punchlines.stripped_whole_lines() if not _])
 
     def test_non_comment_lines(self):
-        self.assertTrue([_ for _ in punchlines.stripped_whole_lines() if _.startswith("#")])
-        self.assertFalse([_ for _ in punchlines.non_comment_lines() if _.startswith("#")])
+        self.assertTrue(
+            [_ for _ in punchlines.stripped_whole_lines() if _.startswith("#")]
+        )
+        self.assertFalse(
+            [_ for _ in punchlines.non_comment_lines() if _.startswith("#")]
+        )
 
     def test_has_line(self):
         self.assertTrue(punchlines.has_line("Yes, they will. Cue Cine!"))

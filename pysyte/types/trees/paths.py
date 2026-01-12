@@ -4,6 +4,7 @@ import stat
 
 from pysyte.types.trees import strings
 
+
 class ChmodValues:
     readonly_file = 0o444
     readonly_directory = 0o555

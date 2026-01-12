@@ -8,4 +8,3 @@ class SourcePath(files.FilePath):
 
 
 SourcePath.__file_class__ = SourcePath
-

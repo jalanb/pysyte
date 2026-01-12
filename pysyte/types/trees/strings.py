@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Sequence,
-)
+import os
+from typing import Any
+from typing import Callable
+from typing import Iterable
+from typing import Sequence
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath
