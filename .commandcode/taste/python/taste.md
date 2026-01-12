@@ -1,0 +1,19 @@
+# Python
+- In `if __name__ == '__main__':` blocks, use only one line: `sys.exit(main())`. All logic goes in main(). Confidence: 0.85
+- Keep lines short. Extract names/variables to break up long lines. Confidence: 0.70
+- DRY: Extract repeated values to named variables. 3+ repetitions must be named, 2 repetitions preferred. Confidence: 0.85
+- Use pathlib for file paths, not strings. Confidence: 0.70
+- Use .append() or .extend() in full code. Reserve += for REPL/IPython only. Confidence: 0.85
+- No blank lines inside function bodies. Exception: blank line after inner function definitions. Confidence: 0.85
+- Use full type annotations for all function arguments and returns (Python 3.13, typically one version before latest). Confidence: 0.85
+- Keep functions short. Extract logic to separate functions when a function becomes too long. Confidence: 0.80
+- Add doctests to all functions (except main()). Follow guidelines in jalanb/library/howto/doctests.md: one-liner, uses assert, shows usage. Confidence: 0.75
+- Module-level doctests should tell a narrative story, constructing a flow using multiple functions in sequence. Doctests are documentation, not just tests. Confidence: 0.80
+- Keep doctests simple (KISS). Prefer direct assertions like 'assert allowed' over nerdy type checks like 'assert isinstance(allowed, bool)'. Confidence: 0.75
+- In doctests, use docstring text for comments, not '#' comments. Doctests are "text first, python second". Confidence: 0.85
+- Use DDD (Doctest Driven Development): start with doctests that show the outsider's view of how code should be called, not the insider's view of implementation. When updating code, start in the docstrings. The outsider's view should place significant constraints on the insiders. Confidence: 0.90
+- Avoid default arguments. Use singledispatch for functions that need varying arguments. Confidence: 0.90
+- In docstrings, add English explanations only when needed to explain what's being checked/done to an outsider. If the function name is self-explanatory, doctests alone are sufficient. Confidence: 0.75
+- Docstring formatting: Always start doctests on a new line after opening quotes, never on the same line. Keep the blank line after opening quotes even when dropping the one-liner summary. Docstring has 3 parts: one-liner, blank line, more text. Can drop the one-liner but keep the blank line. Format: `"""\n    >>> code`. Confidence: 0.85
+- For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70
+- For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70
