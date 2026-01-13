@@ -106,13 +106,52 @@ Strip out:
 - This is a **strategic** issue - will be one of FINAL changes
 - Many patterns exist due to Python 2.x/early 3.x limitations
 
+## Development Workflow
+
+### Tox Command Discipline
+Always activate venv first: `source .venv/bin/activate`
+
+**Command sequence** (never skip ahead on failures):
+1. `tox -e formats` - Run early and often (should be on every save ideally)
+2. `tox -e lints` - Run after "finished a section", often same as commit size
+3. `tox -e devs` - Run while developing (fast, stops on first failure)
+4. `tox -e tests` - Run when ready for commit (full suite, slower tests)
+
+**Critical rule**: Do NOT move on from failures. If lints fails, fix it completely before trying devs.
+
+### The Game Plan: Collaborative Code Analysis
+
+**NOT a "fix-it-fast" session** - This is about extracting taste rules through systematic analysis.
+
+#### Process for Each Lint Error
+1. **Group similar errors** - Look for patterns across files/lines
+2. **For each error/group, present**:
+   - Minimal code context (just enough to show the issue)
+   - Linter error message
+   - Suggested fix
+   - **Underlying rule/smell/principle** - Why does this matter?
+3. **Discuss together** - Chat about the "why"
+4. **User makes the fix** - Not CommandCode (keeps it real with typos!)
+5. **Extract taste rule** - Document the pattern for future
+
+#### What to Track
+- **Running discoveries list** - Patterns found today in markdown
+- **Classification by level** - Tag as quick/documentish/tactical/strategic
+- **"Why it matters"** - The high-level principle, not just the rule
+  - Expect more duplicates at this level than at the syntax level
+  - Fewer personal rules than flake8/pylint have rules
+- **Historical context** - Is this a Python 2.x fossil? Corporate import? Just a mistake?
+
+#### Key Insight
+The goal is building the taste system, not just passing lints. Fixes are secondary to understanding WHY things are wrong and documenting those patterns.
+
 ## Next Steps
 
-Ready to start systematic teardown:
-1. Analyze sample code for implicit patterns
-2. Check against stated taste rules
+Ready to start systematic analysis:
+1. Run lints and group errors by pattern
+2. Analyze each group for underlying principles
 3. Document violations by level (quick/documentish/tactical/strategic)
 4. Identify new rules to add to taste
-5. Create prioritized fix list
+5. User fixes code, we verify and move to next group
 
 Focus on trees/ code first since it's current work, but may need to look at broader pysyte codebase to establish baseline patterns.

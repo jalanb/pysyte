@@ -1,0 +1,8 @@
+# Workflow
+- When participating in hub directories: must write profile first (in jalanb/hub/profiles/), read ALL markdown files before writing, stay in plan mode (planning/architecture/design only), read citations sections for full context, follow KISS/DRY/YAGNI. Confidence: 0.85
+- Classify code issues into four levels: quick (immediate fixes), documentish (note for later), tactical (mid-level refactors), strategic (architectural changes). Confidence: 0.85
+- Prioritize code fixes: quick wins first (mechanical fixes), then documentish (doctests/docstrings), then tactical (refactors), then strategic (architecture). Document strategic issues but don't fix until everything else is clean. Confidence: 0.85
+- Always activate virtual environment with `source .venv/bin/activate` before running tox commands. Confidence: 0.85
+- Run tox commands in order: `tox -e formats` early and often, `tox -e lints` after finishing each code section, `tox -e devs` while developing, `tox -e tests` when preparing commits. Confidence: 0.85
+- Never move on from tox failures. Fix all issues in current stage (formats/lints/devs) before progressing to next stage. Make lints fully clean before trying devs. Confidence: 0.85
+- For code review: don't make immediate edits. Present minimal code showing error, linter message, suggested fix, and high-level broken rule/smell/complexity. Then discuss before user writes the fix. Goal is to extract taste/rules, not just fix code. Confidence: 0.85
