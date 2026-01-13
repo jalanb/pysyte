@@ -1,11 +1,13 @@
 # Python
 - In `if __name__ == '__main__':` blocks, use only one line: `sys.exit(main())`. All logic goes in main(). Confidence: 0.85
+- API design: default behavior should be the simplest/most common case. Flags/parameters should ADD features, not remove them. Boolean flags that default to False and get passed as True are backwards. Confidence: 0.85
+- Code smell: if a function name sounds like it should be a class method (e.g., `visitor_line` sounds like `visitor.line()`), either move it to the class or rename it to not imply class membership. Confidence: 0.75
 - Keep lines short. Extract names/variables to break up long lines. Confidence: 0.70
 - DRY: Extract repeated values to named variables. 3+ repetitions must be named, 2 repetitions preferred. Confidence: 0.85
 - Use pathlib for file paths, not strings. Confidence: 0.70
 - Use .append() or .extend() in full code. Reserve += for REPL/IPython only. Confidence: 0.85
 - No blank lines inside function bodies. Exception: blank line after inner function definitions. Confidence: 0.85
-- Use full type annotations for all function arguments and returns (Python 3.13, typically one version before latest). Confidence: 0.85
+- Use full type annotations for all function arguments and returns (Python 3.13, typically one version before latest). If type annotations become too annoying, use `# noqa` on that line. Confidence: 0.90
 - Keep functions short. Extract logic to separate functions when a function becomes too long. Confidence: 0.80
 - Add doctests to all functions (except main()). Follow guidelines in jalanb/library/howto/doctests.md: one-liner, uses assert, shows usage. Confidence: 0.75
 - Module-level doctests should tell a narrative story, constructing a flow using multiple functions in sequence. Doctests are documentation, not just tests. Confidence: 0.80
@@ -15,5 +17,12 @@
 - Avoid default arguments. Use singledispatch for functions that need varying arguments. Confidence: 0.90
 - In docstrings, add English explanations only when needed to explain what's being checked/done to an outsider. If the function name is self-explanatory, doctests alone are sufficient. Confidence: 0.75
 - Docstring formatting: Always start doctests on a new line after opening quotes, never on the same line. Keep the blank line after opening quotes even when dropping the one-liner summary. Docstring has 3 parts: one-liner, blank line, more text. Can drop the one-liner but keep the blank line. Format: `"""\n    >>> code`. Confidence: 0.85
+- Define variables, constants, and functions as close to their use as possible. Only move to broader scope (module-level, outer function) when there's a definite second need. This maintains flexibility for moving code and forces future developers to ask questions rather than assume. Confidence: 0.90
+- For pysyte Path types: use `paths.Path` when you know it's a real path (e.g., after `isdir()` or `isfile()` checks). Use `paths.StringPath` when uncertain or when mypy needs the more general type. `StringPath` is highest in hierarchy and sometimes needed to satisfy mypy even when logic suggests `Path`. Can be more specific (`paths.FilePath`, `paths.NoPath`) when appropriate. Confidence: 0.85
+- Use specific type annotations when available. Prefer specific types (e.g., `importers.ImportVisitor`) over general base classes (e.g., `importers.Visitor`) when the specific type is known. Confidence: 0.75
+- If a nested function is only called from one place in its parent function, nest it deeper into that specific caller. This makes implementation details more explicit and maintains locality. Confidence: 0.80
+- Always use f-strings for string formatting. Avoid old-style % formatting or .format() except in very rare edge cases. Confidence: 0.85
 - For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70
+- Top-level scripts (__main__.py) should only handle shell interaction: parse args, show output. Move business logic to separate testable modules. Confidence: 0.85
+- Avoid naming modules "utils.py". Use specific, meaningful module names that describe their purpose. Confidence: 0.85
 - For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70

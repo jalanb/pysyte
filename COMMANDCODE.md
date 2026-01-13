@@ -145,13 +145,37 @@ Always activate venv first: `source .venv/bin/activate`
 #### Key Insight
 The goal is building the taste system, not just passing lints. Fixes are secondary to understanding WHY things are wrong and documenting those patterns.
 
+## Session State
+
+### Current Session: 2026-01-13
+**Status**: Paused - resuming next session
+
+**Last completed**: Cleaned up `pysyte/imports/__main__.py`, extracted taste rules
+
+**Next up**: 
+1. Decide where `find_sources()` should live (imports/sources.py vs types/paths)
+2. Continue fixing lints errors one at a time
+3. Fix typo in `pysyte/importers.py`: `UsedImportVistor` → `UsedImportVisitor`
+
+**See**: `.commandcode/SESSION_NOTES.md` for detailed context
+
+### Lints Status
+- `tox -e formats` ✅ passing
+- `tox -e lints` ❌ 17 flake8 errors remaining (grouped and analyzed)
+- `tox -e devs` - not yet run (waiting for lints to pass)
+
+### Files for Session Continuity
+- `.commandcode/SESSION_NOTES.md` - Where we left off, what's next
+- `.commandcode/TASTE_DISCOVERIES.md` - New taste rules extracted today
+- `pysyte/imports/__main__.py` - Recently cleaned, good example of current standards
+
 ## Next Steps
 
-Ready to start systematic analysis:
-1. Run lints and group errors by pattern
-2. Analyze each group for underlying principles
+Continue systematic analysis:
+1. Fix remaining lints errors one at a time (see SESSION_NOTES.md for grouped list)
+2. Extract taste rules from each fix
 3. Document violations by level (quick/documentish/tactical/strategic)
-4. Identify new rules to add to taste
-5. User fixes code, we verify and move to next group
+4. Update taste files with new discoveries
+5. Move to devs once lints passes
 
 Focus on trees/ code first since it's current work, but may need to look at broader pysyte codebase to establish baseline patterns.
