@@ -147,11 +147,13 @@ class UsedImportVistor(ImportVisitor):
     def multiples(self):
         return {k: v for k, v in self.imports.items() if len(v) > 1}
 
-    def line(self, line_number, with_number=True):
-        line = linecache.getline(self.path, line_number).rstrip()
-        if not with_number:
-            return line
-        return f"{line_number:4d}: {line}"
+    def line(self, line_number: int) -> str:
+        """Get the line at that number in the visitor's text"""
+        return linecache.getline(self.path, line_number).rstrip()
+
+    def numbered_line(self, line_number: int) -> str:
+        """Get the line at that number, prefixed with the line number"""
+        return f"{line_number:4d}: {self.line()}"
 
 
 @dataclass

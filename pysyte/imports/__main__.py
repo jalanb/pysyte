@@ -1,15 +1,14 @@
 #! /usr/bin/env python3
 """Find imports in python files
 
-Show any imports which are unused, or mutiple
+Show any imports which are unused, or multiple
 """
-
-import linecache
 
 from pysyte import importers
 from pysyte.cli.arguments import ArgumentsParser
 from pysyte.cli.main import run
 from pysyte.types import paths
+from pysyte.types.trees.sources import find_sources
 
 
 def add_args(parser: ArgumentsParser) -> ArgumentsParser:
@@ -21,67 +20,33 @@ def add_args(parser: ArgumentsParser) -> ArgumentsParser:
     return parser
 
 
-def texter(path):
-    """Make a function to get a line form that file"""
-
-    def text(line_number: int) -> str:
-        """Get the line at that number
-
-        Return a string showing the line number and the line
-        """
-        string = "% 4d: %s" % (line_number, linecache.getline(path, line_number))
-        return string.rstrip()
-
-    return text
-
-
-def show_unused(visitor):
+def show_unused(visitor: importers.ImportVisitor) -> list[str]:
     """Show the unused lines that visitor found"""
+
     unused_lines = visitor.unused_lines()
     if not unused_lines:
         return []
-    text = texter(visitor.path)
     print("Unused:")
-    for line in sorted(unused_lines):
-        names = unused_lines[line]
+    for line_number in sorted(unused_lines):
+        names = unused_lines[line_number]
         print(",".join(names))
-        print(text(line))
+        print(visitor.numbered_line(line_number))
     return visitor.unused().keys()
 
 
-def show_multiples(visitor):
+def show_multiples(visitor: importers.ImportVisitor) -> list[str]:
     """Show the multiple imports that visitor found"""
     multiples = visitor.multiples()
     if multiples:
         print("Multiples:")
     for name, lines in multiples.items():
-        instances = [visitor.line(_, True) for _ in lines]
+        instances = [visitor.line(_) for _ in lines]
         lines = [name] + instances
         print("\n".join(lines))
     return multiples.keys()
 
 
-def find_sources(args):
-    """Find all the source files in those args
-
-    args might include paths to files/dirs
-        all files in the args (or in the dirs) should be returned
-    """
-    ignores = ["__pycache__", ".tox", ".git", ".venv"]
-    result = []
-    for arg in args:
-        path_to_arg = paths.path(arg)
-        if path_to_arg.isfile():
-            result.append(path_to_arg)
-        elif path_to_arg.isdir():
-            for path_to_file in path_to_arg.walkfiles(pattern="*.py", ignores=ignores):
-                result.append(path_to_file)
-        else:
-            raise TypeError(f"Unknown path type {path_to_arg}")
-    return result
-
-
-def show_imports(args, source):
+def show_imports(args: ArgumentsParser, source: paths.StringPath) -> bool:
     """Parse any source files from the args, showing imports"""
     visitor = importers.parse(source)
     modules = []
