@@ -117,7 +117,7 @@ class ImportVisitor(visitors.PymVisitor):
         self.generic_visit(node)
 
 
-class UsedImportVistor(ImportVisitor):
+class UsedImportVisitor(ImportVisitor):
     """Visit all imports, and find usages of each import
 
     Naming: "user" as in "thing that uses imports"
@@ -162,8 +162,8 @@ class AS3:
     tree: ast.Module
 
 
-def find_imports(as3: AS3) -> UsedImportVistor:
-    import_user = UsedImportVistor()
+def find_imports(as3: AS3) -> UsedImportVisitor:
+    import_user = UsedImportVisitor()
     import_user.visit(as3.tree)
     return import_user
 
@@ -175,7 +175,7 @@ def parse_python(script) -> Iterator[AS3]:
         yield AS3(script, as3)
 
 
-def parse(script) -> UsedImportVistor:
+def parse(script) -> UsedImportVisitor:
     """Extract all imports from a python script"""
     if not os.path.isfile(script):
         raise FileNotFoundError(f"Not a file: {script}")
