@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+Always use `.venv/bin/tox`, not bare `tox`. If `.venv/bin/tox` is missing, the dev environment needs setting up — run `python -m pip install '.[dev]'` from the activated venv. Do not choose a Python version or create the venv automatically; that is the user's decision.
+
 ```bash
-tox -e formats    # Reformat: black + isort
-tox -e lints      # Lint: black, blackdoc, isort, flake8, mypy
-tox -e devs       # Fast tests: --exitfirst, skip slow, random order
-tox -e tests      # Full test suite with coverage
+.venv/bin/tox -e formats    # Reformat: black + isort
+.venv/bin/tox -e lints      # Lint: black, blackdoc, isort, flake8, mypy
+.venv/bin/tox -e devs       # Fast tests: --exitfirst, skip slow, random order
+.venv/bin/tox -e tests      # Full test suite with coverage
 ```
 
 Run a single test:
@@ -47,6 +49,10 @@ Write failing doctests first when improving public APIs.
 - `__dev__`: Active development (this clone)
 - `__pypi__`: PyPI publishing
 - `trees/`: Ongoing paths→trees refactor (blocking `v0.9`)
+
+## PR Workflow
+
+All PRs target `__main__`. Use `merge_to_main()` from `~/jab/src/bash/git/hub.sh` — it pushes the branch, creates the PR, merges it, checks out `__main__`, and bumps the patch version to match the PR number.
 
 ## Code Style
 
