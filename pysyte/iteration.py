@@ -5,7 +5,7 @@ from typing import Sequence, TypeVar
 T = TypeVar("T")
 
 
-def first(sequence: Sequence[T], message:str = "") -> T:  # Generic function
+def first(sequence: Sequence[T], message: str = "") -> T:  # Generic function
     """The first item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -18,7 +18,7 @@ def first(sequence: Sequence[T], message:str = "") -> T:  # Generic function
         raise ValueError(message or f"{sequence!r} is empty")
 
 
-def last(sequence: Sequence[T], message:str = "") -> T:
+def last(sequence: Sequence[T], message: str = "") -> T:
     """The last item in that sequence
 
     If there aren't any, raise a ValueError with that message
@@ -81,4 +81,3 @@ def drop_falsies_from_end(iterable):
     >>> assert drop_falsies_from_end([0, 1, 2, 0, None]) == [0, 1, 2]
     """
     return drop_from_end(lambda x: not x, iterable)
-

@@ -739,6 +739,7 @@ class DirectPath(DotPath, PathAssertions):
     def isroot(self):
         return str(self) == "/"
 
+
 @dataclass
 class FileTypeData:
     type_: type
@@ -890,6 +891,7 @@ def _____mp(arg) -> StringPath:
 def ______mp(arg) -> StringPath:
     """Make a path from a function's module"""
     from pysyte.types.methods import Method
+
     method = Method(arg)
     stdin_regexp = re.compile("<(stdin|.*python-input.*)>")
     if stdin_regexp.match(method.filename):

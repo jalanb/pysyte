@@ -9,17 +9,18 @@ class Name:
     >>> assert red.name == "red"
     >>> assert red.rich("Hello world") == "[red]Hello world[/]"
     """
+
     def __init__(self, colour: str):
         if colour not in colour_names:
             raise KeyError(f"Unknown colour: {colour}")
         self.name = colour
-    
+
     def __str__(self) -> str:
         """
         >>> assert str(Name("red")) == "red"
         """
         return self.name
-    
+
     def rich(self, text):
         """
         >>> assert Name("red").rich("text") == "[red]text[/]"

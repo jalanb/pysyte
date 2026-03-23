@@ -23,6 +23,7 @@ class MethodData:
             self.method = wrapped
             self.wrapper = method
 
+
 class Method(MethodData):
     """A callable method with some convenience attributes"""
 
@@ -42,6 +43,7 @@ class Method(MethodData):
     @property
     def ast(sefl) -> ast.AST:
         from pym.ast.parse import parse
+
         return parse(self.code)
 
     @property
@@ -76,8 +78,7 @@ class Method(MethodData):
         return about_that_egg(self.ast, arg_name, requirements)
 
 
-
-def about_that_egg(ast: ast.AST, arg_name: str, requirements : list[str]) -> list[str]:
+def about_that_egg(ast: ast.AST, arg_name: str, requirements: list[str]) -> list[str]:
     """Duck type that arg in this method
 
     About the name:
@@ -87,6 +88,7 @@ def about_that_egg(ast: ast.AST, arg_name: str, requirements : list[str]) -> lis
         But Daffy is not that type of duck
     """
     from pym.ast.visitors import DuckVisitor
+
     visitor = DuckVisitor(ast, arg_name, requirements)
     visitor.visit(ast)
     return visitor.usages

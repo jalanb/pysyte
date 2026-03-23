@@ -17,7 +17,8 @@ from functools import total_ordering
 
 @dataclass
 class OTMLData:
-    i : int = 0
+    i: int = 0
+
 
 @total_ordering
 class OTML(OTMLData):
@@ -37,7 +38,7 @@ class OTML(OTMLData):
         rules = {
             "one": self.i == 1,
             "two": self.i == 2,
-            "many":  2 < self.i <= 9,
+            "many": 2 < self.i <= 9,
             "lots": self.i > 9,
         }
         [setattr(f'is_{k}', v) for k, v in rules.items()]

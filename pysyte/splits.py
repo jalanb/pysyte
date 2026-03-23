@@ -5,7 +5,6 @@ from typing import Any, List, Optional, Tuple
 
 from pysyte.types.literals import nones
 
-
 # Available to mockers and monkey-patchers
 splits_separator = ","
 
@@ -32,7 +31,9 @@ def seamless_join(items: list) -> str:
     return join(items, nones.string)
 
 
-def split(string: str, separator_regexp: str = splits_separator, maxsplit=0) -> List[str]:
+def split(
+    string: str, separator_regexp: str = splits_separator, maxsplit=0
+) -> List[str]:
     """Split a string to a list
 
     >>> assert split('fred, was, here') == ['fred', ' was', ' here']
@@ -85,7 +86,9 @@ def split_and_strip_whole(
     return split_and_strip_without(string, [""], separator_regexp)
 
 
-def split_by_count(items: list, count, filler: Optional[Any] = splits_separator) -> List[Tuple]:
+def split_by_count(
+    items: list, count, filler: Optional[Any] = splits_separator
+) -> List[Tuple]:
     """Split the items into tuples of count items each
 
     >>> assert split_by_count([0, 1, 2, 3], 2) == [(0, 1), (2, 3)]

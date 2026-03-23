@@ -22,12 +22,12 @@ from pysyte.iteration import first_or
 from pysyte.types.paths import (
     DirPath,
     FilePath,
-    NonePath,
-    StrPath,
     path,
-}
+)
 
-RgbLine(dataclass):
+
+@dataclass
+class RgbLine:
     line: str
 
     def __post_init__(self):
