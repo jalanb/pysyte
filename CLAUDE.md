@@ -1,38 +1,57 @@
-# pysyte __dev__ clone
+# CLAUDE.md
 
-## Project Overview
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-pysyte
+## Commands
 
-A foundational Python library that adds batteries to Python, bash, and other languages near them
+```bash
+tox -e formats    # Reformat: black + isort
+tox -e lints      # Lint: black, blackdoc, isort, flake8, mypy
+tox -e devs       # Fast tests: --exitfirst, skip slow, random order
+tox -e tests      # Full test suite with coverage
+```
 
-- **License**: MIT License
-- **Python Requirements**: 3.13+
+Run a single test:
+```bash
+py.test pysyte/types/paths.py                          # doctests in module
+py.test pysyte/types/test/test_paths.py                # unit tests
+py.test --doctest-glob=*.test pysyte/types/paths.test  # .test file
+```
 
-## Development Environment
+## Architecture
 
-Development workflow and commands are documented in README.md.
+pysyte is a utility library. Code lives under `pysyte/` as flat modules or small packages.
 
-## Project Structure
+### Key packages
 
-Project structure, dependencies, entry points, and detailed testing information are documented in README.md.
+- **`types/`** — Extended types: `paths.py` (Path subclass, the core workhorse), `strings.py`, `lists.py`, `lines.py`, `dictionaries.py`, `numbers/`, `literals/`
+- **`cli/`** — CLI framework: `app.py`, `arguments.py`, `config.py`, `streams.py`
+- **`bash/`** — Shell integration: `shell.py`, `screen.py`
+- **`colours/`** — ANSI/colour handling
+- **`config/`** — Config management with XDG support
+- **`ai/`** — AI/LLM integration
+- **`oss/`** — OS-specific (darwin, linux, getch)
 
-## Development Workflow
+### Testing conventions
 
-### Branching Strategy
+Three test forms, all discovered by pytest:
+- `*.test` — doctest narrative (story-telling examples)
+- `*.tests` — doctest bulk
+- `test_*.py` — traditional pytest unit tests
 
-**Special Branches:**
-- `__main__`: Primary branch (used instead of "master")
-- `__dev__`: Main development branch for changes not big enough for their own branch
-- `__pypi__`: PyPI publishing branch - uploads to pypi happen from here
+Write failing doctests first when improving public APIs.
 
-**Feature Branches:**
-- Use simple, descriptive names (no prefixes/suffixes)
-- No "/" characters in branch names
-- Examples: `trees`, `vim-mode`, `config-refactor`
+## Branching
 
-### Clone Coordination
-- **trees/**: Major refactor branch (paths → trees → paths)
-- **Feature branches**: Regular rebase with `__main__`, clean git history
-- **Version consistency**: Maintained across all clones via workflow discipline
-- **Clone sync process**: Entirely manual, ad hoc, and as needed (no automation currently)
+- `__main__`: Primary — version bumped here after each PR merge (`vX.Y.{PR_NUMBER}`)
+- `__dev__`: Active development (this clone)
+- `__pypi__`: PyPI publishing
+- `trees/`: Ongoing paths→trees refactor (blocking `v0.9`)
+
+## Code Style
+
+- black with single quotes (`-S`), 88-char lines
+- isort with black profile
+- flake8 ignores: E731, E203, W503
+- mypy: `check_untyped_defs = true`, `strict_optional = true`
+- No emojis in `*.md` files
