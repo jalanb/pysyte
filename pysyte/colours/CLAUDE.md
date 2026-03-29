@@ -58,15 +58,17 @@ The module uses pysyte's hybrid testing approach:
 ### Text Coloring
 ```python
 from pysyte.colours import texts
+
 # Basic usage
 red_text = texts.red("error message")
-# Fluent chaining  
+# Fluent chaining
 colored = texts.colour("green", "success").colour("bold", "!")
 ```
 
 ### ANSI Escapes
 ```python
 from pysyte.colours import ansi_escapes
+
 # Direct escape sequences
 bold_on = ansi_escapes.bold()
 color_off = ansi_escapes.no_colour()
@@ -75,9 +77,10 @@ color_off = ansi_escapes.no_colour()
 ### Color Conversions
 ```python
 from pysyte.colours import colour_numbers
+
 # Convert between formats
 ansi_code = colour_numbers.html_to_ansi("#FF0000")  # red
-html_color = colour_numbers.ansi_to_html(9)         # light red
+html_color = colour_numbers.ansi_to_html(9)  # light red
 ```
 
 ## Integration Context

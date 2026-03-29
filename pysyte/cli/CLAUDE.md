@@ -72,9 +72,11 @@ Comprehensive test suite in `test/` directory includes:
 def main(args):
     print(f"Processing {args.file}")
 
+
 def add_args(parser):
     parser.arg("f", "file", help="File to process")
     return parser
+
 
 if __name__ == "__main__":
     main.run(main, add_args)
@@ -84,9 +86,11 @@ if __name__ == "__main__":
 ```python
 from pysyte.cli.lines import add_args
 
+
 def process_lines(args):
     # Use args.at, args.first, args.last, etc.
     pass
+
 
 if __name__ == "__main__":
     main.run(process_lines, add_args)

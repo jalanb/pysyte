@@ -3,8 +3,8 @@
 >>> zero = otml(0)
 >>> one = otml(1)
 >>> two = otml(2)
->>> many = otml(random.randint(3,9))
->>> lots = otml(random.randint(10,9_999_999_999))
+>>> many = otml(random.randint(3, 9))
+>>> lots = otml(random.randint(10, 9_999_999_999))
 
 >>> assert not zero
 >>> assert one.is_one and not any(_.is_one for _ in (zero, two, many, lots))

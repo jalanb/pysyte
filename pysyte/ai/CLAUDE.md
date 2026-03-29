@@ -56,7 +56,7 @@ app = OpenaiApp("wwts")
 # Send messages to chat completion
 messages = [
     {"role": "system", "content": "You are a helpful assistant"},
-    {"role": "user", "content": "Hello!"}
+    {"role": "user", "content": "Hello!"},
 ]
 choices = app.ask(messages)
 ```

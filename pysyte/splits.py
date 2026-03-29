@@ -101,7 +101,11 @@ def split_by_count(
     >>> assert split_by_count([0, 1, 2, 7, 8, 9, 6], 3) == [(0, 1, 2), (7, 8, 9)]
 
     Specifying a filler expands the "lost" group
-    >>> assert split_by_count([0, 1, 2, 7, 8, 9, 6], 3, 0) == [(0, 1, 2), (7, 8, 9), (6, 0, 0)]
+    >>> assert split_by_count([0, 1, 2, 7, 8, 9, 6], 3, 0) == [
+    ...     (0, 1, 2),
+    ...     (7, 8, 9),
+    ...     (6, 0, 0),
+    ... ]
     """
     if filler is not None:
         items = items[:]

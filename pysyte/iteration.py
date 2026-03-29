@@ -70,7 +70,10 @@ def drop_from_end(predicate, iterable):
     """Drop items from end as long as predicate is True
 
     >>> too = lambda x: x >= 2
-    >>> assert drop_from_end(too, [0, 1, 2, 3, 4, 5]) == [0, 1, ]
+    >>> assert drop_from_end(too, [0, 1, 2, 3, 4, 5]) == [
+    ...     0,
+    ...     1,
+    ... ]
     """
     type_ = type(iterable)
     return type_(reversed(type_(dropwhile(lambda x: predicate(x), reversed(iterable)))))
