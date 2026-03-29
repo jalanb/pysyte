@@ -2,26 +2,12 @@
 
 ## Where We Left Off
 
+### Completed Tasks
+✅ `find_sources()` moved to `pysyte/types/trees/sources.py` (generic path/file operations)
+✅ Fixed typo: `UsedImportVistor` → `UsedImportVisitor` in `pysyte/importers.py`
+
 ### Current Task
-Analyzing `pysyte/imports/__main__.py` to extract business logic from shell interaction.
-
-### Key Discovery
-The `__main__.py` file has business logic that should be moved out:
-- `find_sources()` - File discovery logic (finding Python files)
-- `show_imports()` - Core orchestration logic
-
-### Proposed Refactoring
-```
-pysyte/imports/
-  __main__.py      # ONLY shell interaction: add_args, show_unused, show_multiples, main
-  sources.py       # find_sources() - generic "find Python files" logic
-  analysis.py      # Core business logic from show_imports()
-```
-
-**Open question**: Should `find_sources()` actually go in `pysyte.types.paths` since it's generic path/file operations, not import-specific?
-
-### Bug Found
-`pysyte/importers.py` line 124: `UsedImportVistor` → should be `UsedImportVisitor` (typo)
+Continue systematic lints cleanup - 17 flake8 errors remaining
 
 ## Progress Made This Session
 
@@ -143,22 +129,18 @@ Always: `source .venv/bin/activate` first
 
 ## Next Session Plan
 
-1. **Decide on refactoring**: Where should `find_sources()` go?
-   - Option A: `pysyte/imports/sources.py`
-   - Option B: `pysyte.types.paths` (more generic)
+1. **Continue lints cleanup**: Work through the grouped errors one at a time (17 remaining)
 
-2. **Continue lints cleanup**: Work through the grouped errors one at a time
+2. **Extract more taste rules** as we fix issues
 
-3. **Extract more taste rules** as we fix issues
-
-4. **Update taste files** with discoveries
+3. **Update taste files** with discoveries
 
 ## Files Modified This Session
 - `pysyte/imports/__main__.py` - cleaned up, added type annotations
-- `pysyte/importers.py` - fixed visitor API (added `numbered_line()` method)
+- `pysyte/importers.py` - fixed visitor API (added `numbered_line()` method), fixed typo
+- `pysyte/types/trees/sources.py` - created, moved `find_sources()` here
 
 ## Files to Review Next
 - `pysyte/cli/app.py` - missing `os` import
 - `pysyte/cli/streams.py` - undefined `args`, shadowing issue
 - `pysyte/iteration.py` - missing exception capture, missing import
-- `pysyte/importers.py` - typo in class name `UsedImportVistor`

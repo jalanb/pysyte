@@ -5,6 +5,7 @@
 - Keep lines short. Extract names/variables to break up long lines. Confidence: 0.70
 - DRY: Extract repeated values to named variables. 3+ repetitions must be named, 2 repetitions preferred. Confidence: 0.85
 - Use pathlib for file paths, not strings. Confidence: 0.70
+- Prefer `pysyte.types.paths.Path` over `pathlib.Path` in pysyte codebase. Confidence: 0.85
 - Use .append() or .extend() in full code. Reserve += for REPL/IPython only. Confidence: 0.85
 - No blank lines inside function bodies. Exception: blank line after inner function definitions. Confidence: 0.85
 - Use full type annotations for all function arguments and returns (Python 3.13, typically one version before latest). If type annotations become too annoying, use `# noqa` on that line. Confidence: 0.90
@@ -25,4 +26,15 @@
 - For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70
 - Top-level scripts (__main__.py) should only handle shell interaction: parse args, show output. Move business logic to separate testable modules. Confidence: 0.85
 - Avoid naming modules "utils.py". Use specific, meaningful module names that describe their purpose. Confidence: 0.85
-- For implementation detail functions, prefer nested functions inside the main function over module-level functions with underscore prefix. Nested functions make the "implementation detail" more explicit than underscore convention. Confidence: 0.70
+- In doctests, prefer assert for comparisons instead of bare output. `>>> assert sf.line == 10` not `>>> sf.line\n10`. This keeps tests in Python (precise comparisons) rather than depending on string representation. Confidence: 0.90
+- Don't depend on vagaries of "printing" for tests. Keep it in Python where we can be precise with comparisons like `== 10` (integer comparison, not undefined printout). Confidence: 0.85
+- Doctest "assert vs output" is a rule of thumb, not strict: when strings are very long and using print spreads over 2 lines vs assert using 1 line, prefer print for readability. Confidence: 0.75
+- Never have bare True/False as doctest output. If expected output is `True`, use `assert condition`. If `False`, use `assert not condition`. Confidence: 0.90
+- Asserts in doctests serve multiple purposes: they look like tests (preventing passive reading), provide visual boundaries (context shift markers), and act as "full stops" signaling end of test section. Confidence: 0.85
+- Never reuse a variable name for a different type. `old_path = Path(old_path)` is bad because RHS is str, LHS is Path. Names are contracts - shadowing with type changes breaks the contract and confuses readers. Exception: Click CLI handlers where argument names must match decorator names for help text. Confidence: 0.90
+- Fail fast in control flow. Don't use `if valid_case: ... else: error_handling`. Instead: `if invalid_case: handle_error; return` then continue with main logic. Gets error cases out of the way so you don't keep the condition in your head while reading the main path. Confidence: 0.85
+- Don't add comments that state the obvious. If the code already makes something clear, comments add no value and create maintenance burden. Confidence: 0.85
+- Prefer truthiness in tests over explicit comparisons. `assert thingy` over `assert len(thingy)` over `assert len(thingy) > 0`. Tests can be looser than production code, which needs more precision. Confidence: 0.80
+- Use precise comparisons when the exact value matters (e.g., `assert len(x) == 1` when you specifically want exactly one item).  Confidence: 0.85
+- Code readability is about cognitive ergonomics: visual rhythm, mental stack management, scope visibility, narrative flow, expectation management, and minimizing context switching costs. Optimize for working memory limits and attention management, not just clean syntax. Confidence: 0.90
+- When analyzing code changes or verifying fixes, always re-read files fresh rather than relying on cached tool results from earlier in the conversation. User may have made edits between reads. Confidence: 0.75
