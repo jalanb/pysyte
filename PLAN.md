@@ -129,11 +129,7 @@
 
 ## Development Priorities
 
-1. **Immediate**: Test and fix `.claude/hooks` lint gates
-   - Verify pre-existing lint errors block Claude from editing (PreToolUse hook)
-   - Verify Claude-introduced bad code is caught and blocked (PostToolUse hook)
-   - Fix PreToolUse hook output format (currently uses wrong JSON schema — needs `{"decision":"block","reason":"..."}` not nested `hookSpecificOutput`)
-2. **Next**: Complete `trees/` refactor (DotPath, extend_by, missing functionality)
+1. **Next**: Complete `trees/` refactor (DotPath, extend_by, missing functionality)
 2. **Short-term**: Stabilize trees integration for v0.9 release
 3. **Medium-term**: Plan DevOps code integration strategy
 4. **Long-term**: Prepare comprehensive v1.0 with full doctest coverage

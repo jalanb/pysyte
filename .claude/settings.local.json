@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//opt/clones/github/jalanb/macos/maco/**)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
