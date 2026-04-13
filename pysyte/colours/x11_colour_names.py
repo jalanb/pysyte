@@ -20,7 +20,7 @@ from dataclasses import dataclass
 
 from pysyte.iteration import first_or
 from pysyte.types.paths import (
-    DirPath,
+    DirectPath,
     FilePath,
     path,
 )
@@ -41,41 +41,48 @@ class RgbLine:
         )
         match = regexp.match(self.line)
         if not match:
-            return 
+            return
         red, green, blue, name = match.groups()
-        self.red, self.green, self.blue, self.name = int(red), int(green), int(blue), name.strip()
+        self.red, self.green, self.blue, self.name = (
+            int(red),
+            int(green),
+            int(blue),
+            name.strip(),
+        )
 
 
-RgbFile(dataclass):
+@dataclass
+class RgbFile:
     path: FilePath
 
     def __post_init__(self):
         with self.path.open() as stream:
-            self.lines = [RgbLine(line) for line in stream.lines() if line.strip()]/
+            self.lines = [RgbLine(line) for line in stream.lines() if line.strip()]
             self.data = {
-                line.name: (line.red, line.green, line.blue)
-                for line in self.lines
+                line.name: (line.red, line.green, line.blue) for line in self.lines
             }
 
-RgbDirs(dataclass):
+
+class RgbDirs:
     """A list of known dirs that should have a colour files among them
 
     >>> dirs = RgbDirs()
     >>> assert dirs.file
     >>> assert "mauve" in dirs.file.data
     """
-    dirs: list[DirPath] = [path(_) for _ in (
-        "/usr/lib/X11",
-        "/usr/X11/share/X11",
-        path(__file__).parent
-    )]
+
+    file: RgbFile | None = None
 
     def __post_init__(self):
-        name = "rgb.txt"
-        for dir_ in self.dirs:
-            if dir_ / self.name:
-                self.file = RGbFile(dir_ / self.name)
-                break
+        dirs: list[DirectPath] = [
+            path("/usr/lib/X11"),
+            path("/usr/X11/share/X11"),
+            path(__file__).parent,
+        ]
+        file = next((p for _ in dirs if (p := (_ / "rgb.txt").isfile())), None)
+        if file:
+            self.file = RgbFile(file)
+
 
 def names() -> dict[str, tuple[int, int, int]]:
     """Dictionary of available colours as {name: (R, G, B)}

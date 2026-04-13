@@ -19,7 +19,7 @@ Core module for handling Python package requirements:
 
 Key features:
 - Extends pysyte's type system (`packages.Package`, `versions.version`)
-- Integrates with pysyte's path handling (`dirs.DirPath`, `files.FilePath`)
+- Integrates with pysyte's path handling (`DirectPath`, `FilePath`)
 - Supports version constraint parsing with regex pattern matching
 
 ## Development Status
