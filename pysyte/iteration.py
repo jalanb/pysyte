@@ -40,7 +40,7 @@ def first_or(sequence: Sequence[T], value: T) -> T:
         return value
 
 
-def first_that(predicate, sequence: Sequence[T], message=None) -> T:
+def first_that(predicate, sequence: Sequence[T], message="") -> T:
     """The first item in that sequence that matches that predicate
 
     If none matches raise a KeyError with that message
@@ -50,7 +50,7 @@ def first_that(predicate, sequence: Sequence[T], message=None) -> T:
     """
     try:
         return first((_ for _ in sequence if predicate(_)))
-    except (ValueError, StopIteration):
+    except (ValueError, StopIteration) as e:
         raise KeyError(f":-(\n{message}\n{e}" if message else f":-(\n{e}")
 
 
