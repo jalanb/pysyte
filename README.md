@@ -131,3 +131,4 @@ __dev__ → PR → __main__ → pull/rebase → other clones
 - Merge to `__main__` triggers version bump
 - Other clones pull and rebase from `__main__`
 - `__pypi__` clone handles publishing to PyPI
+
