@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
-from typing import Any
-from typing import Callable
-from typing import Iterable
-from typing import Sequence
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    Sequence,
+    TypeAlias,
+)
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath
@@ -82,12 +85,12 @@ class StringPath(JasonOrrendorfPath):
         >>> assert p // ["module", "fred.py"] == "/path/to/module/fred.py"
         >>> assert p // None is p
         """
+        from pysyte.types.trees.makes import makepath
+
         if not substrings:
             return self
         string = str(self)
         strings = [string] + list(substrings)
-        from pysyte.types.trees.makes import makepath
-
         return makepath(os.path.join(*strings))
 
     def __eq__(self, other) -> bool:
@@ -276,7 +279,7 @@ def string_to_paths(string: str) -> StringPaths:
 
 
 def _choose_paths(*strings, chooser: Callable) -> StringPaths:
-    from .makes import path
+    from pysyte.types.trees.makes import path
 
     paths_ = [path(_) for _ in strings]
     return [_ for _ in paths_ if chooser(_)]

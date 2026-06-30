@@ -1,12 +1,14 @@
 import os
 from typing import TextIO
 
-from pysyte.types.trees import chmod
-from pysyte.types.trees import errors
-from pysyte.types.trees import files
-from pysyte.types.trees import makes
-from pysyte.types.trees import paths
-from pysyte.types.trees import strings
+from pysyte.types.trees import (
+    chmod,
+    errors,
+    files,
+    makes,
+    paths,
+    strings,
+)
 from pysyte.types.trees.asserts import PathAssertions
 
 
@@ -200,10 +202,11 @@ def tmp():
 
 
 def home():
-    _home = makes.path(os.path.expanduser("~"))
-    assert _home
-    _ = _home.expand()
-    return _home
+    """
+    >>> import os
+    >>> assert home() == os.environ.get('HOME','')
+    """
+    return makes.path(os.path.expanduser("~"))
 
 
 def pwd():

@@ -1,5 +1,7 @@
-from pysyte.types.trees.errors import MissingPath
-from pysyte.types.trees.errors import PathError
+from pysyte.types.trees.errors import (
+    MissingPath,
+    PathError,
+)
 
 
 class PathAssertions:

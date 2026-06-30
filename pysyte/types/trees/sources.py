@@ -1,7 +1,9 @@
 """Paths that hold source code"""
 
-from pysyte.types.trees import files
-from pysyte.types.trees import paths
+from pysyte.types.trees import (
+    files,
+    paths,
+)
 
 
 class SourcePath(files.FilePath):

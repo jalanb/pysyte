@@ -2,7 +2,11 @@ from dataclasses import dataclass
 import os
 import stat
 
-from pysyte.types.trees import strings
+from pysyte.types.trees.strings import (
+    NoPath,
+    StringPath,
+    StrPath,
+)
 
 
 class ChmodValues:

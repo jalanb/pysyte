@@ -1,11 +1,13 @@
 import os
 from typing import Tuple
 
-from pysyte.types.trees import chmod
-from pysyte.types.trees import dirs
-from pysyte.types.trees import errors
-from pysyte.types.trees import paths
-from pysyte.types.trees import strings
+from pysyte.types.trees import (
+    chmod,
+    dirs,
+    errors,
+    paths,
+    strings,
+)
 from pysyte.types.trees.asserts import PathAssertions
 from pysyte.types.trees.makes import makepath
 from pysyte.types.trees.strings import StringPath
@@ -118,8 +120,7 @@ def ext_language(ext, exts=None, simple=True):
     If exts is supplied, then restrict recognition to those exts only
     If exts is not supplied, then use all known extensions
 
-    >>> ext_language(".py") == "python"
-    True
+    >>> assert ext_language(".py") == "python"
     """
     languages = {
         ".py": "python",
