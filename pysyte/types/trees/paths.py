@@ -14,7 +14,7 @@ class ChmodValues:
     readonly_directory = 0o555
 
 
-class RealPath(strings.StringPath):
+class RealPath(StringPath):
     """This is a path to a real place, e.g. on a filesystem
 
     It might be a file, link, dir, ...
@@ -34,11 +34,11 @@ class RealPath(strings.StringPath):
             self.root = path
 
     @property
-    def root(self) -> strings.StringPath:
+    def root(self) -> StringPath:
         """
         >>> assert RealPath("/usr/local").root == "/"
         """
-        return strings.StringPath("/")
+        return StringPath("/")
 
     def isroot(self) -> bool:
         """
@@ -62,38 +62,36 @@ class Path(RealPath):
         return str(super().basename())
 
     @property
-    def stem(self) -> strings.StringPath:
+    def stem(self) -> StringPath:
         stem, *_ = self.splitexts()
         return stem
 
-    def parent_directory(self):
+    def parent_directory(self) -> StringPath:
         if self.isroot():
-            return None
+            return NoPath()
         return self.parent
 
-    def parent_directories(self):
+    def parent_directories(self) -> list[StringPath]:
         if self.isroot():
             return []
         parent = self.parent
         return [parent] + parent.parent_directories()
 
-    def directory(self):
+    def directory(self) -> StringPath:
         """Return a path to the path's directory"""
         return self.parent
 
-    def dirnames(self):
+    def dirnames(self) -> list[str]:
         """Split the dirname into individual directory names
 
         An absolute path starts with an empty string, a relative path does not
 
-        >>> Path("/path/to/module.py").dirnames() == ["/", "path", "to"]
-        True
-        >>> Path("path/to/module.py").dirnames() == ["path", "to"]
-        True
+        >>> assert Path("/path/to/module.py").dirnames() == ["/", "path", "to"]
+        >>> assert Path("path/to/module.py").dirnames() == ["path", "to"]
         """
         return [str(_) for _ in self.directory().split(os.path.sep)]
 
-    def dirpaths(self):
+    def dirpaths(self) -> list[StringPath]:
         """Split the dirname into individual directory names
 
         An absolute path starts with an empty string, a relative path does not
@@ -107,15 +105,13 @@ class Path(RealPath):
             result.append(result[-1] / name)
         return result
 
-    def directories(self):
+    def directories(self) -> list[str]:
         """Split the dirname into individual directory names
 
         No empty parts are included
 
-        >>> Path("path/to/module.py").directories() == ["path", "to"]
-        True
-        >>> Path("/path/to/module.py").directories() == ["/", "path", "to"]
-        True
+        >>> assert Path("path/to/module.py").directories() == ["path", "to"]
+        >>> assert Path("/path//to/module.py").directories() == ["/", "path", "to"]
         """
         return [d for d in self.dirnames() if d]
 
@@ -125,8 +121,7 @@ class Path(RealPath):
         None,
         """ This path's parent directories, as a list of strings.
 
-        >>> Path("/path/to/module.py").parents == ["/", "path", "to"]
-        True
+        >>> assert Path("/path/to/module.py").parents == ["/", "path", "to"]
         """,
     )
 
@@ -231,7 +226,7 @@ class Path(RealPath):
 class Paths:
     """A collection of paths"""
 
-    paths: list[strings.StrPath]
+    paths: list[StrPath]
 
     def __iter__(self):
         yield self.paths
