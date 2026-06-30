@@ -13,7 +13,7 @@ from typing import (
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath
 
-StrPath = "StringPath" | str  # many args can be either string or path
+StrPath: TypeAlias = "StringPath | str"  # many args can be either string or path
 
 
 @dataclass
@@ -169,12 +169,10 @@ class StringPath(JasonOrrendorfPath):
         if isinstance(other, StringPath):
             return str(other).startswith(str(self))
         return str(other) in str(self)
-        return self.basename()
 
     @property
     def name(self) -> str:
         return str(super().name)
-        return self.stem.name
 
 
 StringPaths = list[StringPath]
