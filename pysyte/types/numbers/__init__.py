@@ -43,7 +43,7 @@ class NAN(ValueError):
         super().__init__(f"NAN: {value}")
 
 
-def _to_number(value, kind, default):
+def _to_number(value, kind: type, default) -> int:
     """Convert the value to that kind of int, using that default
 
     >>> assert _to_number(3, int, 7) == 3

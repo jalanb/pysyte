@@ -8,14 +8,14 @@ class PathError(Exception):
 
 
 class MissingPath(PathError):
-    def __init__(self, path, desc=""):  # noqa: B042
+    def __init__(self, path: str, desc: str="") -> None:  # noqa: B042
         self.path = path
         description = desc or "path"
         super().__init__(f"Missing {description}{path}")
 
 
 class MissingImport(MissingPath, ModuleNotFoundError):
-    def __init__(self, module):  # noqa: B042
+    def __init__(self, module) -> None:  # noqa: B042
         self.module = module
         try:
             key = module.__file__

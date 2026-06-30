@@ -23,24 +23,24 @@ class Repper:
 class Stringer:
     """A Mixin to provide more ops to a class that can str()"""
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Derive a hash value from the string"""
         return hash(str(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Whether this equals other, compared as strings"""
         return str(self) == str(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         """Whether this differs from other, compared as strings"""
         return str(self) != str(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """Whether this is less than other, compared as strings"""
         return str(self) < str(other)
 
 
-def pp(name, value):
+def pp(name, value) -> str:
     """
     >>> assert pp("x", 0) == "x: int == 0"
     """

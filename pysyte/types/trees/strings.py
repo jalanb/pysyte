@@ -104,10 +104,10 @@ class StringPath(JasonOrrendorfPath):
     def __le__(self, other):
         return self.__eq__(other) or self.__lt__(other)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return not self.__le__(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return not self.__lt__(other)
 
     def __contains__(self, other) -> bool:
@@ -186,7 +186,7 @@ class NoPath(StringPath):
     >>> assert np == NoPath(None) == NoPath(0) == NoPath(False)
     """
 
-    def __init__(self, string: Any = ""):
+    def __init__(self, string: Any = "") -> None:
         from pysyte.types.trees.dirs import DirectPath
         from pysyte.types.trees.files import FilePath
 

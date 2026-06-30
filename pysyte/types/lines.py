@@ -3,8 +3,8 @@
 import re
 
 
-def _chop(lines_in, at, first, last):
-    def as_int(string, start, end):
+def _chop(lines_in, at, first: int, last: int):
+    def as_int(string, start, end) -> int:
         try:
             return int(string)
         except (ValueError, TypeError):
@@ -16,7 +16,7 @@ def _chop(lines_in, at, first, last):
         return 0
 
     def boundaries():
-        def line(i):
+        def line(i) -> int:
             line = i if i >= 0 else length_read + 1 + i
             if line >= length_read:
                 return length_read
@@ -37,7 +37,7 @@ def _chop(lines_in, at, first, last):
     return first, rest
 
 
-def chop(text, at, first=1, last=-1):
+def chop(text, at, first: int=1, last: int=-1):
     r"""Make that text fit those boundaries
 
     >>> lines = ["one", "two", "three", "four"]
@@ -56,7 +56,7 @@ def set_width(line, width):
     return line[:width]
 
 
-def _number_format(count=999):
+def _number_format(count: int=999) -> str:
     """A string format for line numbers
 
     Should give a '%d' format with width big enough to `count` lines
@@ -67,8 +67,8 @@ def _number_format(count=999):
     return "%%%dd: " % digits
 
 
-def add_numbers(lines, first=0):
-    def numbered(i, line_, line_format_):
+def add_numbers(lines, first: int=0):
+    def numbered(i, line_, line_format_) -> str:
         prefix = line_format_ % (first + i + 1)
         return f"{prefix}{line_.rstrip()}"
 

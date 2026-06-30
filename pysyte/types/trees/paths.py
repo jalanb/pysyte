@@ -22,7 +22,7 @@ class RealPath(StringPath):
     We assume it has a familiar root
     """
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         string = str(self)
         init = string[0]
         if init == "/":
@@ -206,7 +206,7 @@ class Path(RealPath):
         s = str(self.basename())
         return s and s[0] == "."
 
-    def is_executable(self):
+    def is_executable(self) -> bool:
         """Whether the path is executable"""
         return False
 

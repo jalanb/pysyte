@@ -59,7 +59,7 @@ def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> Li
 
 
 def split_and_strip(
-    string: str, separator_regexp: Optional[str] = None, maxsplit=0
+    string: str, separator_regexp: Optional[str] = None, maxsplit: int=0
 ) -> List[str]:
     """Split a string into items and trim any excess spaces from the items
 
@@ -105,7 +105,7 @@ def split_and_strip_whole(
     return split_and_strip_without(string, [""], separator_regexp)
 
 
-def split_by_count(items: list, count, filler: Optional[Any] = None) -> List[Tuple]:
+def split_by_count(items: list, count: int, filler: Optional[Any] = None) -> List[Tuple]:
     """Split the items into tuples of count items each
 
     >>> split_by_count([0, 1, 2, 3], 2)

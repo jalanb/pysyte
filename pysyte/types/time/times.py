@@ -24,12 +24,12 @@ def taken(diff):
     return abs(diff.days * 24 * 60 * 60 * 1_000 + microseconds)
 
 
-def seconds_taken(diff):
+def seconds_taken(diff) -> int:
     """Convert a time diff to total number of seconds"""
     return int(diff.total_seconds())
 
 
-def now():
+def now() -> datetime.datetime:
     """Convenience method to call datetime's now"""
     return datetime.datetime.now()
 

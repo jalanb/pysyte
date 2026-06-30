@@ -33,7 +33,7 @@ class NoKeys(StopIteration):
     pass
 
 
-def get_ord():
+def get_ord() -> int:
     """The integer ordinal of the next byte read from sys.stdin"""
     return ord(std.in_(1))
 
@@ -45,7 +45,7 @@ class TerminalContext(object):
         self.fd = None
         self.old_settings = None
 
-    def __enter__(self):
+    def __enter__(self) -> TerminalContext:
         self.fd = std.in_fileno()
         self.old_settings = termios.tcgetattr(self.fd)
         mode = termios.tcgetattr(self.fd)
@@ -79,7 +79,7 @@ class TimerContext(object):
         self.old_handler = None
         self.timed_out = False
 
-    def __enter__(self):
+    def __enter__(self) -> TimerContext:
         self.old_handler = signal.signal(signal.SIGALRM, timeout_raiser)
         signal.setitimer(signal.ITIMER_REAL, self.seconds)
         return self
@@ -160,7 +160,7 @@ def get_codes():
     return tuple(str(_) for _ in _get_keycodes())
 
 
-def get_key():
+def get_key() -> str:
     """Get a key from the keyboard as a string
 
     A 'key' will be a single char, or the name of an extended key
@@ -175,7 +175,7 @@ def get_key():
     return get_extended_key_name(codes)
 
 
-def get_menu(**kwargs):
+def get_menu(**kwargs) -> str:
     key = get_key()
     for name, string in kwargs.items():
         match = re.match(f"^{string}$", key)
@@ -197,7 +197,7 @@ def get_ascii():
         return None
 
 
-def get_ASCII():
+def get_ASCII() -> int:
     """Get ASCII key
 
     raise error on other
@@ -208,7 +208,7 @@ def get_ASCII():
         raise KeyboardInterrupt
 
 
-def get_as_key():
+def get_as_key() -> int:
     """Get key
 
     return ASCII keys as (single char) strings
@@ -233,13 +233,13 @@ def name(codes):
         return control_key_name(codes)
 
 
-def control_key_name(code):
+def control_key_name(code: int) -> str:
     """Prefix the name of a control key with '^'"""
     name = chr(code - 1 + ord("A"))
     return f"^{name}"
 
 
-def get_extended_key_name(codes):
+def get_extended_key_name(codes) -> str:
     """Get a name for the extended key with those codes
 
     Names are defined herein
@@ -332,7 +332,7 @@ yield_ASCIIs = _yielder(get_ASCII)
 yield_as_keys = _yielder(get_as_key)
 
 
-def get_string():
+def get_string() -> str:
     """A better str(_get_keycodes()) method"""
     keycodes = _get_keycodes()
     initial_code, codes = keycodes[0], keycodes[1:]
@@ -352,7 +352,7 @@ def ask_user_simplified(
     prompt: str = f"Hello {user}",
     default_key: str = "y",
     simplifier: Callable = lambda x: x.lower(),
-):
+) -> str:
     if prompt or default_key:
         default_prompt = f"[{default_key}] " if default_key else ""
         std.out(f"{prompt} {default_prompt}")

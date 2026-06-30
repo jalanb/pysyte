@@ -5,7 +5,7 @@ import inflect
 _inlection = inflect.engine()
 
 
-def pluralize(string):
+def pluralize(string) -> str:
     """Returns the plural of string.
 
     >>> pluralize("Cow") == "Cows"

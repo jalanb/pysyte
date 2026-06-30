@@ -15,17 +15,17 @@ import re
 from pysyte.colours import colour_names
 
 
-def integer_to_ansi(integer):
+def integer_to_ansi(integer) -> int:
     if integer < 16:
         return integer
 
-    def rgb_to_decimal(i):
+    def rgb_to_decimal(i) -> int:
         i -= 0x10
         if i < 0:
             return 0
         return i // 40
 
-    def grey_shade(red, green, blue):
+    def grey_shade(red, green, blue) -> bool:
         for i in red, green, blue:
             if (i - 8) % 10:
                 return False
@@ -48,7 +48,7 @@ def ansi_to_red_green_blue(ansi):
     assert 231 >= a >= 16
     red, green, blue = ((a - 16) / 36) % 6, ((a - 16) / 6) % 6, (a - 16) % 6
 
-    def decimal_to_rgb(i):
+    def decimal_to_rgb(i) -> int:
         if not i:
             return 0
         return int((i * 40) + 55)
@@ -56,7 +56,7 @@ def ansi_to_red_green_blue(ansi):
     return decimal_to_rgb(red), decimal_to_rgb(green), decimal_to_rgb(blue)
 
 
-def red_green_blue_to_int(red, green, blue):
+def red_green_blue_to_int(red: int, green: int, blue: int):
     assert 0 <= red < 512
     assert 0 <= blue < 512
     assert 0 <= green < 512, green
@@ -95,7 +95,7 @@ def html_to_html(string):
     return digits
 
 
-def hashed_html(string):
+def hashed_html(string) -> str:
     return f"#{html_to_html(string)}"
 
 
@@ -106,11 +106,11 @@ def html_to_red_green_blue(string):
     return int(string[:2], 16), int(string[2:4], 16), int(string[4:], 16)
 
 
-def integer_to_html(integer):
+def integer_to_html(integer) -> str:
     return "#%06X" % integer
 
 
-def html_to_ansi(string):
+def html_to_ansi(string) -> int:
     i = html_to_small_ansi(string)
     if i is not None:
         return i

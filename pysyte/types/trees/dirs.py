@@ -50,7 +50,7 @@ class DirectPath(paths.Path, PathAssertions):
             return self
         return self.parent
 
-    def remove_dir(self):
+    def remove_dir(self) -> bool:
         """Try to remove the path
 
         If it is a directory, try recursive removal of contents too
@@ -65,7 +65,7 @@ class DirectPath(paths.Path, PathAssertions):
             return False
         return True
 
-    def empty_directory(self):
+    def empty_directory(self) -> None:
         """Remove all contents of a directory
 
         Including any sub-directories and their contents"""
@@ -96,7 +96,7 @@ class DirectPath(paths.Path, PathAssertions):
         others = [_ for _ in items if not _.isdir()]
         return dirs, others
 
-    def make_read_only(self):
+    def make_read_only(self) -> None:
         """chmod the directory permissions to -r-xr-xr-x"""
         self.chmod(chmod.readonly_directory)
 
@@ -142,7 +142,7 @@ class DirectPath(paths.Path, PathAssertions):
 
 
 def ignore_fnmatches(ignores):
-    def ignored(a_path):
+    def ignored(a_path) -> bool:
         if not ignores:
             return False
         for ignore in ignores:

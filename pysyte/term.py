@@ -5,7 +5,7 @@ class NoTerminalAvailable(NotImplementedError):
     pass
 
 
-def _tput(tput_command):
+def _tput(tput_command: str) -> int:
     command = f"tput {tput_command}"
     status, output = getstatusoutput(command)
     if status:
@@ -20,9 +20,9 @@ def _tput(tput_command):
         return 0
 
 
-def screen_width():
+def screen_width() -> int:
     return _tput("cols")
 
 
-def screen_height():
+def screen_height() -> int:
     return _tput("lines")

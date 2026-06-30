@@ -12,7 +12,7 @@ def put_clipboard_data(data):
     run(platform.bash_copy, encoding="utf-8", input=data)
 
 
-def get_clipboard_data():
+def get_clipboard_data() -> str:
     result = run(platform.bash_paste, capture_output=True, encoding="utf-8")
     return result.stdout
 

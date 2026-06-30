@@ -10,7 +10,7 @@ class Config(NameSpaces):
         super().__init__(data)
 
 
-def load(path_to_config):
+def load(path_to_config) -> Config:
     with path_to_config.open() as stream:
         data = yaml.safe_load(stream)
         return Config(data)

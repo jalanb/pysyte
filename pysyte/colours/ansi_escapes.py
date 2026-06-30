@@ -5,23 +5,23 @@ All numbers used in this file are values usable in an ANSI escape sequence
 """
 
 
-def escape(string):
+def escape(string: str) -> str:
     return f"\033{string}"
 
 
-def escape_sequence(string):
+def escape_sequence(string: str) -> str:
     return escape(f"[{string}m")
 
 
-def bold():
+def bold() -> str:
     return escape_sequence("1")
 
 
-def no_bold():
+def no_bold() -> str:
     return escape_sequence("22")
 
 
-def no_colour():
+def no_colour() -> str:
     return escape_sequence("2") + escape_sequence("0")
 
 
@@ -29,7 +29,7 @@ def no_prompt():
     return prompt(no_colour())
 
 
-def _colour_16(ground, i):
+def _colour_16(ground: int, i) -> str:
     if i > 7:
         prefix = bold()
         i = i - 8
@@ -39,23 +39,23 @@ def _colour_16(ground, i):
     return f"{prefix}{escaped}"
 
 
-def _colour_256(ground, i):
+def _colour_256(ground: int, i) -> str:
     return escape_sequence(f"{ground};5;{i}")
 
 
-def _background_16(i):
+def _background_16(i) -> str:
     return _colour_16(4, i)
 
 
-def _background_256(i):
+def _background_256(i) -> str:
     return _colour_256(48, i)
 
 
-def _foreground_16(i):
+def _foreground_16(i) -> str:
     return _colour_16(3, i)
 
 
-def _foreground_256(i):
+def _foreground_256(i) -> str:
     return _colour_256(38, i)
 
 
@@ -63,36 +63,36 @@ def _small_colour_number(i):
     return i < 16
 
 
-def foreground(i):
+def foreground(i) -> str:
     if not i:
         return ""
     return _small_colour_number(i) and _foreground_16(i) or _foreground_256(i)
 
 
-def background(i):
+def background(i) -> str:
     if not i:
         return ""
     return _small_colour_number(i) and _background_16(i) or _background_256(i)
 
 
-def prompt(string):
+def prompt(string: str) -> str:
     return f"\001{string}\002"
 
 
-def colour_string(colour, text):
+def colour_string(colour: str, text) -> str:
     stop = no_colour() if colour else ""
     return f"{colour}{text}{stop}"
 
 
-def foreground_string(text, i):
+def foreground_string(text, i) -> str:
     return colour_string(foreground(i), text)
 
 
-def background_string(text, i):
+def background_string(text, i) -> str:
     return colour_string(background(i), text)
 
 
-def grounds_string(text, background_colour, foreground_colour):
+def grounds_string(text, background_colour, foreground_colour) -> str:
     return "%s%s%s%s" % (
         background(background_colour),
         foreground(foreground_colour),
@@ -101,6 +101,6 @@ def grounds_string(text, background_colour, foreground_colour):
     )
 
 
-def prompt_string(text, i):
+def prompt_string(text, i) -> str:
     string = foreground(i)
     return f"{prompt(string)}{text}{no_prompt()}"

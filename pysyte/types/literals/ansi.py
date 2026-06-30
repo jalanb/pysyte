@@ -27,5 +27,5 @@ grey = dark_colour % 37
 off = "\033[0m"
 
 
-def highlighted(colour, text):
+def highlighted(colour, text) -> str:
     return f"{colour}{text}{off}"

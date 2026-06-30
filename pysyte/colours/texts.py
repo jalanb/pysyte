@@ -35,16 +35,16 @@ class ColouredTail(object):
         self.reddy = partial(self.colour_text, "light red")
         self.none = partial(self.colour_text, None)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.head!r}{self.tail!r}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.head}{self.tail}"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
-    def colour_text(self, *args):
+    def colour_text(self, *args) -> ColouredTail:
         try:
             colour_name, text = args
         except ValueError:
@@ -56,7 +56,7 @@ class ColouredTail(object):
     colour = text = colour_text
 
 
-def colour_text(colour_name, text, head=None):
+def colour_text(colour_name, text, head=None) -> ColouredTail:
     return ColouredTail(
         head or "",
         ansi_escapes.foreground_string(
@@ -73,11 +73,11 @@ for name in colour_names.cga():
 none = partial(colour_text, None)
 
 
-def colour_initial(colour_name, string):
+def colour_initial(colour_name, string) -> ColouredTail:
     return colour(colour_name, string[0]).colour(None, string[1:])
 
 
-def colour_initials(colour_name, strings):
+def colour_initials(colour_name, strings) -> str:
     return "".join([str(colour_initial(colour_name, s)) for s in strings])
 
 

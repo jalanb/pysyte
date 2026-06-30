@@ -20,7 +20,7 @@ class Nones(list):
         self.args = args
         super().__init__(*args)
 
-    def check(self, i) -> bool:
+    def check(self, i: int) -> bool:
         if self.limit < 0:
             return True
         if len(self.args) <= self.limit:

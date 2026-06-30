@@ -48,7 +48,7 @@ class FilePath(paths.Path, PathAssertions):
         """A list of all non-empty, non-comment lines"""
         return [_ for _ in self.stripped_whole_lines() if not _.startswith("#")]
 
-    def isroot(self):
+    def isroot(self) -> bool:
         """A file cannot be root of a filesystem"""
         return False
 
@@ -56,19 +56,19 @@ class FilePath(paths.Path, PathAssertions):
         """Whether the file has any executable bits set"""
         return self.has_executable()
 
-    def has_line(self, string):
+    def has_line(self, string) -> bool:
         for line in self:
             if string == line:
                 return True
         return False
 
-    def any_line_has(self, string):
+    def any_line_has(self, string) -> bool:
         for line in self:
             if string in line:
                 return True
         return False
 
-    def make_read_only(self):
+    def make_read_only(self) -> None:
         """chmod the file permissions to -r--r--r--"""
         self.chmod(chmod.readonly_file)
 
@@ -107,10 +107,10 @@ class FilePath(paths.Path, PathAssertions):
         return self._language
 
     @language.setter
-    def language(self, value):
+    def language(self, value) -> None:
         self._language = value
 
-    def write(self, string: str):
+    def write(self, string: str) -> None:
         self.file.write_text(string)
 
 
@@ -138,7 +138,7 @@ def ext_language(ext, exts=None, simple=True):
 class StringFile(FilePath):
     """A path to an unknown file with a string"""
 
-    def __init__(self, *args: str):
+    def __init__(self, *args: str) -> None:
         self.file = FilePath()
         self.file.write(*args)
         super().__init__(*args)

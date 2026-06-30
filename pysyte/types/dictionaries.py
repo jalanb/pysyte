@@ -86,7 +86,7 @@ def group_list_by(items, key_from_item):
 class DefaultDict(defaultdict):
     """A default dict with improved repr"""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         from pprint import pformat
 
         name = self.__class__.__name__
