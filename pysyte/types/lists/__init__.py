@@ -95,7 +95,8 @@ class UniquelyTrues(Uniques):
 def de_duplicate(items: List) -> List:
     """Remove any duplicate item, preserving order
 
-    >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2]) == [1, 9, 2, 8, 7]
+    >>> assert   list( set( [1, 9, 2, 8, 1, 7, 2])) != [1, 9, 2, 8, 7]
+    >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2] ) == [1, 9, 2, 8, 7]
     """
     return list(Uniques(items))
 
