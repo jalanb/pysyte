@@ -39,6 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 lint = [
+    "autotyping",
     "black",
     "blackdoc",
     "flake8",
@@ -112,6 +113,7 @@ envlist = [
 [tool.tox.env.formats]
 deps = [".[lint]"]
 commands = [
+    ["python", "-m", "autotyping", "--safe", "pysyte"],
     ["black", "-S", "."],
     ["blackdoc", "-S", "--include", "[.](md|py|test)", "--exclude", ".*\\.swp$", "."],
     ["isort", "pysyte"],
