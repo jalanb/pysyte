@@ -40,7 +40,7 @@ ArgumentsParsers = Callable[[arguments.ArgumentsParser], arguments.ArgumentsPars
 @dataclass
 class CallerData:
     function: MainMethod
-    add_args: Optional[ArgumentsParsers]
+    add_args: ArgumentsParsers | None
 
 
 def exit(main: Callable):
@@ -50,11 +50,11 @@ def exit(main: Callable):
 
 def run(
     main_method: Callable,
-    add_args: Optional[ArgumentsParsers] = None,
-    post_parse: Optional[Callable] = None,
-    usage: Optional[str] = None,
-    epilog: Optional[str] = None,
-    config_name: Optional[str] = None,
+    add_args: ArgumentsParsers | None = None,
+    post_parse: Callable | None = None,
+    usage: str = "",
+    epilog: str = "",
+    config_name: str = "",
 ):
     """Run a main_method from command line, parsing arguments
 

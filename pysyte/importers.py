@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import importlib
 import linecache
 import os
-from typing import Iterator
+from collections.abc import Iterator
 
 from pym.ast.visit import visitors
 

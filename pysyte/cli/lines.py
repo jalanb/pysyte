@@ -19,7 +19,7 @@ class LinesParser(ArgumentsParser):
     def __init__(self, parser_: ArgumentsParser):
         super().__init__(parser_)
         self.version = __version__
-        self.groups: DefaultDict[str, List] = defaultdict(list)
+        self.groups: DefaultDict[str, list] = defaultdict(list)
 
     def add_files(self, name=None, action=None):
         name_ = name if name else "files"

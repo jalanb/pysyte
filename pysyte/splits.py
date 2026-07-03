@@ -18,7 +18,7 @@ def _default_separator() -> str:
     return punctuation.comma
 
 
-def join(items: list, separator: Optional[str] = None) -> str:
+def join(items: list, separator: str | None = None) -> str:
     """Join the items into a string using the separator
 
     Converts items to strings if needed
@@ -42,7 +42,7 @@ def seamless_join(items: list) -> str:
     return join(items, nones.string)
 
 
-def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> List[str]:
+def split(string: str, separator_regexp: str | None = None, maxsplit=0) -> list[str]:
     """Split a string to a list
 
     >>> split("fred, was, here")
@@ -59,8 +59,8 @@ def split(string: str, separator_regexp: Optional[str] = None, maxsplit=0) -> Li
 
 
 def split_and_strip(
-    string: str, separator_regexp: Optional[str] = None, maxsplit: int=0
-) -> List[str]:
+    string: str, separator_regexp: str | None = None, maxsplit: int=0
+) -> list[str]:
     """Split a string into items and trim any excess spaces from the items
 
     >>> split_and_strip("fred, was, here  ")
@@ -77,8 +77,8 @@ def split_and_strip(
 
 
 def split_and_strip_without(
-    string: str, exclude, separator_regexp: Optional[str] = None
-) -> List[str]:
+    string: str, exclude, separator_regexp: str | None = None
+) -> list[str]:
     """Split a string into items, and trim any excess spaces
 
     Any items in exclude are not in the returned list
@@ -93,8 +93,8 @@ def split_and_strip_without(
 
 
 def split_and_strip_whole(
-    string: str, separator_regexp: Optional[str] = None
-) -> List[str]:
+    string: str, separator_regexp: str | None = None
+) -> list[str]:
     """Split a string into items and trim any excess spaces from the items
 
     Exclude any empty items
@@ -105,7 +105,7 @@ def split_and_strip_whole(
     return split_and_strip_without(string, [""], separator_regexp)
 
 
-def split_by_count(items: list, count: int, filler: Optional[Any] = None) -> List[Tuple]:
+def split_by_count(items: list, count: int, filler: Any | None = None) -> list[tuple]:
     """Split the items into tuples of count items each
 
     >>> split_by_count([0, 1, 2, 3], 2)
@@ -134,7 +134,7 @@ def split_by_count(items: list, count: int, filler: Optional[Any] = None) -> Lis
     return list(zip(*iterators))
 
 
-def pairs(items: list, filler: Optional[Any] = None) -> List[Tuple]:
+def pairs(items: list, filler: Any | None = None) -> list[tuple]:
     """Split the items into pairs
 
     >>> pairs([0, 1, 2, 7, 8, 9, 10])
@@ -147,7 +147,7 @@ def pairs(items: list, filler: Optional[Any] = None) -> List[Tuple]:
     return split_by_count(items, 2, filler)
 
 
-def threes(items: list, filler: Optional[Any] = None) -> List[Tuple]:
+def threes(items: list, filler: Any | None = None) -> list[tuple]:
     """Split the items into groups of 3
 
     >>> threes([0, 1, 2, 6, 7, 8, 9])
@@ -160,7 +160,7 @@ def threes(items: list, filler: Optional[Any] = None) -> List[Tuple]:
     return split_by_count(items, 3, filler)
 
 
-def despaced(string: str) -> List[str]:
+def despaced(string: str) -> list[str]:
     """Split a string into spaceless items
 
     Split on spaces, trim excess space, exclude any empty strings
@@ -171,7 +171,7 @@ def despaced(string: str) -> List[str]:
     return split_and_strip_without(string, [""], " ")
 
 
-def words(string: str) -> List[str]:
+def words(string: str) -> list[str]:
     """Split a string into words
 
     Split on (English) punctuaution, trim space, exclude any empty strings
@@ -182,7 +182,7 @@ def words(string: str) -> List[str]:
     return split_and_strip_without(string, [""], "[,;. ]")
 
 
-def rejoin(string: str, separator_regexp: Optional[str] = None, spaced=False) -> str:
+def rejoin(string: str, separator_regexp: str | None = None, spaced=False) -> str:
     """Split a string and then rejoin it
 
     Spaces are interspersed between items only if spaced is True

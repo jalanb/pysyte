@@ -23,8 +23,7 @@ class DirectPath(paths.Path, PathAssertions):
         return files.FilePath
 
     def __iter__(self):
-        for a_path in self.listdir():
-            yield a_path
+        yield from self.listdir()
 
     def __add__(self, other: strings.StringPath) -> strings.StringPath:
         string = f"{self}/{other}"
@@ -114,14 +113,14 @@ class DirectPath(paths.Path, PathAssertions):
     # pylint: disable=arguments-differ
     def walkdirs(self, pattern=None, errors="strict", ignores=None):
         ignored = ignore_fnmatches(ignores)
-        for path_to_dir in super(DirectPath, self).walkdirs(pattern, errors):
+        for path_to_dir in super().walkdirs(pattern, errors):
             if not ignored(path_to_dir.relpath(self)):
                 yield path_to_dir
 
     # pylint: disable=arguments-differ
     def walkfiles(self, pattern=None, errors="strict", ignores=None):
         ignored = ignore_fnmatches(ignores)
-        for path_to_file in super(DirectPath, self).walkfiles(pattern, errors):
+        for path_to_file in super().walkfiles(pattern, errors):
             if not ignored(path_to_file.relpath(self)):
                 yield path_to_file
 

@@ -40,7 +40,7 @@ class MockLinesError(MockSketch):
     """Mock some lines into a file, but raise an error"""
 
     def lines(self, encoding=None, errors="strict", retain=True):
-        raise IOError("something went wrong")
+        raise OSError("something went wrong")
 
 
 class TestPaths(TestCase):

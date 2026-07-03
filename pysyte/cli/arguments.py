@@ -25,7 +25,7 @@ def config(arguments):
     return load_configs(arguments.prog)
 
 
-def extract_strings(names: dict, name: str) -> List[str]:
+def extract_strings(names: dict, name: str) -> list[str]:
     try:
         value = names[name]
     except KeyError:
@@ -43,7 +43,7 @@ class IntyAction(argparse.Action):
         setattr(namespace, self.dest, inty(value))
 
 
-class ArgumentsParser(object):
+class ArgumentsParser:
     """Add more attriubtes and methods to an argparse.ArgumentParser"""
 
     def __init__(self, argparser):
@@ -128,7 +128,7 @@ class DescribedParser(ArgumentsParser):
         )
 
 
-class ArgumentsNamespace(object):
+class ArgumentsNamespace:
     def __init__(self, result):
         self._result = result
 
@@ -151,7 +151,7 @@ class ArgumentsNamespace(object):
     def get_arg(self, name: str) -> Any:
         return getattr(self._result, name, None)
 
-    def get_strings(self, name: str) -> List[str]:
+    def get_strings(self, name: str) -> list[str]:
         if not self._result:
             return []
         return extract_strings(self._result.__dict__, name)

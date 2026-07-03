@@ -3,7 +3,7 @@
 from pysyte.colours import colour_numbers
 
 
-class Colour(object):
+class Colour:
     def __init__(self, name):
         self._id = colour_numbers.name_to_id(name)
         self._name = name

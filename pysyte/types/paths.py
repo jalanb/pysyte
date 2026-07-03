@@ -3,8 +3,6 @@
 The classes all inherit from the original path.path
 """
 
-from __future__ import annotations
-
 from fnmatch import fnmatch
 import os
 

@@ -122,7 +122,7 @@ class NameSpace(dict):
 
     def __init__(self, *args, **kwargs):
         """>>> assert NameSpace({'fred': 1}).fred == 1"""
-        super(NameSpace, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__dict__ = self
 
     def update(self, other):
@@ -140,7 +140,7 @@ class NameSpaces(NameSpace):
         data = {}
         for key, value in (thing or {}).items():
             data[key] = NameSpaces(value) if isinstance(value, dict) else value
-        super(NameSpaces, self).__init__(data)
+        super().__init__(data)
 
 
 @dataclass

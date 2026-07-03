@@ -20,8 +20,7 @@ class FilePath(paths.Path, PathAssertions):
         raise errors.PathError("%r has no children" % self)
 
     def __iter__(self):
-        for line in self.stripped_lines():
-            yield line
+        yield from self.stripped_lines()
 
     def __add__(self, other: strings.StrPath) -> strings.StringPath:
         return self.addext(other)
@@ -147,7 +146,7 @@ class StringFile(FilePath):
 class ExtendedPath(FilePath):
     """A file path with an extension"""
 
-    def dezip(self) -> Tuple[StringPath, str]:
+    def dezip(self) -> tuple[StringPath, str]:
         """Split all zipping extensions from the path
 
         >>> p = FilePath("here/fred.tar.gz")

@@ -14,7 +14,7 @@ from pysyte.colours import colour_names
 from pysyte.colours import colour_numbers
 
 
-class ColouredTail(object):
+class ColouredTail:
     """The tail of a string that is being coloured
 
     Also holds its head

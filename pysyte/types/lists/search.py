@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable
+from collections.abc import Callable
 from typing import List
 
 """
@@ -81,7 +81,7 @@ class Picker:
         return self.picker(*args, **kwargs)
 
 
-def directed_search(average: Picker, arr: List[int], sought: int) -> int:
+def directed_search(average: Picker, arr: list[int], sought: int) -> int:
     """
     Perform a directed search on a sorted array to find the index of a sought element.
 

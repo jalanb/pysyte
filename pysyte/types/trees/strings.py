@@ -4,11 +4,10 @@ from dataclasses import dataclass
 import os
 from typing import (
     Any,
-    Callable,
-    Iterable,
-    Sequence,
     TypeAlias,
 )
+from collections.abc import Callable
+from collections.abc import Iterable, Sequence
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath

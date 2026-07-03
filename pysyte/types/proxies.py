@@ -3,7 +3,7 @@
 from typing import Any
 
 
-class Proxy(object):
+class Proxy:
     """Offers attributes from self, or another object"""
 
     def __init__(self, value: Any, name: str = "", **kwargs: dict) -> None:

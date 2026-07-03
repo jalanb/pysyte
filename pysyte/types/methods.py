@@ -16,7 +16,7 @@ from dataclasses import dataclass
 import inspect
 from types import FrameType
 from types import ModuleType
-from typing import Callable
+from collections.abc import Callable
 from typing import Optional
 
 from lazy import lazy
@@ -66,7 +66,7 @@ class Method(MethodData):
         return self.method(*args, **kwargs)
 
     @property
-    def name(self) -> Optional[ModuleType]:
+    def name(self) -> ModuleType | None:
         return self.method.name
 
     def __call__(self, *args, **kwargs):
@@ -93,7 +93,7 @@ class Method(MethodData):
         return inspect.getmodule(self.method)
 
     @property
-    def module_name(self) -> Optional[ModuleType]:
+    def module_name(self) -> ModuleType | None:
         return self.method.__module__
 
     @property

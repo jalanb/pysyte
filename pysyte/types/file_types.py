@@ -57,15 +57,15 @@ class FileTypes:
     >>> assert isinstance(fred, YamlConfig)
     """
 
-    file_types: List[FileType]
+    file_types: list[FileType]
 
-    def __init__(self, file_types: List[FileType]):
+    def __init__(self, file_types: list[FileType]):
         """Convert all elements in file_types to FileType instances."""
         self.file_types = [
             _ if isinstance(_, FileType) else FileType(*_) for _ in file_types
         ]
 
-    def extend(self, file_stem: files.FilePath) -> List[files.FilePath]:
+    def extend(self, file_stem: files.FilePath) -> list[files.FilePath]:
         """The first real file matching the stem with one of our extensions"""
         for file_type in self.file_types:
             file = file_type.extend(file_stem)

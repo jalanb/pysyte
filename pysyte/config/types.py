@@ -45,7 +45,7 @@ class ConfigFile(ABC):
 
 
 class ConfigFileType(Configuration):
-    types: List[str] = []
+    types: list[str] = []
 
     def __init__(self, stem: str):
         self.path = self.path(stem)
@@ -58,7 +58,7 @@ class ConfigFileType(Configuration):
             raise NotImplementedError
         return path
 
-    def paths(self, stem_: str) -> List[paths.StringPath]:
+    def paths(self, stem_: str) -> list[paths.StringPath]:
         stem = paths.path(stem_)
         files = [stem.extend_by(_) for _ in self.types]
         return [_ for _ in files if _ and _.isfile()]

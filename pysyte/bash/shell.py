@@ -13,8 +13,8 @@ class BashError(ValueError):
     pass
 
 
-_working_dirs: List[str] = [""]
-_paths: List[str] = []
+_working_dirs: list[str] = [""]
+_paths: list[str] = []
 
 
 def cd(path: str):

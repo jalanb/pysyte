@@ -55,7 +55,7 @@ def show_imports(args: ArgumentsParser, source: paths.StringPath) -> bool:
     if args.unused:
         modules.extend(show_unused(visitor))
     if args.edit and modules:
-        sought = r"\|".join((rf"\<{_}\>" for _ in modules))
+        sought = r"\|".join(rf"\<{_}\>" for _ in modules)
         print(f'\nvim {visitor.path} +/"{sought}"')
     return bool(modules)
 

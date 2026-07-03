@@ -19,7 +19,7 @@ import signal
 import sys
 import termios
 import tty
-from typing import Callable
+from collections.abc import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -38,7 +38,7 @@ def get_ord() -> int:
     return ord(std.in_(1))
 
 
-class TerminalContext(object):
+class TerminalContext:
     """Context wrapper to set up termios values"""
 
     def __init__(self):
@@ -71,7 +71,7 @@ def timeout_raiser(_signum, _frame):
     raise Timeout()
 
 
-class TimerContext(object):
+class TimerContext:
     """Context wrapper for a timeout"""
 
     def __init__(self, seconds):
@@ -93,7 +93,7 @@ class TimerContext(object):
             return True
 
 
-_key_cache: List[Tuple[int, ...]] = []
+_key_cache: list[tuple[int, ...]] = []
 
 
 def cache_keys(keys):
@@ -142,7 +142,7 @@ class ExtendedKey(Exception):
     """Raised for an unrecognised Extended key code"""
 
     def __init__(self, codes):
-        super(ExtendedKey, self).__init__(f"Too many key codes: {codes!r}")
+        super().__init__(f"Too many key codes: {codes!r}")
         self.codes = codes
 
 
@@ -247,7 +247,7 @@ def get_extended_key_name(codes) -> str:
     return known_keys()[codes]
 
 
-def known_keys() -> Dict[Tuple[int, ...], str]:
+def known_keys() -> dict[tuple[int, ...], str]:
     result = {
         (27, 79, 70): "end",
         (27, 79, 72): "home",
@@ -296,7 +296,7 @@ def known_keys() -> Dict[Tuple[int, ...], str]:
     return _add_ascii_keys(result)
 
 
-def _add_ascii_keys(data) -> Dict[Tuple[int, ...], str]:
+def _add_ascii_keys(data) -> dict[tuple[int, ...], str]:
     """Update the data with ascii keys
 
     >>> data = _add_ascii_keys({})

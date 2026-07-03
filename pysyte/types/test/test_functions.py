@@ -13,7 +13,7 @@ def initials(forename, surname, stream):
     Function is memoized, so we show an actual call by writing to stream
     """
     print(" ".join(("Call:", str(forename), str(surname))), file=stream)
-    return "%s%s" % (forename[0], surname[0])
+    return f"{forename[0]}{surname[0]}"
 
 
 @functions.memoized

@@ -17,7 +17,7 @@ from functools import singledispatch
 import inspect
 from types import FrameType
 from types import ModuleType
-from typing import Callable
+from collections.abc import Callable
 from typing import Optional
 
 from lazy import lazy
@@ -54,11 +54,11 @@ class Function:
         return self.callable(*args, **kwargs)
 
     @property
-    def name(self) -> Optional[ModuleType]:
+    def name(self) -> ModuleType | None:
         return self.callable.name
 
     @property
-    def module(self) -> Optional[ModuleType]:
+    def module(self) -> ModuleType | None:
         return inspect.getmodule(self.callable)
 
     @property
@@ -66,7 +66,7 @@ class Function:
         return inspect.getdoc(self.callable) or ""
 
     @property
-    def caller(self) -> Optional[FrameType]:
+    def caller(self) -> FrameType | None:
         return self.post_init_frame.f_back
 
     def __getattr__(self, name):

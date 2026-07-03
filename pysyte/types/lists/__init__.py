@@ -2,8 +2,8 @@
 
 import itertools
 from typing import Any
-from typing import Callable
-from typing import Iterable
+from collections.abc import Callable
+from collections.abc import Iterable
 from typing import List
 from typing import Tuple
 from typing import TypeVar
@@ -92,7 +92,7 @@ class UniquelyTrues(Uniques):
         return bool(item)
 
 
-def de_duplicate(items: List) -> List:
+def de_duplicate(items: list) -> list:
     """Remove any duplicate item, preserving order
 
     >>> assert   list( set( [1, 9, 2, 8, 1, 7, 2])) != [1, 9, 2, 8, 7]
@@ -101,7 +101,7 @@ def de_duplicate(items: List) -> List:
     return list(Uniques(items))
 
 
-def flatten(list_of_lists: List[List]) -> List:
+def flatten(list_of_lists: list[list]) -> list:
     """Reduce a lists of lists to a list, comprehensively
 
     >>> assert flatten([[1, 2], [3, 4]]) == [1, 2, 3, 4]
@@ -112,7 +112,7 @@ def flatten(list_of_lists: List[List]) -> List:
     return [item for list_ in list_of_lists for item in list_]
 
 
-def flatten_(list_of_lists: List[List]) -> List:
+def flatten_(list_of_lists: list[list]) -> list:
     """Reduce a lists of lists to a list, functionally
 
     >>> assert flatten_([[1, 2], [3, 4]]) == [1, 2, 3, 4]
@@ -139,7 +139,7 @@ def as_list(item):
                 raise TypeError(f"Cannot make a list from {item!r}")
 
 
-def splits(predicate: Callable, items: List) -> Tuple[List[Any], List[Any]]:
+def splits(predicate: Callable, items: list) -> tuple[list[Any], list[Any]]:
     """Split a list into 2 lists based one the predicate
 
     >>> is_odd = lambda x: bool(x % 2)
@@ -147,8 +147,8 @@ def splits(predicate: Callable, items: List) -> Tuple[List[Any], List[Any]]:
     >>> assert odds == [1, 3, 5]
     >>> assert evens == [0, 2, 4, 6]
     """
-    one: List[Any] = []
-    two: List[Any] = []
+    one: list[Any] = []
+    two: list[Any] = []
     for item in items:
         destination = one if predicate(item) else two
         destination.append(item)

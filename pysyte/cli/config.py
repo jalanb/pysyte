@@ -11,7 +11,7 @@ from pysyte.types.paths import DirectPath
 from pysyte.types.paths import path
 
 
-def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
+def _common_config_dirs(extras: list[DirectPath]) -> list[DirectPath]:
     """Build a list of common config dirs
 
     Try each of the following directories
@@ -35,7 +35,7 @@ def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
         elif expanded.isfile():
             configs.append(expanded.parent)
 
-    configs: List[DirectPath] = []
+    configs: list[DirectPath] = []
     add_dir("/etc")
     for path_ in linux.xdg_dirs():
         add_dir(path_)
@@ -46,7 +46,7 @@ def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
     return configs
 
 
-def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
+def load_configs(name: str, extras: list | None = None) -> NameSpaces:
     """Load all config files with that name from common config dirs"""
     config_paths = ConfigPaths(_common_config_dirs(extras or []))
     return config_paths.load(name)

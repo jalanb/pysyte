@@ -9,9 +9,9 @@ from typing import List
 @dataclass
 class Host:
     hostname: str
-    aliases: List[str]
-    addresses: List[str]
-    users: List[str]
+    aliases: list[str]
+    addresses: list[str]
+    users: list[str]
 
 
 def _read_localhost() -> Host:

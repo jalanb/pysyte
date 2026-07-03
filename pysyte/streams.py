@@ -3,7 +3,7 @@
 from contextlib import contextmanager
 from io import StringIO
 import sys
-from typing import Generator
+from collections.abc import Generator
 from typing import Optional
 from typing import TextIO
 from typing import Tuple
@@ -55,7 +55,7 @@ def print_err(*args, **kwargs):
 
 
 @contextmanager
-def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
+def swallow_stdout(stream: TextIO | None = None) -> Generator[TextIO]:
     """Divert stdout into the given stream
 
     >>> with swallow_stdout() as stream:
@@ -75,7 +75,7 @@ def swallow_stdout(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 
 
 @contextmanager
-def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, None]:
+def swallow_stderr(stream: TextIO | None = None) -> Generator[TextIO]:
     """Divert stderr into the given stream
 
     >>> with swallow_stderr() as string:
@@ -95,7 +95,7 @@ def swallow_stderr(stream: Optional[TextIO] = None) -> Generator[TextIO, None, N
 
 
 @contextmanager
-def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
+def swallow_std() -> Generator[tuple[TextIO, TextIO]]:
     """Divert stdout and stderr to the given stream
 
     >>> with swallow_std() as streams:
@@ -114,7 +114,7 @@ def swallow_std() -> Generator[Tuple[TextIO, TextIO], None, None]:
 
 
 @contextmanager
-def swallow_stdin(text: str) -> Generator[StringIO, None, None]:
+def swallow_stdin(text: str) -> Generator[StringIO]:
     """Feed the given text into sys.stdin as if typed
 
     >>> from pysyte.oss import getch

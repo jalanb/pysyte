@@ -7,13 +7,13 @@ name = "pysyte"
 version = "0.8.79"
 description = "Pysyte extends Python"
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 license = {text = "MIT License"}
 authors = [
     {name = "jalanb", email = "github@al-got-rhythm.net"}
 ]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.13",
     "Development Status :: 4 - Beta",
     "Natural Language :: English",
     "Environment :: Console",

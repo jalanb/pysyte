@@ -93,7 +93,7 @@ def background_string(text, i) -> str:
 
 
 def grounds_string(text, background_colour, foreground_colour) -> str:
-    return "%s%s%s%s" % (
+    return "{}{}{}{}".format(
         background(background_colour),
         foreground(foreground_colour),
         text,

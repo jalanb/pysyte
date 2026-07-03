@@ -54,7 +54,7 @@ class DictionariesTest(unittest.TestCase):
         ]
         for key, value, expected in data:
             dictionaries.append_value(dictionary, key, value)
-            message = "append(%s, %s): %s != %s" % (
+            message = "append({}, {}): {} != {}".format(
                 key,
                 value,
                 expected,
@@ -72,7 +72,7 @@ class DictionariesTest(unittest.TestCase):
         ]
         for key, value, expected in data:
             dictionaries.extend_values(dictionary, key, value)
-            message = "extend(%s, %s): %s != %s" % (
+            message = "extend({}, {}): {} != {}".format(
                 key,
                 value,
                 expected,
