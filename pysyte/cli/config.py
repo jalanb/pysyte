@@ -1,15 +1,15 @@
 """Handle configs from program name"""
 
-from typing import List, Optional
 
 from pysyte import __file__ as path_to_pysyte
 from pysyte.config.types import ConfigPaths
 from pysyte.oss import linux
 from pysyte.types.dictionaries import NameSpaces
-from pysyte.types.paths import DirectPath, path
+from pysyte.types.paths import DirectPath
+from pysyte.types.paths import path
 
 
-def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
+def _common_config_dirs(extras: list[DirectPath]) -> list[DirectPath]:
     """Build a list of common config dirs
 
     Try each of the following directories
@@ -21,8 +21,8 @@ def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
         then any extras specified as args
     """
 
-    def add_dir(value: str):
-        path_ = path(value)
+    def add_dir(string: str):
+        path_ = path(string)
         if not path_:
             return
         expanded = path_.expand()
@@ -35,8 +35,7 @@ def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
 
     configs: List[DirectPath] = []
     add_dir("/etc")
-    for path_ in linux.xdg_dirs():
-        add_dir(path_)
+    configs.extend(_ for _ in linux.xdg_dirs if _.isdir())
     add_dir("~/.config")
     add_dir(linux.xdg_home())
     for path_ in extras or []:
@@ -44,7 +43,7 @@ def _common_config_dirs(extras: List[DirectPath]) -> List[DirectPath]:
     return configs
 
 
-def load_configs(name: str, extras: Optional[list] = None) -> NameSpaces:
+def load_configs(name: str, extras: list | None = None) -> NameSpaces:
     """Load all config files with that name from common config dirs"""
     config_paths = ConfigPaths(_common_config_dirs(extras or []))
     return config_paths.load(name)
