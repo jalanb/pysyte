@@ -35,7 +35,7 @@ def _common_config_dirs(extras: list[DirectPath]) -> list[DirectPath]:
 
     configs: List[DirectPath] = []
     add_dir("/etc")
-    configs.extend(_ for _ in linux.xdg_dirs if _.isdir())
+    configs.extend(_ for _ in linux.xdg_dirs() if _.isdir())
     add_dir("~/.config")
     add_dir(linux.xdg_home())
     for path_ in extras or []:
