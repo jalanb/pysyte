@@ -1,11 +1,8 @@
 """A collection of extended path classes and methods
 
 The classes all inherit from the original path.path
-
->>> here = path(__file__)
->>> assert here
->>> assert here.parent / here.name == here
 """
+
 from __future__ import annotations
 
 import os
@@ -536,7 +533,7 @@ class FilePath(DotPath, PathAssertions):
         for line in self.stripped_lines():
             yield line
 
-    def contains(self, other: StrPath) -> bool:
+    def contains(self, other: str) -> bool:
         """Whether other is in this file's text"""
         return str(other) in self.text()
 
@@ -893,14 +890,13 @@ def _____mp(arg) -> StringPath:
 @makepath.register(type(makepath))
 def ______mp(arg) -> StringPath:
     """Make a path from a function's module"""
-    from pysyte.types.methods import Function
+    from pysyte.types.methods import Method
 
-    function = Function(arg)
     method = Method(arg)
     stdin_regexp = re.compile("<(stdin|.*python-input.*)>")
-    if stdin_regexp.match(function.filename):
-        return NonePath(function.filename)
-    return _make_module_path(function)
+    if stdin_regexp.match(method.filename):
+        return NonePath(method.filename)
+    return _make_module_path(method)
 
 
 @makepath.register(type(DotPath))  # type: ignore[no-redef]
