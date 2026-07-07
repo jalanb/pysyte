@@ -1,6 +1,17 @@
 """A collection of extended path classes and methods
 
 The classes all inherit from the original path.path
+
+Most path-like things can be turned into a ...Path
+>>> here = path(__file__)
+
+We know this files exists
+>>> assert here
+
+Now that it's a ...Path it has more attribbutes and operators
+>>> assert here.parent / here.name == here
+>>> assert here.ext in ('.py', '.pyc')
+
 """
 
 from __future__ import annotations
