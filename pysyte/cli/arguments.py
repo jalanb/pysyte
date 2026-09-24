@@ -171,7 +171,7 @@ class ArgumentHandler:
             stackprinter.show(e, style=pysyte.stackprinter.style)
 
 
-def parser(description=None, usage=None, epilog=None):
+def parser(description=None, usage=None, epilog=None) -> DescribedParser:
     """Make a command line argument parser"""
 
     if usage:

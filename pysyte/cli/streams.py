@@ -10,7 +10,7 @@ from pysyte.cli import arguments
 from pysyte.oss.platforms import get_clipboard_data
 
 
-def parse_args(description=""):
+def parse_args(description="") -> arguments.ArgumentsNamespace:
     """Parse out command line arguments"""
     parser = arguments.parser(description or __doc__)
     parser.positional("streams", help="streams to use")
