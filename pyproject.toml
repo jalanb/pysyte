@@ -103,10 +103,6 @@ envlist = [
     "formats",
     "lints",
     "tests",
-    "devs",
-    "patch",
-    "minor",
-    "major",
 ]
 
 [tool.tox.env.formats]
