@@ -8,7 +8,7 @@ name = python_platform.system().lower()
 platform = importlib.import_module(f"pysyte.oss.{name}", "pysyte.oss")
 
 
-def put_clipboard_data(data):
+def put_clipboard_data(data) -> None:
     run(platform.bash_copy, encoding="utf-8", input=data)
 
 

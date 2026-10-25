@@ -11,13 +11,12 @@
 """
 
 import ast
+from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import singledispatch
 import inspect
-from types import FrameType
-from types import ModuleType
-from collections.abc import Callable
+from types import FrameType, ModuleType
 from typing import Optional
 
 from lazy import lazy
@@ -30,15 +29,15 @@ class Function:
 
     callable: Callable
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.code = self.callable.__code__
         self.post_init_frame = inspect.currentframe()
         assert self.post_init_frame
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.code
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '\n'.join(
             [
                 f"<{self.__class__.__name__} {self.module}{self.name}",
@@ -88,22 +87,22 @@ class NoFunction(Function):
     >>> assert nm == NoFunction(None) == NoFunction(0) == NoFunction(False)
     """
 
-    def __init__(self, thing: Any = lambda: ""):
-        def thingy():
+    def __init__(self, thing: Any = lambda: "") -> None:
+        def thingy() -> str:
             return ""
 
         self.thing = thing or thingy
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<{self.__class__.__name__}>'
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return False
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return not other
 
 
@@ -257,10 +256,10 @@ class Def:
     line: int
     source: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.source
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.path}:{self.line}\n{self.source}\n>"
 
     @lazy

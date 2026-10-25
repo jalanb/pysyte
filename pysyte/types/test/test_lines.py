@@ -7,19 +7,19 @@ from pysyte.types import lines
 
 
 class TestLines(TestCase):
-    def test_set_width(self):
+    def test_set_width(self) -> None:
         line = "01234567890123456789"
         expected = "012345678901234"
         actual = lines.set_width(line, 15)
         self.assertEqual(actual, expected)
 
-    def test_set_no_width(self):
+    def test_set_no_width(self) -> None:
         line = "01234567890123456789"
         expected = line
         actual = lines.set_width(line, None)
         self.assertEqual(actual, expected)
 
-    def test_add_numbers(self):
+    def test_add_numbers(self) -> None:
         """add_numbers() should prefix each line with count
 
         counts start at 1, not 0
@@ -38,7 +38,7 @@ class TestLines(TestCase):
         actual = list(lines.add_numbers(lines_))
         self.assertEqual(actual, expected)
 
-    def test_add_numbers_offset(self):
+    def test_add_numbers_offset(self) -> None:
         """add_numbers() should prefix each line with count
 
         counts start at the given number plus 1
@@ -57,7 +57,7 @@ class TestLines(TestCase):
         actual = list(lines.add_numbers(lines_, 2))
         self.assertEqual(actual, expected)
 
-    def test_add_over_10_numbers(self):
+    def test_add_over_10_numbers(self) -> None:
         """add_numbers() should prefix each line with count
 
         If total number of lines is over 2 digits,
@@ -73,7 +73,7 @@ class TestLines(TestCase):
         actual = actuals[9]
         self.assertEqual(actual, expected)
 
-    def test_select(self):
+    def test_select(self) -> None:
         """select() chooses lines"""
         text = "one,two,three,four,five,six,seven,eight,nine,ten,eleven"
         lines_ = text.split(",")
@@ -85,7 +85,7 @@ class TestLines(TestCase):
         ]
         self.assertEqual(actual, expected)
 
-    def test_as_text(self):
+    def test_as_text(self) -> None:
         """as_text() joins lines into text"""
         text = "one,two,three,four,five,six,seven,eight,nine,ten,eleven"
         lines_ = text.split(",")
@@ -94,7 +94,7 @@ class TestLines(TestCase):
         actual = lines.as_text(lines_)
         self.assertEqual(actual, expected)
 
-    def test_reformat_lines(self):
+    def test_reformat_lines(self) -> None:
         """reformat_lines() sets width, and can prefix line numbers"""
         text = "one,two,three,four,five"
         lines_ = text.split(",")
@@ -108,7 +108,7 @@ class TestLines(TestCase):
         actual = lines.reformat_lines(lines_, first=7, numbers=False, width=3)
         self.assertEqual(actual, expected)
 
-    def test_reformat_lines_with_low_numbers(self):
+    def test_reformat_lines_with_low_numbers(self) -> None:
         """reformat_lines() can prefix line numbers"""
         text = "one,two,three,four,five"
         lines_ = text.split(",")
@@ -122,7 +122,7 @@ class TestLines(TestCase):
         actual = lines.reformat_lines(lines_, first=0, numbers=True, width=0)
         self.assertEqual(actual, expected)
 
-    def test_reformat_lines_with_high_numbers(self):
+    def test_reformat_lines_with_high_numbers(self) -> None:
         """reformat_lines() sets width, and can prefix line numbers"""
         text = "one,two,three,four,five"
         lines_ = text.split(",")
@@ -139,7 +139,7 @@ class TestLines(TestCase):
         self.assertEqual(actual, expected)
 
     @patch("pysyte.types.lines.chop")
-    def test_arg_lines(self, chop):
+    def test_arg_lines(self, chop) -> None:
         """arg_lines() is a convenience method for chop()
 
         It just extracts expected args then calls chop
@@ -156,7 +156,7 @@ class TestLines(TestCase):
         chop.assert_called_with(text, args.at, args.first, args.last)
 
     @patch("pysyte.types.lines.reformat_lines")
-    def test_sed(self, reformat_lines):
+    def test_sed(self, reformat_lines) -> None:
         """sed() is a convenience method for reformat_lines()
 
         It just extracts expected args then calls reformat_lines()

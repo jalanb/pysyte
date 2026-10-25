@@ -10,7 +10,7 @@ class TestStringer(TestCase):
     Because it does not implement the __str__() function
     """
 
-    def test_str(self):
+    def test_str(self) -> None:
         string = Stringer()
         with self.assertRaises(NotImplementedError):
             _ = str(string)
@@ -22,7 +22,7 @@ class Child(Stringer):
     So should get all the extras provided by Stringer
     """
 
-    def __init__(self, string: str):
+    def __init__(self, string: str) -> None:
         self.string = string
 
     def __str__(self) -> str:
@@ -30,54 +30,54 @@ class Child(Stringer):
 
 
 class TestChildOfStringer(TestCase):
-    def test_repper(self):
+    def test_repper(self) -> None:
         child = Child("Hello")
         assert repr(child) == '<Child "Hello">'
 
-    def test_equals(self):
+    def test_equals(self) -> None:
         child = Child("Hello")
         kiddy = Child("Hello")
         assert child == kiddy
         assert kiddy == child
 
-    def test_equal_string(self):
+    def test_equal_string(self) -> None:
         child = "Hello"
         kiddy = Child("Hello")
         assert child == kiddy
         assert kiddy == child
 
-    def test_not_equal(self):
+    def test_not_equal(self) -> None:
         child = Child("Hello")
         kiddy = Child("World")
         assert child != kiddy
         assert kiddy != child
 
-    def test_not_equal_string(self):
+    def test_not_equal_string(self) -> None:
         child = "Hello"
         kiddy = Child("World")
         assert child != kiddy
         assert kiddy != child
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         child = Child("Hello")
         assert hash(child) == hash("Hello")
 
-    def test_less(self):
+    def test_less(self) -> None:
         low = Child("aaa")
         high = Child("zzz")
         assert low < high
 
-    def test_greater(self):
+    def test_greater(self) -> None:
         low = Child("aaa")
         high = Child("zzz")
         assert high > low
 
-    def test_less_equal(self):
+    def test_less_equal(self) -> None:
         low = Child("aaa")
         high = Child("aaa" if randoms.flip() else "zzz")
         assert low <= high
 
-    def test_greater_equal(self):
+    def test_greater_equal(self) -> None:
         low = Child("aaa")
         high = Child("aaa" if randoms.flip() else "zzz")
         assert high >= low

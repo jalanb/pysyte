@@ -6,7 +6,7 @@ from pysyte.bash import shell
 
 
 class TestShell(unittest.TestCase):
-    def test_double_cd(self):
+    def test_double_cd(self) -> None:
         """This test is purely for sake of coverage
 
         The second cd (to same dir) should have no effect

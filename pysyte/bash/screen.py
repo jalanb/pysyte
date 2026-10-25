@@ -8,12 +8,12 @@ _alt_screen_started = False
 _TERM = "xterm"
 
 
-def _stop_alt_screen():
+def _stop_alt_screen() -> None:
     if _alt_screen_started:
         run(f"TERM={_TERM} tput rmcup")
 
 
-def _start_alt_screen():
+def _start_alt_screen() -> None:
     global _alt_screen_started
     _alt_screen_started = True
     run("tput smcup")

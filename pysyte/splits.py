@@ -1,13 +1,9 @@
 """Generic methods for splitting strings"""
 
 import re
-from typing import Any
-from typing import List
-from typing import Optional
-from typing import Tuple
+from typing import Any, List, Optional, Tuple
 
-from pysyte.types.literals import nones
-from pysyte.types.literals import punctuation
+from pysyte.types.literals import nones, punctuation
 
 
 def _default_separator() -> str:
@@ -59,7 +55,7 @@ def split(string: str, separator_regexp: str | None = None, maxsplit=0) -> list[
 
 
 def split_and_strip(
-    string: str, separator_regexp: str | None = None, maxsplit: int=0
+    string: str, separator_regexp: str | None = None, maxsplit: int = 0
 ) -> list[str]:
     """Split a string into items and trim any excess spaces from the items
 

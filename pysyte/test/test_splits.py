@@ -6,10 +6,10 @@ from pysyte import splits
 
 
 class TestSplits(unittest.TestCase):
-    def test_docstring(self):
+    def test_docstring(self) -> None:
         self.assertTrue(splits.__doc__)
 
-    def test_split(self):
+    def test_split(self) -> None:
         """Basic split method is similar to that of string
 
         Except that it splits on commas, not spaces
@@ -18,13 +18,13 @@ class TestSplits(unittest.TestCase):
         actual = splits.split("fred, was here")
         self.assertEqual(expected, actual)
 
-    def test_on_space(self):
+    def test_on_space(self) -> None:
         """But spaces can be specified (or any other regexp)"""
         expected = ["fred,", "was", "here"]
         actual = splits.split("fred, was here", " ")
         self.assertEqual(expected, actual)
 
-    def test_separator_regexp(self):
+    def test_separator_regexp(self) -> None:
         """Can split on a regular expression"""
         data = [
             ("one,two;three", "[,;]", ["one", "two", "three"]),
@@ -35,13 +35,13 @@ class TestSplits(unittest.TestCase):
             actual = splits.split(string, separator)
             self.assertEqual(expected, actual)
 
-    def test_split_and_strip(self):
+    def test_split_and_strip(self) -> None:
         """Split a string on commas, and trim any spaces from the results"""
         expected = ["fred", "was", "here", "today"]
         actual = splits.split_and_strip("fred,was   , here ,today")
         self.assertEqual(expected, actual)
 
-    def test_regexp(self):
+    def test_regexp(self) -> None:
         """Can supply a more complicated separator, which is a regexp
 
         Let's separate on commas or spaces
@@ -52,20 +52,20 @@ class TestSplits(unittest.TestCase):
         )
         self.assertEqual(expected, actual)
 
-    def test_maxsplit(self):
+    def test_maxsplit(self) -> None:
         """Can supply a max number of parts"""
         expected = ["fred", "was   , here ,today"]
         actual = splits.split_and_strip("fred,was   , here ,today", maxsplit=1)
         self.assertEqual(expected, actual)
 
-    def test_separator_and_maxsplit(self):
+    def test_separator_and_maxsplit(self) -> None:
         expected = ["fred", "was", "", ", here ,today"]
         actual = splits.split_and_strip(
             "fred,was   , here ,today", separator_regexp="[, ]", maxsplit=3
         )
         self.assertEqual(expected, actual)
 
-    def test_without(self):
+    def test_without(self) -> None:
         """We can say that we do not want some values in the result"""
         expected = ["fred", "was", "today"]
         actual = splits.split_and_strip_without(
@@ -73,19 +73,19 @@ class TestSplits(unittest.TestCase):
         )
         self.assertEqual(expected, actual)
 
-    def test_join(self):
+    def test_join(self) -> None:
         """Simple joins can handle non-strings"""
         expected = "1,2,3"
         actual = splits.join([1, 2, 3])
         self.assertEqual(expected, actual)
 
-    def test_joiner(self):
+    def test_joiner(self) -> None:
         """Any character can act as a joiner"""
         expected = "1--2--3"
         actual = splits.join([1, 2, 3], "--")
         self.assertEqual(expected, actual)
 
-    def test_rejoin(self):
+    def test_rejoin(self) -> None:
         """Splitting and rejoining allows better control of spaces between
 
         (not just "remove all spaces")
@@ -94,24 +94,24 @@ class TestSplits(unittest.TestCase):
         actual = splits.rejoin("fred,was   , here with some nice people,today")
         self.assertEqual(expected, actual)
 
-    def test_rejoin_spaced(self):
+    def test_rejoin_spaced(self) -> None:
         """The rejoin can add back minimal separator spaces"""
         expected = "fred, was, here, today"
         actual = splits.rejoin("fred,was   , here ,today", spaced=True)
         self.assertEqual(expected, actual)
 
-    def test_despaced(self):
+    def test_despaced(self) -> None:
         """Split a string into spaceless items"""
         expected = ["fred,", ",", "was,here", "today"]
         actual = splits.despaced("fred, , was,here today")
         self.assertEqual(expected, actual)
 
-    def test_despaced_edge_cases(self):
+    def test_despaced_edge_cases(self) -> None:
         self.assertEqual(splits.despaced("despaced"), ["despaced"])
         self.assertEqual(splits.despaced(""), [])
         self.assertEqual(splits.despaced(None), [])
 
-    def test_split_mirrors_join(self):
+    def test_split_mirrors_join(self) -> None:
         tests = ["", ",", "a,", ",b", "a,b"]
         actual = all(splits.join(splits.split(t)) == t for t in tests)
         self.assertTrue(actual)
@@ -119,21 +119,21 @@ class TestSplits(unittest.TestCase):
         actual = all(splits.split(splits.join(t)) == t for t in tests)
         self.assertTrue(actual)
 
-    def test_empty_separator(self):
+    def test_empty_separator(self) -> None:
         self.assertEqual(splits.split("i was here", ""), "i was here".split())
 
-    def test_empties_separator(self):
+    def test_empties_separator(self) -> None:
         self.assertEqual(
             splits.split_and_strip("i  was here", ""), "i was here".split()
         )
 
-    def test_no_exclusions(self):
+    def test_no_exclusions(self) -> None:
         self.assertEqual(
             splits.split_and_strip_without("i was here", ""),
             splits.split_and_strip("i was here"),
         )
 
-    def test_split_by_count(self):
+    def test_split_by_count(self) -> None:
         items = [1, 2, 3]
         actual = splits.split_by_count(items, 2, 4)
         expected = [(1, 2), (3, 4)]

@@ -15,11 +15,11 @@ from pysyte import importers
 
 
 class TestDashboardImports(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         source = __file__.replace(".pyc", ".py")  # just in case
         self.visitor = importers.parse(source)
 
-    def test_import_count(self):
+    def test_import_count(self) -> None:
         """Check that we can find imports in a file
 
         Simple check - just make sure we can count imports here
@@ -39,7 +39,7 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(len(self.visitor.froms), 3)
         self.assertEqual(len(self.visitor.used), 2)
 
-    def test_redundant_imports(self):
+    def test_redundant_imports(self) -> None:
         """Should be able to find all the imports herein
 
         And we should know which ones one them are not used
@@ -51,7 +51,7 @@ class TestDashboardImports(unittest.TestCase):
             {"defaultdict", "system", "killer", "path", "os"},
         )
 
-    def test_multiples(self):
+    def test_multiples(self) -> None:
         """Check that multiple imports of 'os' are found
 
         They are on lines 10 and 30
@@ -60,7 +60,7 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(list(multiples.keys()), ["os"])
         self.assertEqual(multiples["os"], [10, 30])
 
-    def test_redundant_has_line_numbers(self):
+    def test_redundant_has_line_numbers(self) -> None:
         """Check that each module entry in unused imports has a line number
 
         We will only test here for the first line number
@@ -70,7 +70,7 @@ class TestDashboardImports(unittest.TestCase):
         self.assertEqual(redundant["system"][0], 30)
         self.assertEqual(redundant["killer"][0], 31)
 
-    def test_redundant_lines(self):
+    def test_redundant_lines(self) -> None:
         """The unused_lines() gives a dict keyed by line number
 
         With values for all redundant modules imported on that line
@@ -85,6 +85,6 @@ class TestDashboardImports(unittest.TestCase):
 class TestErrorImports(unittest.TestCase):
     """Check edge cases when trying to parse files"""
 
-    def test_handles_missing_file(self):
+    def test_handles_missing_file(self) -> None:
         with self.assertRaises(FileNotFoundError):
             importers.parse("/not/a/file")

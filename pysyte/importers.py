@@ -3,18 +3,18 @@
 import abc
 import ast
 from collections import defaultdict
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 import importlib
 import linecache
 import os
-from collections.abc import Iterator
 
 from pym.ast.visit import visitors
 
 
 class ImportVisitor(visitors.PymVisitor):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.imports = defaultdict(list)
         self.froms = defaultdict(list)
@@ -59,23 +59,23 @@ class ImportVisitor(visitors.PymVisitor):
                     return name
         return None
 
-    def visit_ImportFrom(self, node):
+    def visit_ImportFrom(self, node) -> None:
         if node.module != "__future__":
             names = self.collect_names(node)
             self.froms[node.module].extend(names)
         self.generic_visit(node)
 
-    def visit_Import(self, node):
+    def visit_Import(self, node) -> None:
         _ = self.collect_names(node)
         self.generic_visit(node)
 
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node) -> None:
         for decorator in node.decorator_list:
             name = self.find_name(decorator, "func", "value")
             self.imported(name, decorator)
         self.generic_visit(node)
 
-    def visit_Subscript(self, node):
+    def visit_Subscript(self, node) -> None:
         name = self.find_value_id(node)
         name2 = self.find_name(node, "value")
         assert name == name2
@@ -85,7 +85,7 @@ class ImportVisitor(visitors.PymVisitor):
         self.imported(subname, node)
         self.generic_visit(node)
 
-    def visit_Attribute(self, node):
+    def visit_Attribute(self, node) -> None:
         try:
             self.imported(node.value.id, node.lineno)
             full_name = f"{node.value.id}.{node.attr}"
@@ -94,13 +94,13 @@ class ImportVisitor(visitors.PymVisitor):
             pass
         self.generic_visit(node)
 
-    def visit_ClassDef(self, node):
+    def visit_ClassDef(self, node) -> None:
         for base in node.bases:
             name = self.find_name(base, "value")
             self.imported(name, node)
         self.generic_visit(node)
 
-    def visit_Call(self, node):
+    def visit_Call(self, node) -> None:
         func = node.func
         try:
             name = func.id
@@ -111,7 +111,7 @@ class ImportVisitor(visitors.PymVisitor):
         self.imported(name, node)
         self.generic_visit(node)
 
-    def visit_Name(self, node):
+    def visit_Name(self, node) -> None:
         name = self.find_name(node)
         self.imported(name, node)
         self.generic_visit(node)
@@ -124,11 +124,11 @@ class UsedImportVisitor(ImportVisitor):
                NOT as in "logged in person"
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.used = defaultdict(list)
 
-    def imported(self, name, node):
+    def imported(self, name, node) -> None:
         if not name:
             return
         if name in self.imports:

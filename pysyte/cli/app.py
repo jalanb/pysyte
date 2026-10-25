@@ -9,7 +9,7 @@ from pysyte.cli.exceptions import rich_exceptions
 from pysyte.types.functions import Function
 
 
-def exit(function, locals_=None):
+def exit(function, locals_=None) -> None:
     exit_code = os.EX_FAIL
     with rich_exceptions(locals_ if locals_ else {}):
         try:
@@ -24,7 +24,7 @@ class App(Function, ContextDecorator):
         self.exit_code = None
         return self
 
-    def run(self, *args, **kwargs):
+    def run(self, *args, **kwargs) -> None:
         kwargs["app"] = self
         self.exit_code = super().run(*args, **kwargs)
 

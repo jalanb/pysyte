@@ -2,19 +2,18 @@
 
 import unittest
 
-from pysyte.cli import arguments
-from pysyte.cli import lines
+from pysyte.cli import arguments, lines
 
 
 class TestPaths(unittest.TestCase):
     """Check that paths are extracted from command line if they exist"""
 
-    def test_add_args(self):
+    def test_add_args(self) -> None:
         """Adding args should give a PathParser"""
         actual = lines.add_args(arguments.test_parser())
         self.assertIsInstance(actual, lines.LinesParser)
 
-    def test_parse_short_numbers(self):
+    def test_parse_short_numbers(self) -> None:
         """Parse out line arguments from cli
 
         Parse a cli with short versions of numeric line options
@@ -26,7 +25,7 @@ class TestPaths(unittest.TestCase):
         self.assertEqual(parsed.first, 2)
         self.assertEqual(parsed.last, 1)
 
-    def test_parse_long_numbers(self):
+    def test_parse_long_numbers(self) -> None:
         """Parse out line arguments from cli
 
         Parse a cli with long versions of numeric line options
@@ -38,7 +37,7 @@ class TestPaths(unittest.TestCase):
         self.assertEqual(parsed.first, 2)
         self.assertEqual(parsed.last, 1)
 
-    def test_parse_spaced_long_numbers(self):
+    def test_parse_spaced_long_numbers(self) -> None:
         """Parse out line arguments from cli
 
         Parse a cli with long versions of numeric line options
@@ -50,7 +49,7 @@ class TestPaths(unittest.TestCase):
         self.assertEqual(parsed.width, 2)
         self.assertEqual(parsed.remove, 1)
 
-    def test_parse_files(self):
+    def test_parse_files(self) -> None:
         """Parse out files from cli"""
         parser = lines.add_args(arguments.test_parser())
         parser.add_files()
@@ -58,7 +57,7 @@ class TestPaths(unittest.TestCase):
         self.assertIn(__file__, parsed.files)
         self.assertIn("another", parsed.files)
 
-    def test_version(self):
+    def test_version(self) -> None:
         """Parse out version from cli
 
         Showing the version should cause a sys.exit()

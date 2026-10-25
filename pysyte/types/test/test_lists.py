@@ -4,49 +4,49 @@ from pysyte.types import lists
 
 
 class TestAsList(TestCase):
-    def test_as_list(self):
+    def test_as_list(self) -> None:
         """list in, list out"""
         actual = lists.as_list([1, 2, 3])
         expected = [1, 2, 3]
         self.assertEqual(actual, expected)
 
-    def test_tuple_as_list(self):
+    def test_tuple_as_list(self) -> None:
         """set in, list out"""
         expected = [1, 2, 3]
         actual = lists.as_list((1, 2, 3))
         self.assertEqual(actual, expected)
 
-    def test_set_as_list(self):
+    def test_set_as_list(self) -> None:
         """set in, list out"""
         expected = [1, 2, 3]
         actual = lists.as_list({1, 2, 3})
         self.assertEqual(actual, expected)
 
-    def test_dict_as_list(self):
+    def test_dict_as_list(self) -> None:
         """dict in, list of items out"""
         expected = [(1, 4), (2, 5), (3, 6)]
         actual = lists.as_list({1: 4, 2: 5, 3: 6})
         self.assertEqual(actual, expected)
 
-    def test_string_as_list(self):
+    def test_string_as_list(self) -> None:
         """string in, list of chars out"""
         expected = ["f", "r", "e", "d"]
         actual = lists.as_list("fred")
         self.assertEqual(actual, expected)
 
-    def test_int_as_list(self):
+    def test_int_as_list(self) -> None:
         """Tring to turn a non-sequence to a list raise error"""
         self.assertRaises(TypeError, lists.as_list, 999)
 
 
 class TestUniques(TestCase):
-    def test_uniqueness(self):
+    def test_uniqueness(self) -> None:
         """Duplicate items should be ignored"""
         expected = [1, 3, 2, 0]
         actual = list(lists.Uniques([1, 1, 3, 1, 2, 3, 0]))
         self.assertEqual(actual, expected)
 
-    def test_appending_new(self):
+    def test_appending_new(self) -> None:
         """New items should be appended"""
         expected = [1, 3, 2, 0, 4]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -54,7 +54,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_appending_old(self):
+    def test_appending_old(self) -> None:
         """Duplicate items should not be appended"""
         expected = [1, 3, 2, 0]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -62,7 +62,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_new(self):
+    def test_extending_new(self) -> None:
         """New items should be extended"""
         expected = [1, 3, 2, 0, 4, 5]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -70,7 +70,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_set(self):
+    def test_extending_set(self) -> None:
         """A set of new items should be extended"""
         expected = [1, 3, 2, 0, 4, 5]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -78,7 +78,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_dict(self):
+    def test_extending_dict(self) -> None:
         """A dict of new items should be extended with the keys"""
         expected = [1, 3, 2, 0, 4, 5]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -86,7 +86,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_old(self):
+    def test_extending_old(self) -> None:
         """Duplicate items should not be extended"""
         expected = [1, 3, 2, 0, 4]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -94,7 +94,7 @@ class TestUniques(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_empty(self):
+    def test_extending_empty(self) -> None:
         """Extending with an empty list does nothing"""
         expected = [1, 3, 2, 0]
         uniques = lists.Uniques([1, 1, 3, 1, 2, 3, 0])
@@ -104,13 +104,13 @@ class TestUniques(TestCase):
 
 
 class TestUniquelyTrues(TestCase):
-    def test_uniqueness(self):
+    def test_uniqueness(self) -> None:
         """Duplicate and false items should be ignored"""
         expected = [1, 3, 2]
         actual = list(lists.UniquelyTrues([1, 1, 3, 1, 2, 3, 0]))
         self.assertEqual(actual, expected)
 
-    def test_appending_new(self):
+    def test_appending_new(self) -> None:
         """New items should be appended"""
         expected = [1, 3, 2, 4]
         uniques = lists.UniquelyTrues([1, 1, 3, 1, 2, 3, 0])
@@ -118,7 +118,7 @@ class TestUniquelyTrues(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_appending_old(self):
+    def test_appending_old(self) -> None:
         """Duplicate items should not be appended"""
         expected = [1, 3, 2]
         uniques = lists.UniquelyTrues([1, 1, 3, 1, 2, 3, 0])
@@ -126,7 +126,7 @@ class TestUniquelyTrues(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_appending_false(self):
+    def test_appending_false(self) -> None:
         """False items should not be appended"""
         expected = [1, 3, 2]
         uniques = lists.UniquelyTrues([1, 1, 3, 1, 2, 3])
@@ -136,7 +136,7 @@ class TestUniquelyTrues(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_new(self):
+    def test_extending_new(self) -> None:
         """New items should be extended
 
         Items do not all have to have same type
@@ -147,7 +147,7 @@ class TestUniquelyTrues(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_old(self):
+    def test_extending_old(self) -> None:
         """Duplicate items should not be extended"""
         expected = [1, 3, 2, 9]
         uniques = lists.UniquelyTrues([1, 1, 3, 1, 2, 3, 0])
@@ -155,7 +155,7 @@ class TestUniquelyTrues(TestCase):
         actual = list(uniques)
         self.assertEqual(actual, expected)
 
-    def test_extending_false(self):
+    def test_extending_false(self) -> None:
         """False items should not be extended"""
         expected = [1, 3, 2, 9]
         uniques = lists.UniquelyTrues([1, 1, 3, 1, 2, 3])

@@ -4,7 +4,7 @@ from pysyte.colours import colour_numbers
 
 
 class Colour:
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         self._id = colour_numbers.name_to_id(name)
         self._name = name
 

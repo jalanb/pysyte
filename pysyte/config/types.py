@@ -1,7 +1,6 @@
 """Classes for configuration"""
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
 
@@ -36,7 +35,7 @@ class ConfigFile(ABC):
         """
         raise ValueError(values) from e
 
-    def __init__(self, path: paths.StringPath):
+    def __init__(self, path: paths.StringPath) -> None:
         super().__init__(self.load())
 
     @abstractmethod
@@ -47,7 +46,7 @@ class ConfigFile(ABC):
 class ConfigFileType(Configuration):
     types: list[str] = []
 
-    def __init__(self, stem: str):
+    def __init__(self, stem: str) -> None:
         self.path = self.path(stem)
         if self.path:
             super().__init__(self.path)
@@ -69,7 +68,7 @@ class YamlConfiguration(ConfigFileType):
 
     types = ["yml", "yaml"]
 
-    def __init__(self, module):
+    def __init__(self, module) -> None:
         super().__init__(paths.path(module))
 
     def load(self, path):
@@ -80,7 +79,7 @@ class YamlConfiguration(ConfigFileType):
 
 
 class ModuleConfiguration(YamlConfiguration):
-    def __init__(self, module):
+    def __init__(self, module) -> None:
         super().__init__(paths.path(module))
 
 
@@ -90,7 +89,7 @@ class ConfigPathsData:
 
 
 class ConfigPaths(ConfigPathsData):
-    def __init__(self, paths_):
+    def __init__(self, paths_) -> None:
         super().__init__([_ for _ in paths_ if _])
         self.file_types = FileTypes(
             [

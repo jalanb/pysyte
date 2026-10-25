@@ -8,7 +8,7 @@ class PathError(Exception):
 
 
 class MissingPath(PathError):
-    def __init__(self, path: str, desc: str="") -> None:  # noqa: B042
+    def __init__(self, path: str, desc: str = "") -> None:  # noqa: B042
         self.path = path
         description = desc or "path"
         super().__init__(f"Missing {description}{path}")

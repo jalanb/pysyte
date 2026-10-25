@@ -6,44 +6,44 @@ from pysyte.types import dictionaries
 
 
 class DictionariesTest(unittest.TestCase):
-    def test_get_caselessly(self):
+    def test_get_caselessly(self) -> None:
         things = {"Fred": 9, "A": 1, "b": 2}
         self.assertEqual(9, dictionaries.get_caselessly(things, "fred"))
 
-    def test_get_lower_caselessly(self):
+    def test_get_lower_caselessly(self) -> None:
         things = {"Fred": 9, "A": 1, "b": 2}
         self.assertEqual(2, dictionaries.get_caselessly(things, "B"))
 
-    def test_get_upper_caselessly(self):
+    def test_get_upper_caselessly(self) -> None:
         things = {"Fred": 9, "A": 1, "b": 2}
         self.assertEqual(1, dictionaries.get_caselessly(things, "a"))
 
-    def test_do_not_get_caselessly(self):
+    def test_do_not_get_caselessly(self) -> None:
         things = {"Fred": 9, "A": 1, "b": 2}
         with self.assertRaises(KeyError):
             dictionaries.get_caselessly(things, "free")
 
-    def test_swap(self):
+    def test_swap(self) -> None:
         pythons = {"John": "Cleese", "Graham": "Chapman", "Eric": "Idle"}
         expected = {"Cleese": "John", "Chapman": "Graham", "Idle": "Eric"}
         actual = dictionaries.swap_dictionary(pythons)
         self.assertEqual(expected, actual)
 
-    def test_swap_empty_dictionary(self):
+    def test_swap_empty_dictionary(self) -> None:
         actual = dictionaries.swap_dictionary({})
         expected = {}
         self.assertEqual(expected, actual)
 
-    def test_swap_none(self):
+    def test_swap_none(self) -> None:
         expected = None
         actual = dictionaries.swap_dictionary(None)
         self.assertEqual(expected, actual)
 
-    def test_swap_not_a_dictionary(self):
+    def test_swap_not_a_dictionary(self) -> None:
         with self.assertRaises(AttributeError):
             dictionaries.swap_dictionary("not a dict")
 
-    def test_append_value(self):
+    def test_append_value(self) -> None:
         dictionary = {}
         data = [
             ("one", 1, {"one": [1]}),
@@ -62,7 +62,7 @@ class DictionariesTest(unittest.TestCase):
             )
             self.assertDictEqual(dictionary, expected, message)
 
-    def test_extend_values(self):
+    def test_extend_values(self) -> None:
         dictionary = {}
         data = [
             ("one", [1], {"one": [1]}),
@@ -80,7 +80,7 @@ class DictionariesTest(unittest.TestCase):
             )
             self.assertDictEqual(dictionary, expected, message)
 
-    def test_extend_with_non_list(self):
+    def test_extend_with_non_list(self) -> None:
         self.assertRaisesRegex(
             TypeError,
             "Expected a list, got: 2",

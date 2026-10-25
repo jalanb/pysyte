@@ -62,7 +62,7 @@ def default_environ_path(key, default):
     return path(os.environ.get(key, default))
 
 
-def add_star(string):
+def add_star(string) -> str:
     """Add '*' to string
 
     >>> assert add_star("fred") == "fred*"

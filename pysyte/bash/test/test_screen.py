@@ -9,7 +9,7 @@ starting_callbacks = screen.atexit._ncallbacks()
 
 
 class TestScreen(TestCase):
-    def test_alt_screen(self):
+    def test_alt_screen(self) -> None:
         """Calling alt_screen should give a method to start such a screen
 
         And should register a method to stop it on exitting
@@ -22,21 +22,21 @@ class TestScreen(TestCase):
         current_callbacks = screen.atexit._ncallbacks()
         self.assertGreater(current_callbacks, starting_callbacks)
 
-    def test_get_alt_screens(self):
+    def test_get_alt_screens(self) -> None:
         """get_alt_screens() should return 2 methods"""
         expected = screen._start_alt_screen, screen._stop_alt_screen
         actual = screen.get_alt_screens()
         self.assertEqual(actual, expected)
 
     @patch("pysyte.bash.screen.run")
-    def test_start_alt_screen(self, run):
+    def test_start_alt_screen(self, run) -> None:
         """start_alt_screen should run the tput command smcup"""
         start_alt_screen, _ = screen.get_alt_screens()
         start_alt_screen()
         run.assert_called_with("tput smcup")
 
     @patch("pysyte.bash.screen.run")
-    def test_not_stop_alt_screen(self, run):
+    def test_not_stop_alt_screen(self, run) -> None:
         """stop_alt_screen will run "tput rmcup" if start_alt_screen() was run
 
         These tests do not actually run start_alt_screen()
@@ -47,7 +47,7 @@ class TestScreen(TestCase):
         run.assert_not_called()
 
     @patch("pysyte.bash.screen.run")
-    def test_stop_alt_screen(self, run):
+    def test_stop_alt_screen(self, run) -> None:
         """stop_alt_screen should run the tput command rmcup
 
         it will only run that command if the start_alt_screen() was run first

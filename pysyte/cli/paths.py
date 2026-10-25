@@ -5,7 +5,7 @@ from pysyte.types.paths import path
 class PathParser(ArgumentsParser):
     """Handle positional args as paths"""
 
-    def __init__(self, argparser, paths="paths"):
+    def __init__(self, argparser, paths="paths") -> None:
         super().__init__(argparser)
         self.paths = paths
         super().positionals(self.paths)

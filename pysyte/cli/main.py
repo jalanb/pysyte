@@ -8,16 +8,14 @@ from dataclasses import dataclass
 import sys
 from typing import Optional
 
-from pysyte.cli import app
-from pysyte.cli import arguments
+from pysyte.cli import app, arguments
 from pysyte.cli.config import load_configs
-from pysyte.types.functions import Callable
-from pysyte.types.functions import Method
+from pysyte.types.functions import Callable, Method
 from pysyte.types.paths import makepath
 
 
 class MainMethod(Method):
-    def __init__(self, function):
+    def __init__(self, function) -> None:
         super().__init__(function)
         self.in_main_module = self.module.__name__ == "__main__"
         self.needs_args = self.argcount > 0
@@ -43,7 +41,7 @@ class CallerData:
     add_args: ArgumentsParsers | None
 
 
-def exit(main: Callable):
+def exit(main: Callable) -> None:
     """Exit to shell with error"""
     app.exit(main)
 
@@ -55,7 +53,7 @@ def run(
     usage: str = "",
     epilog: str = "",
     config_name: str = "",
-):
+) -> None:
     """Run a main_method from command line, parsing arguments
 
     if add_args(parser) is given it should call parser.add_arg()

@@ -5,6 +5,51 @@ Transform the monolithic `pysyte.types.paths` module into a modular `pysyte.type
 
 ## Refactor Strategy
 
+### Phase 0: Doctest Driven Spec (DDD)
+**Priority**: High - Do this before any more Phase 1/2 coding
+
+See `~/.claude/rules/doctest.md` for the method. No implementation work
+below should proceed until this contract exists and is agreed.
+
+- [ ] Write the module docstring + doctests for `pysyte.types.paths` (the
+      public package, once `trees/` is renamed back) - what it *affords*
+- [ ] Write the doctest for `pysyte.types.paths.path()` - the single
+      entry point - showing "you can do this, and this, and this" as a
+      narrative of real usage, not a method-by-method listing
+- [ ] Iterate on these doctests with Alan until both agree they're the
+      best available
+- [ ] Park it for a few months, come back, review the doctests fresh,
+      then hand to sub-agents as the spec for the coding work
+
+### Sub-Refactors Discovered En Route
+
+While looking at `FilePath`/`Path` for the above, several clusters of
+methods look like they only exist because a use case was heard once, then
+grew legs. Each is a candidate for pulling *out* of the path classes into
+functions that operate *with* a path, not *on* it. Capturing distinctly so
+none gets lost in the main refactor:
+
+- [ ] **fnmatch/glob matching** - already partly extracted into
+      `trees/globs.py` as a standalone `Glob` matcher rather than path
+      methods. Good precedent - audit for stragglers still living on
+      `Path`/`FilePath`.
+- [ ] **Text/content helpers on `FilePath`** (`has_line`, `any_line_has`,
+      `non_comment_lines`, `stripped_lines`, `stripped_whole_lines`,
+      `contains`) - these read and grep file *contents*, not the path
+      itself. Candidate for a `trees/content.py` of free functions.
+- [ ] **Shell/OS action methods** (`cd`, `mv`, `make_read_only`,
+      `is_executable`) - these mutate process/filesystem state via a
+      path, not the path value itself. Candidate for free functions.
+- [ ] **Pure string-manipulation methods** (`path_split`, `slashpath`,
+      `short_relative_path_to`, `short_relative_path_to_here`,
+      `short_relative_path_from_here`) - algorithms on the string value,
+      don't need to be bound methods.
+- [ ] **`language` property** (getter/setter) - guesses file language
+      from extension/shebang - classification logic, not a path
+      responsibility.
+- [ ] For each cluster above: decide module home, write its doctest-first
+      contract (per Phase 0 method), then migrate.
+
 ### Phase 1: Complete Missing Components (Current Focus)
 **Priority**: High - Restore basic functionality
 
@@ -41,6 +86,16 @@ Transform the monolithic `pysyte.types.paths` module into a modular `pysyte.type
 - [ ] Run `tox -e tests` for full coverage
 - [ ] Verify no regression in other modules
 - [ ] Check doctest coverage across trees/
+
+#### 2.4 Drop Jason Orendorff's `path.py` dependency
+- [ ] Replace `from path import Path as JasonOrrendorfPath` in `trees/strings.py` with `pathlib.Path`
+- [ ] Remove `path.py==7.7.1` pin from `pyproject.toml`
+- [ ] Update/remove the `from path import path` doctest in `pysyte/types/test/paths.test`
+- [ ] Review every class method on path/tree classes - any that exist only to
+      wrap or proxy `path.py` behaviour are candidates for deletion once
+      `pathlib.Path` is the base
+- [ ] Note: this is also why `pip install pysyte` fails on modern Python -
+      resolving it unblocks that
 
 ### Phase 3: Quality Assurance
 **Priority**: Medium - Ensure production readiness

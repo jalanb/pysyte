@@ -37,7 +37,7 @@ def _chop(lines_in, at, first: int, last: int):
     return first, rest
 
 
-def chop(text, at, first: int=1, last: int=-1):
+def chop(text, at, first: int = 1, last: int = -1):
     r"""Make that text fit those boundaries
 
     >>> lines = ["one", "two", "three", "four"]
@@ -56,7 +56,7 @@ def set_width(line, width):
     return line[:width]
 
 
-def _number_format(count: int=999) -> str:
+def _number_format(count: int = 999) -> str:
     """A string format for line numbers
 
     Should give a '%d' format with width big enough to `count` lines
@@ -67,7 +67,7 @@ def _number_format(count: int=999) -> str:
     return "%%%dd: " % digits
 
 
-def add_numbers(lines, first: int=0):
+def add_numbers(lines, first: int = 0):
     def numbered(i, line_, line_format_) -> str:
         prefix = line_format_ % (first + i + 1)
         return f"{prefix}{line_.rstrip()}"

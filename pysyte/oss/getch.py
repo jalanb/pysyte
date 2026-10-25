@@ -12,6 +12,7 @@ Adapted from
         No need here for Windows/Carbon
 """
 
+from collections.abc import Callable
 from curses import ascii
 import getpass
 import re
@@ -19,10 +20,8 @@ import signal
 import sys
 import termios
 import tty
-from collections.abc import Callable
-from typing import Dict
-from typing import List
-from typing import Tuple
+from types import TracebackType
+from typing import Dict, List, Optional, Tuple, Type
 
 from pysyte.streams import std
 
@@ -41,7 +40,7 @@ def get_ord() -> int:
 class TerminalContext:
     """Context wrapper to set up termios values"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.fd = None
         self.old_settings = None
 
@@ -53,7 +52,12 @@ class TerminalContext:
         termios.tcsetattr(self.fd, termios.TCSAFLUSH, mode)
         return self
 
-    def __exit__(self, typ, value, traceback):
+    def __exit__(
+        self,
+        typ: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         if typ is not None:
             pass  # exception
         if self.old_settings:
@@ -74,7 +78,7 @@ def timeout_raiser(_signum, _frame):
 class TimerContext:
     """Context wrapper for a timeout"""
 
-    def __init__(self, seconds):
+    def __init__(self, seconds) -> None:
         self.seconds = seconds
         self.old_handler = None
         self.timed_out = False
@@ -84,7 +88,12 @@ class TimerContext:
         signal.setitimer(signal.ITIMER_REAL, self.seconds)
         return self
 
-    def __exit__(self, typ_, value, traceback):
+    def __exit__(
+        self,
+        typ_: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> bool:
         signal.setitimer(signal.ITIMER_REAL, 0)
         if self.old_handler:
             signal.signal(signal.SIGALRM, self.old_handler)
@@ -96,7 +105,7 @@ class TimerContext:
 _key_cache: list[tuple[int, ...]] = []
 
 
-def cache_keys(keys):
+def cache_keys(keys) -> None:
     """Allow debugging via PyCharm"""
     d = known_keys()
     known_names = dict(zip(d.values(), d.keys()))
@@ -141,7 +150,7 @@ def _get_keycodes():
 class ExtendedKey(Exception):
     """Raised for an unrecognised Extended key code"""
 
-    def __init__(self, codes):
+    def __init__(self, codes) -> None:
         super().__init__(f"Too many key codes: {codes!r}")
         self.codes = codes
 

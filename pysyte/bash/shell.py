@@ -17,7 +17,7 @@ _working_dirs: list[str] = [""]
 _paths: list[str] = []
 
 
-def cd(path: str):
+def cd(path: str) -> None:
     if _working_dirs[0] == path:
         return
     assert os.path.isdir(path)

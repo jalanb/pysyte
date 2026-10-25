@@ -19,7 +19,7 @@ from pysyte.types.paths import DirectPath
 
 
 class UnixDirectory(DirectPath):
-    def __init__(self, path_):
+    def __init__(self, path_) -> None:
         super().__init__(path_)
 
 

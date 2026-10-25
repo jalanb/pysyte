@@ -6,7 +6,7 @@ from pysyte.types.dictionaries import NameSpaces
 
 
 class Config(NameSpaces):
-    def __init__(self, data):
+    def __init__(self, data) -> None:
         super().__init__(data)
 
 
@@ -16,6 +16,6 @@ def load(path_to_config) -> Config:
         return Config(data)
 
 
-def dump(data, path_to_config):
+def dump(data, path_to_config) -> None:
     with path_to_config.open("w") as stream:
         yaml.safe_dump(data, stream, explicit_start=True)

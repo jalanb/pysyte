@@ -9,9 +9,7 @@ Conversion from rgb.txt names to RGB inspired by https://github.com/lilydjwg/win
 
 from functools import partial
 
-from pysyte.colours import ansi_escapes
-from pysyte.colours import colour_names
-from pysyte.colours import colour_numbers
+from pysyte.colours import ansi_escapes, colour_names, colour_numbers
 
 
 class ColouredTail:
@@ -23,12 +21,12 @@ class ColouredTail:
     When treated as a string, gives head + tail
     """
 
-    def __init__(self, head, tail):
+    def __init__(self, head, tail) -> None:
         self.head = str(head) if head else ""
         self.tail = str(tail) if tail else ""
         self.add_colour_names()
 
-    def add_colour_names(self):
+    def add_colour_names(self) -> None:
         for colour_name in colour_names.cga():
             attr_name = colour_name.replace(" ", "_")
             setattr(self, attr_name, partial(self.colour_text, colour_name))

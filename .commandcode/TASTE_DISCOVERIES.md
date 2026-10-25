@@ -56,7 +56,7 @@ If a nested function is only called from one place in its parent, nest it furthe
 def parent():
     def helper():  # Only called from child()
         pass
-    
+
     def child():
         helper()  # ← Should be nested inside child() instead
 ```
@@ -107,12 +107,12 @@ f"{line_number:4d}: {text}"
 **Example**:
 ```python
 # Bad - flag turns ON the basic feature
-thing.line(n)        # no line numbers
+thing.line(n)  # no line numbers
 thing.line(n, True)  # WITH line numbers (backwards!)
 
 # Good - default is simple, flag adds feature
-thing.line(n)              # just the line (simple)
-thing.numbered_line(n)     # line WITH number (separate method)
+thing.line(n)  # just the line (simple)
+thing.numbered_line(n)  # line WITH number (separate method)
 ```
 
 **Why it matters**: Principle of least surprise. Method names should promise what they deliver by default.

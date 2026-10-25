@@ -4,11 +4,9 @@ Usage: python3 -m pysyte.kat [options] [files]
 
 """
 
-from pysyte.cli import arguments
-from pysyte.cli import lines
+from pysyte.cli import arguments, lines
 from pysyte.cli.app import App
-from pysyte.types.lines import arg_lines
-from pysyte.types.lines import sed
+from pysyte.types.lines import arg_lines, sed
 
 
 def parse_args():
@@ -17,7 +15,7 @@ def parse_args():
     return line_parser.parse_args()
 
 
-def kat(app):
+def kat(app) -> bool:
     """Run kat"""
     for file in app.args.files():
         text = file.read()
@@ -28,7 +26,7 @@ def kat(app):
     return True
 
 
-def main():
+def main() -> None:
     args = parse_args()
     with App(kat, args) as app:
         app.run(app.args)

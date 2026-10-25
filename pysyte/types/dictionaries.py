@@ -33,7 +33,7 @@ def swap_dictionary(dictionary):
     return {v: k for k, v in dictionary.items()}
 
 
-def append_value(dictionary, key, item):
+def append_value(dictionary, key, item) -> None:
     """Append those items to the values for that key"""
     items = dictionary.get(key, [])
     items.append(item)
@@ -104,7 +104,7 @@ class LazyDefaultDict(DefaultDict):
 
     method: Any = None
 
-    def __init__(self, method: Any):
+    def __init__(self, method: Any) -> None:
         self.method = method
         super().__init__(None)
 
@@ -120,12 +120,12 @@ class NameSpace(dict):
     >>> assert NameSpace({"fred": 1}).fred == 1
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """>>> assert NameSpace({'fred': 1}).fred == 1"""
         super().__init__(*args, **kwargs)
         self.__dict__ = self
 
-    def update(self, other):
+    def update(self, other) -> None:
         self.__dict__ = data_merge(self.__dict__, other)
 
 
@@ -136,7 +136,7 @@ class NameSpaces(NameSpace):
     >>> assert spaces.fred.mary == 1
     """
 
-    def __init__(self, thing):
+    def __init__(self, thing) -> None:
         data = {}
         for key, value in (thing or {}).items():
             data[key] = NameSpaces(value) if isinstance(value, dict) else value

@@ -7,8 +7,7 @@
 """
 
 from dataclasses import dataclass
-from typing import Any
-from typing import List
+from typing import Any, List
 
 from pysyte.types.trees import files
 
@@ -59,7 +58,7 @@ class FileTypes:
 
     file_types: list[FileType]
 
-    def __init__(self, file_types: list[FileType]):
+    def __init__(self, file_types: list[FileType]) -> None:
         """Convert all elements in file_types to FileType instances."""
         self.file_types = [
             _ if isinstance(_, FileType) else FileType(*_) for _ in file_types

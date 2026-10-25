@@ -27,7 +27,7 @@ class OTML(OTMLData):
     >>> assert i.is_many and not (i.is_one or i.is_two or i.is_lots)
     """
 
-    def __postinit__(self):
+    def __postinit__(self) -> None:
         """Set some 'is_...' booleans
 
         >>> i = OTML(7)

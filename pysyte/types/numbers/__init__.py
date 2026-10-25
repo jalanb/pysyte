@@ -39,7 +39,7 @@ as_int() does not
 
 
 class NAN(ValueError):
-    def __init__(self, value):
+    def __init__(self, value) -> None:
         super().__init__(f"NAN: {value}")
 
 

@@ -6,7 +6,7 @@ from pysyte import term
 
 
 class TestTerm(unittest.TestCase):
-    def test_height(self):
+    def test_height(self) -> None:
         try:
             height = term.screen_height()
         except term.NoTerminalAvailable:
@@ -14,7 +14,7 @@ class TestTerm(unittest.TestCase):
         self.assertIsInstance(height, int)
         self.assertGreater(height, 10)
 
-    def test_width(self):
+    def test_width(self) -> None:
         try:
             width = term.screen_width()
         except term.NoTerminalAvailable:

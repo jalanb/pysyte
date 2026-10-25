@@ -73,7 +73,7 @@ class Duration:
     seconds: int = 0
     subs: float = 0.0
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Initialise a Duration
 
         >>> assert Duration(1, 15) == Duration(0, 0, 1, 15)
@@ -177,7 +177,7 @@ class NoDuration(Duration):
     >>> assert isinstance(none, NoDuration)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(0, 0, 0, 0)
 
     def __bool__(self, other) -> bool:

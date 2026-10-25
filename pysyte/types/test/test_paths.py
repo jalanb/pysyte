@@ -44,7 +44,7 @@ class MockLinesError(MockSketch):
 
 
 class TestPaths(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.setup_dir = paths.pwd()
         self.path_to_test = paths.path(__file__).extend_by("py")
         self.dir = self.path_to_test.parent
@@ -54,51 +54,51 @@ class TestPaths(TestCase):
         #     i.e. not very top-level with ".git", etc
         self.path_to_project = self.path_to_package.parent
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         self.setup_dir.cd()
 
-    def test_path_error(self):
+    def test_path_error(self) -> None:
         self.assertRaises(paths.PathError, paths.path("/not/a/path").assertExists)
 
-    def test_not_path_error(self):
+    def test_not_path_error(self) -> None:
         path = paths.path("/")
         self.assertEqual(path, path.assertExists())
 
-    def test_assert_isfile(self):
+    def test_assert_isfile(self) -> None:
         self.assertEqual(self.path_to_test, self.path_to_test.assert_isfile())
 
-    def test_assert_not_isfile(self):
+    def test_assert_not_isfile(self) -> None:
         self.assertRaises(paths.PathError, self.dir.assert_isfile)
 
-    def test_assert_isdir(self):
+    def test_assert_isdir(self) -> None:
         self.assertEqual(self.dir, self.dir.assert_isdir())
 
-    def test_assert_not_isdir(self):
+    def test_assert_not_isdir(self) -> None:
         self.assertRaises(paths.PathError, self.path_to_test.assert_isdir)
 
-    def test_join_with_nothing(self):
+    def test_join_with_nothing(self) -> None:
         self.assertEqual(self.dir, self.dir / "")
 
-    def test_file_class(self):
+    def test_file_class(self) -> None:
         path = SourcePath(str(self.path_to_paths))
         self.assertTrue(path.isfile)
         self.assertIs(path.__file_class__, SourcePath)
 
-    def test_dirnames(self):
+    def test_dirnames(self) -> None:
         self.assertIn(self.dir.name, self.path_to_test.dirnames())
 
-    def test_stripped_lines(self):
+    def test_stripped_lines(self) -> None:
         line = random.choice(punchlines.lines())
         self.assertTrue(line[-1].isspace())
         line = random.choice(punchlines.stripped_lines())
         if line:
             self.assertFalse(line[-1].isspace())
 
-    def test_stripped_whole_lines(self):
+    def test_stripped_whole_lines(self) -> None:
         self.assertTrue([_ for _ in punchlines.stripped_lines() if not _])
         self.assertFalse([_ for _ in punchlines.stripped_whole_lines() if not _])
 
-    def test_non_comment_lines(self):
+    def test_non_comment_lines(self) -> None:
         self.assertTrue(
             [_ for _ in punchlines.stripped_whole_lines() if _.startswith("#")]
         )
@@ -106,61 +106,61 @@ class TestPaths(TestCase):
             [_ for _ in punchlines.non_comment_lines() if _.startswith("#")]
         )
 
-    def test_has_line(self):
+    def test_has_line(self) -> None:
         self.assertTrue(punchlines.has_line("Yes, they will. Cue Cine!"))
         self.assertFalse(punchlines.has_line("Cine"))
         self.assertFalse(punchlines.has_line("Punchline"))
 
-    def test_any_line_has(self):
+    def test_any_line_has(self) -> None:
         self.assertTrue(punchlines.any_line_has("Yes, they will. Cue Cine!"))
         self.assertTrue(punchlines.any_line_has("Cine"))
         self.assertFalse(punchlines.any_line_has("Punchline"))
 
-    def test_directory(self):
+    def test_directory(self) -> None:
         self.assertEqual(self.path_to_test.directory(), self.path_to_test.parent)
 
-    def test_no_div_for_file(self):
+    def test_no_div_for_file(self) -> None:
         path = files.FilePath(__file__)
         with self.assertRaises(paths.PathError):
             path / "fred"
 
-    def test_directory_iteration(self):
+    def test_directory_iteration(self) -> None:
         for item in self.path_to_test.directory():
             if item == self.path_to_test:
                 break
         else:
             self.fail("Could not find %s" % self.path_to_test)
 
-    def test_vcs_dirs(self):
+    def test_vcs_dirs(self) -> None:
         self.assertTrue(paths.path("/usr/.git/fred").has_vcs_dir())
         self.assertTrue(paths.path("/usr/local/.svn/fred").has_vcs_dir())
         self.assertTrue(paths.path("/.hg/etc").has_vcs_dir())
         self.assertFalse(paths.path("/usr/local/bin").has_vcs_dir())
 
-    def test_cd_back(self):
+    def test_cd_back(self) -> None:
         paths.cd.previous = None
         paths.cd("/usr")
         paths.cd("/usr/local")
         paths.cd("-")
         self.assertEqual(paths.pwd(), "/usr")
 
-    def test_cd_back_without_previous(self):
+    def test_cd_back_without_previous(self) -> None:
         paths.cd.previous = None
         self.assertRaises(paths.PathError, paths.cd, "-")
 
-    def test_cd_nowhere(self):
+    def test_cd_nowhere(self) -> None:
         self.assertFalse(paths.cd("/path/to/nowhere"))
 
-    def test_as_path_with_path(self):
+    def test_as_path_with_path(self) -> None:
         path = paths.makepath("/usr/local")
         self.assertIs(paths.as_path(path), path)
 
-    def test_as_path_with_string(self):
+    def test_as_path_with_string(self) -> None:
         string = "/usr/local"
         self.assertIsNot(paths.as_path(string), string)
         self.assertEqual(paths.as_path(string), string)
 
-    def test_string_to_paths(self):
+    def test_string_to_paths(self) -> None:
         """String_to_paths should split a string with standard path separators
 
         For example - should work with the ':' used in $PATH
@@ -173,7 +173,7 @@ class TestPaths(TestCase):
         actual = paths.string_to_paths("/bin:/usr/bin:/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_string_to_paths_without_separator(self):
+    def test_string_to_paths_without_separator(self) -> None:
         """string_to_paths() gives plain path if there are no separators
 
         It will always give a list
@@ -183,7 +183,7 @@ class TestPaths(TestCase):
         actual = paths.string_to_paths("/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_paths(self):
+    def test_paths(self) -> None:
         """paths() return all actual paths in a list of strings"""
         expected = [
             paths.makepath("/usr/bin"),
@@ -192,7 +192,7 @@ class TestPaths(TestCase):
         actual = paths.paths(*["/not/a/path", "/usr/bin", "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
-    def test_path_argss(self):
+    def test_path_argss(self) -> None:
         """paths() return all actual paths in its args"""
         expected = [
             paths.makepath("/usr/bin"),
@@ -201,7 +201,7 @@ class TestPaths(TestCase):
         actual = paths.paths("/not/a/path", "/usr/bin", "/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_directories(self):
+    def test_directories(self) -> None:
         """directories() should return actual directories in strings"""
         expected = [
             paths.makepath("/usr/bin"),
@@ -210,7 +210,7 @@ class TestPaths(TestCase):
         actual = paths.directories(*["/not/a/path", "/usr/bin", "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
-    def test_directories_args(self):
+    def test_directories_args(self) -> None:
         """directories() should return actual directories in its args"""
         expected = [
             paths.makepath("/usr/bin"),
@@ -219,25 +219,25 @@ class TestPaths(TestCase):
         actual = paths.directories("/not/a/path", "/usr/bin", "/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_files(self):
+    def test_files(self) -> None:
         """files() should return actual files in a list of strings"""
         expected = [paths.makepath(__file__)]
         actual = paths.files(*["/not/a/path", __file__, "/usr/local/bin"])
         self.assertEqual(actual, expected)
 
-    def test_files_args(self):
+    def test_files_args(self) -> None:
         """files() should return actual files in its args"""
         expected = [paths.makepath(__file__)]
         actual = paths.files("/not/a/path", __file__, "/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_list_items_without_path(self):
+    def test_list_items_without_path(self) -> None:
         """Looking for a glob in non-existent path gives an empty set"""
         actual = paths.list_items("/path/to/nowhere", "*.*")
         expected = []
         self.assertEqual(actual, expected)
 
-    def test_environ_paths(self):
+    def test_environ_paths(self) -> None:
         """environ_paths() will split a ':' PATH from environ into paths"""
         shell_path = os.environ.get("PATH")
         shell_paths = shell_path.split(":")
@@ -245,14 +245,14 @@ class TestPaths(TestCase):
         environ_paths = paths.environ_paths("PATH")
         self.assertIn(a_path, environ_paths)
 
-    def test_environ_path(self):
+    def test_environ_path(self) -> None:
         """environ_path() gets a symbol from environ and converts it to path"""
         os.environ["TEST_PATH"] = "/usr/local"
         actual = paths.environ_path("TEST_PATH")
         expected = paths.makepath("/usr/local")
         self.assertEqual(actual, expected)
 
-    def test_default_environ_path(self):
+    def test_default_environ_path(self) -> None:
         """default_environ_path() gets a symbol from environ as a path"""
         os.environ["TEST_PATH"] = "/usr/local"
         actual = paths.default_environ_path("TEST_PATH", "/usr/local/bin")
@@ -260,7 +260,7 @@ class TestPaths(TestCase):
         self.assertEqual(actual, expected)
         del os.environ["TEST_PATH"]
 
-    def test_default_environ_path_missing_key(self):
+    def test_default_environ_path_missing_key(self) -> None:
         """default_environ_path() gets a symbol from environ as a path
 
         And takes a default value, in case the key is missing
@@ -270,34 +270,34 @@ class TestPaths(TestCase):
         expected = paths.makepath("/usr/local/bin")
         self.assertEqual(actual, expected)
 
-    def test_pyc_to_py(self):
+    def test_pyc_to_py(self) -> None:
         """Convert a file like '...pyc' to '...py'"""
         expected = "fred.py"
         actual = paths.pyc_to_py("fred.pyc")
         self.assertEqual(actual, expected)
 
-    def test_py_to_py(self):
+    def test_py_to_py(self) -> None:
         """Don't convert a file like '...py', leave it as '...py'"""
         expected = "fred.py"
         actual = paths.pyc_to_py("fred.py")
         self.assertEqual(actual, expected)
 
-    def test_equality(self):
+    def test_equality(self) -> None:
         """Two paths are same as strings to be == as paths
 
         But, any trailing '/' on a directory does not matter
         """
         self.assertEqual(paths.path("/usr/local"), paths.path("/usr/local/"))
 
-    def test_less_than(self):
+    def test_less_than(self) -> None:
         """Paths use strings for testing less than"""
         self.assertLess(paths.path("/usr/local"), paths.path("/usr/local/bin"))
 
-    def test_total_ordering(self):
+    def test_total_ordering(self) -> None:
         """Greater than is based on less than"""
         self.assertGreater(paths.path("/usr/local/bin"), paths.path("/usr/local"))
 
-    def test_relative_paths(self):
+    def test_relative_paths(self) -> None:
         expected = self.path_to_package.basename()
         actual = self.path_to_project.short_relative_path_to(self.path_to_package)
         self.assertEqual(actual, expected)
@@ -305,24 +305,24 @@ class TestPaths(TestCase):
         actual = self.path_to_package.short_relative_path_to(self.path_to_project)
         self.assertEqual(actual, expected)
 
-    def test_relative_path_hither(self):
+    def test_relative_path_hither(self) -> None:
         self.path_to_package.cd()
         expected = self.path_to_package.basename()
         actual = self.path_to_project.short_relative_path_to_here()
         self.assertEqual(actual, expected)
 
-    def test_relative_path_hence(self):
+    def test_relative_path_hence(self) -> None:
         self.path_to_package.cd()
         expected = ".."
         actual = self.path_to_project.short_relative_path_from_here()
         self.assertEqual(actual, expected)
 
-    def test_fnmatch_basename(self):
+    def test_fnmatch_basename(self) -> None:
         """The name of this file should start with 'test_'"""
         self.assertTrue(self.path_to_test.fnmatch_basename("test_*"))
         self.assertTrue(self.path_to_test.fnmatch_basename("/test_*"))
 
-    def test_fnmatch_directory(self):
+    def test_fnmatch_directory(self) -> None:
         """The name of this file's dir should start with 'test'
 
         Check against "te*" as well, as the name may be 'test'
@@ -332,7 +332,7 @@ class TestPaths(TestCase):
         self.assertTrue(self.path_to_test.fnmatch_directory("/test*/"))
         self.assertTrue(self.path_to_test.fnmatch_directory("te*"))
 
-    def test_fnmatch_directories(self):
+    def test_fnmatch_directories(self) -> None:
         """One pf the parent dires from this file should be 'pysyte'
 
         But this (test) file is not in that directory
@@ -343,7 +343,7 @@ class TestPaths(TestCase):
         self.assertTrue(self.path_to_test.fnmatch_directories("/py*te/"))
         self.assertFalse(self.path_to_test.fnmatch_directory("py*te"))
 
-    def test_fnmatch_part(self):
+    def test_fnmatch_part(self) -> None:
         """The fnmatch_part() method tries globs against all parts
 
         So - all of the above test globs should match
@@ -353,20 +353,20 @@ class TestPaths(TestCase):
         self.assertTrue(self.path_to_test.fnmatch_part("te*"))
         self.assertTrue(self.path_to_test.fnmatch_part("py*te"))
 
-    def test_no_shebang(self):
+    def test_no_shebang(self) -> None:
         """This file should not have a shebang line"""
         expected = ""
         actual = self.path_to_test.shebang()
         self.assertEqual(actual, expected)
 
-    def test_python_shebang(self):
+    def test_python_shebang(self) -> None:
         """Read the shebang line from a file"""
         path = MockPythonShebang("/not/a/real/file")
         expected = "/usr/bin/env python3"
         actual = path.shebang()
         self.assertEqual(actual, expected)
 
-    def test_python_shebang_unicode(self):
+    def test_python_shebang_unicode(self) -> None:
         """Read the shebang line from an erroring file gives nothing
 
         It should not propogate the error
@@ -377,17 +377,17 @@ class TestPaths(TestCase):
         actual = path.shebang()
         self.assertEqual(actual, expected)
 
-    def test_language(self):
+    def test_language(self) -> None:
         expected = "python"
         actual = self.path_to_test.language
         self.assertEqual(actual, expected)
 
-    def test_set_language(self):
+    def test_set_language(self) -> None:
         self.assertEqual(self.path_to_test.language, "python")
         self.path_to_test.language = "python3"
         self.assertEqual(self.path_to_test.language, "python3")
 
-    def test_builtin_module(self):
+    def test_builtin_module(self) -> None:
         """makepath() works for modules, except builtins which has no file"""
         self.assertTrue(paths.makepath(os).isfile())
         self.assertFalse(paths.makepath(builtins).isfile())
@@ -400,28 +400,28 @@ class TestNonePath(TestCase):
     But still act like a Path (has 'isfile()', can be extended ...)
     """
 
-    def test_none_to_none(self):
+    def test_none_to_none(self) -> None:
         for item in (None, "", 0):
             path = paths.path(item)
             self.assertTrue(isinstance(path, paths.NoPath))
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         actual = repr(paths.path(None))
         expected = '<NoPath "">'
         self.assertEqual(actual, expected)
 
-    def test_string_repr(self):
+    def test_string_repr(self) -> None:
         actual = repr(paths.path("not/real/path"))
         expected = '<NoPath "not/real/path">'
         self.assertEqual(actual, expected)
 
-    def test_has_parent(self):
+    def test_has_parent(self) -> None:
         """A non-existent path can have a parent that does exist"""
         path = paths.path("/usr/fred")
         self.assertFalse(path.exists())
         self.assertTrue(path.parent.exists())
 
-    def test_has_no_parent_without_slash(self):
+    def test_has_no_parent_without_slash(self) -> None:
         """A NoPath with no '/' has no parent
 
         This is unlike an existing path which always has a parent
@@ -429,13 +429,13 @@ class TestNonePath(TestCase):
         """
         self.assertIsNone(paths.path("fred_was_here").parent)
 
-    def test_equality(self):
+    def test_equality(self) -> None:
         """A NoPath is equal to anything else none-ish"""
         path = paths.path(None)
         self.assertEqual(path, "")
         self.assertEqual(path, 0)
 
-    def test_equality_from_string(self):
+    def test_equality_from_string(self) -> None:
         """A NoPath is equal to anything else none-ish
 
         Except: if made from a string, then do a string comparison
@@ -444,26 +444,26 @@ class TestNonePath(TestCase):
         self.assertEqual(path, "/path/to/nowhere")
         self.assertEqual(paths.path(None), path)
 
-    def test_less_than(self):
+    def test_less_than(self) -> None:
         """A NoPath is less than anything that's not false-y"""
         path = paths.path("/path/to/nowhere")
         self.assertLess(path, "/path/to/nowhere/else")
         self.assertLess(path, paths.path("/usr"))
 
-    def test_not_less_than(self):
+    def test_not_less_than(self) -> None:
         """A NoPath is not less than anything that's false-y"""
         path = paths.path("/path/to/nowhere")
         self.assertGreaterEqual(path, False)
         self.assertGreaterEqual(path, paths.path(None))
 
-    def test_total_ordering(self):
+    def test_total_ordering(self) -> None:
         """NoPath has __eq__, and __lt__, but can use other comparisons"""
         path = paths.path("/path/to/nowhere")
         self.assertGreater(path, "/path/to")
         self.assertLessEqual(path, paths.path("/usr"))
         self.assertLessEqual(path, paths.path("/path/to/nowhere"))
 
-    def test_contains_nothing(self):
+    def test_contains_nothing(self) -> None:
         """There's nothing in a NoPath
 
         Unlike an existing path
@@ -472,12 +472,12 @@ class TestNonePath(TestCase):
         self.assertIn(paths.path("/usr/local"), paths.path("/usr"))
         self.assertNotIn(paths.path("/a/path"), paths.path("/a"))
 
-    def test_div(self):
+    def test_div(self) -> None:
         """Can still use the '/' operator with a NoPath"""
         parent = paths.path("/path/to")
         child = paths.path("/path/to/nowhere")
         self.assertEqual(parent / "nowhere", child)
 
-    def test_executable(self):
+    def test_executable(self) -> None:
         """A NoPath should not be executable"""
         self.assertFalse(paths.path(None).has_executable())

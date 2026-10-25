@@ -24,7 +24,7 @@ def add_args(parser: arguments.ArgumentsParser) -> arguments.ArgumentsParser:
     return parser
 
 
-def main(args):
+def main(args) -> bool:
     if args.codes:
         print(", ".join(getch.get_codes()))
     elif args.string:

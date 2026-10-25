@@ -203,7 +203,7 @@ def tmp():
 def home():
     """
     >>> import os
-    >>> assert home() == os.environ.get('HOME','')
+    >>> assert home() == os.environ.get('HOME', '')
     """
     return makes.path(os.path.expanduser("~"))
 

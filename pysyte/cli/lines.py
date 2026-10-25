@@ -3,8 +3,7 @@
 from collections import defaultdict
 from functools import partial
 import sys
-from typing import DefaultDict
-from typing import List
+from typing import DefaultDict, List
 
 from pysyte import __version__
 from pysyte.bash.screen import alt_screen
@@ -16,7 +15,7 @@ from pysyte.types import lines as pylines
 class LinesParser(ArgumentsParser):
     """Add option sets to the parser"""
 
-    def __init__(self, parser_: ArgumentsParser):
+    def __init__(self, parser_: ArgumentsParser) -> None:
         super().__init__(parser_)
         self.version = __version__
         self.groups: DefaultDict[str, list] = defaultdict(list)
@@ -27,7 +26,7 @@ class LinesParser(ArgumentsParser):
         self.positional(name_, help=f"{name_} to {action_}")
         return self
 
-    def add_to(self, letter, name, group, type_, help_, default=None):
+    def add_to(self, letter, name, group, type_, help_, default=None) -> None:
         letter_ = f'-{letter.lstrip("-")}'
         name_ = f'--{name.lstrip("-")}'
         safe_default = default if default else 0 if str(type_).startswith("int") else ""

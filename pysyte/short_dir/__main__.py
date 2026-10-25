@@ -129,7 +129,7 @@ def sub_script(directory, args):
         return None
 
 
-def script(args):
+def script(args) -> bool:
     for arg_dir in args.directories:
         directory = real_path(arg_dir)
         new_directory = sub_script(directory, args)

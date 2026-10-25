@@ -16,7 +16,7 @@ class AiAppConfig:
 class OpenaiApp:
     key_provider: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.config = apis.ApiConfiguration(
             __file__, self.key_provider, apis.Apis("openai")
         )

@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
-from collections.abc import Callable
-from typing import List
+from types import TracebackType
+from typing import List, Optional, Type
 
 """
 >>> faxed, fixed = applied((fax, fix), (+7, -999))
@@ -65,13 +66,18 @@ class Picker:
 
     picker: Callable = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         pass
 
     def __enter__(self):
         return self.picker
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         pass
 
     def __call__(self, *args, **kwargs):

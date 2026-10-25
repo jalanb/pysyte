@@ -2,20 +2,19 @@
 
 import unittest
 
-from pysyte.cli import arguments
-from pysyte.cli import paths
+from pysyte.cli import arguments, paths
 from pysyte.types.paths import path
 
 
 class TestPaths(unittest.TestCase):
     """Check that paths are extracted from command line if they exist"""
 
-    def test_add_args(self):
+    def test_add_args(self) -> None:
         """Adding args should give a PathParser"""
         actual = paths.add_args(arguments.test_parser())
         self.assertIsInstance(actual, paths.PathParser)
 
-    def test_parse(self):
+    def test_parse(self) -> None:
         """Parse out paths from cli
 
         Parse a cli with some known paths
@@ -31,7 +30,7 @@ class TestPaths(unittest.TestCase):
         self.assertNotIn("another", parsed.paths)
         self.assertIn("another", parsed.not_paths)
 
-    def test_named_parse(self):
+    def test_named_parse(self) -> None:
         """CHeck that the paths argument can be named differently"""
         parser = paths.add_args(arguments.test_parser(), "fred")
         path_to_test = path(__file__)

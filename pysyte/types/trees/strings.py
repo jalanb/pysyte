@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 import os
 from typing import (
     Any,
     TypeAlias,
 )
-from collections.abc import Callable
-from collections.abc import Iterable, Sequence
 
 from deprecated import deprecated
 from path import Path as JasonOrrendorfPath

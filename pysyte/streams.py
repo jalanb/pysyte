@@ -1,12 +1,10 @@
 """Methods to handle streams"""
 
+from collections.abc import Generator
 from contextlib import contextmanager
 from io import StringIO
 import sys
-from collections.abc import Generator
-from typing import Optional
-from typing import TextIO
-from typing import Tuple
+from typing import Optional, TextIO, Tuple
 
 
 class Print:
@@ -16,12 +14,12 @@ class Print:
         """Read from sys.stdin"""
         return sys.stdin.read(*args, **kwargs)
 
-    def out(*args, **kwargs):
+    def out(*args, **kwargs) -> None:
         """Direct print() to sys.stdout"""
         kwargs["file"] = sys.stdout
         print(*args, **kwargs)
 
-    def err(*args, **kwargs):
+    def err(*args, **kwargs) -> None:
         """Direct print() to sys.stderr"""
         kwargs["file"] = sys.stderr
         print(*args, **kwargs)
@@ -40,7 +38,7 @@ class Print:
 std = Print()
 
 
-def print_out(*args, **kwargs):
+def print_out(*args, **kwargs) -> None:
     """Direct print() to sys.stdout
 
     This function only exists to rhyme with print_err() below
@@ -48,7 +46,7 @@ def print_out(*args, **kwargs):
     print(*args, **kwargs)
 
 
-def print_err(*args, **kwargs):
+def print_err(*args, **kwargs) -> None:
     """Direct print() to sys.stderr"""
     kwargs["file"] = sys.stderr
     print(*args, **kwargs)

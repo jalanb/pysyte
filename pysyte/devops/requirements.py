@@ -3,8 +3,7 @@
 from dataclasses import dataclass
 
 from pysyte.types import versions
-from pysyte.types.paths import dirs
-from pysyte.types.paths import files
+from pysyte.types.paths import dirs, files
 from pysyte.types.python import packages
 
 
@@ -15,7 +14,7 @@ class Requirement(packages.Package):
     min_: versions.version = versions.NoVersion()
     max_: versions.version = versions.NoVersion()
 
-    def __postinit__(self):
+    def __postinit__(self) -> None:
         import re
 
         breakpoint()
@@ -29,10 +28,10 @@ class Requirements:
 
     required: list = [Requirement]
 
-    def extend(self, items: list[Requirement]):
+    def extend(self, items: list[Requirement]) -> None:
         self.required.extend(items)
 
-    def append(self, item: Requirement):
+    def append(self, item: Requirement) -> None:
         self.required.append(item)
 
     def pop(self) -> Requirement:

@@ -11,12 +11,11 @@
 """
 
 import ast
+from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
 import inspect
-from types import FrameType
-from types import ModuleType
-from collections.abc import Callable
+from types import FrameType, ModuleType
 from typing import Optional
 
 from lazy import lazy
@@ -36,7 +35,7 @@ class MethodData:
     method: Callable
     wrapper: Callable | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         method, wrapped = unwrap(self.method)
         if wrapped:
             self.method = wrapped
@@ -46,17 +45,17 @@ class MethodData:
 class Method(MethodData):
     """A callable method with some convenience attributes"""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.code = self.method.__code__
         unwrapped = unwrap(self.method)
         self.wrapped = unwrapped if unwrapped != self.method else None
         self.init_frame = inspect.currentframe()
         self.callers = [self.init_frame.f_back]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.code
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"""<{self.__class__.__name__} {self.module}{self.name}
 
 {self.doc}
@@ -241,10 +240,10 @@ class Def:
     line: int
     source: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.source
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.path}:{self.line}\n{self.source}\n>"
 
     @lazy

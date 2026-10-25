@@ -20,12 +20,11 @@ Hello
 
 """
 
+from collections.abc import Callable
 import contextlib
 from dataclasses import dataclass
 import io
-from sys import stderr as err
-from sys import stdout as out
-from collections.abc import Callable
+from sys import stderr as err, stdout as out
 
 from _io import TextIOWrapper as Wrapper
 

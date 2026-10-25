@@ -19,19 +19,19 @@ class TestFirstThat(unittest.TestCase):
         and check that we always get the first one
     """
 
-    def test_find_first(self):
+    def test_find_first(self) -> None:
         sequence = [(1, "one"), (2, "two"), (1, "ONE")]
         actual = iteration.first_that(is_one, sequence)
         expected = (1, "one")
         assert actual == expected
 
-    def test_find_second(self):
+    def test_find_second(self) -> None:
         sequence = [(2, "two"), (1, "one"), (1, "ONE")]
         actual = iteration.first_that(is_one, sequence)
         expected = (1, "one")
         assert actual == expected
 
-    def test_not_found(self):
+    def test_not_found(self) -> None:
         sequence = [(2, "two"), (7, "one"), (8, "ONE")]
         expected = "my message"
         with pytest.raises(KeyError, match=expected):
@@ -44,17 +44,17 @@ class TestFirst(unittest.TestCase):
     It should raise errors if there are no items
     """
 
-    def test_first(self):
+    def test_first(self) -> None:
         expected = "expected"
         actual = iteration.first([expected])
         assert actual == expected
 
-    def test_exception_on_empty(self):
+    def test_exception_on_empty(self) -> None:
         expected = "this message"
         with pytest.raises(ValueError, match=expected):
             iteration.first([], expected)
 
-    def test_generator(self):
+    def test_generator(self) -> None:
         def generate():
             while True:
                 yield expected

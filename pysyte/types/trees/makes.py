@@ -3,14 +3,11 @@ from importlib import import_module
 import os
 import re
 import sys
-from typing import Any
-from typing import Protocol
+from typing import Any, Protocol
 
 from pysyte.types.trees.errors import MissingImport
-from pysyte.types.trees.paths import Path
-from pysyte.types.trees.paths import Paths
-from pysyte.types.trees.strings import NoPath
-from pysyte.types.trees.strings import StringPath
+from pysyte.types.trees.paths import Path, Paths
+from pysyte.types.trees.strings import NoPath, StringPath
 
 
 class Pathed(Protocol):

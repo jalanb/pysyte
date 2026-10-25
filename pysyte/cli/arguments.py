@@ -11,13 +11,11 @@ from pprint import pformat
 import re
 import shlex
 import sys
-from typing import Any
-from typing import List
+from typing import Any, List
 
 import stackprinter
 
-from pysyte.cli.config import load_configs
-from pysyte.cli.config import pysyte
+from pysyte.cli.config import load_configs, pysyte
 from pysyte.types.numbers import inty
 
 
@@ -39,14 +37,14 @@ def extract_strings(names: dict, name: str) -> list[str]:
 
 
 class IntyAction(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
+    def __call__(self, parser, namespace, value, option_string=None) -> None:
         setattr(namespace, self.dest, inty(value))
 
 
 class ArgumentsParser:
     """Add more attriubtes and methods to an argparse.ArgumentParser"""
 
-    def __init__(self, argparser):
+    def __init__(self, argparser) -> None:
         self.parser = argparser
         self._parsed = None
 
@@ -59,10 +57,12 @@ class ArgumentsParser:
         self.inty = partial(self.arg, action=IntyAction)
         self.strings = partial(self.positional, type=str)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
 
-    def add_to(self, name=None, group=None, type_=None, default=None, *args, **kwargs):
+    def add_to(
+        self, name=None, group=None, type_=None, default=None, *args, **kwargs
+    ) -> None:
         args_ = args[:]
         kwargs_ = kwargs.copy()
         name_ = name if name else ""
@@ -117,7 +117,7 @@ class ArgumentsParser:
 class DescribedParser(ArgumentsParser):
     """An argparse.ArgumentParser with a description, usage and epilog"""
 
-    def __init__(self, description, usage, epilog):
+    def __init__(self, description, usage, epilog) -> None:
         super().__init__(
             argparse.ArgumentParser(
                 formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -129,10 +129,10 @@ class DescribedParser(ArgumentsParser):
 
 
 class ArgumentsNamespace:
-    def __init__(self, result):
+    def __init__(self, result) -> None:
         self._result = result
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Show args nicely in cli and debuggers"""
         klass = self.__class__.__qualname__
         cmd = " ".join(sys.argv)

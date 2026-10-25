@@ -1,12 +1,8 @@
 """Handle lists for pysyte"""
 
+from collections.abc import Callable, Iterable
 import itertools
-from typing import Any
-from collections.abc import Callable
-from collections.abc import Iterable
-from typing import List
-from typing import Tuple
-from typing import TypeVar
+from typing import Any, List, Tuple, TypeVar
 
 Unique = TypeVar("Unique")  # Generic type
 
@@ -14,7 +10,7 @@ Unique = TypeVar("Unique")  # Generic type
 class Nones(list):
     limit: int = 0
 
-    def __init__(self, limit: int, *args):
+    def __init__(self, limit: int, *args) -> None:
         self.limit = limit
         self.check(len(args))
         self.args = args
@@ -33,24 +29,24 @@ class Nones(list):
 
 
 class One(Nones):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.one, *_ = args
         super().__init__(1, [self.one])
 
 
 class Two(Nones):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.one, self.two, *_ = args
         super().__init__(2, args)
 
 
 class Many(Two):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(8, args)
 
 
 class Lots(Many):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.limit = -1
         super().__init__(-1, args)
 
@@ -62,7 +58,7 @@ class Uniques(list):
     Uniqueness is checked when appending to the list
     """
 
-    def __init__(self, items=None):
+    def __init__(self, items=None) -> None:
         super().__init__([])
         self.extend(items or [])
 
@@ -95,8 +91,8 @@ class UniquelyTrues(Uniques):
 def de_duplicate(items: list) -> list:
     """Remove any duplicate item, preserving order
 
-    >>> assert   list( set( [1, 9, 2, 8, 1, 7, 2])) != [1, 9, 2, 8, 7]
-    >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2] ) == [1, 9, 2, 8, 7]
+    >>> assert list(set([1, 9, 2, 8, 1, 7, 2])) != [1, 9, 2, 8, 7]
+    >>> assert de_duplicate([1, 9, 2, 8, 1, 7, 2]) == [1, 9, 2, 8, 7]
     """
     return list(Uniques(items))
 

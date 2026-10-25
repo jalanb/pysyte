@@ -7,7 +7,7 @@ from pysyte.types import functions
 
 
 @functions.memoized
-def initials(forename, surname, stream):
+def initials(forename, surname, stream) -> str:
     """Print initials of the name
 
     Function is memoized, so we show an actual call by writing to stream
@@ -37,28 +37,28 @@ def printer(a, b, stream):
 
 
 class MemoizeTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.stream = StringIO()
 
-    def test_first_call(self):
+    def test_first_call(self) -> None:
         self.assertEqual("FM", initials("Fred", "Murphy", self.stream))
         self.assertEqual("Call: Fred Murphy\n", self.stream.getvalue())
 
-    def test_function_name(self):
+    def test_function_name(self) -> None:
         """A memoized function has been renamed"""
         self.assertEqual("memoized(initials)", initials.__name__)
 
-    def test_function_docstring(self):
+    def test_function_docstring(self) -> None:
         docstring = initials.__doc__.splitlines()[0]
         self.assertEqual("Print initials of the name", docstring)
 
-    def test_same_module(self):
+    def test_same_module(self) -> None:
         self.assertEqual(none.__module__, printer.__module__)
 
-    def test_different_modules(self):
+    def test_different_modules(self) -> None:
         self.assertNotEqual(none.__module__, initials.__module__)
 
-    def test_second_call_different_args(self):
+    def test_second_call_different_args(self) -> None:
         """Second call of function gives twice the output"""
         self.assertEqual("FS", initials("Fred", "Smith", self.stream))
         self.assertEqual("FS", initials("Fred", "Silly", self.stream))
@@ -66,7 +66,7 @@ class MemoizeTest(unittest.TestCase):
         expected = "Call: Fred Smith\nCall: Fred Silly\n"
         self.assertEqual(expected, actual)
 
-    def test_second_call_same_args(self):
+    def test_second_call_same_args(self) -> None:
         """Second call of function with same args gives once the output"""
         self.assertEqual("OS", initials("One", "Smith", self.stream))
         self.assertEqual("OS", initials("One", "Smith", self.stream))
@@ -74,7 +74,7 @@ class MemoizeTest(unittest.TestCase):
         expected = "Call: One Smith\n"
         self.assertEqual(expected, actual)
 
-    def test_invalidate(self):
+    def test_invalidate(self) -> None:
         """Invalidating a cached call loses the memory
 
         So, after invalidation, it is actually called again
@@ -90,7 +90,7 @@ class MemoizeTest(unittest.TestCase):
         self.assertEqual("TS", initials("Two", "Smith", self.stream))
         self.assertEqual("Call: Two Smith\nCall: Two Smith\n", self.stream.getvalue())
 
-    def test_particular_invalidation(self):
+    def test_particular_invalidation(self) -> None:
         """Calls can be invalidated for particular arguments
 
         We test by invalidating for Fred
@@ -110,11 +110,11 @@ class MemoizeTest(unittest.TestCase):
             self.stream.getvalue(),
         )
 
-    def test_invalid_invalidation(self):
+    def test_invalid_invalidation(self) -> None:
         self.assertEqual("TS", initials("Three", "Smith", self.stream))
         self.assertRaises(KeyError, initials.invalidate, "not called")
 
-    def test_use_wtithout_decorator(self):
+    def test_use_wtithout_decorator(self) -> None:
         memo_average = functions.memoized(printer)
         one = memo_average(1, 6, self.stream)
         two = memo_average(2, 5, self.stream)
@@ -126,12 +126,12 @@ class MemoizeTest(unittest.TestCase):
             self.stream.getvalue(),
         )
 
-    def test_no_arguments(self):
+    def test_no_arguments(self) -> None:
         """Functions without arguments can lead to barfing in some memoisers"""
         self.assertIsNone(no_args())
         self.assertIsNone(no_args())
 
-    def test_default_arguments(self):
+    def test_default_arguments(self) -> None:
         """Functions without arguments can lead to barfing in some memoisers
 
         Defaults are a slightly different form of "no args"
@@ -139,12 +139,12 @@ class MemoizeTest(unittest.TestCase):
         self.assertIsNone(default_args())
         self.assertIsNone(default_args())
 
-    def test_mutable_arguments(self):
+    def test_mutable_arguments(self) -> None:
         """Call with lists is handled (despite list not being hashable)"""
         self.assertEqual("FS", initials(["F", "red"], ["S", "mith"], self.stream))
         self.assertEqual("FS", initials(["F", "red"], ["S", "mith"], self.stream))
         self.assertEqual("Call: ['F', 'red'] ['S', 'mith']\n", self.stream.getvalue())
 
-    def test_full_coverage(self):
+    def test_full_coverage(self) -> None:
         """Some tests needed to get full coverage"""
         self.assertIsNone(none())

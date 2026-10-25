@@ -16,6 +16,6 @@ class Apis:
 class ApiConfiguration(ModuleConfiguration):
     api: Apis
 
-    def __init__(self, file: str, key: str, api: Apis):
+    def __init__(self, file: str, key: str, api: Apis) -> None:
         super().__init__(file)
         openai.api_key = self.keys[key][api.name]
